@@ -1,5 +1,5 @@
 import type { UserAnswers, Product, RecommendationResult } from '../types';
-import { products } from './products';
+import { getActiveProducts } from './products-extended';
 
 interface ScoredProduct extends Product {
   score: number;
@@ -7,8 +7,11 @@ interface ScoredProduct extends Product {
 
 export function getRecommendations(answers: UserAnswers, isCompany: boolean = false): RecommendationResult {
   // Filter products based on user type
+
+  const products = getActiveProducts()
+
   const filteredProducts = isCompany
-    ? products.filter(p => p.forCompany === true)
+    ? getActiveProducts().filter(p => p.forCompany === true)
     : products;
 
   const scoredProducts: ScoredProduct[] = filteredProducts.map(product => ({
