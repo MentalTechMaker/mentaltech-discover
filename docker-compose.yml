@@ -1,0 +1,56 @@
+services:
+  mentaltech-discover:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mentaltech-discover
+    ports:
+      - "3033:8080"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # Sécurité: Limiter les ressources
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    # Sécurité: Capacités Linux limitées
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    # Sécurité: Lecture seule du système de fichiers (sauf /tmp et cache)
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+      - /var/cache/nginx:uid=101,gid=101
+      - /var/run:uid=101,gid=101
+    # Sécurité: Empêcher l'escalade de privilèges
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mentaltech-network
+
+networks:
+  mentaltech-network:
+    driver: bridge
