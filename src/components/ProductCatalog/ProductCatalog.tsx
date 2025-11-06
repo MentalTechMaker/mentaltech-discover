@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { getAllProducts } from "../../data/products-extended";
 import { ProductCatalogCard } from "./ProductCatalogCard";
 import { FilterSection } from "./FilterSection";
+import { useUrlFilters } from "../../hooks/useUrlFilters";
 
 export interface Filters {
   search: string;
@@ -25,8 +26,12 @@ export const ProductCatalog: React.FC = () => {
   });
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"relevance" | "name" | "pricing">("relevance");
 
   const allProducts = getAllProducts();
+
+  // Synchroniser les filtres avec l'URL
+  useUrlFilters(filters, setFilters);
 
   // Extract unique values for filters
   const filterOptions = useMemo(() => {
@@ -52,9 +57,9 @@ export const ProductCatalog: React.FC = () => {
     };
   }, [allProducts]);
 
-  // Filter products
+  // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return allProducts.filter((product) => {
+    const filtered = allProducts.filter((product) => {
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
@@ -115,7 +120,32 @@ export const ProductCatalog: React.FC = () => {
 
       return true;
     });
-  }, [allProducts, filters]);
+
+    // Sort products
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "name":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+      case "pricing": {
+        const pricingOrder: Record<string, number> = {
+          free: 0,
+          freemium: 1,
+          subscription: 2,
+          "per-session": 3,
+          enterprise: 4,
+          custom: 5,
+        };
+        return sorted.sort((a, b) => {
+          const orderA = pricingOrder[a.pricing?.model || "custom"] ?? 99;
+          const orderB = pricingOrder[b.pricing?.model || "custom"] ?? 99;
+          return orderA - orderB;
+        });
+      }
+      case "relevance":
+      default:
+        return sorted;
+    }
+  }, [allProducts, filters, sortBy]);
 
   const handleFilterChange = (key: keyof Filters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -131,6 +161,14 @@ export const ProductCatalog: React.FC = () => {
       forCompany: "all",
       companyStatus: ["active", "liquidation", "closed"],
     });
+  };
+
+  // Filtres rapides pré-configurés
+  const applyQuickFilter = (quickFilters: Partial<Filters>) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...quickFilters,
+    }));
   };
 
   const activeFiltersCount = useMemo(() => {
@@ -187,6 +225,51 @@ export const ProductCatalog: React.FC = () => {
           )}
         </div>
 
+        {/* Filtres rapides */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-text-secondary mb-3">
+            🔥 Filtres populaires
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => applyQuickFilter({ pricingModel: ["free"] })}
+              className="px-4 py-2 bg-green-50 text-green-700 border-2 border-green-200 rounded-lg font-medium hover:bg-green-100 transition-colors text-sm"
+            >
+              💰 Gratuit uniquement
+            </button>
+            <button
+              onClick={() => applyQuickFilter({ problemsSolved: ["stress-anxiety"] })}
+              className="px-4 py-2 bg-blue-50 text-blue-700 border-2 border-blue-200 rounded-lg font-medium hover:bg-blue-100 transition-colors text-sm"
+            >
+              😰 Stress & Anxiété
+            </button>
+            <button
+              onClick={() => applyQuickFilter({ audience: ["teen"] })}
+              className="px-4 py-2 bg-purple-50 text-purple-700 border-2 border-purple-200 rounded-lg font-medium hover:bg-purple-100 transition-colors text-sm"
+            >
+              👦 Pour ados
+            </button>
+            <button
+              onClick={() => applyQuickFilter({ problemsSolved: ["addiction"] })}
+              className="px-4 py-2 bg-orange-50 text-orange-700 border-2 border-orange-200 rounded-lg font-medium hover:bg-orange-100 transition-colors text-sm"
+            >
+              🚭 Addictions
+            </button>
+            <button
+              onClick={() => applyQuickFilter({ forCompany: "company" })}
+              className="px-4 py-2 bg-gray-50 text-gray-700 border-2 border-gray-200 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm"
+            >
+              🏢 Solutions B2B
+            </button>
+            <button
+              onClick={() => applyQuickFilter({ pricingModel: ["freemium", "free"] })}
+              className="px-4 py-2 bg-yellow-50 text-yellow-700 border-2 border-yellow-200 rounded-lg font-medium hover:bg-yellow-100 transition-colors text-sm"
+            >
+              ✨ Essai gratuit
+            </button>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
@@ -199,8 +282,26 @@ export const ProductCatalog: React.FC = () => {
 
           {/* Products Grid/List */}
           <div className="flex-1">
-            {/* View mode toggle */}
-            <div className="flex justify-end mb-4">
+            {/* Sort and view controls */}
+            <div className="flex justify-between items-center mb-4 gap-4">
+              {/* Sort dropdown */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="sort-select" className="text-sm font-semibold text-text-secondary whitespace-nowrap">
+                  Trier par :
+                </label>
+                <select
+                  id="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="px-4 py-2 bg-white border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm font-medium text-text-primary"
+                >
+                  <option value="relevance">Pertinence</option>
+                  <option value="name">Nom (A-Z)</option>
+                  <option value="pricing">Prix (gratuit d'abord)</option>
+                </select>
+              </div>
+
+              {/* View mode toggle */}
               <div className="bg-white border-2 border-gray-200 rounded-lg p-1 flex gap-1">
                 <button
                   onClick={() => setViewMode("grid")}

@@ -17,7 +17,6 @@ export const LegalNotice: React.FC = () => {
         </div>
 
         <div className="card space-y-6">
-          {/* Éditeur du site */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -41,7 +40,6 @@ export const LegalNotice: React.FC = () => {
             </div>
           </section>
 
-          {/* Hébergeur */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -70,7 +68,6 @@ export const LegalNotice: React.FC = () => {
             </div>
           </section>
 
-          {/* Directeur de publication */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -83,7 +80,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Propriété intellectuelle */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -99,7 +95,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Données personnelles */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -126,7 +121,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Cookies */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -142,7 +136,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Liens externes */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -158,7 +151,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Responsabilité */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -174,7 +166,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Contact */}
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
@@ -196,7 +187,6 @@ export const LegalNotice: React.FC = () => {
             </p>
           </section>
 
-          {/* Date de mise à jour */}
           <section className="pt-4 border-t border-gray-200">
             <p className="text-sm text-text-secondary italic">
               Dernière mise à jour :{" "}

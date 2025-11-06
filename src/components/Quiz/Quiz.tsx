@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import { useAppStore } from '../../store/useAppStore';
-import { questions } from '../../data/questions';
-import { companyQuestions } from '../../data/companyQuestions';
-import { getRecommendations } from '../../data/recommendationEngine';
-import { QuestionCard } from './QuestionCard';
-import { ProgressBar } from './ProgressBar';
-import { EmergencyBanner } from './EmergencyBanner';
+import React, { useEffect, useMemo } from "react";
+import { useAppStore } from "../../store/useAppStore";
+import { questions } from "../../data/questions";
+import { companyQuestions } from "../../data/companyQuestions";
+import { getRecommendations } from "../../data/recommendationEngine";
+import { QuestionCard } from "./QuestionCard";
+import { ProgressBar } from "./ProgressBar";
+import { EmergencyBanner } from "./EmergencyBanner";
 
 export const Quiz: React.FC = () => {
   const {
@@ -18,15 +18,13 @@ export const Quiz: React.FC = () => {
     previousQuestion,
     setView,
     setShowEmergencyBanner,
-    setRecommendations
+    setRecommendations,
   } = useAppStore();
 
-  // Select questions based on user type
-  const questionsList = userType === 'company' ? companyQuestions : questions;
+  const questionsList = userType === "company" ? companyQuestions : questions;
 
-  // Filter questions based on conditions
   const activeQuestions = useMemo(() => {
-    return questionsList.filter(q => {
+    return questionsList.filter((q) => {
       if (!q.condition) return true;
       const conditionAnswer = getAnswerValue(q.condition.questionId);
       return conditionAnswer === q.condition.value;
@@ -34,32 +32,33 @@ export const Quiz: React.FC = () => {
   }, [answers, questionsList]);
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
-  const currentAnswer = currentQuestion ? getAnswerValue(currentQuestion.id) : undefined;
+  const currentAnswer = currentQuestion
+    ? getAnswerValue(currentQuestion.id)
+    : undefined;
 
-  // Check for emergency situation
   useEffect(() => {
-    if (answers.feeling === 'very-bad' && answers.urgency === 'dark-thoughts') {
+    if (answers.feeling === "very-bad" && answers.urgency === "dark-thoughts") {
       setShowEmergencyBanner(true);
     }
   }, [answers.feeling, answers.urgency, setShowEmergencyBanner]);
 
   function getAnswerValue(questionId: number): string | undefined {
-    if (userType === 'company') {
+    if (userType === "company") {
       const companyMapping: Record<number, keyof typeof answers> = {
-        1: 'companySize',
-        2: 'companyNeeds',
-        3: 'preference'
+        1: "companySize",
+        2: "companyNeeds",
+        3: "preference",
       };
       const key = companyMapping[questionId];
       return answers[key];
     }
 
     const individualMapping: Record<number, keyof typeof answers> = {
-      1: 'feeling',
-      2: 'urgency',
-      3: 'problem',
-      4: 'audience',
-      5: 'preference'
+      1: "feeling",
+      2: "urgency",
+      3: "problem",
+      4: "audience",
+      5: "preference",
     };
     const key = individualMapping[questionId];
     return answers[key];
@@ -75,10 +74,12 @@ export const Quiz: React.FC = () => {
     if (currentQuestionIndex < activeQuestions.length - 1) {
       nextQuestion();
     } else {
-      // Quiz completed, generate recommendations
-      const recommendations = getRecommendations(answers, userType === 'company');
+      const recommendations = getRecommendations(
+        answers,
+        userType === "company"
+      );
       setRecommendations(recommendations);
-      setView('results');
+      setView("results");
     }
   };
 

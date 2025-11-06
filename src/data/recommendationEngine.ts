@@ -6,7 +6,6 @@ interface ScoredProduct extends Product {
 }
 
 export function getRecommendations(answers: UserAnswers, isCompany: boolean = false): RecommendationResult {
-  // Filter products based on user type
 
   const products = getActiveProducts()
 
@@ -19,21 +18,19 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
     score: isCompany ? calculateCompanyScore(product, answers) : calculateScore(product, answers)
   }));
 
-  // Sort by score descending
   scoredProducts.sort((a, b) => b.score - a.score);
 
-  // Get top 2-3 products (minimum 2, maximum 3)
   const topProducts = scoredProducts
     .filter(p => p.score > 0)
-    .slice(0, 3)
-    .map(({ score, ...product }) => product);
+    .slice(0, 9) // 3 principales + 6 supplémentaires
+    .map(({ score, ...product }) => ({
+      ...product,
+      recommendationScore: score
+    }));
 
-  // If no match, return versatile options
   const recommendedProducts = topProducts.length > 0
     ? topProducts
-    : isCompany
-      ? filteredProducts.slice(0, 2)
-      : [products.find(p => p.id === 'qare')!, products.find(p => p.id === 'petitbambou')!];
+    : filteredProducts.slice(0, isCompany ? 2 : 9);
 
   const explanation = isCompany
     ? generateCompanyExplanation(answers, recommendedProducts)
@@ -45,62 +42,108 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
   };
 }
 
+/**
+ * Calcule un score de pertinence pour un produit donné en fonction des réponses utilisateur
+ *
+ * Critères de scoring (transparent et générique) :
+ * - Correspondance audience (10 pts) : Le produit cible-t-il le bon public ?
+ * - Correspondance problème (8 pts) : Le produit traite-t-il le problème identifié ?
+ * - Correspondance préférence (6 pts) : Le format correspond-il à ce que cherche l'utilisateur ?
+ * - Urgence et état émotionnel (5-7 pts) : Le produit est-il adapté au niveau d'urgence ?
+ * - Spécialisation (10-15 pts) : Le produit est-il spécialisé pour ce besoin spécifique ?
+ *
+ * Score maximum théorique : ~50 points
+ */
 function calculateScore(product: Product, answers: UserAnswers): number {
   let score = 0;
 
-  // 1. Audience matching (highest priority)
+  // 1. AUDIENCE MATCHING (10 points)
+  // Le produit doit cibler le bon public (adulte, enfant, senior, etc.)
   if (answers.audience && product.audience.includes(answers.audience)) {
     score += 10;
   }
 
-  // 2. Problem matching (very important)
+  // 2. PROBLEM MATCHING (8 points)
+  // Le produit doit résoudre le problème spécifique identifié
   if (answers.problem && product.problemsSolved.includes(answers.problem)) {
     score += 8;
+
+    // Bonus de spécialisation : si le produit est très spécialisé sur ce problème
+    // (détecté si le produit ne résout qu'un seul type de problème)
+    if (product.problemsSolved.length === 1) {
+      score += 10; // Spécialisation forte
+    } else if (product.problemsSolved.length === 2) {
+      score += 5; // Spécialisation modérée
+    }
   }
 
-  // 3. Preference matching (important)
+  // 3. PREFERENCE MATCHING (6 points)
+  // Le format de la solution doit correspondre aux attentes utilisateur
   if (answers.preference && product.preferenceMatch.includes(answers.preference)) {
     score += 6;
   }
 
-  // 4. Feeling-based adjustments
+  // 4. URGENCE ET ÉTAT ÉMOTIONNEL (5-7 points)
+  // Adaptation selon le niveau de détresse
   if (answers.feeling === 'very-bad' || answers.feeling === 'not-great') {
-    // Prioritize professional help and immediate support
+    // En cas de mal-être, prioriser l'accompagnement humain immédiat
     if (product.preferenceMatch.includes('talk-now')) {
       score += 5;
     }
+    // Bonus pour les solutions avec professionnels certifiés
+    if (product.tags.includes('professionnel') || product.tags.includes('téléconsultation')) {
+      score += 3;
+    }
   } else if (answers.feeling === 'prevention') {
-    // Prioritize preventive tools
+    // En prévention, prioriser les outils de bien-être et éducatifs
     if (product.tags.includes('prévention') || product.tags.includes('bien-être')) {
+      score += 5;
+    }
+    if (product.tags.includes('autonomie') || product.tags.includes('éducation')) {
+      score += 2;
+    }
+  }
+
+  // 5. URGENCE CRITIQUE (7 points supplémentaires)
+  // Si la personne souffre actuellement, prioriser fortement l'accès immédiat
+  if (answers.urgency === 'suffering') {
+    if (product.preferenceMatch.includes('talk-now')) {
+      score += 7;
+    }
+    // Bonus pour disponibilité 24/7 ou accès rapide (détecté par les tags)
+    if (product.tags.includes('urgent') || product.type === 'Téléconsultation') {
       score += 5;
     }
   }
 
-  // 5. Urgency adjustments
-  if (answers.urgency === 'suffering') {
-    if (product.id === 'qare' || product.preferenceMatch.includes('talk-now')) {
-      score += 7;
-    }
-  }
-
-  // 6. Special case: children/parents
+  // 6. CAS SPÉCIFIQUES - ENFANTS (15 points de bonus)
+  // Les solutions pédiatriques doivent être fortement privilégiées pour les enfants
   if (answers.audience === 'child' || answers.audience === 'parent') {
-    if (product.id === 'koalou') {
-      score += 15; // Heavily prioritize Koalou for children
+    if (product.tags.includes('enfants') || product.type === 'App enfants') {
+      score += 15; // Forte spécialisation pédiatrique
     }
   }
 
-  // 7. Special case: addiction
+  // 7. CAS SPÉCIFIQUES - ADDICTIONS
+  // Les solutions dédiées aux addictions spécifiques sont prioritaires
   if (answers.problem === 'addiction') {
-    if (product.id === 'kwit') {
-      score += 10; // Prioritize Kwit for tobacco addiction
+    // Détection de spécialisation addiction par tags
+    const addictionTags = ['addiction', 'sevrage', 'alcool', 'tabac', 'coaching'];
+    const hasAddictionSpecialization = addictionTags.some(tag =>
+      product.tags.includes(tag) || product.type.toLowerCase().includes(tag)
+    );
+
+    if (hasAddictionSpecialization) {
+      score += 10; // Spécialisation addiction
     }
   }
 
-  // 8. Special case: trauma
+  // 8. CAS SPÉCIFIQUES - TRAUMA / TSPT
+  // Les solutions spécialisées trauma doivent être prioritaires
   if (answers.problem === 'trauma') {
-    if (product.id === 'resileyes') {
-      score += 10; // Prioritize ResilEyes for trauma
+    if (product.tags.includes('trauma') || product.tags.includes('TSPT') ||
+        product.type.toLowerCase().includes('trauma')) {
+      score += 10; // Spécialisation trauma
     }
   }
 
@@ -147,19 +190,16 @@ function generateExplanation(answers: UserAnswers, _products: Product[]): string
     ? `En fonction de tes réponses, nous avons identifié que tu cherches ${needs.join(', et ')}.`
     : 'En fonction de tes réponses, voici des solutions qui pourraient t\'aider.';
 
-  return `${needsText}\n\nCes outils ont été recommandés par des professionnels de santé et ont aidé des milliers de personnes dans des situations similaires.`;
+  return `${needsText}\n\nCes outils ont été recommandés par des professionnels de santé et ont aidé des centaines de personnes dans des situations similaires.`;
 }
 
 function calculateCompanyScore(product: Product, answers: UserAnswers): number {
   let score = 0;
 
-  // Company size matching
   if (answers.companySize) {
-    // All company products are generally suitable for all sizes
     score += 5;
   }
 
-  // Company needs matching
   if (answers.companyNeeds) {
     if (answers.companyNeeds === 'prevention' && product.tags.includes('prévention')) {
       score += 10;
@@ -178,7 +218,6 @@ function calculateCompanyScore(product: Product, answers: UserAnswers): number {
     }
   }
 
-  // Solution type matching
   if (answers.preference) {
     if (answers.preference === 'platform' && product.tags.includes('entreprise')) {
       score += 8;

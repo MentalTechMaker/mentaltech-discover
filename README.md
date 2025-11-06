@@ -1,21 +1,19 @@
-# MentalTech Discover 💙
+# MentalTech Discover
 
-> Découvrez les solutions digitales en santé mentale adaptées à vos besoins
+**MentalTech Discover** est un outil créé par **[MentalTechMaker](https://mentaltechmaker.fr)** pour le **Collectif MentalTech** qui aide les utilisateurs à naviguer dans l'écosystème des solutions digitales en santé mentale.
 
-**MentalTech Discover** est un outil créé par **[MentalTechMaker](https://mentaltechmaker.com)** pour le **Collectif MentalTech** qui aide les utilisateurs à naviguer dans l'écosystème des solutions digitales en santé mentale.
+## À propos
 
-## 🎯 À propos
+MentalTech Discover référence **X solutions** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
 
-MentalTech Discover référence **24 solutions** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
+- **Questionnaire personnalisé** - 2 minutes pour des recommandations sur-mesure
+- **Catalogue complet** - Explorez toutes les solutions avec des filtres avancés
+- **Algorithme de scoring** - Matching intelligent basé sur vos réponses
+- **100% gratuit et anonyme** - Aucune donnée collectée
 
-- 🔍 **Questionnaire personnalisé** - 2 minutes pour des recommandations sur-mesure
-- 📚 **Catalogue complet** - Explorez toutes les solutions avec des filtres avancés
-- 🎯 **Algorithme de scoring** - Matching intelligent basé sur vos réponses
-- 💙 **100% gratuit et anonyme** - Aucune donnée collectée
+## Fonctionnalités
 
-## ✨ Fonctionnalités
-
-### 🧭 Recommandations personnalisées
+### Recommandations personnalisées
 
 Un questionnaire rapide analyse vos besoins et recommande 2-3 solutions parmi :
 
@@ -23,7 +21,7 @@ Un questionnaire rapide analyse vos besoins et recommande 2-3 solutions parmi :
 - **Problématiques** : stress, anxiété, dépression, addictions, burn-out, sommeil, trauma
 - **Préférences** : accompagnement autonome, thérapie immédiate, programmes structurés
 
-### 📱 Catalogue interactif
+### Catalogue interactif
 
 Explorez toutes les solutions avec 8 filtres :
 
@@ -35,7 +33,7 @@ Explorez toutes les solutions avec 8 filtres :
 - Statut de l'entreprise
 - Public (particuliers vs entreprises)
 
-### 🎨 Interface moderne
+### Interface moderne
 
 - Design épuré avec emojis
 - Vue grille et vue liste
@@ -43,7 +41,7 @@ Explorez toutes les solutions avec 8 filtres :
 - Badges colorés par catégorie
 - Accessibilité optimisée
 
-## 🛠️ Stack technique
+## Stack technique
 
 - **Frontend:** React 19 + TypeScript
 - **State Management:** Zustand
@@ -51,7 +49,7 @@ Explorez toutes les solutions avec 8 filtres :
 - **Build:** Vite 7
 - **Qualité:** ESLint + TypeScript strict mode
 
-## 🚀 Installation
+## Installation
 
 ```bash
 # Cloner le repository
@@ -68,46 +66,6 @@ npm run dev
 npm run build
 ```
 
-## 📂 Structure du projet
-
-```
-mentaltech-discover/
-├── src/
-│   ├── components/
-│   │   ├── Landing.tsx              # Page d'accueil
-│   │   ├── Quiz/                    # Questionnaire personnalisé
-│   │   ├── Results/                 # Résultats & recommandations
-│   │   ├── ProductCatalog/          # Catalogue avec filtres
-│   │   └── Layout/                  # Header, Footer
-│   ├── data/
-│   │   ├── products-extended.ts     # Base des 24 solutions
-│   │   ├── questions.ts             # Questions du quiz
-│   │   └── recommendationEngine.ts  # Algorithme de scoring
-│   ├── types/
-│   │   └── index.ts                 # Types TypeScript
-│   └── store/
-│       └── useAppStore.ts           # Store Zustand
-├── public/
-└── docs/                            # Documentation
-```
-
-## 📊 Solutions référencées
-
-### 24 membres du Collectif MentalTech
-
-**Membres fondateurs (7):**
-
-- 👨‍⚕️ **Qare** - Téléconsultation
-- 🧘 **Petit BamBou** - Méditation
-- 🥽 **HypnoVR** - Réalité virtuelle
-- 🚭 **Kwit** - Sevrage tabagique
-- ☕ **moka.care** - Bien-être entreprise
-- 👁️ **ResilEyes** - Thérapie trauma
-- 🎮 **Tricky** - Prévention ludique
-
-**Membres adhérents (17):**
-📊 EDRA - 🍷 EOS Care - 🌈 Feel - 🌿 Holicare - 💚 iFeel - 😴 InSleepLab - 💬 LetsTolk - 🔗 Lyynk - 🧩 Neuredia - 🌟 Pleinia - 👀 Suricog - 🤝 Tuki - 🗣️ WeTalk - 📱 Lisl Up - 🧠 mindDay - 🐨 Koalou - 💡 Lumm
-
 ### Informations par solution
 
 Chaque solution comprend :
@@ -120,7 +78,7 @@ Chaque solution comprend :
 - Lien vers le site officiel
 - Statut de l'entreprise
 
-## 🎯 Cas d'usage
+## Cas d'usage
 
 ### Pour les particuliers
 
@@ -138,7 +96,7 @@ Chaque solution comprend :
 - Trouver des solutions B2B pour collaborateurs
 - Comparer les offres entreprise
 
-## 🎨 Design
+## Design
 
 ### Emojis comme identité visuelle
 
@@ -156,42 +114,21 @@ Choix d'utiliser des emojis pour :
 - **Secondaire:** Vert (#10B981) - Bien-être, croissance
 - **Accents:** Violet, Orange, Rose - Diversité
 
-## 🔐 Confidentialité
+## Confidentialité
 
 - ✅ **100% anonyme** - Aucune donnée personnelle collectée
 - ✅ **Pas de tracking** - Aucun analytics
 - ✅ **Pas de cookies** - Navigation privée
 - ✅ **Open source** - Code transparent
 
-## 📈 Performance
+## Performance
 
 - Build optimisé : < 300KB total
 - Time to Interactive : < 2s
 - Lighthouse Score : 95+
 - Responsive : Mobile-first
 
-## 🏗️ Architecture
-
-### Composants React modulaires
-
-- Séparation claire des responsabilités
-- Composants réutilisables
-- Props typées avec TypeScript
-- Hooks personnalisés
-
-### State management
-
-- Store Zustand centralisé
-- State minimal et optimisé
-- Actions typées
-
-### Performance
-
-- Optimisations React (useMemo, useCallback)
-- Lazy loading implicite
-- Filtrage temps réel optimisé
-
-## 🤝 Contribution
+## Contribution
 
 Ce projet a été créé par **MentalTechMaker** pour le Collectif MentalTech.
 
@@ -203,32 +140,32 @@ Pour ajouter une solution ou proposer des améliorations :
 4. Push vers la branche (`git push origin feature/nouvelle-solution`)
 5. Créer une Pull Request
 
-## 📄 Licence
+## Licence
 
 Développé pour le **Collectif MentalTech** - Écosystème français de la santé mentale digitale.
 
 Les données sur les solutions proviennent de sources publiques et sont mises à jour régulièrement.
 
-## 🙏 Remerciements
+## Remerciements
 
 - **Collectif MentalTech** et tous ses membres
 - Toutes les **entreprises innovantes** en santé mentale
 - La **communauté open source** React/TypeScript
 
-## 👨‍💻 Créateur
+## Créateur
 
 **MentalTechMaker** - Membre du Collectif MentalTech
 
-- 🌐 Website: [mentaltechmaker.com](https://mentaltechmaker.com)
-- 💼 LinkedIn: [MentalTechMaker](https://www.linkedin.com/in/mentaltechmaker)
+- Website : [mentaltechmaker.fr](https://mentaltechmaker.fr)
+- LinkedIn : [Arnaud Bressot](https://www.linkedin.com/in/arnaudbressot)
+- Email : arnaud@mentaltechmaker.fr
 
-## 📞 Contact Collectif
+## Contact Collectif
 
-- **Website**: [mentaltech.fr](https://mentaltech.fr)
-- **Email**: arnaud@mentaltechmaker.fr
-- **LinkedIn**: [Collectif MentalTech](https://www.linkedin.com/company/mentaltech)
+- Website : [mentaltech.fr](https://mentaltech.fr)
+- LinkedIn : [Collectif MentalTech](https://www.linkedin.com/company/mentaltech)
 
-## 🔮 Roadmap
+## Roadmap
 
 ### Prochaines fonctionnalités
 
@@ -251,11 +188,3 @@ Les données sur les solutions proviennent de sources publiques et sont mises à
 - [ ] Avis d'utilisateurs
 - [ ] Blog / Ressources
 - [ ] Guides thématiques
-
----
-
-**Version:** 1.0.0
-**Dernière mise à jour:** Octobre 2025
-**Statut:** ✅ Production Ready
-
-Made with 💙 by MentalTechMaker for the Collectif MentalTech

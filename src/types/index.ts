@@ -1,4 +1,3 @@
-// Type definitions for MentalTech Discover
 
 export interface QuestionOption {
   value: string;
@@ -46,6 +45,7 @@ export interface Product {
     details?: string;
   };
   companyStatus?: 'active' | 'closed' | 'liquidation';
+  recommendationScore?: number;
 }
 
 export interface RecommendationResult {
@@ -55,4 +55,4 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company';
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology';

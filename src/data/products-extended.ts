@@ -83,6 +83,25 @@ export const productsExtended: Product[] = [
     companyStatus: "active"
   },
   {
+    id: "sobero",
+    name: "Sobero",
+    type: "Gestion de l'alcool",
+    tagline: "Maîtrise ta consommation d'alcool",
+    description: "Application basée sur les sciences comportementales pour réduire ou arrêter l'alcool. Suivi quotidien, exercices personnalisés, support communautaire et chat expert. Développée par les créateurs de Kwit.",
+    url: "https://www.sobero.app",
+    logo: "🍺",
+    tags: ["addiction", "coaching", "autonomie", "suivi", "alcool"],
+    audience: ["adult"],
+    problemsSolved: ["addiction", "stress-anxiety"],
+    preferenceMatch: ["autonomous", "program"],
+    pricing: {
+      model: "subscription",
+      amount: "9,99€/mois",
+      details: "Essai gratuit de 7 jours, puis 9,99€/mois sans engagement"
+    },
+    companyStatus: "active"
+  },
+  {
     id: "mokacare",
     name: "moka.care",
     type: "Bien-être en entreprise",

@@ -54,6 +54,24 @@ export const products: Product[] = [
     preferenceMatch: ["autonomous", "program"]
   },
   {
+    id: "sobero",
+    name: "Sobero",
+    type: "Gestion de l'alcool",
+    tagline: "Maîtrise ta consommation d'alcool",
+    description: "Application basée sur les sciences comportementales pour réduire ou arrêter l'alcool. Suivi quotidien, exercices personnalisés, support communautaire et chat expert.",
+    url: "https://www.sobero.app",
+    logo: "/logos/sobero.png",
+    tags: ["addiction", "coaching", "autonomie", "suivi"],
+    audience: ["adult"],
+    problemsSolved: ["addiction", "stress-anxiety"],
+    preferenceMatch: ["autonomous", "program"],
+    pricing: {
+      model: "subscription",
+      amount: "9,99€/mois",
+      details: "Essai gratuit de 7 jours, puis 9,99€/mois sans engagement"
+    }
+  },
+  {
     id: "mokacare",
     name: "moka.care",
     type: "Bien-être en entreprise",

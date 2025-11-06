@@ -138,7 +138,7 @@ export const Privacy: React.FC = () => {
               <span className="text-3xl" aria-hidden="true">
                 ❓
               </span>
-              Questions ?
+              Questions
             </h2>
             <p className="text-text-secondary leading-relaxed">
               Pour toute question concernant la confidentialité, contactez-nous
@@ -152,7 +152,6 @@ export const Privacy: React.FC = () => {
             </p>
           </section>
 
-          {/* Date de mise à jour */}
           <section className="pt-4 border-t border-gray-200">
             <p className="text-sm text-text-secondary italic">
               Dernière mise à jour :{" "}

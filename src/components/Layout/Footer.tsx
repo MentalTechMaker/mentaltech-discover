@@ -9,7 +9,6 @@ export const Footer: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="text-center space-y-4">
           <p className="text-sm text-text-secondary flex items-center justify-center gap-2">
-            <span className="text-lg">🔒</span>
             <span>Anonyme et confidentiel - Aucune donnée collectée</span>
           </p>
 
@@ -21,21 +20,29 @@ export const Footer: React.FC = () => {
             >
               📚 Catalogue
             </button>
-            <span className="text-text-secondary">-</span>
+            <span className="text-text-secondary">|</span>
+            <button
+              onClick={() => setView("methodology")}
+              className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+              aria-label="Notre méthodologie"
+            >
+              🔍 Méthodologie
+            </button>
+            <span className="text-text-secondary">|</span>
             <button
               onClick={() => setView("privacy")}
               className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
               aria-label="Politique de confidentialité"
             >
-              Confidentialité
+              🔒 Confidentialité
             </button>
-            <span className="text-text-secondary">-</span>
+            <span className="text-text-secondary">|</span>
             <button
               onClick={() => setView("legal")}
               className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
               aria-label="Mentions légales"
             >
-              Mentions légales
+              🗎 Mentions légales
             </button>
           </div>
 
