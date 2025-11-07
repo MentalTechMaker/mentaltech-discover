@@ -4,7 +4,7 @@
  */
 
 import { getRecommendations } from './recommendationEngine';
-import { getActiveProducts, getAllProducts } from './products-extended';
+import { getActiveProducts, getAllProducts } from './products';
 import type { UserAnswers } from '../types';
 
 // Test scenarios
@@ -125,7 +125,7 @@ console.log();
 console.log("⚠️  NOTE IMPORTANTE:");
 console.log("    Le fichier recommendationEngine.ts utilise actuellement './products'");
 console.log("    Pour utiliser les produits étendus, modifiez l'import:");
-console.log("    import { products } from './products-extended';");
+console.log("    import { products } from './products';");
 console.log("    const products = getActiveProducts(); // ou getAllProducts()");
 console.log();
 

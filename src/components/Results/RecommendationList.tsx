@@ -60,8 +60,8 @@ export const RecommendationList: React.FC = () => {
         </div>
 
         <div>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
               <span className="text-3xl">⭐</span>
               Top 3 des meilleures solutions pour vous
             </h2>
@@ -125,8 +125,8 @@ export const RecommendationList: React.FC = () => {
 
         {hasAdditionalProducts && showAdditional && (
           <div>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
                 <span className="text-3xl">💡</span>
                 Autres solutions qui peuvent vous intéresser
               </h2>

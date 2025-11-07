@@ -1,12 +1,14 @@
-import React from 'react';
+import React from "react";
 
 interface EmergencyBannerProps {
   onContinue: () => void;
 }
 
-export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({ onContinue }) => {
+export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
+  onContinue,
+}) => {
   const handleCall = () => {
-    window.location.href = 'tel:3114';
+    window.location.href = "tel:3114";
   };
 
   return (
@@ -18,7 +20,8 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({ onContinue }) 
             Tu as besoin d'aide maintenant
           </h2>
           <p className="text-text-primary leading-relaxed">
-            Si tu es en détresse, il est important de parler à quelqu'un immédiatement.
+            Si tu es en détresse, il est important de parler à quelqu'un
+            immédiatement.
           </p>
         </div>
 
@@ -41,7 +44,7 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({ onContinue }) 
         <div className="space-y-3">
           <button
             onClick={handleCall}
-            className="w-full bg-danger text-white px-6 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-danger focus:ring-opacity-50"
+            className="w-full bg-danger px-6 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-danger focus:ring-opacity-50"
             aria-label="Appeler le 3114"
           >
             📞 Appeler le 3114

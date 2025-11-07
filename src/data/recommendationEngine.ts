@@ -1,5 +1,5 @@
 import type { UserAnswers, Product, RecommendationResult } from '../types';
-import { getActiveProducts } from './products-extended';
+import { getActiveProducts } from './products';
 
 interface ScoredProduct extends Product {
   score: number;

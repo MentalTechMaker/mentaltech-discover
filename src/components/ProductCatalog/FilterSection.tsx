@@ -59,7 +59,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
       </div>
 
       <div className="overflow-y-auto px-6 pb-6 space-y-6 flex-1">
-        {/* Search */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Recherche
@@ -73,7 +72,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
           />
         </div>
 
-        {/* For Company */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Public cible
@@ -109,7 +107,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
           </div>
         </div>
 
-        {/* Audience */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Public ({filters.audience.length})
@@ -134,7 +131,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
           </div>
         </div>
 
-        {/* Problems Solved */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Problèmes traités ({filters.problemsSolved.length})
@@ -159,7 +155,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
           </div>
         </div>
 
-        {/* Type */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Type de service ({filters.type.length})
@@ -182,7 +177,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
           </div>
         </div>
 
-        {/* Pricing Model */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
             Tarification ({filters.pricingModel.length})
@@ -201,35 +195,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 />
                 <span className="text-text-secondary">
                   {pricingLabels[model] || model}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Company Status */}
-        <div>
-          <label className="block text-sm font-semibold text-text-primary mb-2">
-            Statut de l'entreprise
-          </label>
-          <div className="space-y-2">
-            {["active", "liquidation", "closed"].map((status) => (
-              <label
-                key={status}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={filters.companyStatus.includes(status)}
-                  onChange={() => toggleArrayFilter("companyStatus", status)}
-                  className="w-4 h-4 text-primary"
-                />
-                <span className="text-text-secondary">
-                  {status === "active"
-                    ? "Actives"
-                    : status === "liquidation"
-                    ? "En liquidation"
-                    : "Fermées"}
                 </span>
               </label>
             ))}

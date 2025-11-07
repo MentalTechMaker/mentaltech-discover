@@ -46,24 +46,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
   product,
   viewMode,
 }) => {
-  const companyStatusBadge = () => {
-    if (product.companyStatus === "liquidation") {
-      return (
-        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-          ⚠️ En liquidation
-        </div>
-      );
-    }
-    if (product.companyStatus === "closed") {
-      return (
-        <div className="absolute top-2 left-2 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-          ✕ Fermé
-        </div>
-      );
-    }
-    return null;
-  };
-
   if (viewMode === "list") {
     return (
       <div
@@ -75,17 +57,13 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
             : "border-gray-200 hover:border-primary"
         } p-6 transition-all hover:shadow-lg relative`}
       >
-        {companyStatusBadge()}
-
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-6xl">
               {product.logo}
             </div>
           </div>
 
-          {/* Content */}
           <div className="flex-1 space-y-3">
             <div>
               <div className="flex items-start justify-between gap-4 mb-2">
@@ -108,7 +86,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               {product.description}
             </p>
 
-            {/* Pricing */}
             {product.pricing && (
               <div className="flex items-center gap-2">
                 <div
@@ -127,9 +104,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               </div>
             )}
 
-            {/* Tags */}
             <div className="flex flex-wrap gap-2">
-              {/* Audience */}
               {product.audience.slice(0, 3).map((aud) => (
                 <span
                   key={aud}
@@ -138,7 +113,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                   {audienceLabels[aud] || aud}
                 </span>
               ))}
-              {/* Problems */}
               {product.problemsSolved.slice(0, 3).map((prob) => (
                 <span
                   key={prob}
@@ -147,7 +121,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                   {problemLabels[prob] || prob}
                 </span>
               ))}
-              {/* Product tags */}
               {product.tags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
@@ -158,7 +131,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               ))}
             </div>
 
-            {/* CTA */}
             <div>
               <a
                 href={product.url}
@@ -176,7 +148,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
     );
   }
 
-  // Grid view
   return (
     <div
       className={`bg-white rounded-xl border-2 ${
@@ -187,16 +158,12 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
           : "border-gray-200 hover:border-primary"
       } p-6 transition-all hover:shadow-lg relative flex flex-col h-full`}
     >
-      {companyStatusBadge()}
-
-      {/* Logo */}
       <div className="mb-4">
         <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-5xl">
           {product.logo}
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 space-y-3">
         <div>
           <div className="flex items-start justify-between gap-2 mb-1">
@@ -219,7 +186,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
           {product.description}
         </p>
 
-        {/* Pricing */}
         {product.pricing && (
           <div>
             <div
@@ -233,7 +199,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
           </div>
         )}
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-2">
           {product.audience.slice(0, 2).map((aud) => (
             <span
@@ -254,7 +219,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         </div>
       </div>
 
-      {/* CTA */}
       <div className="mt-4">
         <a
           href={product.url}

@@ -20,11 +20,10 @@ export const Methodology: React.FC = () => {
         </div>
 
         <section className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="text-4xl">🔍</div>
+          <div className=" items-start gap-4 mb-6 text-center">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Comment sont sourcées nos solutions
+                🔍 Comment sont sourcées nos solutions
               </h2>
               <p className="text-sm text-gray-600">
                 Un processus rigoureux du collectif MentalTech pour vous
@@ -113,11 +112,10 @@ export const Methodology: React.FC = () => {
         </section>
 
         <section className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="text-4xl">🧭</div>
+          <div className="items-start gap-4 mb-6 text-center">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Fonctionnement des recommandations
+                🧭 Fonctionnement des recommandations
               </h2>
               <p className="text-sm text-gray-600">
                 Un système transparent basé uniquement sur les caractéristiques
@@ -336,11 +334,10 @@ export const Methodology: React.FC = () => {
 
         <section className="bg-white rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-start gap-4 mb-6">
-            <div className="text-4xl">🚀</div>
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="items-center gap-3 mb-2 text-center">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  Évaluation et scoring des solutions
+                  🚀 Évaluation et scoring des solutions
                 </h2>
                 <span className="inline-block bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-800 text-xs font-semibold px-4 py-1.5 rounded-full border border-amber-300">
                   ⏳ À venir en Version 2
