@@ -9,7 +9,7 @@ export const LegalNotice: React.FC = () => {
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-            Mentions Légales
+            Mentions légales
           </h1>
           <p className="text-lg text-text-secondary">
             Informations légales concernant ce site
@@ -26,7 +26,13 @@ export const LegalNotice: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
               <p>
-                <strong>Arnaud Bressot</strong>
+                <strong>MentalTech Discover</strong>
+              </p>
+              <p>
+                Créé par <strong>MentalTechMaker</strong> (Arnaud Bressot)
+              </p>
+              <p>
+                Pour le <strong>Collectif MentalTech</strong>
               </p>
               <p>
                 Email :{" "}
@@ -35,6 +41,17 @@ export const LegalNotice: React.FC = () => {
                   className="text-primary hover:underline"
                 >
                   arnaud@mentaltechmaker.fr
+                </a>
+              </p>
+              <p>
+                Site web :{" "}
+                <a
+                  href="https://mentaltechmaker.fr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  mentaltechmaker.fr
                 </a>
               </p>
             </div>
@@ -87,12 +104,36 @@ export const LegalNotice: React.FC = () => {
               </span>
               Propriété intellectuelle
             </h2>
-            <p className="text-text-secondary leading-relaxed">
-              L'ensemble du contenu de ce site (textes, images, vidéos, code)
-              est la propriété du MentalTechMaker, sauf mention contraire. Toute
-              reproduction, distribution, modification ou exploitation non
-              autorisée est interdite.
-            </p>
+            <div className="text-text-secondary leading-relaxed space-y-3">
+              <p>
+                © {new Date().getFullYear()} <strong>MentalTech Discover</strong>
+              </p>
+              <p>
+                L'ensemble du contenu de ce site (textes, images, design, structure)
+                est la propriété de <strong>MentalTechMaker</strong>, sauf mention contraire.
+              </p>
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                <p className="font-semibold text-green-900 mb-2">🔓 Code Open Source</p>
+                <p className="text-sm">
+                  Le code source de cette application est{" "}
+                  <strong>open-source</strong> et disponible sur{" "}
+                  <a
+                    href="https://github.com/mentaltech/mentaltech-discover"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-semibold"
+                  >
+                    GitHub
+                  </a>
+                  . Vous êtes libre de l'auditer, le forker ou y contribuer selon
+                  les termes de la licence MIT.
+                </p>
+              </div>
+              <p>
+                Développé pour le <strong>Collectif MentalTech</strong> - Premier
+                écosystème français de santé mentale digitale.
+              </p>
+            </div>
           </section>
 
           <section className="space-y-3">
@@ -158,18 +199,89 @@ export const LegalNotice: React.FC = () => {
               </span>
               Limitation de responsabilité
             </h2>
-            <p className="text-text-secondary leading-relaxed">
-              Les informations fournies sur ce site sont à titre indicatif et ne
-              constituent pas un conseil médical. En cas d'urgence ou de
-              détresse psychologique, veuillez contacter les services d'urgence
-              (15 ou 112) ou le numéro national de prévention du suicide (3114).
-            </p>
+            <div className="text-text-secondary leading-relaxed space-y-3">
+              <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                <p className="font-semibold text-amber-900 mb-2">
+                  ⚠️ Important : Outil de découverte, pas un dispositif médical
+                </p>
+                <p className="text-sm">
+                  <strong>MentalTech Discover</strong> est un outil de découverte qui
+                  référence des solutions digitales en santé mentale. Ce n'est{" "}
+                  <strong>pas un dispositif médical certifié</strong>.
+                </p>
+              </div>
+              <p>
+                MentalTech Discover ne garantit pas :
+              </p>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>L'exhaustivité ou l'exactitude des informations référencées</li>
+                <li>L'actualité des informations (mises à jour régulières mais non en temps réel)</li>
+                <li>L'efficacité clinique des solutions référencées</li>
+                <li>La disponibilité ou la continuité des services tiers</li>
+              </ul>
+              <p>
+                Les <strong>solutions référencées</strong> sont responsables de leurs
+                propres services, tarifs, et politiques. MentalTech Discover n'est
+                <strong> pas responsable</strong> du contenu, de la qualité ou des
+                dysfonctionnements de ces services tiers.
+              </p>
+              <div className="bg-red-50 border-2 border-red-400 p-4 rounded">
+                <p className="font-bold text-red-900 mb-2">🚨 En cas d'urgence :</p>
+                <p className="text-sm">
+                  Pour tout diagnostic, traitement ou urgence, consultez un
+                  professionnel de santé qualifié.
+                </p>
+                <p className="text-sm mt-2 font-semibold">
+                  Numéros d'urgence gratuits 24h/24 :
+                </p>
+                <ul className="text-sm space-y-1 mt-1">
+                  <li>
+                    <a href="tel:3114" className="text-primary hover:underline font-bold">
+                      3114
+                    </a>{" "}
+                    - Prévention suicide
+                  </li>
+                  <li>
+                    <a href="tel:15" className="text-primary hover:underline font-bold">
+                      15
+                    </a>{" "}
+                    - SAMU
+                  </li>
+                  <li>
+                    <a href="tel:112" className="text-primary hover:underline font-bold">
+                      112
+                    </a>{" "}
+                    - Urgences européennes
+                  </li>
+                </ul>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
               <span className="text-3xl" aria-hidden="true">
-                📧
+                🇫🇷
+              </span>
+              Droit applicable et juridiction
+            </h2>
+            <div className="text-text-secondary leading-relaxed space-y-2">
+              <p>
+                Les présentes mentions légales sont soumises au{" "}
+                <strong>droit français</strong>.
+              </p>
+              <p>
+                En cas de litige relatif à l'utilisation de ce site, et après échec
+                de toute tentative de recherche d'une solution amiable, les tribunaux
+                français seront seuls compétents.
+              </p>
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                ✉️
               </span>
               Contact
             </h2>

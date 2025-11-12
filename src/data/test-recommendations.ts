@@ -4,7 +4,7 @@
  */
 
 import { getRecommendations } from './recommendationEngine';
-import { getActiveProducts, getAllProducts } from './products';
+import { getAllProducts } from './products';
 import type { UserAnswers } from '../types';
 
 // Test scenarios
@@ -113,9 +113,7 @@ console.log("=".repeat(80));
 console.log();
 
 console.log(`📊 Statistiques des produits:`);
-console.log(`   - Produits actifs: ${getActiveProducts().length}`);
 console.log(`   - Produits totaux: ${getAllProducts().length}`);
-console.log(`   - Produits en liquidation/fermés: ${getAllProducts().length - getActiveProducts().length}`);
 console.log();
 
 // Note: Le système actuel utilise les produits de ./products.ts
@@ -156,17 +154,17 @@ console.log("ANALYSE DE COMPATIBILITÉ");
 console.log("=".repeat(80));
 console.log();
 
-const activeProducts = getActiveProducts();
+const allProducts = getAllProducts();
 
 // Vérifier que tous les produits ont les champs requis
 const requiredFields = ['id', 'name', 'type', 'tagline', 'description', 'url', 'logo', 'tags', 'audience', 'problemsSolved', 'preferenceMatch'];
 
 let validProducts = 0;
-let invalidProducts: string[] = [];
+const invalidProducts: string[] = [];
 
-activeProducts.forEach(product => {
+allProducts.forEach((product) => {
   const missingFields = requiredFields.filter(field => !product[field as keyof typeof product] ||
-    (Array.isArray(product[field as keyof typeof product]) && (product[field as keyof typeof product] as any[]).length === 0));
+    (Array.isArray(product[field as keyof typeof product]) && (product[field as keyof typeof product] as unknown[]).length === 0));
 
   if (missingFields.length === 0) {
     validProducts++;
@@ -175,20 +173,20 @@ activeProducts.forEach(product => {
   }
 });
 
-console.log(`✅ Produits valides: ${validProducts}/${activeProducts.length}`);
+console.log(`✅ Produits valides: ${validProducts}/${allProducts.length}`);
 if (invalidProducts.length > 0) {
   console.log(`❌ Produits invalides:`);
   invalidProducts.forEach(msg => console.log(`   - ${msg}`));
 } else {
-  console.log(`✅ Tous les produits actifs sont compatibles avec le système de recommandation!`);
+  console.log(`✅ Tous les produits sont compatibles avec le système de recommandation!`);
 }
 console.log();
 
 // Statistiques par catégorie
 console.log("📈 Couverture par problème:");
 const problemCoverage: Record<string, number> = {};
-activeProducts.forEach(product => {
-  product.problemsSolved.forEach(problem => {
+allProducts.forEach((product) => {
+  product.problemsSolved.forEach((problem: string) => {
     problemCoverage[problem] = (problemCoverage[problem] || 0) + 1;
   });
 });
@@ -199,8 +197,8 @@ console.log();
 
 console.log("📈 Couverture par audience:");
 const audienceCoverage: Record<string, number> = {};
-activeProducts.forEach(product => {
-  product.audience.forEach(aud => {
+allProducts.forEach((product) => {
+  product.audience.forEach((aud: string) => {
     audienceCoverage[aud] = (audienceCoverage[aud] || 0) + 1;
   });
 });
@@ -211,8 +209,8 @@ console.log();
 
 console.log("📈 Couverture par préférence:");
 const preferenceCoverage: Record<string, number> = {};
-activeProducts.forEach(product => {
-  product.preferenceMatch.forEach(pref => {
+allProducts.forEach((product) => {
+  product.preferenceMatch.forEach((pref: string) => {
     preferenceCoverage[pref] = (preferenceCoverage[pref] || 0) + 1;
   });
 });
@@ -222,11 +220,11 @@ Object.entries(preferenceCoverage).forEach(([pref, count]) => {
 console.log();
 
 console.log("📈 Produits entreprise vs particuliers:");
-const companyProducts = activeProducts.filter(p => p.forCompany === true);
-const individualProducts = activeProducts.filter(p => !p.forCompany);
+const companyProducts = allProducts.filter((p) => p.forCompany === true);
+const individualProducts = allProducts.filter((p) => !p.forCompany);
 console.log(`   - Entreprises: ${companyProducts.length} produit(s)`);
 console.log(`   - Particuliers: ${individualProducts.length} produit(s)`);
-console.log(`   - Les deux: ${activeProducts.length - companyProducts.length - individualProducts.length} produit(s)`);
+console.log(`   - Les deux: ${allProducts.length - companyProducts.length - individualProducts.length} produit(s)`);
 console.log();
 
 console.log("=".repeat(80));

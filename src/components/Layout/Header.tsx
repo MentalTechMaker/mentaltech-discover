@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-primary to-secondary shadow-md sticky top-0 z-50">
+    <header className="bg-primary shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <button
@@ -33,6 +33,26 @@ export const Header: React.FC = () => {
           </button>
 
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setView("about")}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                currentView === "about"
+                  ? "bg-white text-primary"
+                  : "text-white hover:bg-white hover:bg-opacity-20 hover:text-black"
+              }`}
+            >
+              🎯 Notre démarche
+            </button>
+            <button
+              onClick={() => setView("faq")}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                currentView === "faq"
+                  ? "bg-white text-primary"
+                  : "text-white hover:bg-white hover:bg-opacity-20 hover:text-black"
+              }`}
+            >
+              ❓ FAQ
+            </button>
             <button
               onClick={() => setView("catalog")}
               className={`px-4 py-2 rounded-lg font-semibold transition-colors ${

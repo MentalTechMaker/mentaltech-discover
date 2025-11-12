@@ -1,15 +1,6 @@
 import type { Product } from '../types';
 
-/**
- * Liste complète des produits des membres de MentalTech.fr
- * Mise à jour: 2025-10-24
- *
- * Inclut les membres fondateurs, adhérents et partenaires
- * Status des entreprises: active, liquidation, closed
- */
-
 export const products: Product[] = [
-  // MEMBRES FONDATEURS
   {
     id: "qare",
     name: "Qare",
@@ -26,7 +17,6 @@ export const products: Product[] = [
       model: "per-session",
       details: "Remboursable par l'Assurance Maladie"
     },
-    companyStatus: "active"
   },
   {
     id: "petitbambou",
@@ -44,7 +34,6 @@ export const products: Product[] = [
       model: "freemium",
       details: "Version gratuite + abonnement premium"
     },
-    companyStatus: "active"
   },
   {
     id: "hypnovr",
@@ -62,44 +51,46 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Destiné aux établissements de santé"
     },
-    companyStatus: "active"
   },
   {
     id: "kwit",
     name: "Kwit",
     type: "Sevrage tabagique",
-    tagline: "Arrête de fumer avec coaching",
-    description: "Application gamifiée pour t'aider à arrêter de fumer avec coaching personnalisé.",
+    tagline: "Arrêtez de fumer et restez non-fumeur pour de bon",
+    description: "Application mobile combinant TCC et gamification pour arrêter de fumer. Validée par l'OMS depuis 2023, avec 68% de réussite à 3 mois.",
     url: "https://kwit.app",
     logo: "🚭",
-    tags: ["addiction", "coaching", "gamification"],
-    audience: ["adult"],
+    tags: ["addiction", "coaching", "gamification", "TCC"],
+    audience: ["adult", "teen"],
     problemsSolved: ["addiction"],
-    preferenceMatch: ["autonomous", "program"],
+    preferenceMatch: ["autonomous", "learn", "program"],
     pricing: {
       model: "freemium",
-      details: "Version gratuite + abonnement premium"
+      amount: "60€/an",
+      details: "3 jours d'essai gratuit"
     },
-    companyStatus: "active"
+    forCompany: true,
+    lastUpdated: "2025-11-12"
   },
   {
     id: "sobero",
     name: "Sobero",
     type: "Gestion de l'alcool",
-    tagline: "Maîtrise ta consommation d'alcool",
-    description: "Application basée sur les sciences comportementales pour réduire ou arrêter l'alcool. Suivi quotidien, exercices personnalisés, support communautaire et chat expert. Développée par les créateurs de Kwit.",
-    url: "https://www.sobero.app",
-    logo: "🍺",
-    tags: ["addiction", "coaching", "autonomie", "suivi", "alcool"],
-    audience: ["adult"],
-    problemsSolved: ["addiction", "stress-anxiety"],
-    preferenceMatch: ["autonomous", "program"],
+    tagline: "Reprenez le pouvoir sur votre consommation d'alcool",
+    description: "Application mobile pour développer une relation plus saine avec l'alcool. Approche Sober Curious, bienveillante et sans jugement. Plus de 60 000 utilisateurs.",
+    url: "https://sobero.app",
+    logo: "💙",
+    tags: ["addiction", "TCC", "autonomie", "gamification"],
+    audience: ["adult", "teen"],
+    problemsSolved: ["addiction"],
+    preferenceMatch: ["autonomous", "learn", "program"],
     pricing: {
       model: "subscription",
-      amount: "9,99€/mois",
-      details: "Essai gratuit de 7 jours, puis 9,99€/mois sans engagement"
+      amount: "60€/an",
+      details: "7 jours d'essai gratuits"
     },
-    companyStatus: "active"
+    forCompany: true,
+    lastUpdated: "2025-11-12"
   },
   {
     id: "mokacare",
@@ -118,7 +109,6 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Sur devis pour entreprises"
     },
-    companyStatus: "active"
   },
   {
     id: "resileyes",
@@ -136,7 +126,6 @@ export const products: Product[] = [
       model: "custom",
       details: "Prix non communiqué"
     },
-    companyStatus: "active"
   },
   {
     id: "tricky",
@@ -155,7 +144,6 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Sur devis pour entreprises"
     },
-    companyStatus: "active"
   },
 
   // MEMBRES ADHÉRENTS
@@ -175,119 +163,119 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Dispositif médical professionnel"
     },
-    companyStatus: "active"
   },
   {
     id: "eoscare",
-    name: "EOS Care",
-    type: "Plateforme addictologie",
-    tagline: "Solutions innovantes pour les addictions",
-    description: "Plateforme digitale combinant expertise médicale et soutien émotionnel pour le traitement des addictions, notamment alcool.",
+    name: "Eos",
+    type: "Clinique digitale addictologie",
+    tagline: "Solution de santé numérique pour consolider l'abstinence",
+    description: "Première clinique digitale dédiée à l'addictologie. Dispositif médical numérique pour l'alcoolodépendance et le sevrage tabagique.",
     url: "https://www.eos-care.com",
     logo: "🍷",
-    tags: ["addiction", "alcool", "accompagnement", "médical"],
+    tags: ["addiction", "téléconsultation", "dispositif médical", "TCC"],
     audience: ["adult"],
     problemsSolved: ["addiction"],
-    preferenceMatch: ["talk-now", "program"],
+    preferenceMatch: ["talk-now", "autonomous", "learn", "program"],
     pricing: {
-      model: "enterprise",
-      details: "Partenariats établissements de santé"
+      model: "freemium",
+      details: "Consultations remboursables Sécurité Sociale, abonnement mensuel pour programme"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "feelapp",
     name: "Feel",
-    type: "Autothérapie TCC",
-    tagline: "Surmonte la dépression avec les TCC",
-    description: "Première application d'autothérapie par TCCs pour la dépression. Conçue par des psychiatres français.",
+    type: "Application TCC",
+    tagline: "Application qui aide à soigner la dépression en 3 à 6 mois",
+    description: "Application basée sur la TCC pour soigner la dépression. Exercices pour modifier les comportements et maîtriser les pensées négatives. Dispositif médical.",
     url: "https://feelapp.care/",
-    logo: "🌈",
-    tags: ["dépression", "TCC", "autonomie", "thérapie"],
-    audience: ["adult", "teen"],
-    problemsSolved: ["sadness", "stress-anxiety"],
-    preferenceMatch: ["autonomous", "program"],
+    logo: "💜",
+    tags: ["TCC", "dépression", "autonomie", "gamification"],
+    audience: ["adult", "senior", "parent"],
+    problemsSolved: ["sadness"],
+    preferenceMatch: ["autonomous", "learn", "program"],
     pricing: {
       model: "freemium",
-      amount: "4,99€/mois",
-      details: "Essai gratuit 15 jours, puis abonnement à partir de 4,99€/mois"
+      amount: "29,99€ pour 6 mois",
+      details: "15 jours d'essai, psychoéducation gratuite"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "holicare",
     name: "Holicare",
-    type: "Santé mentale en entreprise",
-    tagline: "Détection, prévention, prise en charge",
-    description: "Plateforme numérique complète pour la santé mentale au travail avec évaluation, programmes personnalisés et coordination de soins.",
-    url: "https://www.holicare.com",
-    logo: "🌿",
-    tags: ["entreprise", "prévention", "détection", "accompagnement"],
-    audience: ["adult"],
-    problemsSolved: ["work", "stress-anxiety", "sadness"],
-    preferenceMatch: ["program", "talk-now"],
+    type: "Plateforme entreprise",
+    tagline: "La santé mentale au travail est une science",
+    description: "Cultivez durablement la santé mentale au travail grâce à une expertise scientifique et une approche humaine. Détection précoce, plateforme dédiée, parcours de soins.",
+    url: "https://www.holicare.com/",
+    logo: "🫂",
+    tags: ["entreprise", "téléconsultation", "formation", "prévention"],
+    audience: ["adult", "teen", "senior", "parent"],
+    problemsSolved: ["stress-anxiety", "sadness", "addiction", "trauma", "work", "sleep"],
+    preferenceMatch: ["talk-now", "learn", "program"],
     forCompany: true,
     pricing: {
       model: "enterprise",
-      details: "Démo sur demande"
+      details: "Abonnement"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "ifeel",
-    name: "iFeel",
-    type: "Bien-être en entreprise",
-    tagline: "Bien-être mental pour vos équipes",
-    description: "Service de santé mentale en ligne pour entreprises avec accès à des psychologues professionnels.",
-    url: "https://ifeelonline.com",
-    logo: "💚",
-    tags: ["entreprise", "thérapie", "accompagnement", "bien-être"],
-    audience: ["adult"],
-    problemsSolved: ["work", "stress-anxiety", "sadness"],
-    preferenceMatch: ["talk-now", "program"],
+    name: "ifeel",
+    type: "Plateforme entreprise",
+    tagline: "Solution incontournable en santé mentale pour les entreprises",
+    description: "Solution de référence pour relever le défi de la santé mentale au travail. Accompagnement pour réduire l'absentéisme et instaurer un climat positif.",
+    url: "https://ifeelonline.com/fr/",
+    logo: "🧠",
+    tags: ["entreprise", "téléconsultation", "bien-être", "formation"],
+    audience: ["adult", "parent"],
+    problemsSolved: ["stress-anxiety", "sadness", "addiction", "trauma", "work"],
+    preferenceMatch: ["talk-now", "autonomous", "learn", "program"],
     forCompany: true,
     pricing: {
       model: "enterprise",
-      details: "Sur devis pour entreprises"
+      details: "Sur devis"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "insleeplab",
-    name: "InSleepLab",
-    type: "Gestion du sommeil",
-    tagline: "Prévention des risques liés à la fatigue",
-    description: "Solution complète de prévention des risques professionnels liés à la fatigue et au manque de sommeil avec formation et dépistage.",
+    name: "inSleep'Academy et inSleep'Care",
+    type: "Plateforme entreprise",
+    tagline: "Bien dormir s'apprend, mal dormir se soigne",
+    description: "Spécialiste de la prévention des risques liés à la fatigue et à la somnolence en entreprise. Formation, diagnostic et contrôle des troubles du sommeil.",
     url: "https://www.insleeplab.fr",
     logo: "😴",
-    tags: ["sommeil", "fatigue", "prévention", "formation"],
+    tags: ["sommeil", "entreprise", "téléconsultation", "formation"],
     audience: ["adult"],
-    problemsSolved: ["sleep", "work"],
-    preferenceMatch: ["understand", "program"],
+    problemsSolved: ["sleep"],
+    preferenceMatch: ["talk-now", "autonomous", "learn", "program"],
     forCompany: true,
     pricing: {
       model: "enterprise",
-      details: "Formation et dépistage B2B"
+      details: "Abonnement, à la séance, ou sur devis"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "letstolk",
-    name: "LetsTolk",
-    type: "Téléconsultation psychologique",
-    tagline: "Psychologues en ligne pour hommes",
-    description: "Première plateforme de téléconsultation dédiée aux hommes avec psychologues spécialisés. Messaging asynchrone disponible.",
-    url: "https://www.letstolk.com",
-    logo: "💬",
-    tags: ["téléconsultation", "hommes", "thérapie", "spécialisé"],
-    audience: ["adult"],
-    problemsSolved: ["stress-anxiety", "sadness", "addiction", "work", "other"],
+    name: "Let's Tolk",
+    type: "Téléconsultation",
+    tagline: "Les psychologues en ligne",
+    description: "Cabinet digital où des psys passionnés prennent soin de ton mental. Burn-out, anxiété, dépression, addictions… En visio, 7j/7, en moins de 24h.",
+    url: "https://www.letstolk.com/",
+    logo: "🫶",
+    tags: ["téléconsultation", "professionnel", "urgent", "accessible"],
+    audience: ["adult", "teen", "senior", "parent"],
+    problemsSolved: ["stress-anxiety", "sadness", "addiction", "trauma", "work"],
     preferenceMatch: ["talk-now"],
     pricing: {
       model: "per-session",
-      details: "Première consultation 25€, puis à partir de 49€"
+      amount: "à partir de 28€",
+      details: "Remboursement par la mutuelle selon contrat"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "lyynk",
@@ -305,7 +293,6 @@ export const products: Product[] = [
       model: "free",
       details: "Application gratuite"
     },
-    companyStatus: "active"
   },
   {
     id: "neuredia",
@@ -323,26 +310,25 @@ export const products: Product[] = [
       model: "freemium",
       details: "Version gratuite avec fonctionnalités essentielles + premium"
     },
-    companyStatus: "active"
   },
   {
     id: "pleinia",
     name: "Pleinia",
-    type: "Bien-être holistique entreprise",
-    tagline: "Solution holistique de santé mentale",
-    description: "Plateforme combinant coaching, formations et défis gamifiés pour améliorer le bien-être mental en entreprise.",
+    type: "Plateforme entreprise",
+    tagline: "Donner aux salariés les clés pour agir sur leur santé mentale",
+    description: "Approche globale pour adapter les comportements de vie et développer les soft skills. Contenus digitaux, bilans, parcours coachés et défis collectifs.",
     url: "https://www.pleinia.com",
-    logo: "🌟",
-    tags: ["entreprise", "coaching", "bien-être", "gamification"],
+    logo: "💪",
+    tags: ["entreprise", "coaching", "bien-être", "prévention"],
     audience: ["adult"],
-    problemsSolved: ["work", "stress-anxiety"],
-    preferenceMatch: ["program", "autonomous"],
+    problemsSolved: ["stress-anxiety", "work", "sleep"],
+    preferenceMatch: ["talk-now", "autonomous", "learn", "program"],
     forCompany: true,
     pricing: {
       model: "enterprise",
       details: "Sur devis"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "suricog",
@@ -360,7 +346,6 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Dispositif médical professionnel"
     },
-    companyStatus: "active"
   },
   {
     id: "tuki",
@@ -378,25 +363,26 @@ export const products: Product[] = [
       model: "freemium",
       details: "Accès gratuit avec contenu premium"
     },
-    companyStatus: "active"
   },
   {
     id: "wetalk",
-    name: "WeTalk",
-    type: "Plateforme communautaire",
-    tagline: "Discussions sur le bien-être communautaire",
-    description: "Série de talks pour faciliter l'échange scientifique et l'engagement communautaire autour de la santé mentale.",
-    url: "https://we-talk.eu",
-    logo: "🗣️",
-    tags: ["éducation", "communauté", "recherche", "prévention"],
-    audience: ["adult"],
-    problemsSolved: ["stress-anxiety", "work"],
-    preferenceMatch: ["understand"],
+    name: "We talk",
+    type: "Téléconsultation",
+    tagline: "Partenaire pour le bien-être mental de vos collaborateurs",
+    description: "Solution complète, efficace et personnalisée, accessible au plus grand nombre avec analyse d'impact.",
+    url: "https://www.wetalk.life",
+    logo: "🫶",
+    tags: ["téléconsultation", "entreprise", "urgent", "accessible"],
+    audience: ["adult", "parent"],
+    problemsSolved: ["stress-anxiety", "sadness", "trauma", "work", "sleep"],
+    preferenceMatch: ["talk-now", "autonomous", "learn", "program"],
+    forCompany: true,
     pricing: {
-      model: "free",
-      details: "Plateforme d'échange gratuite"
+      model: "subscription",
+      amount: "à partir de 4€",
+      details: "Essai gratuit bilan émotionnel"
     },
-    companyStatus: "active"
+    lastUpdated: "2025-11-12"
   },
   {
     id: "lislup",
@@ -415,7 +401,6 @@ export const products: Product[] = [
       model: "subscription",
       details: "Abonnement selon taille entreprise (<250 ou >250 employés)"
     },
-    companyStatus: "active"
   },
   {
     id: "mindday",
@@ -434,7 +419,6 @@ export const products: Product[] = [
       amount: "Abonnement",
       details: "Essai gratuit 7 jours puis abonnement"
     },
-    companyStatus: "active"
   },
   {
     id: "koalou",
@@ -452,7 +436,6 @@ export const products: Product[] = [
       model: "custom",
       details: "Démo sur demande - destiné aux professionnels et parents"
     },
-    companyStatus: "active"
   },
   {
     id: "lumm",
@@ -471,29 +454,22 @@ export const products: Product[] = [
       model: "enterprise",
       details: "Sur devis pour entreprises"
     },
-    companyStatus: "liquidation"
   }
 ];
 
 /**
- * Mapping des statuts d'entreprise
- */
-export const companyStatusLabels: Record<string, string> = {
-  active: "Entreprise active",
-  liquidation: "En liquidation judiciaire",
-  closed: "Entreprise fermée"
-};
-
-/**
- * Filtre les produits selon le statut de l'entreprise
- */
-export function getActiveProducts(): Product[] {
-  return products.filter(p => p.companyStatus === 'active');
-}
-
-/**
- * Filtre tous les produits incluant ceux en liquidation/fermés
+ * Retourne tous les produits actifs
+ * Note: Seuls les produits en exploitation sont inclus dans la base
  */
 export function getAllProducts(): Product[] {
   return products;
+}
+
+/**
+ * Vérifie si un produit nécessite une mise à jour
+ * @param product - Le produit à vérifier
+ * @returns true si le produit n'a pas de date de mise à jour
+ */
+export function needsUpdate(product: Product): boolean {
+  return !product.lastUpdated;
 }

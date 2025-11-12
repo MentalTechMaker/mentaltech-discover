@@ -1,5 +1,5 @@
 import type { UserAnswers, Product, RecommendationResult } from '../types';
-import { getActiveProducts } from './products';
+import { getAllProducts } from './products';
 
 interface ScoredProduct extends Product {
   score: number;
@@ -7,10 +7,10 @@ interface ScoredProduct extends Product {
 
 export function getRecommendations(answers: UserAnswers, isCompany: boolean = false): RecommendationResult {
 
-  const products = getActiveProducts()
+  const products = getAllProducts()
 
   const filteredProducts = isCompany
-    ? getActiveProducts().filter(p => p.forCompany === true)
+    ? getAllProducts().filter(p => p.forCompany === true)
     : products;
 
   const scoredProducts: ScoredProduct[] = filteredProducts.map(product => ({
@@ -33,8 +33,8 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
     : filteredProducts.slice(0, isCompany ? 2 : 9);
 
   const explanation = isCompany
-    ? generateCompanyExplanation(answers, recommendedProducts)
-    : generateExplanation(answers, recommendedProducts);
+    ? generateCompanyExplanation(answers)
+    : generateExplanation(answers);
 
   return {
     products: recommendedProducts,
@@ -150,7 +150,7 @@ function calculateScore(product: Product, answers: UserAnswers): number {
   return score;
 }
 
-function generateExplanation(answers: UserAnswers, _products: Product[]): string {
+function generateExplanation(answers: UserAnswers): string {
   const needs: string[] = [];
 
   if (answers.feeling === 'very-bad' || answers.feeling === 'not-great') {
@@ -236,7 +236,7 @@ function calculateCompanyScore(product: Product, answers: UserAnswers): number {
   return score;
 }
 
-function generateCompanyExplanation(answers: UserAnswers, _products: Product[]): string {
+function generateCompanyExplanation(answers: UserAnswers): string {
   const needs: string[] = [];
 
   if (answers.companySize) {

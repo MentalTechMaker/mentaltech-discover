@@ -20,9 +20,9 @@ export const Methodology: React.FC = () => {
         </div>
 
         <section className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className=" items-start gap-4 mb-6 text-center">
+          <div className="items-start gap-4 mb-6 text-center">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-text-primary mb-4">
                 🔍 Comment sont sourcées nos solutions
               </h2>
               <p className="text-sm text-gray-600">
@@ -114,7 +114,7 @@ export const Methodology: React.FC = () => {
         <section className="bg-white rounded-lg shadow-md p-8 mb-8">
           <div className="items-start gap-4 mb-6 text-center">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-text-primary mb-4">
                 🧭 Fonctionnement des recommandations
               </h2>
               <p className="text-sm text-gray-600">
@@ -336,7 +336,7 @@ export const Methodology: React.FC = () => {
           <div className="flex items-start gap-4 mb-6">
             <div className="flex-1">
               <div className="items-center gap-3 mb-2 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-text-primary">
                   🚀 Évaluation et scoring des solutions
                 </h2>
                 <span className="inline-block bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-800 text-xs font-semibold px-4 py-1.5 rounded-full border border-amber-300">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Product } from "../../types";
 import { sanitizeUrl } from "../../utils/security";
+import { analytics } from "../../lib/analytics";
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +28,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
+        {!product.lastUpdated && (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 text-orange-700 text-xs font-semibold rounded-full backdrop-blur-sm shadow-sm">
+            <svg
+              className="w-3.5 h-3.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Infos à vérifier</span>
+          </div>
+        )}
         {product.recommendationScore !== undefined &&
           product.recommendationScore > 0 && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-xs font-bold rounded-full backdrop-blur-sm shadow-sm">
@@ -98,6 +115,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             href={safeUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              analytics.solutionClicked(
+                product.name,
+                product.type || "unknown"
+              );
+            }}
             className="relative group/btn flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/20"
             aria-label={`Découvrir ${product.name} (ouvre dans un nouvel onglet)`}
           >
@@ -125,6 +148,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             Lien non disponible
           </div>
         )}
+
+        <div className="text-center pt-2 border-t border-gray-100">
+          <a
+            href={`mailto:arnaud@mentaltechmaker.fr?subject=Signalement solution: ${encodeURIComponent(product.name)}&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant la solution "${encodeURIComponent(product.name)}" :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement`}
+            onClick={() => {
+              analytics.solutionReported(product.name);
+            }}
+            className="text-xs text-gray-500 hover:text-red-600 hover:underline transition-colors"
+            aria-label={`Signaler un problème avec ${product.name}`}
+          >
+            🚨 Signaler un problème
+          </a>
+        </div>
       </div>
 
       <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/20 rounded-2xl pointer-events-none transition-colors duration-300" />

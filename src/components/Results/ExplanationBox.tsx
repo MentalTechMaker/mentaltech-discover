@@ -1,8 +1,9 @@
 import React from "react";
+import type { AppView } from "../../types";
 
 interface ExplanationBoxProps {
   explanation: string;
-  setView: Function;
+  setView: (view: AppView) => void;
 }
 
 export const ExplanationBox: React.FC<ExplanationBoxProps> = ({

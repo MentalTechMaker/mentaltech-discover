@@ -123,7 +123,7 @@ export const ProductCatalog: React.FC = () => {
     }
   }, [allProducts, filters, sortBy]);
 
-  const handleFilterChange = (key: keyof Filters, value: any) => {
+  const handleFilterChange = (key: keyof Filters, value: string | string[]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 

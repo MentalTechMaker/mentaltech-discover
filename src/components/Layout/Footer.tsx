@@ -13,6 +13,14 @@ export const Footer: React.FC = () => {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+            <a
+              href="mailto:arnaud@mentaltechmaker.fr?subject=Signalement MentalTech Discover&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement"
+              className="text-red-600 hover:underline focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 rounded px-2 py-1 font-semibold"
+              aria-label="Signaler un problème"
+            >
+              🚨 Signaler un problème
+            </a>
+            <span className="text-text-secondary">|</span>
             <button
               onClick={() => setView("catalog")}
               className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
@@ -22,11 +30,19 @@ export const Footer: React.FC = () => {
             </button>
             <span className="text-text-secondary">|</span>
             <button
-              onClick={() => setView("methodology")}
+              onClick={() => setView("about")}
               className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
-              aria-label="Notre méthodologie"
+              aria-label="Notre démarche"
             >
-              🔍 Méthodologie
+              🎯 Notre démarche
+            </button>
+            <span className="text-text-secondary">|</span>
+            <button
+              onClick={() => setView("faq")}
+              className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+              aria-label="Questions fréquentes"
+            >
+              ❓ FAQ
             </button>
             <span className="text-text-secondary">|</span>
             <button

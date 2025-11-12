@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { questions } from "../../data/questions";
 import { companyQuestions } from "../../data/companyQuestions";
@@ -6,6 +6,7 @@ import { getRecommendations } from "../../data/recommendationEngine";
 import { QuestionCard } from "./QuestionCard";
 import { ProgressBar } from "./ProgressBar";
 import { EmergencyBanner } from "./EmergencyBanner";
+import { analytics } from "../../lib/analytics";
 
 export const Quiz: React.FC = () => {
   const {
@@ -22,6 +23,8 @@ export const Quiz: React.FC = () => {
   } = useAppStore();
 
   const questionsList = userType === "company" ? companyQuestions : questions;
+  const hasStartedRef = useRef(false);
+  const isCompletedRef = useRef(false);
 
   const activeQuestions = useMemo(() => {
     return questionsList.filter((q) => {
@@ -31,10 +34,30 @@ export const Quiz: React.FC = () => {
     });
   }, [answers, questionsList]);
 
+
   const currentQuestion = activeQuestions[currentQuestionIndex];
   const currentAnswer = currentQuestion
     ? getAnswerValue(currentQuestion.id)
     : undefined;
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+
+    if (!hasStartedRef.current) {
+      analytics.quizStarted();
+      hasStartedRef.current = true;
+    }
+
+    return () => {
+      if (!isCompletedRef.current && hasStartedRef.current) {
+        analytics.quizAbandoned(currentQuestionIndex + 1);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (answers.feeling === "very-bad" && answers.urgency === "dark-thoughts") {
@@ -73,7 +96,16 @@ export const Quiz: React.FC = () => {
   const handleNext = () => {
     if (currentQuestionIndex < activeQuestions.length - 1) {
       nextQuestion();
+      setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
     } else {
+      const numberOfAnswers = Object.values(answers).filter(Boolean).length;
+      analytics.quizCompleted(numberOfAnswers);
+      isCompletedRef.current = true;
+
       const recommendations = getRecommendations(
         answers,
         userType === "company"

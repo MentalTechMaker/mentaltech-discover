@@ -49,14 +49,26 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
   if (viewMode === "list") {
     return (
       <div
-        className={`bg-white rounded-xl border-2 ${
-          product.companyStatus === "liquidation"
-            ? "border-red-200 opacity-75"
-            : product.companyStatus === "closed"
-            ? "border-gray-300 opacity-50"
-            : "border-gray-200 hover:border-primary"
-        } p-6 transition-all hover:shadow-lg relative`}
+        className="bg-white rounded-xl border-2 border-gray-200 hover:border-primary p-6 transition-all hover:shadow-lg relative"
       >
+        {!product.lastUpdated && (
+          <div className="absolute top-4 left-4 z-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 text-orange-700 text-xs font-semibold rounded-full backdrop-blur-sm shadow-sm">
+              <svg
+                className="w-3.5 h-3.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>Infos à vérifier</span>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
             <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-6xl">
@@ -73,11 +85,13 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                   </h3>
                   <p className="text-sm text-text-secondary">{product.type}</p>
                 </div>
-                {product.forCompany && (
-                  <div className="bg-secondary bg-opacity-10 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
-                    🏢 ENTREPRISE
-                  </div>
-                )}
+                <div className="flex flex-col gap-2 items-end">
+                  {product.forCompany && (
+                    <div className="bg-secondary bg-opacity-10 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                      🏢 ENTREPRISE
+                    </div>
+                  )}
+                </div>
               </div>
               <p className="text-primary font-semibold">{product.tagline}</p>
             </div>
@@ -150,14 +164,26 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-xl border-2 ${
-        product.companyStatus === "liquidation"
-          ? "border-red-200 opacity-75"
-          : product.companyStatus === "closed"
-          ? "border-gray-300 opacity-50"
-          : "border-gray-200 hover:border-primary"
-      } p-6 transition-all hover:shadow-lg relative flex flex-col h-full`}
+      className="bg-white rounded-xl border-2 border-gray-200 hover:border-primary p-6 transition-all hover:shadow-lg relative flex flex-col h-full"
     >
+      {!product.lastUpdated && (
+        <div className="absolute top-4 right-4 z-10">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 text-orange-700 text-xs font-semibold rounded-full backdrop-blur-sm shadow-sm">
+            <svg
+              className="w-3.5 h-3.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Infos à vérifier</span>
+          </div>
+        </div>
+      )}
       <div className="mb-4">
         <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-5xl">
           {product.logo}

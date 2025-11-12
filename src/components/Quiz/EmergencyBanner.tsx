@@ -1,4 +1,5 @@
 import React from "react";
+import { analytics } from "../../lib/analytics";
 
 interface EmergencyBannerProps {
   onContinue: () => void;
@@ -8,6 +9,7 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
   onContinue,
 }) => {
   const handleCall = () => {
+    analytics.emergencyNumberClicked("3114");
     window.location.href = "tel:3114";
   };
 

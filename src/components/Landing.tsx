@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppStore } from "../store/useAppStore";
+import { MedicalDisclaimer } from "./Disclaimer/MedicalDisclaimer";
 
 export const Landing: React.FC = () => {
   const { setView, setUserType } = useAppStore();
@@ -14,7 +15,9 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8 md:py-12">
+    <div className="min-h-[calc(100vh-280px)]">
+      <MedicalDisclaimer variant="banner" />
+      <div className="px-4 py-8 md:py-12">
       <div className="max-w-5xl mx-auto text-center space-y-8 mb-12">
         <div className="space-y-4">
           <h1 className="text-4xl md:text-6xl font-bold text-text-primary leading-tight">
@@ -174,6 +177,7 @@ export const Landing: React.FC = () => {
             <span>→</span>
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

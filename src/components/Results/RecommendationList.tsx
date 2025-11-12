@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { ProductCard } from "./ProductCard";
 import { ExplanationBox } from "./ExplanationBox";
+import { MedicalDisclaimer } from "../Disclaimer/MedicalDisclaimer";
 
 export const RecommendationList: React.FC = () => {
   const { recommendations, reset, setView } = useAppStore();
@@ -58,6 +59,8 @@ export const RecommendationList: React.FC = () => {
             </p>
           )}
         </div>
+
+        <MedicalDisclaimer variant="card" className="max-w-4xl mx-auto" />
 
         <div>
           <div className="mb-6 text-center">
@@ -146,12 +149,10 @@ export const RecommendationList: React.FC = () => {
               ))}
             </div>
 
-            {/* Bouton "Réduire" */}
             <div className="flex justify-center pt-8">
               <button
                 onClick={() => {
                   setShowAdditional(false);
-                  // Scroll vers le haut des résultats
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo/20"
@@ -175,39 +176,6 @@ export const RecommendationList: React.FC = () => {
             </div>
           </div>
         )}
-
-        <div
-          className="relative overflow-hidden bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-warning/30 rounded-2xl p-6 shadow-lg"
-          style={{ animation: "fadeIn 1s ease-out 0.5s backwards" }}
-        >
-          <div className="absolute -top-6 -right-6 w-32 h-32 bg-warning/10 rounded-full blur-2xl" />
-          <div className="relative flex items-start gap-4">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-warning/20 rounded-xl flex items-center justify-center">
-                <span className="text-2xl" aria-hidden="true">
-                  ⚠️
-                </span>
-              </div>
-            </div>
-            <div className="flex-1 space-y-2">
-              <p className="font-bold text-text-primary text-lg">
-                Informations importantes
-              </p>
-              <p className="text-text-secondary leading-relaxed">
-                Cet outil est informatif et ne remplace pas un avis médical
-                professionnel. Si tu es en détresse ou en danger immédiat,
-                contacte le{" "}
-                <a
-                  href="tel:3114"
-                  className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
-                >
-                  📞 3114
-                </a>{" "}
-                (gratuit 24h/7j).
-              </p>
-            </div>
-          </div>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-6 justify-center items-center">
           <button

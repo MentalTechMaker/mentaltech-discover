@@ -44,7 +44,7 @@ export interface Product {
     amount?: string;
     details?: string;
   };
-  companyStatus?: 'active' | 'closed' | 'liquidation';
+  lastUpdated?: string; // Format ISO date: YYYY-MM-DD
   recommendationScore?: number;
 }
 
@@ -55,4 +55,4 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company';
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq';

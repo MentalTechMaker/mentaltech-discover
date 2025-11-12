@@ -1,5 +1,6 @@
 import React from "react";
 import type { Filters } from "./ProductCatalog";
+import { analytics } from "../../lib/analytics";
 
 interface FilterSectionProps {
   filters: Filters;
@@ -9,7 +10,7 @@ interface FilterSectionProps {
     problems: string[];
     pricingModels: string[];
   };
-  onFilterChange: (key: keyof Filters, value: any) => void;
+  onFilterChange: (key: keyof Filters, value: string | string[]) => void;
 }
 
 const audienceLabels: Record<string, string> = {
@@ -46,9 +47,15 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
 }) => {
   const toggleArrayFilter = (key: keyof Filters, value: string) => {
     const currentArray = filters[key] as string[];
-    const newArray = currentArray.includes(value)
+    const isRemoving = currentArray.includes(value);
+    const newArray = isRemoving
       ? currentArray.filter((v) => v !== value)
       : [...currentArray, value];
+
+    if (!isRemoving) {
+      analytics.filterUsed(key, value);
+    }
+
     onFilterChange(key, newArray);
   };
 
@@ -67,7 +74,13 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
             type="text"
             placeholder="Nom, description, tags..."
             value={filters.search}
-            onChange={(e) => onFilterChange("search", e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              onFilterChange("search", value);
+              if (value.length > 0) {
+                analytics.filterUsed("search", value.substring(0, 20));
+              }
+            }}
             className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
           />
         </div>
@@ -81,7 +94,10 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
               <input
                 type="radio"
                 checked={filters.forCompany === "all"}
-                onChange={() => onFilterChange("forCompany", "all")}
+                onChange={() => {
+                  analytics.filterUsed("forCompany", "all");
+                  onFilterChange("forCompany", "all");
+                }}
                 className="w-4 h-4 text-primary"
               />
               <span className="text-text-secondary">Tous</span>
@@ -90,7 +106,10 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
               <input
                 type="radio"
                 checked={filters.forCompany === "individual"}
-                onChange={() => onFilterChange("forCompany", "individual")}
+                onChange={() => {
+                  analytics.filterUsed("forCompany", "individual");
+                  onFilterChange("forCompany", "individual");
+                }}
                 className="w-4 h-4 text-primary"
               />
               <span className="text-text-secondary">Particuliers</span>
@@ -99,7 +118,10 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
               <input
                 type="radio"
                 checked={filters.forCompany === "company"}
-                onChange={() => onFilterChange("forCompany", "company")}
+                onChange={() => {
+                  analytics.filterUsed("forCompany", "company");
+                  onFilterChange("forCompany", "company");
+                }}
                 className="w-4 h-4 text-primary"
               />
               <span className="text-text-secondary">Entreprises</span>

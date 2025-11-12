@@ -1,7 +1,3 @@
-/**
- * Utilitaires de sécurité pour l'application MentalTech Discover
- */
-
 // Assainie une URL pour éviter les attaques XSS via les liens
 export function sanitizeUrl(url: string): string {
   if (!url) return '';
@@ -39,6 +35,7 @@ export function sanitizeText(text: string, maxLength: number = 1000): string {
   const truncated = text.slice(0, maxLength);
 
   // Supprimer les caractères dangereux (sauf espaces, tabs, newlines)
+  // eslint-disable-next-line no-control-regex
   return truncated.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 }
 
