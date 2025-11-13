@@ -44,7 +44,7 @@ export interface Product {
     amount?: string;
     details?: string;
   };
-  lastUpdated?: string; // Format ISO date: YYYY-MM-DD
+  lastUpdated?: string; // YYYY-MM-DD
   recommendationScore?: number;
 }
 

@@ -1,13 +1,7 @@
-/**
- * Fichier de test pour vérifier la compatibilité du système de recommandation
- * avec les produits étendus de MentalTech
- */
-
 import { getRecommendations } from './recommendationEngine';
 import { getAllProducts } from './products';
 import type { UserAnswers } from '../types';
 
-// Test scenarios
 const testScenarios: Array<{ name: string; answers: UserAnswers; isCompany: boolean }> = [
   {
     name: "Adolescent anxieux cherchant app autonome",
@@ -116,10 +110,6 @@ console.log(`📊 Statistiques des produits:`);
 console.log(`   - Produits totaux: ${getAllProducts().length}`);
 console.log();
 
-// Note: Le système actuel utilise les produits de ./products.ts
-// Pour tester avec les produits étendus, il faudrait modifier recommendationEngine.ts
-// ou créer une version de test
-
 console.log("⚠️  NOTE IMPORTANTE:");
 console.log("    Le fichier recommendationEngine.ts utilise actuellement './products'");
 console.log("    Pour utiliser les produits étendus, modifiez l'import:");
@@ -156,7 +146,6 @@ console.log();
 
 const allProducts = getAllProducts();
 
-// Vérifier que tous les produits ont les champs requis
 const requiredFields = ['id', 'name', 'type', 'tagline', 'description', 'url', 'logo', 'tags', 'audience', 'problemsSolved', 'preferenceMatch'];
 
 let validProducts = 0;
@@ -182,7 +171,6 @@ if (invalidProducts.length > 0) {
 }
 console.log();
 
-// Statistiques par catégorie
 console.log("📈 Couverture par problème:");
 const problemCoverage: Record<string, number> = {};
 allProducts.forEach((product) => {
