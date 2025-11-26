@@ -15,7 +15,7 @@ interface FilterSectionProps {
 
 const audienceLabels: Record<string, string> = {
   adult: "Adultes",
-  teen: "Adolescents",
+  young: "Adolescents",
   child: "Enfants",
   parent: "Parents",
   senior: "Seniors",

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { questions } from "../../data/questions";
 import { companyQuestions } from "../../data/companyQuestions";
@@ -26,13 +26,35 @@ export const Quiz: React.FC = () => {
   const hasStartedRef = useRef(false);
   const isCompletedRef = useRef(false);
 
+  const getAnswerValue = useCallback((questionId: number): string | undefined => {
+    if (userType === "company") {
+      const companyMapping: Record<number, keyof typeof answers> = {
+        1: "companySize",
+        2: "companyNeeds",
+        3: "preference",
+      };
+      const key = companyMapping[questionId];
+      return answers[key];
+    }
+
+    const individualMapping: Record<number, keyof typeof answers> = {
+      1: "feeling",
+      2: "urgency",
+      3: "problem",
+      4: "audience",
+      5: "preference",
+    };
+    const key = individualMapping[questionId];
+    return answers[key];
+  }, [answers, userType]);
+
   const activeQuestions = useMemo(() => {
     return questionsList.filter((q) => {
       if (!q.condition) return true;
       const conditionAnswer = getAnswerValue(q.condition.questionId);
       return conditionAnswer === q.condition.value;
     });
-  }, [answers, questionsList]);
+  }, [questionsList, getAnswerValue]);
 
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
@@ -57,35 +79,13 @@ export const Quiz: React.FC = () => {
         analytics.quizAbandoned(currentQuestionIndex + 1);
       }
     };
-  }, []);
+  }, [currentQuestionIndex]);
 
   useEffect(() => {
     if (answers.feeling === "very-bad" && answers.urgency === "dark-thoughts") {
       setShowEmergencyBanner(true);
     }
   }, [answers.feeling, answers.urgency, setShowEmergencyBanner]);
-
-  function getAnswerValue(questionId: number): string | undefined {
-    if (userType === "company") {
-      const companyMapping: Record<number, keyof typeof answers> = {
-        1: "companySize",
-        2: "companyNeeds",
-        3: "preference",
-      };
-      const key = companyMapping[questionId];
-      return answers[key];
-    }
-
-    const individualMapping: Record<number, keyof typeof answers> = {
-      1: "feeling",
-      2: "urgency",
-      3: "problem",
-      4: "audience",
-      5: "preference",
-    };
-    const key = individualMapping[questionId];
-    return answers[key];
-  }
 
   const handleSelect = (value: string) => {
     if (currentQuestion) {

@@ -59,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                 />
               </svg>
               <span>
-                {Math.round((product.recommendationScore / 50) * 100)}% match
+                {Math.round(product.recommendationScore)}% match
               </span>
             </div>
           )}
@@ -72,6 +72,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
               src={product.logo}
               alt={`Logo ${product.name}`}
               className="w-full h-full object-contain p-2"
+              loading="lazy"
+              width="64"
+              height="64"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = "none";

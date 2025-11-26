@@ -35,7 +35,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
         role="alert"
       >
         <div className="space-y-4">
-          <div className="items-center gap-3">
+          <div className="items-center gap-3 text-center">
             <h3 className="text-xl font-bold text-amber-900">
               Information Importante
             </h3>

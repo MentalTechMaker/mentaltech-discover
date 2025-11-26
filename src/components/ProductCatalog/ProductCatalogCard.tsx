@@ -26,7 +26,7 @@ const pricingColors: Record<string, string> = {
 
 const audienceLabels: Record<string, string> = {
   adult: "Adultes",
-  teen: "Ados",
+  young: "Ados",
   child: "Enfants",
   parent: "Parents",
   senior: "Seniors",
@@ -71,8 +71,21 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         )}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-6xl">
-              {product.logo}
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center overflow-hidden">
+              <img
+                src={product.logo}
+                alt={`Logo ${product.name}`}
+                className="w-full h-full object-contain p-3"
+                loading="lazy"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                  const fallback = document.createElement("span");
+                  fallback.className = "text-5xl";
+                  fallback.textContent = "💙";
+                  target.parentElement?.appendChild(fallback);
+                }}
+              />
             </div>
           </div>
 
@@ -185,8 +198,21 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         </div>
       )}
       <div className="mb-4">
-        <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-5xl">
-          {product.logo}
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center overflow-hidden">
+          <img
+            src={product.logo}
+            alt={`Logo ${product.name}`}
+            className="w-full h-full object-contain p-3"
+            loading="lazy"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+              const fallback = document.createElement("span");
+              fallback.className = "text-4xl";
+              fallback.textContent = "💙";
+              target.parentElement?.appendChild(fallback);
+            }}
+          />
         </div>
       </div>
 
@@ -208,7 +234,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
           </p>
         </div>
 
-        <p className="text-text-secondary text-sm leading-relaxed line-clamp-3">
+        <p className="text-text-secondary text-sm leading-relaxed">
           {product.description}
         </p>
 

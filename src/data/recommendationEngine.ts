@@ -3,6 +3,7 @@ import { getAllProducts } from './products';
 
 interface ScoredProduct extends Product {
   score: number;
+  randomTieBreaker: number;
 }
 
 export function getRecommendations(answers: UserAnswers, isCompany: boolean = false): RecommendationResult {
@@ -15,10 +16,18 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
 
   const scoredProducts: ScoredProduct[] = filteredProducts.map(product => ({
     ...product,
-    score: isCompany ? calculateCompanyScore(product, answers) : calculateScore(product, answers)
+    score: isCompany ? calculateCompanyScore(product, answers, isCompany) : calculateScore(product, answers, isCompany),
+    randomTieBreaker: Math.random() // Valeur aléatoire pour départager les ex-aequo
   }));
 
-  scoredProducts.sort((a, b) => b.score - a.score);
+  scoredProducts.sort((a, b) => {
+    // Tri par score décroissant
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    // Si même score, tri aléatoire
+    return b.randomTieBreaker - a.randomTieBreaker;
+  });
 
   const topProducts = scoredProducts
     .filter(p => p.score > 0)
@@ -51,10 +60,11 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
  * - Correspondance préférence (6 pts) : Le format correspond-il à ce que cherche l'utilisateur ?
  * - Urgence et état émotionnel (5-7 pts) : Le produit est-il adapté au niveau d'urgence ?
  * - Spécialisation (10-15 pts) : Le produit est-il spécialisé pour ce besoin spécifique ?
+ * - Correspondance type utilisateur (20 pts) : Le produit est-il adapté au contexte (individuel/entreprise) ?
  *
- * Score maximum théorique : ~50 points
+ * Score maximum : 100 points (plafonné)
  */
-function calculateScore(product: Product, answers: UserAnswers): number {
+function calculateScore(product: Product, answers: UserAnswers, isCompany: boolean = false): number {
   let score = 0;
 
   // 1. AUDIENCE MATCHING (10 points)
@@ -147,7 +157,18 @@ function calculateScore(product: Product, answers: UserAnswers): number {
     }
   }
 
-  return score;
+  // 9. CORRESPONDANCE TYPE UTILISATEUR (20 points)
+  // Bonus si le produit correspond au contexte (individuel vs entreprise)
+  if (product.forCompany === false && !isCompany) {
+    // Produit individuel pour utilisateur individuel
+    score += 20;
+  } else if (product.forCompany === false && isCompany) {
+    // Pénalité : produit individuel pour une entreprise
+    score -= 10;
+  }
+
+  // Plafond à 100 points
+  return Math.min(score, 100);
 }
 
 function generateExplanation(answers: UserAnswers): string {
@@ -193,7 +214,7 @@ function generateExplanation(answers: UserAnswers): string {
   return `${needsText}\n\nCes outils ont été recommandés par des professionnels de santé et ont aidé des centaines de personnes dans des situations similaires.`;
 }
 
-function calculateCompanyScore(product: Product, answers: UserAnswers): number {
+function calculateCompanyScore(product: Product, answers: UserAnswers, isCompany: boolean = true): number {
   let score = 0;
 
   if (answers.companySize) {
@@ -233,7 +254,18 @@ function calculateCompanyScore(product: Product, answers: UserAnswers): number {
     }
   }
 
-  return score;
+  // CORRESPONDANCE TYPE UTILISATEUR (20 points)
+  // Bonus si le produit correspond au contexte entreprise
+  if (product.forCompany === true && isCompany) {
+    // Produit entreprise pour une entreprise
+    score += 20;
+  } else if (product.forCompany === true && !isCompany) {
+    // Pénalité : produit entreprise pour utilisateur individuel (ne devrait pas arriver avec le filtre)
+    score -= 10;
+  }
+
+  // Plafond à 100 points
+  return Math.min(score, 100);
 }
 
 function generateCompanyExplanation(answers: UserAnswers): string {
