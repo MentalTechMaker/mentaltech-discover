@@ -70,7 +70,7 @@ Explorez toutes les solutions avec filtres puissants :
 
 ```bash
 # Cloner le repository
-git clone https://github.com/mentaltech/mentaltech-discover.git
+git clone https://github.com/mentaltechmaker/mentaltech-discover.git
 cd mentaltech-discover
 
 # Installer les dépendances
@@ -121,7 +121,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-L'application sera disponible sur `http://localhost:8080`
+L'application sera disponible sur `http://localhost:8033`
 
 ---
 
@@ -236,7 +236,7 @@ Premier écosystème français de santé mentale digitale
 
 ## 🗺️ Roadmap
 
-### ✅ V1.0 - Production Ready (Novembre 2024)
+### ✅ V1.0 - Production Ready (Novembre 2025)
 
 - [x] Questionnaire personnalisé (particuliers + entreprises)
 - [x] Catalogue avec 22 solutions référencées
@@ -247,7 +247,7 @@ Premier écosystème français de santé mentale digitale
 - [x] Open source (MIT)
 - [x] Build optimisé < 350 KB
 
-### 🔮 V2 - Expansion (2025)
+### 🔮 V2 - Expansion (2026)
 
 - [ ] Scoring avancé avec pondération entreprise/individuel
 - [ ] Tests unitaires (Vitest)
@@ -255,7 +255,7 @@ Premier écosystème français de santé mentale digitale
 - [ ] CI/CD (GitHub Actions)
 - [ ] Monitoring (Sentry)
 
-### 🌟 V3 - Écosystème (2026)
+### 🌟 V3 - Écosystème (2027)
 
 - [ ] Multi-langue (EN, ES, DE)
 - [ ] PWA avec mode offline
