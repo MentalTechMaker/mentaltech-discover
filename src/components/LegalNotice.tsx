@@ -118,7 +118,7 @@ export const LegalNotice: React.FC = () => {
                   Le code source de cette application est{" "}
                   <strong>open-source</strong> et disponible sur{" "}
                   <a
-                    href="https://github.com/mentaltech/mentaltech-discover"
+                    href="https://github.com/mentaltechmaker/mentaltech-discover"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-semibold"
