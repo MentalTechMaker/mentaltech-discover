@@ -376,7 +376,7 @@ export const FAQ: React.FC = () => {
           <p>
             💻 GitHub :{" "}
             <a
-              href="https://github.com/mentaltech/mentaltech-discover/issues"
+              href="https://github.com/mentaltechmaker/mentaltech-discover/issues"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline font-semibold"
@@ -397,7 +397,7 @@ export const FAQ: React.FC = () => {
           <br />
           → Repo GitHub :{" "}
           <a
-            href="https://github.com/mentaltech/mentaltech-discover"
+            href="https://github.com/mentaltechmaker/mentaltech-discover"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline font-semibold"
