@@ -55,4 +55,4 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company';
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'admin';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email';

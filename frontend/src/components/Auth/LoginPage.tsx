@@ -80,7 +80,16 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-text-secondary">
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setView("forgot-password")}
+              className="text-sm text-text-secondary hover:text-primary hover:underline"
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
+
+          <p className="mt-4 text-center text-sm text-text-secondary">
             Pas encore de compte ?{" "}
             <button
               onClick={() => setView("register")}

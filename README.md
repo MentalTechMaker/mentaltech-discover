@@ -43,6 +43,9 @@ Explorez toutes les solutions avec filtres puissants :
 ### 🔐 Authentification et Administration
 
 - **Inscription / Connexion** - JWT avec access token (30 min) + refresh token (7 jours)
+- **Page profil** - Consultation des informations du compte et changement de mot de passe
+- **Vérification email** - Email de confirmation envoyé à l'inscription avec lien sécurisé (24h)
+- **Mot de passe oublié** - Réinitialisation par email avec lien temporaire (1h)
 - **Panel Admin** - CRUD complet sur les produits (ajout, modification, suppression)
 - **Rôles** - Utilisateur standard et administrateur
 
@@ -78,6 +81,7 @@ Explorez toutes les solutions avec filtres puissants :
 - **PostgreSQL 16** - Base de données
 - **JWT** (python-jose) - Authentification
 - **bcrypt** (passlib) - Hashage des mots de passe
+- **fastapi-mail** + **Jinja2** - Envoi d'emails transactionnels (vérification, reset)
 
 ### Infrastructure
 
@@ -140,7 +144,7 @@ mentaltech-discover/
 │   │   ├── api/            # Couche API (client, auth, products)
 │   │   ├── components/     # Composants React
 │   │   │   ├── Admin/      # Panel d'administration
-│   │   │   ├── Auth/       # Pages login / register
+│   │   │   ├── Auth/       # Pages login / register / profil / reset password
 │   │   │   ├── Layout/     # Header, Footer
 │   │   │   ├── ProductCatalog/
 │   │   │   ├── Quiz/
@@ -160,7 +164,8 @@ mentaltech-discover/
 │   │   ├── models/         # Modèles SQLAlchemy (User, Product)
 │   │   ├── schemas/        # Schémas Pydantic (validation)
 │   │   ├── routers/        # Endpoints API (auth, products)
-│   │   ├── services/       # Logique métier (JWT, CRUD)
+│   │   ├── services/       # Logique métier (JWT, CRUD, email)
+│   │   ├── templates/      # Templates HTML emails (Jinja2)
 │   │   ├── config.py       # Configuration (pydantic-settings)
 │   │   ├── database.py     # Connexion SQLAlchemy
 │   │   ├── dependencies.py # Guards (auth, admin)
@@ -171,9 +176,11 @@ mentaltech-discover/
 │   └── requirements.txt
 │
 ├── database/                # PostgreSQL
-│   └── init/
-│       ├── 01_schema.sql   # Tables users + products
-│       └── 02_seed_products.sql  # 22 produits pré-chargés
+│   ├── init/
+│   │   ├── 01_schema.sql   # Tables users + products
+│   │   └── 02_seed_products.sql  # 22 produits pré-chargés
+│   └── migrations/
+│       └── 001_add_email_verified.sql  # Ajout vérification email
 │
 ├── docker-compose.yml       # Orchestration 3 services
 └── .env.example             # Variables d'environnement
@@ -185,10 +192,15 @@ mentaltech-discover/
 
 | Méthode | Route | Auth | Description |
 |---------|-------|------|-------------|
-| `POST` | `/api/auth/register` | - | Inscription |
+| `POST` | `/api/auth/register` | - | Inscription (+ envoi email vérification) |
 | `POST` | `/api/auth/login` | - | Connexion (retourne JWT) |
 | `POST` | `/api/auth/refresh` | - | Renouveler l'access token |
 | `GET` | `/api/auth/me` | JWT | Profil utilisateur courant |
+| `PUT` | `/api/auth/change-password` | JWT | Changer le mot de passe |
+| `POST` | `/api/auth/forgot-password` | - | Demander un email de réinitialisation |
+| `POST` | `/api/auth/reset-password` | - | Réinitialiser le mot de passe (via token) |
+| `GET` | `/api/auth/verify-email` | - | Vérifier l'adresse email (via token) |
+| `POST` | `/api/auth/resend-verification` | JWT | Renvoyer l'email de vérification |
 | `GET` | `/api/products` | - | Liste tous les produits |
 | `GET` | `/api/products/{id}` | - | Détail d'un produit |
 | `POST` | `/api/products` | Admin | Créer un produit |
@@ -217,6 +229,9 @@ docker compose down
 
 # Arrêter et supprimer les données
 docker compose down -v
+
+# Exécuter une migration (base existante)
+docker compose exec db psql -U mentaltech -d mentaltech -f /migrations/001_add_email_verified.sql
 ```
 
 ### Services
@@ -237,6 +252,15 @@ docker compose down -v
 | `DATABASE_URL` | `postgresql://...` | URL de connexion complète |
 | `SECRET_KEY` | `change-me-...` | Clé secrète JWT |
 | `CORS_ORIGINS` | `http://localhost:3033,...` | Origines CORS autorisées |
+| `FRONTEND_URL` | `http://localhost:3033` | URL du frontend (pour les liens dans les emails) |
+| `MAIL_USERNAME` | *(vide)* | Identifiant SMTP |
+| `MAIL_PASSWORD` | *(vide)* | Mot de passe SMTP (app password recommandé) |
+| `MAIL_FROM` | `noreply@mentaltechmaker.fr` | Adresse expéditeur |
+| `MAIL_FROM_NAME` | `MentalTech Discover` | Nom expéditeur |
+| `MAIL_SERVER` | `smtp.gmail.com` | Serveur SMTP |
+| `MAIL_PORT` | `587` | Port SMTP |
+| `MAIL_STARTTLS` | `true` | Activer STARTTLS |
+| `MAIL_SSL_TLS` | `false` | Activer SSL/TLS direct |
 
 ---
 
@@ -281,6 +305,8 @@ Chaque solution comprend :
 - ✅ **Pas de tracking tiers** - Aucun pixel externe
 - ✅ **Mots de passe hashés** - bcrypt
 - ✅ **JWT sécurisés** - Access token courte durée + refresh
+- ✅ **Vérification email** - Tokens signés avec expiration
+- ✅ **Anti-énumération** - Réponse identique que l'email existe ou non (forgot password)
 - ✅ **Open source** - Code transparent sur GitHub
 
 ### Responsabilité
@@ -361,6 +387,15 @@ Premier écosystème français de santé mentale digitale
 - [x] Panel d'administration (CRUD produits)
 - [x] Docker Compose 3 services
 - [x] Proxy Nginx vers le backend
+
+### ✅ V2.1 - Gestion de compte (Janvier 2026)
+
+- [x] Page profil utilisateur (consultation des informations)
+- [x] Changement de mot de passe (depuis le profil)
+- [x] Vérification d'email à l'inscription (lien par email, 24h)
+- [x] Mot de passe oublié (réinitialisation par email, 1h)
+- [x] Envoi d'emails transactionnels (fastapi-mail + Jinja2)
+- [x] Scripts de migration SQL
 
 ### 🔮 V3 - Expansion
 

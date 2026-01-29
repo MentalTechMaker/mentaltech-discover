@@ -9,6 +9,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ./database/migrations:/migrations:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mentaltech}"]
       interval: 10s
@@ -25,6 +26,15 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://mentaltech:mentaltech_secret@db:5432/mentaltech}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3033,http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3033}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@mentaltechmaker.fr}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-MentalTech Discover}
+      MAIL_SERVER: ${MAIL_SERVER:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      MAIL_SSL_TLS: ${MAIL_SSL_TLS:-false}
     depends_on:
       db:
         condition: service_healthy

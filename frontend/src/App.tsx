@@ -15,6 +15,10 @@ import { About } from "./components/About";
 import { FAQ } from "./components/FAQ";
 import { LoginPage } from "./components/Auth/LoginPage";
 import { RegisterPage } from "./components/Auth/RegisterPage";
+import { ProfilePage } from "./components/Auth/ProfilePage";
+import { ForgotPasswordPage } from "./components/Auth/ForgotPasswordPage";
+import { ResetPasswordPage } from "./components/Auth/ResetPasswordPage";
+import { VerifyEmailPage } from "./components/Auth/VerifyEmailPage";
 import { AdminPanel } from "./components/Admin/AdminPanel";
 import { analytics } from "./lib/analytics";
 
@@ -59,6 +63,10 @@ function App() {
         {currentView === "faq" && <FAQ />}
         {currentView === "login" && <LoginPage />}
         {currentView === "register" && <RegisterPage />}
+        {currentView === "profile" && <ProfilePage />}
+        {currentView === "forgot-password" && <ForgotPasswordPage />}
+        {currentView === "reset-password" && <ResetPasswordPage />}
+        {currentView === "verify-email" && <VerifyEmailPage />}
         {currentView === "admin" && <AdminPanel />}
       </main>
       <Footer />

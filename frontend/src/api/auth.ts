@@ -11,6 +11,7 @@ interface UserResponse {
   email: string;
   name: string;
   role: string;
+  email_verified: boolean;
 }
 
 export async function register(email: string, password: string, name: string): Promise<TokenResponse> {
@@ -33,4 +34,35 @@ export async function login(email: string, password: string): Promise<TokenRespo
 
 export async function getMe(): Promise<UserResponse> {
   return apiFetch<UserResponse>('/auth/me', {}, true);
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/change-password', {
+    method: 'PUT',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  }, true);
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, new_password: newPassword }),
+  });
+}
+
+export async function verifyEmail(token: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/auth/verify-email?token=${encodeURIComponent(token)}`, {});
+}
+
+export async function resendVerification(): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/resend-verification', {
+    method: 'POST',
+  }, true);
 }

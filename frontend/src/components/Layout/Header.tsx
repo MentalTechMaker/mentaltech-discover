@@ -85,9 +85,16 @@ export const Header: React.FC = () => {
                     Admin
                   </button>
                 )}
-                <span className="text-white text-sm opacity-80">
+                <button
+                  onClick={() => setView("profile")}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    currentView === "profile"
+                      ? "bg-white text-primary"
+                      : "text-white hover:bg-white hover:bg-opacity-20 hover:text-black"
+                  }`}
+                >
                   {user?.name}
-                </span>
+                </button>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 rounded-lg font-semibold text-white hover:bg-white hover:bg-opacity-20 hover:text-black transition-colors"
