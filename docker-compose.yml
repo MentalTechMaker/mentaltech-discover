@@ -1,15 +1,50 @@
 services:
-  mentaltech-discover:
+  db:
+    image: postgres:16-alpine
+    container_name: mentaltech-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mentaltech}
+      POSTGRES_USER: ${POSTGRES_USER:-mentaltech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mentaltech_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mentaltech}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - mentaltech-network
+
+  backend:
+    build: ./backend
+    container_name: mentaltech-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://mentaltech:mentaltech_secret@db:5432/mentaltech}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3033,http://localhost:5173}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - mentaltech-network
+
+  frontend:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: mentaltech-discover
+    container_name: mentaltech-frontend
+    depends_on:
+      - backend
     ports:
       - "3033:8080"
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-    # Sécurité: Limiter les ressources
+    # Securite: Limiter les ressources
     deploy:
       resources:
         limits:
@@ -18,20 +53,20 @@ services:
         reservations:
           cpus: "0.5"
           memory: 256M
-    # Sécurité: Capacités Linux limitées
+    # Securite: Capacites Linux limitees
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    # Sécurité: Lecture seule du système de fichiers (sauf /tmp et cache)
+    # Securite: Lecture seule du systeme de fichiers (sauf /tmp et cache)
     read_only: true
     tmpfs:
       - /tmp:mode=1777
       - /var/cache/nginx:uid=101,gid=101
       - /var/run:uid=101,gid=101
-    # Sécurité: Empêcher l'escalade de privilèges
+    # Securite: Empecher l'escalade de privileges
     security_opt:
       - no-new-privileges:true
     healthcheck:
@@ -50,6 +85,9 @@ services:
       start_period: 40s
     networks:
       - mentaltech-network
+
+volumes:
+  postgres_data:
 
 networks:
   mentaltech-network:

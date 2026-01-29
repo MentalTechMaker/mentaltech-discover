@@ -7,10 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Frontend
 node_modules
 dist
 dist-ssr
 *.local
+
+# Backend Python
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+.eggs
+*.egg
+venv/
+.venv/
 
 # Editor directories and files
 .vscode/*
@@ -32,6 +43,7 @@ dist-ssr
 
 # Docker
 docker-compose.override.yml
+postgres_data/
 
 # Testing
 coverage

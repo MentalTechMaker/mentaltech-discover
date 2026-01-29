@@ -8,12 +8,12 @@
 
 ## 🎯 À propos
 
-MentalTech Discover référence **13 solutions actives** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
+MentalTech Discover référence **22 solutions** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
 
 - 🧭 **Questionnaire personnalisé** - Recommandations sur-mesure en 3-5 minutes
 - 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique
 - 🎯 **Algorithme de scoring** - Matching intelligent plafonné à 100%
-- 🔒 **100% gratuit et anonyme** - Aucune donnée personnelle collectée
+- 🔒 **Authentification** - Inscription, connexion, panel d'administration
 - 📖 **Open Source** - Code transparent sous licence MIT
 
 ---
@@ -40,6 +40,12 @@ Explorez toutes les solutions avec filtres puissants :
 - **Problèmes traités** - 6 catégories principales
 - **Tarification** - Gratuit, Freemium, Abonnement, Par séance, B2B
 
+### 🔐 Authentification et Administration
+
+- **Inscription / Connexion** - JWT avec access token (30 min) + refresh token (7 jours)
+- **Panel Admin** - CRUD complet sur les produits (ajout, modification, suppression)
+- **Rôles** - Utilisateur standard et administrateur
+
 ### 🛡️ Sécurité et Transparence
 
 - ✅ **Disclaimers médicaux** - Numéros d'urgence (3114, 15, 112)
@@ -57,33 +63,70 @@ Explorez toutes les solutions avec filtres puissants :
 
 ## 🏗️ Stack Technique
 
-- **Frontend** : React 19 + TypeScript
-- **State Management** : Zustand 5
-- **Styling** : Tailwind CSS 4
-- **Build** : Vite 7
-- **Analytics** : Plausible (privacy-first)
-- **Qualité** : ESLint + TypeScript strict mode
+### Frontend
+
+- **React 19** + TypeScript
+- **Zustand 5** - State management
+- **Tailwind CSS 4** - Styling
+- **Vite 7** - Build tool
+- **Plausible** - Analytics privacy-first
+
+### Backend
+
+- **FastAPI** (Python 3.11)
+- **SQLAlchemy 2** - ORM
+- **PostgreSQL 16** - Base de données
+- **JWT** (python-jose) - Authentification
+- **bcrypt** (passlib) - Hashage des mots de passe
+
+### Infrastructure
+
+- **Docker Compose** - Orchestration 3 services
+- **Nginx** - Reverse proxy + serveur statique
+- **PostgreSQL 16 Alpine** - Base de données
 
 ---
 
 ## 🚀 Démarrage Rapide
+
+### Avec Docker (recommandé)
 
 ```bash
 # Cloner le repository
 git clone https://github.com/mentaltechmaker/mentaltech-discover.git
 cd mentaltech-discover
 
-# Installer les dépendances
+# Copier la configuration
+cp .env.example .env
+
+# Démarrer les 3 services (db + backend + frontend)
+docker compose up --build
+
+# Créer le premier administrateur
+docker compose exec backend python -m scripts.create_admin
+```
+
+L'application sera disponible sur :
+- **Frontend** : http://localhost:3033
+- **API** : http://localhost:8000
+- **API Docs** : http://localhost:8000/api/docs
+
+### Développement local (frontend uniquement)
+
+```bash
+cd frontend
 npm install
-
-# Lancer en développement
 npm run dev
+```
 
-# Build production
-npm run build
+Le proxy Vite redirige `/api` vers `http://localhost:8000`.
 
-# Preview production
-npm run preview
+### Développement local (backend uniquement)
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
 ---
@@ -92,19 +135,68 @@ npm run preview
 
 ```
 mentaltech-discover/
-├── src/
-│   ├── components/       # Composants React
-│   ├── data/            # Données produits et questions
-│   ├── lib/             # Analytics et utilitaires
-│   ├── store/           # State management (Zustand)
-│   ├── types/           # Types TypeScript
-│   └── utils/           # Fonctions utilitaires
-├── public/              # Assets statiques
-│   └── logos/          # Logos des produits (172 KB optimisés)
-├── Dockerfile          # Image Docker multi-stage
-├── nginx.conf          # Configuration Nginx
-└── docker-compose.yml  # Orchestration Docker
+├── frontend/                # Application React
+│   ├── src/
+│   │   ├── api/            # Couche API (client, auth, products)
+│   │   ├── components/     # Composants React
+│   │   │   ├── Admin/      # Panel d'administration
+│   │   │   ├── Auth/       # Pages login / register
+│   │   │   ├── Layout/     # Header, Footer
+│   │   │   ├── ProductCatalog/
+│   │   │   ├── Quiz/
+│   │   │   └── Results/
+│   │   ├── data/           # Questions et moteur de recommandation
+│   │   ├── lib/            # Analytics
+│   │   ├── store/          # Zustand (app, auth, products)
+│   │   ├── types/          # Types TypeScript
+│   │   └── utils/          # Fonctions utilitaires
+│   ├── public/             # Assets statiques et logos
+│   ├── Dockerfile          # Image multi-stage (node + nginx)
+│   ├── nginx.conf          # Config Nginx avec proxy API
+│   └── package.json
+│
+├── backend/                 # API FastAPI
+│   ├── app/
+│   │   ├── models/         # Modèles SQLAlchemy (User, Product)
+│   │   ├── schemas/        # Schémas Pydantic (validation)
+│   │   ├── routers/        # Endpoints API (auth, products)
+│   │   ├── services/       # Logique métier (JWT, CRUD)
+│   │   ├── config.py       # Configuration (pydantic-settings)
+│   │   ├── database.py     # Connexion SQLAlchemy
+│   │   ├── dependencies.py # Guards (auth, admin)
+│   │   └── main.py         # Point d'entrée FastAPI
+│   ├── scripts/            # Scripts utilitaires
+│   │   └── create_admin.py # Création admin initial
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── database/                # PostgreSQL
+│   └── init/
+│       ├── 01_schema.sql   # Tables users + products
+│       └── 02_seed_products.sql  # 22 produits pré-chargés
+│
+├── docker-compose.yml       # Orchestration 3 services
+└── .env.example             # Variables d'environnement
 ```
+
+---
+
+## 🔌 API Endpoints
+
+| Méthode | Route | Auth | Description |
+|---------|-------|------|-------------|
+| `POST` | `/api/auth/register` | - | Inscription |
+| `POST` | `/api/auth/login` | - | Connexion (retourne JWT) |
+| `POST` | `/api/auth/refresh` | - | Renouveler l'access token |
+| `GET` | `/api/auth/me` | JWT | Profil utilisateur courant |
+| `GET` | `/api/products` | - | Liste tous les produits |
+| `GET` | `/api/products/{id}` | - | Détail d'un produit |
+| `POST` | `/api/products` | Admin | Créer un produit |
+| `PUT` | `/api/products/{id}` | Admin | Modifier un produit |
+| `DELETE` | `/api/products/{id}` | Admin | Supprimer un produit |
+| `GET` | `/api/health` | - | Health check |
+
+Documentation interactive : http://localhost:8000/api/docs
 
 ---
 
@@ -112,16 +204,39 @@ mentaltech-discover/
 
 ```bash
 # Build et démarrage
-docker-compose up -d
+docker compose up -d --build
 
 # Vérifier les logs
-docker-compose logs -f
+docker compose logs -f
+
+# Créer l'admin initial
+docker compose exec backend python -m scripts.create_admin
 
 # Arrêter
-docker-compose down
+docker compose down
+
+# Arrêter et supprimer les données
+docker compose down -v
 ```
 
-L'application sera disponible sur `http://localhost:8033`
+### Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `db` | 5432 (interne) | PostgreSQL 16 Alpine |
+| `backend` | 8000 | API FastAPI |
+| `frontend` | 3033 | Nginx + React SPA |
+
+### Variables d'environnement
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `POSTGRES_DB` | `mentaltech` | Nom de la base |
+| `POSTGRES_USER` | `mentaltech` | Utilisateur PostgreSQL |
+| `POSTGRES_PASSWORD` | `mentaltech_secret` | Mot de passe PostgreSQL |
+| `DATABASE_URL` | `postgresql://...` | URL de connexion complète |
+| `SECRET_KEY` | `change-me-...` | Clé secrète JWT |
+| `CORS_ORIGINS` | `http://localhost:3033,...` | Origines CORS autorisées |
 
 ---
 
@@ -154,7 +269,7 @@ Chaque solution comprend :
 - Mobile-first responsive
 - Accessibilité ARIA labels
 - Animations fluides
-- Performance optimisée (332 KB gzippé)
+- Performance optimisée
 
 ---
 
@@ -162,10 +277,10 @@ Chaque solution comprend :
 
 ### Privacy-First
 
-- ✅ **Aucune donnée personnelle** stockée
 - ✅ **Analytics sans cookies** (Plausible)
 - ✅ **Pas de tracking tiers** - Aucun pixel externe
-- ✅ **Navigation anonyme** - Pas de compte requis
+- ✅ **Mots de passe hashés** - bcrypt
+- ✅ **JWT sécurisés** - Access token courte durée + refresh
 - ✅ **Open source** - Code transparent sur GitHub
 
 ### Responsabilité
@@ -173,15 +288,6 @@ Chaque solution comprend :
 - **Disclaimers** - Avertissements médicaux
 - **Numéros d'urgence** - 3114, 15, 112 affichés
 - **Limitations claires** - Outil de découverte uniquement
-
----
-
-## ⚡ Performance
-
-- **Bundle size** : 332 KB JS (90 KB gzippé) + 48 KB CSS
-- **Target** : < 350 KB maintenu
-- **Logos optimisés** : 172 KB total (13 fichiers)
-- **Time to Interactive** : < 2s sur 4G
 
 ---
 
@@ -194,7 +300,7 @@ Pour référencer une nouvelle solution :
 1. ✅ Vérifier que l'entreprise est membre du Collectif MentalTech
 2. ✅ S'assurer de la conformité aux critères de référencement
 3. Fork le repository
-4. Ajouter dans `src/data/products.ts` en suivant le format
+4. Ajouter le produit via le panel admin ou via un INSERT SQL dans `database/init/02_seed_products.sql`
 5. Créer une Pull Request avec description complète
 
 ### Proposer des améliorations
@@ -236,7 +342,7 @@ Premier écosystème français de santé mentale digitale
 
 ## 🗺️ Roadmap
 
-### ✅ V1.0 - Production Ready (Novembre 2025)
+### ✅ V1.0 - Frontend (Novembre 2025)
 
 - [x] Questionnaire personnalisé (particuliers + entreprises)
 - [x] Catalogue avec 22 solutions référencées
@@ -245,26 +351,27 @@ Premier écosystème français de santé mentale digitale
 - [x] Disclaimers médicaux et numéros d'urgence
 - [x] Analytics privacy-first (Plausible)
 - [x] Open source (MIT)
-- [x] Build optimisé < 350 KB
 
-### 🔮 V2 - Expansion (2026)
+### ✅ V2.0 - Monorepo Full-Stack (Janvier 2026)
 
-- [ ] Scoring avancé avec pondération entreprise/individuel
-- [ ] Tests unitaires (Vitest)
+- [x] Architecture monorepo (frontend / backend / database)
+- [x] API REST FastAPI avec documentation Swagger
+- [x] Base de données PostgreSQL avec 22 produits pré-chargés
+- [x] Authentification JWT (inscription, connexion, refresh)
+- [x] Panel d'administration (CRUD produits)
+- [x] Docker Compose 3 services
+- [x] Proxy Nginx vers le backend
+
+### 🔮 V3 - Expansion
+
+- [ ] Tests unitaires (Vitest + pytest)
 - [ ] Tests E2E (Playwright)
 - [ ] CI/CD (GitHub Actions)
 - [ ] Monitoring (Sentry)
-
-### 🌟 V3 - Écosystème (2027)
-
 - [ ] Multi-langue (EN, ES, DE)
-- [ ] PWA avec mode offline
-- [ ] API publique
-- [ ] Système de favoris
-- [ ] Avis utilisateurs vérifiés
 
 ---
 
-**Version actuelle** : V1.0.0
-**Dernière mise à jour** : Novembre 2025
+**Version actuelle** : V1.2.0
+**Dernière mise à jour** : Janvier 2026
 **Status** : ✅ Production Ready
