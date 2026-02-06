@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
-from jose import jwt
+from jose import jwt, JWTError
 from jinja2 import Environment, FileSystemLoader
 
 from ..config import settings
@@ -32,18 +32,23 @@ fm = FastMail(mail_conf)
 
 
 def create_email_token(user_id: str, purpose: str, expire_hours: int = 24) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(hours=expire_hours)
-    payload = {"sub": user_id, "exp": expire, "type": purpose}
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(hours=expire_hours)
+    payload = {"sub": user_id, "exp": expire, "iat": now, "type": purpose}
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_email_token(token: str, expected_purpose: str) -> str | None:
+def decode_email_token(
+    token: str, expected_purpose: str, return_full: bool = False
+) -> str | dict | None:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") != expected_purpose:
             return None
+        if return_full:
+            return payload
         return payload.get("sub")
-    except Exception:
+    except (JWTError, ValueError, KeyError):
         return None
 
 
@@ -64,8 +69,8 @@ async def send_verification_email(email: str, name: str, user_id: str) -> None:
     try:
         await fm.send_message(message)
         logger.info(f"Verification email sent to {email}")
-    except Exception as e:
-        logger.error(f"Failed to send verification email to {email}: {e}")
+    except Exception:
+        logger.error(f"Failed to send verification email to {email}", exc_info=True)
 
 
 async def send_reset_password_email(email: str, name: str, user_id: str) -> None:
@@ -85,5 +90,5 @@ async def send_reset_password_email(email: str, name: str, user_id: str) -> None
     try:
         await fm.send_message(message)
         logger.info(f"Password reset email sent to {email}")
-    except Exception as e:
-        logger.error(f"Failed to send password reset email to {email}: {e}")
+    except Exception:
+        logger.error(f"Failed to send password reset email to {email}", exc_info=True)

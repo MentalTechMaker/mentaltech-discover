@@ -1,4 +1,6 @@
 const API_BASE = '/api';
+const REQUEST_TIMEOUT_MS = 15_000;
+const MAX_RETRIES = 1;
 
 let onUnauthorized: (() => void) | null = null;
 
@@ -7,32 +9,60 @@ export function setOnUnauthorized(callback: () => void) {
 }
 
 function getTokens() {
-  const stored = localStorage.getItem('auth');
-  if (!stored) return null;
-  try {
-    return JSON.parse(stored) as { accessToken: string; refreshToken: string };
-  } catch {
-    return null;
-  }
+  const accessToken = localStorage.getItem('access_token');
+  if (!accessToken) return null;
+  return { accessToken };
 }
 
-function setTokens(accessToken: string, refreshToken: string) {
-  localStorage.setItem('auth', JSON.stringify({ accessToken, refreshToken }));
+function setTokens(accessToken: string, _refreshToken?: string) {
+  localStorage.setItem('access_token', accessToken);
+  // Refresh token is now stored as HttpOnly cookie by the backend
 }
 
 function clearTokens() {
+  localStorage.removeItem('access_token');
+  // Also remove legacy format
   localStorage.removeItem('auth');
 }
 
-async function refreshAccessToken(): Promise<string | null> {
-  const tokens = getTokens();
-  if (!tokens?.refreshToken) return null;
+function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = REQUEST_TIMEOUT_MS): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeout));
+}
+
+function isRetryable(error: unknown): boolean {
+  if (error instanceof DOMException && error.name === 'AbortError') return true;
+  if (error instanceof TypeError) return true; // network error
+  return false;
+}
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      if (attempt < retries && isRetryable(error)) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        continue;
+      }
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new Error('La requête a expiré, veuillez réessayer');
+      }
+      throw error;
+    }
+  }
+  throw new Error('La requête a échoué après plusieurs tentatives');
+}
+
+async function refreshAccessToken(): Promise<string | null> {
   try {
-    const res = await fetch(`${API_BASE}/auth/refresh`, {
+    const res = await fetchWithTimeout(`${API_BASE}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: tokens.refreshToken }),
+      credentials: 'include',
+      body: JSON.stringify({}),
     });
 
     if (!res.ok) {
@@ -41,7 +71,7 @@ async function refreshAccessToken(): Promise<string | null> {
     }
 
     const data = await res.json();
-    setTokens(data.access_token, data.refresh_token);
+    setTokens(data.access_token);
     return data.access_token;
   } catch {
     clearTokens();
@@ -68,14 +98,14 @@ export async function apiFetch<T>(
     }
   }
 
-  let res = await fetch(url, { ...options, headers });
+  let res = await fetchWithRetry(url, { ...options, headers });
 
   // Auto-refresh on 401
   if (res.status === 401 && auth) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       headers.set('Authorization', `Bearer ${newToken}`);
-      res = await fetch(url, { ...options, headers });
+      res = await fetchWithRetry(url, { ...options, headers });
     } else {
       if (onUnauthorized) onUnauthorized();
       throw new Error('Non authentifié');

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { Product } from "../../types";
+import { getLabelInfo, computeLabelFromScores } from "../../utils/scoring";
 
 interface ProductFormProps {
   product?: Product;
@@ -33,12 +34,32 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
   const [problemsSolved, setProblemsSolved] = useState(product?.problemsSolved?.join(", ") ?? "");
   const [preferenceMatch, setPreferenceMatch] = useState(product?.preferenceMatch?.join(", ") ?? "");
   const [forCompany, setForCompany] = useState(product?.forCompany ?? false);
+  const [isMentaltechMember, setIsMentaltechMember] = useState(product?.isMentaltechMember ?? false);
   const [pricingModel, setPricingModel] = useState(product?.pricing?.model ?? "");
   const [pricingAmount, setPricingAmount] = useState(product?.pricing?.amount ?? "");
   const [pricingDetails, setPricingDetails] = useState(product?.pricing?.details ?? "");
   const [lastUpdated, setLastUpdated] = useState(product?.lastUpdated ?? "");
+  const [scoreSecurity, setScoreSecurity] = useState<number | "">(product?.scoring?.security ?? "");
+  const [scoreEfficacy, setScoreEfficacy] = useState<number | "">(product?.scoring?.efficacy ?? "");
+  const [scoreAccessibility, setScoreAccessibility] = useState<number | "">(product?.scoring?.accessibility ?? "");
+  const [scoreUx, setScoreUx] = useState<number | "">(product?.scoring?.ux ?? "");
+  const [scoreSupport, setScoreSupport] = useState<number | "">(product?.scoring?.support ?? "");
+  const [justificationSecurity, setJustificationSecurity] = useState(product?.scoring?.justificationSecurity ?? "");
+  const [justificationEfficacy, setJustificationEfficacy] = useState(product?.scoring?.justificationEfficacy ?? "");
+  const [justificationAccessibility, setJustificationAccessibility] = useState(product?.scoring?.justificationAccessibility ?? "");
+  const [justificationUx, setJustificationUx] = useState(product?.scoring?.justificationUx ?? "");
+  const [justificationSupport, setJustificationSupport] = useState(product?.scoring?.justificationSupport ?? "");
 
   const isEditing = !!product;
+
+  const previewLabel = computeLabelFromScores(
+    scoreSecurity === "" ? null : scoreSecurity,
+    scoreEfficacy === "" ? null : scoreEfficacy,
+    scoreAccessibility === "" ? null : scoreAccessibility,
+    scoreUx === "" ? null : scoreUx,
+    scoreSupport === "" ? null : scoreSupport,
+  );
+  const previewLabelInfo = getLabelInfo(previewLabel.label);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +82,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         problemsSolved: splitAndTrim(problemsSolved),
         preferenceMatch: splitAndTrim(preferenceMatch),
         forCompany,
+        isMentaltechMember,
         pricing: pricingModel
           ? {
               model: pricingModel as Product["pricing"] extends { model?: infer M } ? M : never,
@@ -69,6 +91,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
             }
           : undefined,
         lastUpdated: lastUpdated || undefined,
+        scoreSecurity: scoreSecurity === "" ? undefined : scoreSecurity,
+        scoreEfficacy: scoreEfficacy === "" ? undefined : scoreEfficacy,
+        scoreAccessibility: scoreAccessibility === "" ? undefined : scoreAccessibility,
+        scoreUx: scoreUx === "" ? undefined : scoreUx,
+        scoreSupport: scoreSupport === "" ? undefined : scoreSupport,
+        justificationSecurity: justificationSecurity || undefined,
+        justificationEfficacy: justificationEfficacy || undefined,
+        justificationAccessibility: justificationAccessibility || undefined,
+        justificationUx: justificationUx || undefined,
+        justificationSupport: justificationSupport || undefined,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur");
@@ -203,17 +235,31 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         />
       </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="forCompany"
-          checked={forCompany}
-          onChange={(e) => setForCompany(e.target.checked)}
-          className="w-4 h-4"
-        />
-        <label htmlFor="forCompany" className="text-sm font-semibold">
-          Solution pour entreprise
-        </label>
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="forCompany"
+            checked={forCompany}
+            onChange={(e) => setForCompany(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="forCompany" className="text-sm font-semibold">
+            Solution pour entreprise
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="isMentaltechMember"
+            checked={isMentaltechMember}
+            onChange={(e) => setIsMentaltechMember(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="isMentaltechMember" className="text-sm font-semibold">
+            Membre du collectif MentalTech
+          </label>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -258,6 +304,59 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
           onChange={(e) => setLastUpdated(e.target.value)}
           className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
         />
+      </div>
+
+      <div className="border-t-2 border-gray-100 pt-6 mt-6">
+        <h4 className="text-lg font-bold text-text-primary mb-4">Scoring qualité (0-20 par critère)</h4>
+        <div className="space-y-4">
+          {([
+            { label: "Sécurité & Confidentialité", value: scoreSecurity, setter: setScoreSecurity, justification: justificationSecurity, justSetter: setJustificationSecurity },
+            { label: "Efficacité & Preuves cliniques", value: scoreEfficacy, setter: setScoreEfficacy, justification: justificationEfficacy, justSetter: setJustificationEfficacy },
+            { label: "Accessibilité & Inclusion", value: scoreAccessibility, setter: setScoreAccessibility, justification: justificationAccessibility, justSetter: setJustificationAccessibility },
+            { label: "Qualité UX", value: scoreUx, setter: setScoreUx, justification: justificationUx, justSetter: setJustificationUx },
+            { label: "Support & Accompagnement", value: scoreSupport, setter: setScoreSupport, justification: justificationSupport, justSetter: setJustificationSupport },
+          ] as const).map(({ label, value, setter, justification, justSetter }) => (
+            <div key={label} className="p-4 bg-gray-50 rounded-lg space-y-2">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-semibold whitespace-nowrap">{label}</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={20}
+                  value={value}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setter(v === "" ? "" : Math.max(0, Math.min(20, Number(v))));
+                  }}
+                  className="w-20 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white"
+                  placeholder="—"
+                />
+                <span className="text-xs text-text-secondary">/ 20</span>
+              </div>
+              <textarea
+                value={justification}
+                onChange={(e) => justSetter(e.target.value)}
+                rows={2}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm bg-white"
+                placeholder="Justification : documents de recherche, preuves, témoignages..."
+              />
+            </div>
+          ))}
+        </div>
+        {previewLabel.total != null && (
+          <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <span
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold"
+              style={{ backgroundColor: previewLabelInfo.bgColor, color: previewLabelInfo.color }}
+            >
+              {previewLabelInfo.grade}
+            </span>
+            <div>
+              <span className="font-semibold text-text-primary">{previewLabelInfo.text}</span>
+              <span className="text-text-secondary ml-2">({previewLabel.total}/100)</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-4 pt-4">

@@ -1,23 +1,30 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..dependencies import require_admin
-from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse
+from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse, PaginatedProducts
 from ..services.product import (
     get_all_products,
     get_product_by_id,
     create_product,
     update_product,
     delete_product,
+    count_products,
 )
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
 
-@router.get("", response_model=list[ProductResponse])
-def list_products(db: Session = Depends(get_db)):
-    return get_all_products(db)
+@router.get("", response_model=PaginatedProducts)
+def list_products(
+    limit: int | None = Query(default=None, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    items = get_all_products(db, limit=limit, offset=offset)
+    total = count_products(db)
+    return PaginatedProducts(items=items, total=total, limit=limit, offset=offset)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)

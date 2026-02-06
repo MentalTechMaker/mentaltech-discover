@@ -11,8 +11,11 @@
 MentalTech Discover référence **22 solutions** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
 
 - 🧭 **Questionnaire personnalisé** - Recommandations sur-mesure en 3-5 minutes
-- 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique
+- 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique, label qualité
 - 🎯 **Algorithme de scoring** - Matching intelligent plafonné à 100%
+- ⭐ **Labels qualité** - Notation Nutriscore (A-E) sur 5 piliers, avec justifications
+- 📄 **Fiches produit** - Page dédiée par solution avec scoring détaillé
+- 💙 **Collectif MentalTech** - Badge d'appartenance au collectif
 - 🔒 **Authentification** - Inscription, connexion, panel d'administration
 - 📖 **Open Source** - Code transparent sous licence MIT
 
@@ -39,6 +42,42 @@ Explorez toutes les solutions avec filtres puissants :
 - **Audience** - Adultes, adolescents, enfants, parents, seniors
 - **Problèmes traités** - 6 catégories principales
 - **Tarification** - Gratuit, Freemium, Abonnement, Par séance, B2B
+- **Label qualité** - Filtrer par grade (A, B, C, D, E, Non évalué)
+- **Tri par label** - Trier par meilleur score qualité
+
+### ⭐ Labels qualité (Nutriscore)
+
+Chaque solution est évaluée sur 5 piliers, chacun noté de 0 à 20, pour un score total sur 100 :
+
+| Score | Grade | Label |
+|-------|-------|-------|
+| 80-100 | **A** | Validé MentalTech |
+| 60-79 | **B** | Recommandé |
+| 40-59 | **C** | Évalué |
+| 20-39 | **D** | Insuffisant |
+| 0-19 | **E** | Non recommandé |
+
+Les 5 piliers d'évaluation :
+
+1. **Sécurité & Confidentialité** - RGPD, hébergement HDS, chiffrement
+2. **Efficacité & Preuves cliniques** - Base scientifique, études publiées
+3. **Accessibilité & Inclusion** - Prix, plateformes, langue, handicap
+4. **Qualité UX** - Design, navigation, performance, mobile
+5. **Support & Accompagnement** - Réactivité, gestion de crise, ressources
+
+Chaque note est accompagnée d'une **justification textuelle** (documents de recherche, témoignages, observations). Les justifications détaillées sont visibles par les administrateurs.
+
+Le protocole d'évaluation complet est documenté dans [`protocole.md`](protocole.md).
+
+### 📄 Fiches produit
+
+Chaque solution dispose d'une page dédiée accessible depuis le catalogue ou les résultats du quiz :
+
+- Informations complètes (description, public, tarification, tags)
+- Score qualité avec barres de progression par critère
+- Justifications détaillées (admin uniquement)
+- Badge "Membre du Collectif MentalTech" (💙)
+- Lien direct vers le site de la solution
 
 ### 🔐 Authentification et Administration
 
@@ -47,6 +86,7 @@ Explorez toutes les solutions avec filtres puissants :
 - **Vérification email** - Email de confirmation envoyé à l'inscription avec lien sécurisé (24h)
 - **Mot de passe oublié** - Réinitialisation par email avec lien temporaire (1h)
 - **Panel Admin** - CRUD complet sur les produits (ajout, modification, suppression)
+- **Scoring admin** - Saisie des 5 scores qualité + justifications par produit avec preview en temps réel
 - **Rôles** - Utilisateur standard et administrateur
 
 ### 🛡️ Sécurité et Transparence
@@ -153,7 +193,7 @@ mentaltech-discover/
 │   │   ├── lib/            # Analytics
 │   │   ├── store/          # Zustand (app, auth, products)
 │   │   ├── types/          # Types TypeScript
-│   │   └── utils/          # Fonctions utilitaires
+│   │   └── utils/          # Fonctions utilitaires (scoring, security)
 │   ├── public/             # Assets statiques et logos
 │   ├── Dockerfile          # Image multi-stage (node + nginx)
 │   ├── nginx.conf          # Config Nginx avec proxy API
@@ -180,10 +220,15 @@ mentaltech-discover/
 │   │   ├── 01_schema.sql   # Tables users + products
 │   │   └── 02_seed_products.sql  # 22 produits pré-chargés
 │   └── migrations/
-│       └── 001_add_email_verified.sql  # Ajout vérification email
+│       ├── 001_add_email_verified.sql  # Ajout vérification email
+│       ├── 002_add_password_changed_at.sql
+│       ├── 003_add_indexes.sql
+│       ├── 004_add_scoring.sql         # Scores qualité + justifications
+│       └── 005_add_mentaltech_member.sql  # Appartenance au collectif
 │
-├── docker-compose.yml       # Orchestration 3 services
-└── .env.example             # Variables d'environnement
+├── protocole.md              # Protocole d'évaluation des solutions
+├── docker-compose.yml        # Orchestration 3 services
+└── .env.example              # Variables d'environnement
 ```
 
 ---
@@ -274,7 +319,10 @@ Chaque solution comprend :
 - **Problèmes traités** : Stress, anxiété, addictions, etc.
 - **Tarification** : Modèle économique clair
 - **Contexte** : Individuel ou entreprise
+- **Appartenance** : Membre du Collectif MentalTech (badge 💙)
 - **Score de match** : Pourcentage de pertinence (0-100%)
+- **Label qualité** : Grade A-E basé sur 5 critères (0-20 chacun)
+- **Justifications** : Texte libre par critère (recherche, preuves, témoignages)
 
 ---
 
@@ -397,6 +445,18 @@ Premier écosystème français de santé mentale digitale
 - [x] Envoi d'emails transactionnels (fastapi-mail + Jinja2)
 - [x] Scripts de migration SQL
 
+### ✅ V2.2 - Scoring & Labels qualité (Février 2026)
+
+- [x] Système de scoring qualité sur 5 piliers (0-20 chacun, total /100)
+- [x] Labels Nutriscore (A-E) avec couleurs et badges
+- [x] Justifications textuelles par critère (recherche, preuves, témoignages)
+- [x] Formulaire admin avec saisie des scores et preview en temps réel
+- [x] Fiches produit dédiées avec scoring détaillé (justifications admin-only)
+- [x] Filtre et tri par label qualité dans le catalogue
+- [x] Bonus label dans l'algorithme de recommandation
+- [x] Badge "Membre du Collectif MentalTech" (💙)
+- [x] Protocole d'évaluation documenté ([`protocole.md`](protocole.md))
+
 ### 🔮 V3 - Expansion
 
 - [ ] Tests unitaires (Vitest + pytest)
@@ -407,6 +467,6 @@ Premier écosystème français de santé mentale digitale
 
 ---
 
-**Version actuelle** : V1.2.0
-**Dernière mise à jour** : Janvier 2026
+**Version actuelle** : V2.2.0
+**Dernière mise à jour** : Février 2026
 **Status** : ✅ Production Ready

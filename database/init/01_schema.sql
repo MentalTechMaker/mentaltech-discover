@@ -22,6 +22,7 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    password_changed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -40,12 +41,27 @@ CREATE TABLE products (
     problems_solved TEXT[] DEFAULT '{}',
     preference_match TEXT[] DEFAULT '{}',
     for_company BOOLEAN DEFAULT FALSE,
+    is_mentaltech_member BOOLEAN DEFAULT FALSE,
     pricing_model pricing_model_enum,
     pricing_amount VARCHAR(100),
     pricing_details TEXT,
     last_updated DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+    -- Quality scoring (0-20 per pillar)
+    score_security SMALLINT CHECK (score_security BETWEEN 0 AND 20),
+    score_efficacy SMALLINT CHECK (score_efficacy BETWEEN 0 AND 20),
+    score_accessibility SMALLINT CHECK (score_accessibility BETWEEN 0 AND 20),
+    score_ux SMALLINT CHECK (score_ux BETWEEN 0 AND 20),
+    score_support SMALLINT CHECK (score_support BETWEEN 0 AND 20),
+
+    -- Justifications (research references, testimonials, etc.)
+    justification_security TEXT,
+    justification_efficacy TEXT,
+    justification_accessibility TEXT,
+    justification_ux TEXT,
+    justification_support TEXT
 );
 
 -- GIN indexes for array columns (fast lookups)

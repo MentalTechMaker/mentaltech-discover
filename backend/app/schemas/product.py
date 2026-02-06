@@ -1,10 +1,23 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PricingSchema(BaseModel):
     model: str | None = None
     amount: str | None = None
     details: str | None = None
+
+
+class ScoringSchema(BaseModel):
+    security: int | None = None
+    efficacy: int | None = None
+    accessibility: int | None = None
+    ux: int | None = None
+    support: int | None = None
+    justificationSecurity: str | None = None
+    justificationEfficacy: str | None = None
+    justificationAccessibility: str | None = None
+    justificationUx: str | None = None
+    justificationSupport: str | None = None
 
 
 class ProductResponse(BaseModel):
@@ -21,8 +34,12 @@ class ProductResponse(BaseModel):
     problemsSolved: list[str]
     preferenceMatch: list[str]
     forCompany: bool
+    isMentaltechMember: bool
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
+    scoring: ScoringSchema | None = None
+    scoreTotal: int | None = None
+    scoreLabel: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -40,8 +57,19 @@ class ProductCreate(BaseModel):
     problemsSolved: list[str] = []
     preferenceMatch: list[str] = []
     forCompany: bool = False
+    isMentaltechMember: bool = False
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
+    scoreSecurity: int | None = Field(None, ge=0, le=20)
+    scoreEfficacy: int | None = Field(None, ge=0, le=20)
+    scoreAccessibility: int | None = Field(None, ge=0, le=20)
+    scoreUx: int | None = Field(None, ge=0, le=20)
+    scoreSupport: int | None = Field(None, ge=0, le=20)
+    justificationSecurity: str | None = None
+    justificationEfficacy: str | None = None
+    justificationAccessibility: str | None = None
+    justificationUx: str | None = None
+    justificationSupport: str | None = None
 
 
 class ProductUpdate(BaseModel):
@@ -56,5 +84,23 @@ class ProductUpdate(BaseModel):
     problemsSolved: list[str] | None = None
     preferenceMatch: list[str] | None = None
     forCompany: bool | None = None
+    isMentaltechMember: bool | None = None
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
+    scoreSecurity: int | None = Field(None, ge=0, le=20)
+    scoreEfficacy: int | None = Field(None, ge=0, le=20)
+    scoreAccessibility: int | None = Field(None, ge=0, le=20)
+    scoreUx: int | None = Field(None, ge=0, le=20)
+    scoreSupport: int | None = Field(None, ge=0, le=20)
+    justificationSecurity: str | None = None
+    justificationEfficacy: str | None = None
+    justificationAccessibility: str | None = None
+    justificationUx: str | None = None
+    justificationSupport: str | None = None
+
+
+class PaginatedProducts(BaseModel):
+    items: list[ProductResponse]
+    total: int
+    limit: int | None = None
+    offset: int = 0

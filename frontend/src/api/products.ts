@@ -1,8 +1,16 @@
 import type { Product } from '../types';
 import { apiFetch } from './client';
 
+interface PaginatedProducts {
+  items: Product[];
+  total: number;
+  limit: number | null;
+  offset: number;
+}
+
 export async function getAll(): Promise<Product[]> {
-  return apiFetch<Product[]>('/products');
+  const data = await apiFetch<PaginatedProducts>('/products');
+  return data.items;
 }
 
 export async function getById(id: string): Promise<Product> {

@@ -8,8 +8,10 @@ interface AppState {
   showEmergencyBanner: boolean;
   recommendations: RecommendationResult | null;
   userType: UserType;
+  selectedProductId: string | null;
 
   setView: (view: AppView) => void;
+  viewProduct: (productId: string) => void;
   setAnswer: (questionId: number, answer: string) => void;
   nextQuestion: () => void;
   previousQuestion: () => void;
@@ -26,12 +28,21 @@ export const useAppStore = create<AppState>((set) => ({
   showEmergencyBanner: false,
   recommendations: null,
   userType: 'individual',
+  selectedProductId: null,
 
   setView: (view) => {
-    set({ currentView: view });
+    set({ currentView: view, selectedProductId: null });
     if (typeof window !== 'undefined') {
       window.history.pushState({ view }, '', `#${view}`);
       window.scrollTo({top: 0,left: 0});
+    }
+  },
+
+  viewProduct: (productId) => {
+    set({ currentView: 'product', selectedProductId: productId });
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ view: 'product', productId }, '', `#product/${productId}`);
+      window.scrollTo({ top: 0, left: 0 });
     }
   },
 
@@ -74,38 +85,68 @@ export const useAppStore = create<AppState>((set) => ({
   }
 }));
 
-function parseHashView(): AppView {
+function parseHashView(): { view: AppView; productId?: string } {
   const hash = window.location.hash.replace('#', '');
   const viewName = hash.split('?')[0];
+
+  // Handle #product/some-id
+  if (viewName.startsWith('product/')) {
+    const productId = viewName.slice('product/'.length);
+    if (productId) return { view: 'product', productId };
+    return { view: 'catalog' };
+  }
+
   const validViews: AppView[] = [
     'landing', 'quiz', 'results', 'privacy', 'legal', 'catalog',
     'methodology', 'about', 'faq', 'login', 'register', 'admin',
     'profile', 'forgot-password', 'reset-password', 'verify-email',
   ];
   if (validViews.includes(viewName as AppView)) {
-    return viewName as AppView;
+    return { view: viewName as AppView };
   }
-  return 'landing';
+  return { view: 'landing' };
 }
 
-if (typeof window !== 'undefined') {
-  window.addEventListener('popstate', (event) => {
+export function initializeAppStore(): (() => void) | undefined {
+  if (typeof window === 'undefined') return undefined;
+
+  const handlePopState = (event: PopStateEvent) => {
     const state = event.state;
     if (state && state.view) {
-      useAppStore.setState({ currentView: state.view as AppView });
+      useAppStore.setState({
+        currentView: state.view as AppView,
+        selectedProductId: state.productId ?? null,
+      });
     } else {
-      useAppStore.setState({ currentView: parseHashView() });
+      const parsed = parseHashView();
+      useAppStore.setState({
+        currentView: parsed.view,
+        selectedProductId: parsed.productId ?? null,
+      });
     }
-  });
+  };
 
-  // On initial load, detect hash-based deep links (e.g. #verify-email?token=... or #reset-password?token=...)
-  const initialView = parseHashView();
-  if (initialView !== 'landing') {
-    useAppStore.setState({ currentView: initialView });
-    window.history.replaceState({ view: initialView }, '', window.location.hash);
+  window.addEventListener('popstate', handlePopState);
+
+  // On initial load, detect hash-based deep links (e.g. #verify-email?token=... or #product/some-id)
+  const initial = parseHashView();
+  if (initial.view !== 'landing') {
+    useAppStore.setState({
+      currentView: initial.view,
+      selectedProductId: initial.productId ?? null,
+    });
+    window.history.replaceState(
+      { view: initial.view, productId: initial.productId },
+      '',
+      window.location.hash,
+    );
   } else {
     window.history.replaceState({ view: 'landing' }, '', '#landing');
   }
+
+  return () => {
+    window.removeEventListener('popstate', handlePopState);
+  };
 }
 
 function getAnswerKey(questionId: number, userType: UserType): keyof UserAnswers {

@@ -39,6 +39,7 @@ export interface Product {
   problemsSolved: string[];
   preferenceMatch: string[];
   forCompany?: boolean;
+  isMentaltechMember?: boolean;
   pricing?: {
     model?: 'free' | 'freemium' | 'subscription' | 'per-session' | 'enterprise' | 'custom';
     amount?: string;
@@ -46,6 +47,31 @@ export interface Product {
   };
   lastUpdated?: string; // YYYY-MM-DD
   recommendationScore?: number;
+  scoring?: {
+    security: number | null;
+    efficacy: number | null;
+    accessibility: number | null;
+    ux: number | null;
+    support: number | null;
+    justificationSecurity?: string | null;
+    justificationEfficacy?: string | null;
+    justificationAccessibility?: string | null;
+    justificationUx?: string | null;
+    justificationSupport?: string | null;
+  };
+  scoreTotal?: number | null;
+  scoreLabel?: string | null;
+  // camelCase fields used for create/update API calls
+  scoreSecurity?: number;
+  scoreEfficacy?: number;
+  scoreAccessibility?: number;
+  scoreUx?: number;
+  scoreSupport?: number;
+  justificationSecurity?: string;
+  justificationEfficacy?: string;
+  justificationAccessibility?: string;
+  justificationUx?: string;
+  justificationSupport?: string;
 }
 
 export interface RecommendationResult {
@@ -55,4 +81,4 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company';
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product';

@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Product } from "../../types";
+import { sanitizeUrl } from "../../utils/security";
+import { getLabelInfo, SCORE_CRITERIA } from "../../utils/scoring";
+import { useAppStore } from "../../store/useAppStore";
 
 interface ProductCatalogCardProps {
   product: Product;
@@ -42,10 +45,59 @@ const problemLabels: Record<string, string> = {
   other: "Autres",
 };
 
+const ScoreDetailPanel: React.FC<{ product: Product }> = ({ product }) => {
+  if (!product.scoring) return null;
+  const label = getLabelInfo(product.scoreLabel);
+  return (
+    <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+      <div className="flex items-center gap-2 mb-2">
+        <span
+          className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
+          style={{ backgroundColor: label.bgColor, color: label.color }}
+        >
+          {label.grade}
+        </span>
+        <span className="font-semibold text-text-primary">{label.text}</span>
+        {product.scoreTotal != null && (
+          <span className="text-text-secondary text-sm">({product.scoreTotal}/100)</span>
+        )}
+      </div>
+      {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
+        const score = product.scoring?.[key];
+        const justification = product.scoring?.[justKey];
+        if (score == null && !justification) return null;
+        return (
+          <div key={key}>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-text-primary">{criteriaLabel}</span>
+              {score != null && (
+                <span className="text-sm font-bold text-text-primary">{score}/20</span>
+              )}
+            </div>
+            {score != null && (
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                <div
+                  className="h-1.5 rounded-full transition-all"
+                  style={{ width: `${(score / 20) * 100}%`, backgroundColor: label.bgColor }}
+                />
+              </div>
+            )}
+            {justification && (
+              <p className="text-xs text-text-secondary mt-1 whitespace-pre-line">{justification}</p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
   product,
   viewMode,
 }) => {
+  const [showScoreDetail, setShowScoreDetail] = useState(false);
+  const viewProduct = useAppStore((s) => s.viewProduct);
   if (viewMode === "list") {
     return (
       <div
@@ -92,15 +144,40 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
           <div className="flex-1 space-y-3">
             <div>
               <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <h3 className="text-2xl font-bold text-text-primary">
+                <div className="flex items-center gap-2">
+                  <h3
+                    className="text-2xl font-bold text-text-primary hover:text-primary cursor-pointer transition-colors"
+                    onClick={() => viewProduct(product.id)}
+                  >
                     {product.name}
                   </h3>
+                  {(() => {
+                    const label = getLabelInfo(product.scoreLabel);
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setShowScoreDetail((v) => !v)}
+                        className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                        style={{ backgroundColor: label.bgColor, color: label.color }}
+                        title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} — Cliquez pour voir le détail`}
+                      >
+                        {label.grade}
+                      </button>
+                    );
+                  })()}
+                  {product.isMentaltechMember && (
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full"
+                      title="Membre du collectif MentalTech"
+                    >
+                      💙 MentalTech
+                    </span>
+                  )}
                   <p className="text-sm text-text-secondary">{product.type}</p>
                 </div>
                 <div className="flex flex-col gap-2 items-end">
                   {product.forCompany && (
-                    <div className="bg-secondary bg-opacity-10 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                    <div className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                       🏢 ENTREPRISE
                     </div>
                   )}
@@ -112,6 +189,8 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
             <p className="text-text-secondary leading-relaxed">
               {product.description}
             </p>
+
+            {showScoreDetail && <ScoreDetailPanel product={product} />}
 
             {product.pricing && (
               <div className="flex items-center gap-2">
@@ -158,15 +237,21 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               ))}
             </div>
 
-            <div>
-              <a
-                href={product.url}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => viewProduct(product.id)}
                 className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
               >
-                Découvrir
+                Voir la fiche
                 <span>→</span>
+              </button>
+              <a
+                href={sanitizeUrl(product.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-primary hover:text-primary-dark font-medium text-sm transition-colors"
+              >
+                Accéder au site ↗
               </a>
             </div>
           </div>
@@ -219,11 +304,38 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
       <div className="flex-1 space-y-3">
         <div>
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="text-xl font-bold text-text-primary">
-              {product.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3
+                className="text-xl font-bold text-text-primary hover:text-primary cursor-pointer transition-colors"
+                onClick={() => viewProduct(product.id)}
+              >
+                {product.name}
+              </h3>
+              {(() => {
+                const label = getLabelInfo(product.scoreLabel);
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setShowScoreDetail((v) => !v)}
+                    className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                    style={{ backgroundColor: label.bgColor, color: label.color }}
+                    title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} — Cliquez pour voir le détail`}
+                  >
+                    {label.grade}
+                  </button>
+                );
+              })()}
+              {product.isMentaltechMember && (
+                <span
+                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 text-primary text-[10px] font-semibold rounded-full"
+                  title="Membre du collectif MentalTech"
+                >
+                  💙
+                </span>
+              )}
+            </div>
             {product.forCompany && (
-              <div className="bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded text-xs font-bold">
+              <div className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-bold">
                 🏢
               </div>
             )}
@@ -237,6 +349,8 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         <p className="text-text-secondary text-sm leading-relaxed">
           {product.description}
         </p>
+
+        {showScoreDetail && <ScoreDetailPanel product={product} />}
 
         {product.pricing && (
           <div>
@@ -271,14 +385,20 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 space-y-2">
+        <button
+          onClick={() => viewProduct(product.id)}
+          className="block w-full text-center bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+        >
+          Voir la fiche →
+        </button>
         <a
-          href={product.url}
+          href={sanitizeUrl(product.url)}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-center bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+          className="block text-center text-primary hover:text-primary-dark font-medium text-sm py-1 transition-colors"
         >
-          Découvrir →
+          Accéder au site ↗
         </a>
       </div>
     </div>

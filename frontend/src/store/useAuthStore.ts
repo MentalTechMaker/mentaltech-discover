@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>((set) => {
 
     loadUser: async () => {
       const tokens = getTokens();
-      if (!tokens?.accessToken) return;
+      if (!tokens) return;
 
       set({ isLoading: true });
       try {

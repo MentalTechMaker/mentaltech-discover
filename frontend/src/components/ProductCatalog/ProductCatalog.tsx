@@ -10,6 +10,7 @@ export interface Filters {
   problemsSolved: string[];
   pricingModel: string[];
   forCompany: string;
+  label: string[];
 }
 
 export const ProductCatalog: React.FC = () => {
@@ -20,10 +21,11 @@ export const ProductCatalog: React.FC = () => {
     problemsSolved: [],
     pricingModel: [],
     forCompany: "all",
+    label: [],
   });
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<"name" | "pricing">("name");
+  const [sortBy, setSortBy] = useState<"name" | "pricing" | "label">("name");
 
   const { products: allProducts, isLoading } = useProductsStore();
 
@@ -104,6 +106,11 @@ export const ProductCatalog: React.FC = () => {
         return false;
       }
 
+      if (filters.label.length > 0) {
+        const productLabel = product.scoreLabel ?? "unrated";
+        if (!filters.label.includes(productLabel)) return false;
+      }
+
       return true;
     });
 
@@ -126,6 +133,12 @@ export const ProductCatalog: React.FC = () => {
           return orderA - orderB;
         });
       }
+      case "label":
+        return sorted.sort((a, b) => {
+          const scoreA = a.scoreTotal ?? -1;
+          const scoreB = b.scoreTotal ?? -1;
+          return scoreB - scoreA;
+        });
       default:
         return sorted;
     }
@@ -143,6 +156,7 @@ export const ProductCatalog: React.FC = () => {
       problemsSolved: [],
       pricingModel: [],
       forCompany: "all",
+      label: [],
     });
   };
 
@@ -204,6 +218,7 @@ export const ProductCatalog: React.FC = () => {
                 >
                   <option value="name">Nom (A-Z)</option>
                   <option value="pricing">Prix (gratuit d'abord)</option>
+                  <option value="label">Label qualité (meilleur d'abord)</option>
                 </select>
               </div>
 

@@ -24,7 +24,7 @@ services:
     container_name: mentaltech-backend
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://mentaltech:mentaltech_secret@db:5432/mentaltech}
-      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY env var is required}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3033,http://localhost:5173}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3033}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
@@ -41,6 +41,24 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     networks:
       - mentaltech-network
 
@@ -50,7 +68,8 @@ services:
       dockerfile: Dockerfile
     container_name: mentaltech-frontend
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "3033:8080"
     restart: unless-stopped

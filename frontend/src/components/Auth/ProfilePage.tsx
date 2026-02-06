@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { changePassword, resendVerification } from "../../api/auth";
+import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { validatePassword } from "../../utils/password";
 
 export const ProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -26,8 +28,9 @@ export const ProfilePage: React.FC = () => {
     setError("");
     setSuccess("");
 
-    if (newPassword.length < 6) {
-      setError("Le nouveau mot de passe doit contenir au moins 6 caractères");
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -158,10 +161,11 @@ export const ProfilePage: React.FC = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-                placeholder="Minimum 6 caractères"
+                placeholder="Min. 8 car., majuscule, minuscule, chiffre"
               />
+              <PasswordStrengthBar password={newPassword} />
             </div>
 
             <div>
@@ -174,7 +178,7 @@ export const ProfilePage: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
               />
             </div>

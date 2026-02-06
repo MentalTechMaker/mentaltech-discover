@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { validatePassword } from "../../utils/password";
 
 export const RegisterPage: React.FC = () => {
   const { setView } = useAppStore();
@@ -17,13 +19,14 @@ export const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
       return;
     }
 
@@ -94,10 +97,11 @@ export const RegisterPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-                placeholder="Au moins 6 caractères"
+                placeholder="Min. 8 car., majuscule, minuscule, chiffre"
               />
+              <PasswordStrengthBar password={password} />
             </div>
 
             <div>

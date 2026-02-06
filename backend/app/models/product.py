@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 
-from sqlalchemy import String, Text, Boolean, Date, DateTime, Enum as SAEnum
+from sqlalchemy import String, Text, Boolean, Date, DateTime, Enum as SAEnum, SmallInteger
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -33,6 +33,7 @@ class Product(Base):
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     preference_match: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     for_company: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_mentaltech_member: Mapped[bool] = mapped_column(Boolean, default=False)
     pricing_model: Mapped[str | None] = mapped_column(
         SAEnum(
             "free", "freemium", "subscription", "per-session", "enterprise", "custom",
@@ -52,3 +53,17 @@ class Product(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+    # Quality scoring (0-20 each, nullable = not yet evaluated)
+    score_security: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+    score_efficacy: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+    score_accessibility: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+    score_ux: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+    score_support: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+
+    # Justifications (free text: research docs, testimonials, etc.)
+    justification_security: Mapped[str | None] = mapped_column(Text, nullable=True)
+    justification_efficacy: Mapped[str | None] = mapped_column(Text, nullable=True)
+    justification_accessibility: Mapped[str | None] = mapped_column(Text, nullable=True)
+    justification_ux: Mapped[str | None] = mapped_column(Text, nullable=True)
+    justification_support: Mapped[str | None] = mapped_column(Text, nullable=True)

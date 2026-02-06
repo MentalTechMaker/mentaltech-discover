@@ -63,12 +63,12 @@ export const Landing: React.FC = () => {
             aria-label="Commencer le questionnaire pour un individu"
           >
             <div className="absolute top-4 right-4">
-              <div className="bg-primary bg-opacity-10 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
                 INDIVIDUEL
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="bg-primary bg-opacity-10 p-4 rounded-2xl">
+              <div className="bg-primary/10 p-4 rounded-2xl">
                 <span className="text-5xl">👤</span>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-text-primary">
@@ -96,12 +96,12 @@ export const Landing: React.FC = () => {
             aria-label="Commencer le questionnaire pour une entreprise"
           >
             <div className="absolute top-4 right-4">
-              <div className="bg-secondary bg-opacity-10 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold">
                 ENTREPRISE
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="bg-secondary bg-opacity-10 p-4 rounded-2xl">
+              <div className="bg-secondary/10 p-4 rounded-2xl">
                 <span className="text-5xl">🏢</span>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-text-primary">

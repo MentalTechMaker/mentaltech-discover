@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAppStore } from "./store/useAppStore";
+import { useAppStore, initializeAppStore } from "./store/useAppStore";
 import { useProductsStore } from "./store/useProductsStore";
 import { useAuthStore } from "./store/useAuthStore";
 import { Header } from "./components/Layout/Header";
@@ -20,6 +20,8 @@ import { ForgotPasswordPage } from "./components/Auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./components/Auth/ResetPasswordPage";
 import { VerifyEmailPage } from "./components/Auth/VerifyEmailPage";
 import { AdminPanel } from "./components/Admin/AdminPanel";
+import { ProductPage } from "./components/ProductPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { analytics } from "./lib/analytics";
 
 function App() {
@@ -30,44 +32,39 @@ function App() {
   useEffect(() => {
     fetchProducts();
     loadUser();
+    return initializeAppStore();
   }, [fetchProducts, loadUser]);
 
   useEffect(() => {
     analytics.pageViewed(currentView);
-  }, [currentView]);
-
-  useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-
-    setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 10);
   }, [currentView]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1">
-        {currentView === "landing" && <Landing />}
-        {currentView === "quiz" && <Quiz />}
-        {currentView === "results" && <RecommendationList />}
-        {currentView === "privacy" && <Privacy />}
-        {currentView === "legal" && <LegalNotice />}
-        {currentView === "catalog" && <ProductCatalog />}
-        {currentView === "methodology" && <Methodology />}
-        {currentView === "about" && <About />}
-        {currentView === "faq" && <FAQ />}
-        {currentView === "login" && <LoginPage />}
-        {currentView === "register" && <RegisterPage />}
-        {currentView === "profile" && <ProfilePage />}
-        {currentView === "forgot-password" && <ForgotPasswordPage />}
-        {currentView === "reset-password" && <ResetPasswordPage />}
-        {currentView === "verify-email" && <VerifyEmailPage />}
-        {currentView === "admin" && <AdminPanel />}
+        <ErrorBoundary>
+          {currentView === "landing" && <Landing />}
+          {currentView === "quiz" && <Quiz />}
+          {currentView === "results" && <RecommendationList />}
+          {currentView === "privacy" && <Privacy />}
+          {currentView === "legal" && <LegalNotice />}
+          {currentView === "catalog" && <ProductCatalog />}
+          {currentView === "methodology" && <Methodology />}
+          {currentView === "about" && <About />}
+          {currentView === "faq" && <FAQ />}
+          {currentView === "login" && <LoginPage />}
+          {currentView === "register" && <RegisterPage />}
+          {currentView === "profile" && <ProfilePage />}
+          {currentView === "forgot-password" && <ForgotPasswordPage />}
+          {currentView === "reset-password" && <ResetPasswordPage />}
+          {currentView === "verify-email" && <VerifyEmailPage />}
+          {currentView === "admin" && <AdminPanel />}
+          {currentView === "product" && <ProductPage />}
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>

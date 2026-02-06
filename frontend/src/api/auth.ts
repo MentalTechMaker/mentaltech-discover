@@ -18,8 +18,9 @@ export async function register(email: string, password: string, name: string): P
   const data = await apiFetch<TokenResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({ email, password, name }),
+    credentials: 'include',
   });
-  setTokens(data.access_token, data.refresh_token);
+  setTokens(data.access_token);
   return data;
 }
 
@@ -27,8 +28,9 @@ export async function login(email: string, password: string): Promise<TokenRespo
   const data = await apiFetch<TokenResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
+    credentials: 'include',
   });
-  setTokens(data.access_token, data.refresh_token);
+  setTokens(data.access_token);
   return data;
 }
 

@@ -5,6 +5,19 @@ interface ScoredProduct extends Product {
   randomTieBreaker: number;
 }
 
+/**
+ * Bonus de recommandation basé sur le label qualité MentalTech.
+ * A: +5, B: +3, C: +1, D/E/null: 0
+ */
+function getLabelBonus(scoreLabel: string | null | undefined): number {
+  switch (scoreLabel) {
+    case 'A': return 5;
+    case 'B': return 3;
+    case 'C': return 1;
+    default: return 0;
+  }
+}
+
 export function getRecommendations(answers: UserAnswers, isCompany: boolean = false, products: Product[]): RecommendationResult {
 
   const filteredProducts = isCompany
@@ -164,6 +177,10 @@ function calculateScore(product: Product, answers: UserAnswers, isCompany: boole
     score -= 10;
   }
 
+  // 10. BONUS LABEL QUALITÉ (0-5 points)
+  // Les produits mieux notés par la certification MentalTech sont légèrement favorisés
+  score += getLabelBonus(product.scoreLabel);
+
   // Plafond à 100 points
   return Math.min(score, 100);
 }
@@ -260,6 +277,9 @@ function calculateCompanyScore(product: Product, answers: UserAnswers, isCompany
     // Pénalité : produit entreprise pour utilisateur individuel (ne devrait pas arriver avec le filtre)
     score -= 10;
   }
+
+  // BONUS LABEL QUALITÉ (0-5 points)
+  score += getLabelBonus(product.scoreLabel);
 
   // Plafond à 100 points
   return Math.min(score, 100);

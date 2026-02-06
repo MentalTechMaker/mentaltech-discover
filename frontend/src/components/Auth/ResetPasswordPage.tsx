@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { resetPassword } from "../../api/auth";
+import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { validatePassword } from "../../utils/password";
 
 export const ResetPasswordPage: React.FC = () => {
   const { setView } = useAppStore();
@@ -28,8 +30,9 @@ export const ResetPasswordPage: React.FC = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -42,6 +45,7 @@ export const ResetPasswordPage: React.FC = () => {
     try {
       await resetPassword(token, newPassword);
       setSuccess(true);
+      window.history.replaceState(null, "", "#reset-password");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la réinitialisation");
     } finally {
@@ -112,10 +116,11 @@ export const ResetPasswordPage: React.FC = () => {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-                    placeholder="Minimum 6 caractères"
+                    placeholder="Min. 8 car., majuscule, minuscule, chiffre"
                   />
+                  <PasswordStrengthBar password={newPassword} />
                 </div>
 
                 <div>
@@ -128,7 +133,7 @@ export const ResetPasswordPage: React.FC = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
                   />
                 </div>

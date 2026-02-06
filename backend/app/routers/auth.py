@@ -1,8 +1,15 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from ..database import get_db
 from ..models.user import User
+from ..config import settings
 from ..schemas.user import (
     UserRegister,
     UserLogin,
@@ -18,6 +25,8 @@ from ..services.auth import (
     create_access_token,
     create_refresh_token,
     decode_token,
+    validate_password_strength,
+    DUMMY_HASH,
 )
 from ..services.email import (
     send_verification_email,
@@ -26,15 +35,49 @@ from ..services.email import (
 )
 from ..dependencies import get_current_user
 
+limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+REFRESH_COOKIE_NAME = "refresh_token"
+REFRESH_COOKIE_MAX_AGE = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+
+
+def _set_auth_response(access_token: str, refresh_token: str, status_code: int = 200) -> JSONResponse:
+    response = JSONResponse(
+        content={
+            "access_token": access_token,
+            "refresh_token": "",
+            "token_type": "bearer",
+        },
+        status_code=status_code,
+    )
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=refresh_token,
+        max_age=REFRESH_COOKIE_MAX_AGE,
+        httponly=True,
+        secure=not settings.FRONTEND_URL.startswith("http://localhost"),
+        samesite="lax",
+        path="/api/auth",
+    )
+    return response
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
 async def register(
+    request: Request,
     data: UserRegister,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
+    password_error = validate_password_strength(data.password)
+    if password_error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=password_error,
+        )
+
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
         raise HTTPException(
@@ -47,38 +90,64 @@ async def register(
         password_hash=hash_password(data.password),
         name=data.name,
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Un compte avec cet email existe déjà",
+        )
 
     background_tasks.add_task(
         send_verification_email, user.email, user.name, str(user.id)
     )
 
-    return TokenResponse(
+    return _set_auth_response(
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
+        status_code=201,
     )
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(data: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
-    if not user or not verify_password(data.password, user.password_hash):
+    password_hash = user.password_hash if user else DUMMY_HASH
+    valid = verify_password(data.password, password_hash)
+    if not user or not valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou mot de passe incorrect",
         )
 
-    return TokenResponse(
+    return _set_auth_response(
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
     )
 
 
-@router.post("/refresh", response_model=TokenResponse)
-def refresh(data: TokenRefresh, db: Session = Depends(get_db)):
-    payload = decode_token(data.refresh_token)
+@router.post("/refresh")
+def refresh(
+    data: TokenRefresh | None = None,
+    refresh_token_cookie: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
+    db: Session = Depends(get_db),
+):
+    # Accept refresh token from cookie (preferred) or body (backward compat)
+    token = refresh_token_cookie
+    if not token and data and data.refresh_token:
+        token = data.refresh_token
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token manquant",
+        )
+
+    payload = decode_token(token)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -93,7 +162,7 @@ def refresh(data: TokenRefresh, db: Session = Depends(get_db)):
             detail="Utilisateur non trouvé",
         )
 
-    return TokenResponse(
+    return _set_auth_response(
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
     )
@@ -122,20 +191,24 @@ def change_password(
             detail="Mot de passe actuel incorrect",
         )
 
-    if len(data.new_password) < 6:
+    password_error = validate_password_strength(data.new_password)
+    if password_error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Le nouveau mot de passe doit contenir au moins 6 caractères",
+            detail=password_error,
         )
 
     user.password_hash = hash_password(data.new_password)
+    user.password_changed_at = datetime.now(timezone.utc)
     db.commit()
 
     return {"message": "Mot de passe modifié avec succès"}
 
 
 @router.post("/forgot-password")
+@limiter.limit("3/minute")
 async def forgot_password(
+    request: Request,
     data: ForgotPassword,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
@@ -152,13 +225,17 @@ async def forgot_password(
 
 
 @router.post("/reset-password")
-def reset_password(data: ResetPassword, db: Session = Depends(get_db)):
-    user_id = decode_email_token(data.token, "reset_password")
-    if not user_id:
+@limiter.limit("5/minute")
+def reset_password(request: Request, data: ResetPassword, db: Session = Depends(get_db)):
+    token_data = decode_email_token(data.token, "reset_password", return_full=True)
+    if not token_data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Lien de réinitialisation invalide ou expiré",
         )
+
+    user_id = token_data.get("sub")
+    token_issued_at = token_data.get("iat")
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -167,13 +244,24 @@ def reset_password(data: ResetPassword, db: Session = Depends(get_db)):
             detail="Utilisateur non trouvé",
         )
 
-    if len(data.new_password) < 6:
+    # Invalidate token if password was changed after token was issued
+    if user.password_changed_at and token_issued_at:
+        issued_dt = datetime.fromtimestamp(token_issued_at, tz=timezone.utc)
+        if issued_dt < user.password_changed_at:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Ce lien de réinitialisation a déjà été utilisé",
+            )
+
+    password_error = validate_password_strength(data.new_password)
+    if password_error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Le mot de passe doit contenir au moins 6 caractères",
+            detail=password_error,
         )
 
     user.password_hash = hash_password(data.new_password)
+    user.password_changed_at = datetime.now(timezone.utc)
     db.commit()
 
     return {"message": "Mot de passe réinitialisé avec succès"}
@@ -202,7 +290,9 @@ def verify_email(token: str, db: Session = Depends(get_db)):
 
 
 @router.post("/resend-verification")
+@limiter.limit("2/minute")
 async def resend_verification(
+    request: Request,
     background_tasks: BackgroundTasks,
     user: User = Depends(get_current_user),
 ):

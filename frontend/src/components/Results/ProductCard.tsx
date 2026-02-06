@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import type { Product } from "../../types";
 import { sanitizeUrl } from "../../utils/security";
 import { analytics } from "../../lib/analytics";
+import { getLabelInfo, SCORE_CRITERIA } from "../../utils/scoring";
+import { useAppStore } from "../../store/useAppStore";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +12,8 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showScoreDetail, setShowScoreDetail] = useState(false);
+  const viewProduct = useAppStore((s) => s.viewProduct);
   const safeUrl = sanitizeUrl(product.url);
 
   const animationDelay = `${index * 150}ms`;
@@ -44,25 +48,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             <span>Infos à vérifier</span>
           </div>
         )}
-        {product.recommendationScore !== undefined &&
-          product.recommendationScore > 0 && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-xs font-bold rounded-full backdrop-blur-sm shadow-sm">
-              <svg
-                className="w-3.5 h-3.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
+        <div className="flex items-center gap-2">
+          {product.recommendationScore !== undefined &&
+            product.recommendationScore > 0 && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-xs font-bold rounded-full backdrop-blur-sm shadow-sm">
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>
+                  {Math.round(product.recommendationScore)}% match
+                </span>
+              </div>
+            )}
+          {(() => {
+            const label = getLabelInfo(product.scoreLabel);
+            return (
+              <button
+                type="button"
+                onClick={() => setShowScoreDetail((v) => !v)}
+                className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ backgroundColor: label.bgColor, color: label.color }}
+                title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} — Cliquez pour voir le détail`}
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>
-                {Math.round(product.recommendationScore)}% match
-              </span>
-            </div>
+                {label.grade}
+              </button>
+            );
+          })()}
+          {product.isMentaltechMember && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full shadow-sm"
+              title="Membre du collectif MentalTech"
+            >
+              💙 MentalTech
+            </span>
           )}
+        </div>
       </div>
 
       <div className="relative p-6 space-y-5">
@@ -87,7 +115,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             />
           </div>
           <div className="flex-1 pt-1">
-            <h3 className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors">
+            <h3
+              className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors cursor-pointer"
+              onClick={() => viewProduct(product.id)}
+            >
               {product.name}
             </h3>
             <p className="text-base text-primary font-medium mt-1.5 leading-snug">
@@ -99,6 +130,52 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
         <p className="text-text-secondary leading-relaxed text-sm">
           {product.description}
         </p>
+
+        {showScoreDetail && product.scoring && (() => {
+          const label = getLabelInfo(product.scoreLabel);
+          return (
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
+                  style={{ backgroundColor: label.bgColor, color: label.color }}
+                >
+                  {label.grade}
+                </span>
+                <span className="font-semibold text-text-primary">{label.text}</span>
+                {product.scoreTotal != null && (
+                  <span className="text-text-secondary text-sm">({product.scoreTotal}/100)</span>
+                )}
+              </div>
+              {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
+                const score = product.scoring?.[key];
+                const justification = product.scoring?.[justKey];
+                if (score == null && !justification) return null;
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-text-primary">{criteriaLabel}</span>
+                      {score != null && (
+                        <span className="text-sm font-bold text-text-primary">{score}/20</span>
+                      )}
+                    </div>
+                    {score != null && (
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                        <div
+                          className="h-1.5 rounded-full transition-all"
+                          style={{ width: `${(score / 20) * 100}%`, backgroundColor: label.bgColor }}
+                        />
+                      </div>
+                    )}
+                    {justification && (
+                      <p className="text-xs text-text-secondary mt-1 whitespace-pre-line">{justification}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {product.tags && product.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -113,46 +190,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           </div>
         )}
 
-        {safeUrl ? (
-          <a
-            href={safeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => {
-              analytics.solutionClicked(
-                product.name,
-                product.type || "unknown"
-              );
-            }}
-            className="relative group/btn flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/20"
-            aria-label={`Découvrir ${product.name} (ouvre dans un nouvel onglet)`}
+        <button
+          onClick={() => viewProduct(product.id)}
+          className="relative group/btn flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/20"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+          <span className="relative">Voir la fiche</span>
+          <svg
+            className={`relative w-5 h-5 transition-transform duration-300 ${
+              isHovered ? "translate-x-1" : ""
+            }`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </button>
 
-            <span className="relative">Découvrir</span>
-            <svg
-              className={`relative w-5 h-5 transition-transform duration-300 ${
-                isHovered ? "translate-x-1" : ""
-              }`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          {safeUrl ? (
+            <a
+              href={safeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                analytics.solutionClicked(
+                  product.name,
+                  product.type || "unknown"
+                );
+              }}
+              className="text-xs text-primary hover:text-primary-dark font-medium transition-colors"
+              aria-label={`Accéder au site de ${product.name} (ouvre dans un nouvel onglet)`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-          </a>
-        ) : (
-          <div className="text-center text-text-secondary italic py-3">
-            Lien non disponible
-          </div>
-        )}
-
-        <div className="text-center pt-2 border-t border-gray-100">
+              Accéder au site ↗
+            </a>
+          ) : (
+            <span className="text-xs text-text-secondary italic">Lien non disponible</span>
+          )}
           <a
             href={`mailto:arnaud@mentaltechmaker.fr?subject=Signalement solution: ${encodeURIComponent(product.name)}&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant la solution "${encodeURIComponent(product.name)}" :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement`}
             onClick={() => {

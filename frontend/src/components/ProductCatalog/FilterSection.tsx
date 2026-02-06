@@ -1,6 +1,7 @@
 import React from "react";
 import type { Filters } from "./ProductCatalog";
 import { analytics } from "../../lib/analytics";
+import { getLabelInfo } from "../../utils/scoring";
 
 interface FilterSectionProps {
   filters: Filters;
@@ -220,6 +221,37 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 </span>
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-text-primary mb-2">
+            Label qualité ({filters.label.length})
+          </label>
+          <div className="space-y-2">
+            {(["A", "B", "C", "D", "E", "unrated"] as const).map((grade) => {
+              const info = getLabelInfo(grade === "unrated" ? null : grade);
+              return (
+                <label
+                  key={grade}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.label.includes(grade)}
+                    onChange={() => toggleArrayFilter("label", grade)}
+                    className="w-4 h-4 text-primary"
+                  />
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
+                    style={{ backgroundColor: info.bgColor, color: info.color }}
+                  >
+                    {info.grade}
+                  </span>
+                  <span className="text-text-secondary text-sm">{info.text}</span>
+                </label>
+              );
+            })}
           </div>
         </div>
       </div>

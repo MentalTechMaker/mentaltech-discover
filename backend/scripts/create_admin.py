@@ -8,6 +8,7 @@ Or locally:
     cd backend && python -m scripts.create_admin
 """
 
+import secrets
 import sys
 import os
 
@@ -35,16 +36,18 @@ def create_admin():
                 print("Il est déjà admin.")
             return
 
+        password = secrets.token_urlsafe(16)
         user = User(
             email=email,
-            password_hash=hash_password("changeme123"),
+            password_hash=hash_password(password),
             name="Admin MentalTech",
             role="admin",
         )
         db.add(user)
         db.commit()
-        print(f"Admin créé : {email} / changeme123")
-        print("IMPORTANT : Changez le mot de passe après la première connexion !")
+        print(f"Admin créé : {email}")
+        print(f"Mot de passe généré : {password}")
+        print("ATTENTION : Notez ce mot de passe, il ne sera plus affiché !")
 
     finally:
         db.close()
