@@ -80,7 +80,9 @@ export const FAQ: React.FC = () => {
         <p>
           <strong>Oui, 100% gratuit</strong> pour tous les utilisateurs.
           <br />
-          Aucune inscription requise, aucune donnée collectée.
+          Anonyme et sans inscription pour les visiteurs.{" "}
+          Les professionnels de santé peuvent créer un{" "}
+          <strong>compte prescripteur</strong> gratuit.
         </p>
       ),
     },
@@ -125,15 +127,25 @@ export const FAQ: React.FC = () => {
       category: "Confidentialité",
       question: "Mes données sont-elles collectées ?",
       answer: (
-        <p>
-          <strong>Non.</strong> Aucune donnée personnelle collectée.
-          <br />
-          Vos réponses au questionnaire restent <strong>dans votre navigateur</strong>,
-          jamais envoyées à un serveur.
-          <br />
-          <br />
-          Nous ne demandons ni nom, ni email, ni téléphone.
-        </p>
+        <div className="space-y-3">
+          <div>
+            <p className="font-semibold mb-1">👤 Visiteurs et utilisateurs du questionnaire :</p>
+            <p>
+              <strong>Aucune donnée collectée.</strong> Vos réponses restent{" "}
+              <strong>dans votre navigateur</strong>, jamais envoyées à un serveur.
+              Aucun compte requis.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold mb-1">🩺 Prescripteurs inscrits :</p>
+            <p>
+              Votre <strong>nom, email et profession</strong> sont collectés pour
+              créer votre compte. Ces données sont stockées de manière sécurisée en
+              France (OVH) et ne sont jamais partagées avec des tiers. Vous pouvez
+              demander leur suppression à tout moment.
+            </p>
+          </div>
+        </div>
       ),
     },
     {
@@ -147,6 +159,11 @@ export const FAQ: React.FC = () => {
           Nous utilisons des <strong>statistiques anonymisées</strong> (compteurs de
           visites globaux) pour améliorer le service, mais aucune donnée individuelle
           n'est suivie.
+          <br />
+          <br />
+          Les prescripteurs connectés disposent d'un cookie de session sécurisé
+          (HttpOnly, inaccessible en JavaScript) pour maintenir leur connexion. Ce
+          cookie ne contient aucune donnée personnelle.
         </p>
       ),
     },
@@ -261,7 +278,9 @@ export const FAQ: React.FC = () => {
           <strong>complément</strong> d'un suivi professionnel.
           <br />
           <br />
-          ⚠️ Notez que nous ne certifions pas encore l'efficacité clinique (prévu V2).
+          ⚠️ Notez que nous ne certifions pas l'efficacité clinique. Pour une
+          prescription formelle, référez-vous aux études cliniques disponibles sur
+          la fiche de chaque solution.
         </p>
       ),
     },
@@ -271,19 +290,22 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            <strong>Pas encore en V1</strong> (version actuelle).
-          </p>
-          <p>
-            <strong>V2 (Q1 2026)</strong> : Mode prescripteur avec :
+            <strong>Oui !</strong> L'espace prescripteur est disponible en V2.
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Filtres par diagnostic médical (DSM-5, CIM-11)</li>
-            <li>Informations détaillées entreprises</li>
-            <li>Mode partage recommandations patients</li>
-            <li>Analytics d'utilisation</li>
+            <li>Tableau de bord personnel</li>
+            <li>Création et envoi de prescriptions numériques à vos patients</li>
+            <li>Veille sur les nouvelles solutions</li>
+            <li>Comparateur de solutions côte à côte</li>
           </ul>
           <p className="mt-2">
-            → Abonnement Pro : ~29€/mois
+            → <strong>Gratuit</strong> — créez votre compte sur l'{" "}
+            <button
+              onClick={() => setView("prescriber-auth")}
+              className="text-primary hover:underline font-semibold"
+            >
+              espace prescripteur
+            </button>
           </p>
         </div>
       ),
@@ -323,32 +345,31 @@ export const FAQ: React.FC = () => {
         <div className="space-y-3">
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="font-bold text-blue-900 mb-2">
-              📍 V1 (actuelle) : Découverte gratuite
+              📍 V1 : Découverte gratuite (base)
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>25 solutions référencées membres Collectif</li>
               <li>Questionnaire + catalogue avec filtres</li>
-              <li>Critères : membership Collectif + conformité</li>
-              <li>100% gratuit pour tous</li>
+              <li>Critères : membership Collectif + conformité RGPD</li>
+              <li>100% gratuit et anonyme</li>
             </ul>
           </div>
           <div className="bg-purple-50 p-4 rounded-lg">
             <p className="font-bold text-purple-900 mb-2">
-              🚀 V2 (Q1 2026) : Certification + Fonctionnalités Pro
+              🚀 V2 (actuelle) : Espace prescripteur
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm">
               <li>
-                <strong>Scoring détaillé</strong> : sécurité, efficacité, UX, prix
+                <strong>Comptes prescripteurs</strong> : tableau de bord, suivi
               </li>
               <li>
-                <strong>Mode prescripteurs</strong> : filtres diagnostics, infos
-                détaillées (payant)
+                <strong>Prescriptions numériques</strong> : créez et envoyez des
+                recommandations à vos patients
               </li>
               <li>
-                <strong>Géolocalisation</strong> : carte France + filtres proximité
+                <strong>Veille solutions</strong> : suivez les nouveautés
               </li>
               <li>
-                <strong>API publique</strong> : intégrations tierces
+                <strong>Comparateur</strong> : comparez les solutions côte à côte
               </li>
             </ul>
           </div>

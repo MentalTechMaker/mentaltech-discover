@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import type { Product } from "../../types";
 import { getLabelInfo, computeLabelFromScores } from "../../utils/scoring";
 
@@ -49,6 +49,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
   const [justificationAccessibility, setJustificationAccessibility] = useState(product?.scoring?.justificationAccessibility ?? "");
   const [justificationUx, setJustificationUx] = useState(product?.scoring?.justificationUx ?? "");
   const [justificationSupport, setJustificationSupport] = useState(product?.scoring?.justificationSupport ?? "");
+
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoUploadError, setLogoUploadError] = useState("");
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = !!product;
 
@@ -184,14 +188,68 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
       </div>
 
       <div>
-        <label className="block text-sm font-semibold mb-1">Logo (chemin)</label>
-        <input
-          value={logo}
-          onChange={(e) => setLogo(e.target.value)}
-          required
-          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-          placeholder="/logos/nom.png"
-        />
+        <label className="block text-sm font-semibold mb-1">Logo</label>
+        <div className="flex gap-2 items-start">
+          <input
+            value={logo}
+            onChange={(e) => setLogo(e.target.value)}
+            required
+            className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+            placeholder="/logos/nom.png ou URL https://..."
+          />
+          <button
+            type="button"
+            onClick={() => logoInputRef.current?.click()}
+            disabled={logoUploading}
+            className="px-3 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-semibold hover:bg-gray-200 disabled:opacity-50 whitespace-nowrap"
+          >
+            {logoUploading ? "Upload..." : "Choisir un fichier"}
+          </button>
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/svg+xml,image/webp"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setLogoUploading(true);
+              setLogoUploadError("");
+              try {
+                const formData = new FormData();
+                formData.append("file", file);
+                const token = localStorage.getItem("access_token");
+                const res = await fetch("/api/admin/upload-logo", {
+                  method: "POST",
+                  headers: token ? { Authorization: `Bearer ${token}` } : {},
+                  body: formData,
+                });
+                if (!res.ok) {
+                  const err = await res.json().catch(() => ({}));
+                  throw new Error(err.detail || "Erreur upload");
+                }
+                const data = await res.json();
+                setLogo(data.path);
+              } catch (err) {
+                setLogoUploadError(err instanceof Error ? err.message : "Erreur upload");
+              } finally {
+                setLogoUploading(false);
+                e.target.value = "";
+              }
+            }}
+          />
+        </div>
+        {logoUploadError && (
+          <p className="text-red-600 text-xs mt-1">{logoUploadError}</p>
+        )}
+        {logo && (
+          <img
+            src={logo}
+            alt="Aperçu logo"
+            className="mt-2 h-12 w-auto object-contain rounded border border-gray-200"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        )}
       </div>
 
       <div>

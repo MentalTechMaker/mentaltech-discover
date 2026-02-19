@@ -52,7 +52,7 @@ export const Landing: React.FC = () => {
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="text-center mb-8">
           <p className="text-lg text-text-secondary">
-            Choisis le parcours qui te correspond
+            Choisissez le parcours qui vous correspond
           </p>
         </div>
 
@@ -133,10 +133,10 @@ export const Landing: React.FC = () => {
                 1
               </div>
               <h3 className="text-lg font-bold text-text-primary mb-2">
-                Réponds aux questions
+                Répondez aux questions
               </h3>
               <p className="text-text-secondary text-sm">
-                Sur ton état, tes besoins et préférences
+                Sur votre état, vos besoins et préférences
               </p>
             </div>
             <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl border-2 border-green-100 shadow-sm">
@@ -144,7 +144,7 @@ export const Landing: React.FC = () => {
                 2
               </div>
               <h3 className="text-lg font-bold text-text-primary mb-2">
-                Reçois des recommandations
+                Recevez des recommandations
               </h3>
               <p className="text-text-secondary text-sm">
                 Outils validés par des professionnels
@@ -155,10 +155,10 @@ export const Landing: React.FC = () => {
                 3
               </div>
               <h3 className="text-lg font-bold text-text-primary mb-2">
-                Découvre les solutions
+                Découvrez les solutions
               </h3>
               <p className="text-text-secondary text-sm">
-                Qui correspondent à ta situation
+                Qui correspondent à votre situation
               </p>
             </div>
           </div>
@@ -176,6 +176,30 @@ export const Landing: React.FC = () => {
             <span>Voir le catalogue complet</span>
             <span>→</span>
           </button>
+        </div>
+
+        <div className="max-w-3xl mx-auto mt-12 bg-gradient-to-br from-purple-50 to-white p-6 md:p-8 rounded-2xl border-2 border-purple-200">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-shrink-0 bg-purple-100 p-4 rounded-2xl">
+              <span className="text-4xl">🩺</span>
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-xl font-bold text-text-primary mb-2">
+                Vous êtes professionnel de santé ?
+              </h3>
+              <p className="text-text-secondary text-sm leading-relaxed">
+                Créez votre compte prescripteur pour accéder aux évaluations
+                détaillées et aux justificatifs de chaque solution référencée.
+              </p>
+            </div>
+            <button
+              onClick={() => setView("prescriber-auth")}
+              className="flex-shrink-0 inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors"
+            >
+              <span>Espace prescripteur</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       </div>
       </div>

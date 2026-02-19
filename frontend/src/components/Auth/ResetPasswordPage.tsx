@@ -13,13 +13,12 @@ export const ResetPasswordPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const getTokenFromHash = (): string | null => {
-    const hash = window.location.hash;
-    const match = hash.match(/[?&]token=([^&]+)/);
-    return match ? decodeURIComponent(match[1]) : null;
+  const getToken = (): string | null => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('token');
   };
 
-  const token = getTokenFromHash();
+  const token = getToken();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +44,7 @@ export const ResetPasswordPage: React.FC = () => {
     try {
       await resetPassword(token, newPassword);
       setSuccess(true);
-      window.history.replaceState(null, "", "#reset-password");
+      window.history.replaceState(null, "", "/reset-password");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la réinitialisation");
     } finally {
@@ -91,7 +90,7 @@ export const ResetPasswordPage: React.FC = () => {
                 </p>
               </div>
               <button
-                onClick={() => setView("login")}
+                onClick={() => setView("prescriber-auth")}
                 className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Se connecter

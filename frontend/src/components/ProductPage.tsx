@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { getLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
+import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
 
 const pricingLabels: Record<string, string> = {
   free: "Gratuit",
@@ -46,6 +47,35 @@ export const ProductPage: React.FC = () => {
   const setView = useAppStore((s) => s.setView);
   const products = useProductsStore((s) => s.products);
   const isAdmin = useAuthStore((s) => s.isAdmin);
+  const isPrescriber = useAuthStore((s) => s.isPrescriber);
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isPrescriber || !selectedProductId) return;
+    listFavorites().then((favs) => {
+      setIsFavorite(favs.some((f) => f.productId === selectedProductId));
+    }).catch(() => {});
+  }, [isPrescriber, selectedProductId]);
+
+  const handleToggleFavorite = async () => {
+    if (!selectedProductId) return;
+    setFavoriteLoading(true);
+    try {
+      if (isFavorite) {
+        await removeFavorite(selectedProductId);
+        setIsFavorite(false);
+      } else {
+        await addFavorite(selectedProductId);
+        setIsFavorite(true);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
 
   const product = products.find((p) => p.id === selectedProductId);
 
@@ -148,8 +178,8 @@ export const ProductPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Scoring detail - visible only for admin */}
-            {isAdmin && hasScoring && (
+            {/* Scoring detail - visible for admin and prescribers */}
+            {(isAdmin || isPrescriber) && hasScoring && (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <span
@@ -205,7 +235,7 @@ export const ProductPage: React.FC = () => {
             )}
 
             {/* Scoring summary for non-admin (no justifications) */}
-            {!isAdmin && hasScoring && (
+            {!isAdmin && !isPrescriber && hasScoring && (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <span
@@ -270,7 +300,7 @@ export const ProductPage: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* CTA */}
-            <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 space-y-3">
               {safeUrl ? (
                 <a
                   href={safeUrl}
@@ -282,6 +312,20 @@ export const ProductPage: React.FC = () => {
                 </a>
               ) : (
                 <p className="text-center text-text-secondary italic">Lien non disponible</p>
+              )}
+              {isPrescriber && (
+                <button
+                  onClick={handleToggleFavorite}
+                  disabled={favoriteLoading}
+                  className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold border-2 transition-colors disabled:opacity-50 ${
+                    isFavorite
+                      ? "bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                      : "bg-white border-gray-200 text-text-secondary hover:border-yellow-300 hover:text-yellow-600"
+                  }`}
+                >
+                  <span>{isFavorite ? "★" : "☆"}</span>
+                  <span>{isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
+                </button>
               )}
             </div>
 

@@ -12,6 +12,7 @@ from ..services.auth import ALGORITHM
 logger = logging.getLogger(__name__)
 
 TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
+EMAIL_DEV_DIR = Path("/tmp/mentaltech_emails")
 
 jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
 
@@ -29,6 +30,25 @@ mail_conf = ConnectionConfig(
 )
 
 fm = FastMail(mail_conf)
+
+
+def _write_email_to_file(subject: str, recipients: list[str], html: str) -> None:
+    """Écrit le contenu d'un email dans un fichier local (fallback dev)."""
+    try:
+        EMAIL_DEV_DIR.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        safe_recipient = recipients[0].replace("@", "_at_").replace(".", "_")
+        filepath = EMAIL_DEV_DIR / f"{timestamp}_{safe_recipient}.html"
+        content = (
+            f"<!-- Subject: {subject} -->\n"
+            f"<!-- To: {', '.join(recipients)} -->\n"
+            f"<!-- Sent: {datetime.now().isoformat()} -->\n\n"
+            f"{html}"
+        )
+        filepath.write_text(content, encoding="utf-8")
+        logger.info(f"[DEV] Email écrit dans le fichier : {filepath}")
+    except Exception:
+        logger.error("Impossible d'écrire l'email dans le fichier", exc_info=True)
 
 
 def create_email_token(user_id: str, purpose: str, expire_hours: int = 24) -> str:
@@ -54,7 +74,7 @@ def decode_email_token(
 
 async def send_verification_email(email: str, name: str, user_id: str) -> None:
     token = create_email_token(user_id, "verify_email", expire_hours=24)
-    verify_url = f"{settings.FRONTEND_URL}/#verify-email?token={token}"
+    verify_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
 
     template = jinja_env.get_template("verify_email.html")
     html = template.render(name=name, verify_url=verify_url)
@@ -71,11 +91,50 @@ async def send_verification_email(email: str, name: str, user_id: str) -> None:
         logger.info(f"Verification email sent to {email}")
     except Exception:
         logger.error(f"Failed to send verification email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_prescription_email(
+    patient_email: str,
+    patient_name: str | None,
+    prescriber_name: str,
+    prescriber_profession: str | None,
+    prescriber_organization: str | None,
+    link: str,
+    product_names: list[str],
+    message: str | None,
+    expires_at: str,
+) -> None:
+    template = jinja_env.get_template("prescription.html")
+    html = template.render(
+        patient_name=patient_name or "Cher patient",
+        prescriber_name=prescriber_name,
+        prescriber_profession=prescriber_profession,
+        prescriber_organization=prescriber_organization,
+        link=link,
+        products=product_names,
+        message=message,
+        expires_at=expires_at,
+    )
+
+    message_schema = MessageSchema(
+        subject=f"Prescription numérique de {prescriber_name} - MentalTech Discover",
+        recipients=[patient_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+
+    try:
+        await fm.send_message(message_schema)
+        logger.info(f"Prescription email sent to {patient_email}")
+    except Exception:
+        logger.error(f"Failed to send prescription email to {patient_email}", exc_info=True)
+        _write_email_to_file(message_schema.subject, [patient_email], html)
 
 
 async def send_reset_password_email(email: str, name: str, user_id: str) -> None:
     token = create_email_token(user_id, "reset_password", expire_hours=1)
-    reset_url = f"{settings.FRONTEND_URL}/#reset-password?token={token}"
+    reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
 
     template = jinja_env.get_template("reset_password.html")
     html = template.render(name=name, reset_url=reset_url)
@@ -92,3 +151,4 @@ async def send_reset_password_email(email: str, name: str, user_id: str) -> None
         logger.info(f"Password reset email sent to {email}")
     except Exception:
         logger.error(f"Failed to send password reset email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)

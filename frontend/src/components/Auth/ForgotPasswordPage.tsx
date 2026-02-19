@@ -42,7 +42,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 </p>
               </div>
               <button
-                onClick={() => setView("login")}
+                onClick={() => setView("prescriber-auth")}
                 className="text-primary font-semibold hover:underline"
               >
                 Retour à la connexion
@@ -87,7 +87,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
               <p className="mt-6 text-center text-sm text-text-secondary">
                 <button
-                  onClick={() => setView("login")}
+                  onClick={() => setView("prescriber-auth")}
                   className="text-primary font-semibold hover:underline"
                 >
                   Retour à la connexion

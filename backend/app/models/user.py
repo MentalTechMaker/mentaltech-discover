@@ -19,6 +19,10 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="user")
     email_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    profession: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    organization: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    rpps_adeli: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    is_verified_prescriber: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     password_changed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
     )

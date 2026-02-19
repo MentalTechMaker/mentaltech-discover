@@ -90,12 +90,12 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <p className="mt-4 text-center text-sm text-text-secondary">
-            Pas encore de compte ?{" "}
+            Professionnel de santé ?{" "}
             <button
-              onClick={() => setView("register")}
-              className="text-primary font-semibold hover:underline"
+              onClick={() => setView("prescriber-auth")}
+              className="text-purple-700 font-semibold hover:underline"
             >
-              S'inscrire
+              Espace prescripteur →
             </button>
           </p>
         </div>

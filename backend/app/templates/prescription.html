@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .badge { display: inline-block; background: #f3e8ff; color: #7c3aed; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .prescriber-box { background: #f8f9fa; border-left: 4px solid #4a90e2; border-radius: 4px; padding: 12px 16px; margin: 16px 0; font-size: 14px; }
+        .products { margin: 20px 0; }
+        .product-item { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin: 8px 0; font-size: 14px; }
+        .message-box { background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 14px; color: #713f12; }
+        .btn { display: inline-block; background-color: #7c3aed; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .expiry { font-size: 13px; color: #7f8c8d; margin-top: 8px; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💙 MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <div style="text-align:center">
+                <span class="badge">🩺 Prescription numérique</span>
+            </div>
+            <h2 style="color: #2c3e50;">{{ patient_name }}, votre professionnel de santé vous a envoyé une recommandation</h2>
+
+            <div class="prescriber-box">
+                <strong>{{ prescriber_name }}</strong>{% if prescriber_profession %} — {{ prescriber_profession }}{% endif %}{% if prescriber_organization %}<br>{{ prescriber_organization }}{% endif %}
+            </div>
+
+            {% if message %}
+            <div class="message-box">
+                <strong>Message :</strong><br>{{ message }}
+            </div>
+            {% endif %}
+
+            <div class="products">
+                <p><strong>Solutions recommandées :</strong></p>
+                {% for product in products %}
+                <div class="product-item">
+                    <strong>{{ product }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+
+            <p>Consultez votre prescription complète en cliquant sur le lien ci-dessous :</p>
+            <div style="text-align: center;">
+                <a href="{{ link }}" class="btn" style="color: white;">Voir ma prescription</a>
+            </div>
+            <p class="expiry">⏰ Ce lien est valable jusqu'au {{ expires_at }}.</p>
+            <p style="font-size: 13px; color: #7f8c8d;">Si vous n'attendiez pas ce message, vous pouvez l'ignorer.</p>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover — Trouvez votre solution en santé mentale</p>
+        </div>
+    </div>
+</body>
+</html>

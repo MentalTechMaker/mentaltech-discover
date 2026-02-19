@@ -144,11 +144,15 @@ export const LegalNotice: React.FC = () => {
               Données personnelles
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Conformément au Règlement Général sur la Protection des Données
-              (RGPD) et à la loi Informatique et Libertés, nous vous informons
-              que <strong>ce site ne collecte aucune donnée personnelle</strong>
-              . Aucune inscription, aucun cookie de tracking, aucune analyse
-              comportementale.
+              Conformément au RGPD, les visiteurs anonymes n'ont{" "}
+              <strong>aucune donnée collectée</strong> — le questionnaire reste
+              dans votre navigateur.
+            </p>
+            <p className="text-text-secondary leading-relaxed">
+              Les <strong>prescripteurs inscrits</strong> acceptent que leur nom,
+              email et profession soient stockés pour le fonctionnement du compte.
+              Ces données sont hébergées en France et peuvent être supprimées sur
+              demande.
             </p>
             <p className="text-text-secondary leading-relaxed">
               Pour plus d'informations, consultez notre{" "}
@@ -171,9 +175,13 @@ export const LegalNotice: React.FC = () => {
             </h2>
             <p className="text-text-secondary leading-relaxed">
               Ce site n'utilise aucun cookie de tracking, publicitaire ou
-              analytique. Seul le stockage local du navigateur peut être utilisé
+              analytique. Le stockage local du navigateur peut être utilisé
               temporairement pour sauvegarder votre progression dans le
-              questionnaire, sans aucune transmission de données.
+              questionnaire.
+            </p>
+            <p className="text-text-secondary leading-relaxed text-sm">
+              Les prescripteurs connectés disposent d'un cookie de session
+              sécurisé (HttpOnly) nécessaire au maintien de leur connexion.
             </p>
           </section>
 

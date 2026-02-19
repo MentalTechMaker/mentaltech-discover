@@ -340,7 +340,7 @@ export const Methodology: React.FC = () => {
                   🚀 Évaluation et scoring des solutions
                 </h2>
                 <span className="inline-block bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-800 text-xs font-semibold px-4 py-1.5 rounded-full border border-amber-300">
-                  ⏳ À venir en Version 2
+                  🔜 En cours de développement
                 </span>
               </div>
               <p className="text-sm text-gray-600">
@@ -354,7 +354,7 @@ export const Methodology: React.FC = () => {
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-l-4 border-indigo-600">
               <h3 className="font-bold text-gray-900 mb-4 text-lg flex items-center gap-2">
                 <span className="text-2xl">⭐</span>
-                Ce que la Version 2 apportera
+                Ce que le scoring détaillé apportera
               </h3>
               <p className="text-sm text-gray-700 mb-4">
                 Notre système d'évaluation en V2 ira{" "}
@@ -470,12 +470,11 @@ export const Methodology: React.FC = () => {
 
             <div className="bg-amber-50 border-l-4 border-amber-500 p-5">
               <p className="text-sm text-amber-900">
-                <strong>📅 En attendant la V2 :</strong> Actuellement, nos
-                recommandations sont basées uniquement sur la correspondance
-                avec vos réponses au questionnaire. Nous travaillons activement
-                sur l'implémentation de l'évaluation complète pour vous offrir
-                une vision encore plus précise et objective des solutions
-                disponibles.
+                <strong>🔜 En cours de développement :</strong> Actuellement, nos
+                recommandations sont basées sur la correspondance avec vos réponses
+                au questionnaire. Nous travaillons sur l'implémentation du scoring
+                détaillé pour vous offrir une vision encore plus précise et objective
+                des solutions disponibles.
               </p>
             </div>
           </div>

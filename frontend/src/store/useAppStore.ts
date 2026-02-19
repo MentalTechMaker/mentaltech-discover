@@ -33,7 +33,7 @@ export const useAppStore = create<AppState>((set) => ({
   setView: (view) => {
     set({ currentView: view, selectedProductId: null });
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view }, '', `#${view}`);
+      window.history.pushState({ view }, '', `/${view}`);
       window.scrollTo({top: 0,left: 0});
     }
   },
@@ -41,7 +41,7 @@ export const useAppStore = create<AppState>((set) => ({
   viewProduct: (productId) => {
     set({ currentView: 'product', selectedProductId: productId });
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view: 'product', productId }, '', `#product/${productId}`);
+      window.history.pushState({ view: 'product', productId }, '', `/product/${productId}`);
       window.scrollTo({ top: 0, left: 0 });
     }
   },
@@ -80,29 +80,36 @@ export const useAppStore = create<AppState>((set) => ({
       userType: 'individual'
     });
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view: 'landing' }, '', '#landing');
+      window.history.pushState({ view: 'landing' }, '', '/');
     }
   }
 }));
 
-function parseHashView(): { view: AppView; productId?: string } {
-  const hash = window.location.hash.replace('#', '');
-  const viewName = hash.split('?')[0];
+function parsePathView(): { view: AppView; productId?: string } {
+  const pathname = window.location.pathname.replace(/^\//, '');
 
-  // Handle #product/some-id
-  if (viewName.startsWith('product/')) {
-    const productId = viewName.slice('product/'.length);
+  // Handle /product/some-id
+  if (pathname.startsWith('product/')) {
+    const productId = pathname.slice('product/'.length);
     if (productId) return { view: 'product', productId };
     return { view: 'catalog' };
   }
 
+  // Handle /prescription/token
+  if (pathname.startsWith('prescription/')) {
+    const token = pathname.slice('prescription/'.length);
+    if (token) return { view: 'prescription', productId: token };
+    return { view: 'landing' };
+  }
+
   const validViews: AppView[] = [
     'landing', 'quiz', 'results', 'privacy', 'legal', 'catalog',
-    'methodology', 'about', 'faq', 'login', 'register', 'admin',
-    'profile', 'forgot-password', 'reset-password', 'verify-email',
+    'methodology', 'about', 'faq', 'login', 'register', 'register-prescriber',
+    'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
+    'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
   ];
-  if (validViews.includes(viewName as AppView)) {
-    return { view: viewName as AppView };
+  if (validViews.includes(pathname as AppView)) {
+    return { view: pathname as AppView };
   }
   return { view: 'landing' };
 }
@@ -118,7 +125,7 @@ export function initializeAppStore(): (() => void) | undefined {
         selectedProductId: state.productId ?? null,
       });
     } else {
-      const parsed = parseHashView();
+      const parsed = parsePathView();
       useAppStore.setState({
         currentView: parsed.view,
         selectedProductId: parsed.productId ?? null,
@@ -128,8 +135,8 @@ export function initializeAppStore(): (() => void) | undefined {
 
   window.addEventListener('popstate', handlePopState);
 
-  // On initial load, detect hash-based deep links (e.g. #verify-email?token=... or #product/some-id)
-  const initial = parseHashView();
+  // On initial load, detect path-based deep links (e.g. /verify-email?token=... or /product/some-id)
+  const initial = parsePathView();
   if (initial.view !== 'landing') {
     useAppStore.setState({
       currentView: initial.view,
@@ -138,10 +145,10 @@ export function initializeAppStore(): (() => void) | undefined {
     window.history.replaceState(
       { view: initial.view, productId: initial.productId },
       '',
-      window.location.hash,
+      window.location.pathname + window.location.search,
     );
   } else {
-    window.history.replaceState({ view: 'landing' }, '', '#landing');
+    window.history.replaceState({ view: 'landing' }, '', '/');
   }
 
   return () => {

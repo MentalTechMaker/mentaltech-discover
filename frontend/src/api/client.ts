@@ -2,6 +2,14 @@ const API_BASE = '/api';
 const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_RETRIES = 1;
 
+// Access token in memory — not persisted to localStorage (XSS-safe)
+// Refresh token lives in HttpOnly cookie set by the backend
+let _accessToken: string | null = null;
+
+// Non-sensitive session flag: just tells us whether to attempt a refresh on page load
+// Does NOT contain the token itself — safe in localStorage
+const SESSION_FLAG = 'has_session';
+
 let onUnauthorized: (() => void) | null = null;
 
 export function setOnUnauthorized(callback: () => void) {
@@ -9,20 +17,25 @@ export function setOnUnauthorized(callback: () => void) {
 }
 
 function getTokens() {
-  const accessToken = localStorage.getItem('access_token');
-  if (!accessToken) return null;
-  return { accessToken };
+  if (!_accessToken) return null;
+  return { accessToken: _accessToken };
 }
 
-function setTokens(accessToken: string, _refreshToken?: string) {
-  localStorage.setItem('access_token', accessToken);
-  // Refresh token is now stored as HttpOnly cookie by the backend
+function setTokens(accessToken: string) {
+  _accessToken = accessToken;
+  localStorage.setItem(SESSION_FLAG, '1');
 }
 
 function clearTokens() {
+  _accessToken = null;
+  localStorage.removeItem(SESSION_FLAG);
+  // Cleanup legacy formats
   localStorage.removeItem('access_token');
-  // Also remove legacy format
   localStorage.removeItem('auth');
+}
+
+export function hasSessionFlag(): boolean {
+  return localStorage.getItem(SESSION_FLAG) === '1';
 }
 
 function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = REQUEST_TIMEOUT_MS): Promise<Response> {
@@ -118,10 +131,17 @@ export async function apiFetch<T>(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: 'Erreur inconnue' }));
-    throw new Error(error.detail || `Erreur ${res.status}`);
+    // FastAPI validation errors (422) retournent detail comme tableau d'objets
+    let message: string;
+    if (Array.isArray(error.detail)) {
+      message = error.detail.map((e: { msg?: string }) => e.msg ?? 'Erreur de validation').join(', ');
+    } else {
+      message = error.detail || `Erreur ${res.status}`;
+    }
+    throw new Error(message);
   }
 
   return res.json();
 }
 
-export { getTokens, setTokens, clearTokens };
+export { getTokens, setTokens, clearTokens, refreshAccessToken };

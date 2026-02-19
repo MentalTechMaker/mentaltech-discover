@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useAppStore } from "../../store/useAppStore";
 import { changePassword, resendVerification } from "../../api/auth";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
+
+const roleLabels: Record<string, string> = {
+  user: "Utilisateur",
+  admin: "Administrateur",
+  prescriber: "Prescripteur",
+};
 import { validatePassword } from "../../utils/password";
 
 export const ProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const { setView } = useAppStore();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -93,8 +101,47 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-semibold text-text-secondary mb-1">Rôle</label>
-              <p className="text-text-primary font-medium capitalize">{user.role}</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-text-primary font-medium">{roleLabels[user.role] ?? user.role}</p>
+                {user.role === "prescriber" && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Prescripteur
+                  </span>
+                )}
+                {user.role === "prescriber" && (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    user.is_verified_prescriber
+                      ? "bg-green-100 text-green-800"
+                      : "bg-orange-100 text-orange-800"
+                  }`}>
+                    {user.is_verified_prescriber ? "Identité vérifiée" : "En attente de validation"}
+                  </span>
+                )}
+              </div>
             </div>
+
+            {user.role === "prescriber" && (
+              <>
+                {user.profession && (
+                  <div>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">Profession</label>
+                    <p className="text-text-primary font-medium">{user.profession}</p>
+                  </div>
+                )}
+                {user.organization && (
+                  <div>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">Établissement / Organisation</label>
+                    <p className="text-text-primary font-medium">{user.organization}</p>
+                  </div>
+                )}
+                {user.rpps_adeli && (
+                  <div>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">N° RPPS / ADELI</label>
+                    <p className="text-text-primary font-medium">{user.rpps_adeli}</p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {!user.email_verified && (
@@ -117,6 +164,27 @@ export const ProfilePage: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* User benefits hint (for non-prescribers) */}
+        {user.role === "user" && (
+          <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+            <h3 className="text-base font-bold text-blue-900 mb-2">Votre espace personnel</h3>
+            <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+              <li>Sauvegardez vos résultats de questionnaire</li>
+              <li>Retrouvez vos recommandations personnalisées</li>
+              <li>Accédez à un historique de vos recherches</li>
+            </ul>
+            <p className="text-xs text-blue-700 mt-3">
+              Vous êtes professionnel de santé ?{" "}
+              <button
+                onClick={() => setView("prescriber-auth")}
+                className="font-semibold underline"
+              >
+                Créer un compte prescripteur
+              </button>
+            </p>
+          </div>
+        )}
 
         {/* Change Password */}
         <div className="bg-white rounded-xl shadow-lg p-8">

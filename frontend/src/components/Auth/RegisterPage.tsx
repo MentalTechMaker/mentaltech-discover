@@ -131,10 +131,20 @@ export const RegisterPage: React.FC = () => {
           <p className="mt-6 text-center text-sm text-text-secondary">
             Déjà un compte ?{" "}
             <button
-              onClick={() => setView("login")}
+              onClick={() => setView("prescriber-auth")}
               className="text-primary font-semibold hover:underline"
             >
               Se connecter
+            </button>
+          </p>
+
+          <p className="mt-3 text-center text-sm text-text-secondary">
+            Professionnel de santé ?{" "}
+            <button
+              onClick={() => setView("prescriber-auth")}
+              className="text-primary font-semibold hover:underline"
+            >
+              Inscription Prescripteur →
             </button>
           </p>
         </div>

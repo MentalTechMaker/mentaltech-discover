@@ -35,11 +35,13 @@ services:
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
       MAIL_SSL_TLS: ${MAIL_SSL_TLS:-false}
+    volumes:
+      - ./dev-emails:/tmp/mentaltech_emails
+      - ./dev-uploads:/tmp/uploads
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"
+    # Port 8000 non exposé publiquement — seul le réseau interne Docker est utilisé
     restart: unless-stopped
     deploy:
       resources:

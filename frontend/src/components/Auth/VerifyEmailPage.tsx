@@ -11,9 +11,8 @@ export const VerifyEmailPage: React.FC = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const hash = window.location.hash;
-    const match = hash.match(/[?&]token=([^&]+)/);
-    const token = match ? decodeURIComponent(match[1]) : null;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
 
     if (!token) {
       setStatus("error");
@@ -26,7 +25,7 @@ export const VerifyEmailPage: React.FC = () => {
         setStatus("success");
         setMessage(res.message);
         loadUser();
-        window.history.replaceState(null, "", "#verify-email");
+        window.history.replaceState(null, "", "/verify-email");
       })
       .catch((err) => {
         setStatus("error");

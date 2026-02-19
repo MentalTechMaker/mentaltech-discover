@@ -145,12 +145,12 @@ export const About: React.FC = () => {
               <span className="text-2xl flex-shrink-0">❌</span>
               <div>
                 <h3 className="font-bold text-amber-900 mb-1">
-                  V1 n'est PAS une certification qualité
+                  Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
                   Nous référençons les membres du Collectif MentalTech selon nos
-                  critères. La certification détaillée (sécurité, efficacité, UX)
-                  arrivera en <strong>V2 (2026)</strong>.
+                  critères. Un scoring détaillé (sécurité, efficacité, UX) est en
+                  cours de développement.
                 </p>
               </div>
             </div>
@@ -159,7 +159,7 @@ export const About: React.FC = () => {
               <span className="text-2xl flex-shrink-0">❌</span>
               <div>
                 <h3 className="font-bold text-amber-900 mb-1">
-                  V1 n'évalue PAS l'efficacité clinique
+                  Nous n'évaluons PAS l'efficacité clinique
                 </h3>
                 <p className="text-sm text-amber-800">
                   Nous ne sommes pas une autorité médicale. Consultez un
@@ -261,14 +261,47 @@ export const About: React.FC = () => {
         <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-lg p-8 space-y-6 border-2 border-indigo-200">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🚀</span>
-            Roadmap V2 (Q1 2026)
+            Nouveautés de la V2
           </h2>
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h3 className="text-xl font-bold text-indigo-600 mb-3 flex items-center gap-2">
-                  <span>⭐</span>
-                  Scoring détaillé
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-purple-200">
+                <h3 className="text-xl font-bold text-purple-600 mb-3 flex items-center gap-2">
+                  <span>✅</span>
+                  Espace prescripteur
+                </h3>
+                <p className="text-sm text-text-secondary mb-3">
+                  Pour les professionnels de santé :
+                </p>
+                <ul className="space-y-2 text-sm text-text-secondary">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 font-bold">→</span>
+                    Tableau de bord personnel
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 font-bold">→</span>
+                    Création et envoi de prescriptions numériques aux patients
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 font-bold">→</span>
+                    Veille sur les nouvelles solutions
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 font-bold">→</span>
+                    Comparateur de solutions
+                  </li>
+                </ul>
+                <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                  <p className="text-sm font-semibold text-purple-800">
+                    💎 Gratuit pour les prescripteurs inscrits
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-blue-100">
+                <h3 className="text-xl font-bold text-blue-500 mb-3 flex items-center gap-2">
+                  <span>🔜</span>
+                  Scoring détaillé (en développement)
                 </h3>
                 <p className="text-sm text-text-secondary mb-4">
                   Inspiration <strong>ORCHA</strong> (UK) et{" "}
@@ -276,93 +309,33 @@ export const About: React.FC = () => {
                 </p>
                 <div className="grid gap-2">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-green-600 font-bold">•</span>
+                    <span className="text-gray-400 font-bold">•</span>
                     <span>
                       <strong>🛡️ Sécurité :</strong> Chiffrement, RGPD,
                       hébergement HDS
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-green-600 font-bold">•</span>
+                    <span className="text-gray-400 font-bold">•</span>
                     <span>
                       <strong>💰 Prix :</strong> Rapport qualité-prix,
                       transparence tarifaire
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-green-600 font-bold">•</span>
+                    <span className="text-gray-400 font-bold">•</span>
                     <span>
                       <strong>📱 UX :</strong> Ergonomie, accessibilité, design
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-green-600 font-bold">•</span>
+                    <span className="text-gray-400 font-bold">•</span>
                     <span>
                       <strong>📊 Efficacité :</strong> Études cliniques,
                       témoignages utilisateurs
                     </span>
                   </div>
                 </div>
-                <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-sm font-semibold text-green-800">
-                    ✅ <strong>Score &gt;70% = "Validé MentalTech"</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h3 className="text-xl font-bold text-purple-600 mb-3 flex items-center gap-2">
-                  <span>👩‍⚕️</span>
-                  Fonctionnalités prescripteurs (payant)
-                </h3>
-                <p className="text-sm text-text-secondary mb-3">
-                  Pour professionnels de santé, RH et mutuelles :
-                </p>
-                <ul className="space-y-2 text-sm text-text-secondary">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 font-bold">→</span>
-                    Filtres par diagnostic médical (DSM-5, CIM-11)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 font-bold">→</span>
-                    Informations détaillées entreprises (équipe, financement,
-                    études cliniques)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 font-bold">→</span>
-                    Mode partage recommandations patients
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 font-bold">→</span>
-                    Analytics d'utilisation et tableau de bord
-                  </li>
-                </ul>
-                <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <p className="text-sm font-semibold text-purple-800">
-                    💎 Abonnement Pro : ~29€/mois
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
-                  <span>🗺️</span>
-                  Géolocalisation
-                </h3>
-                <ul className="space-y-2 text-sm text-text-secondary">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">→</span>
-                    Carte de France des entreprises membres
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">→</span>
-                    Filtrage par région et proximité
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">→</span>
-                    Favoriser les solutions locales
-                  </li>
-                </ul>
               </div>
             </div>
           </div>

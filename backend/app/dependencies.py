@@ -45,3 +45,12 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
             detail="Accès réservé aux administrateurs",
         )
     return user
+
+
+def require_prescriber_or_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role not in ("prescriber", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux prescripteurs et administrateurs",
+        )
+    return user

@@ -7,6 +7,15 @@ class UserRegister(BaseModel):
     name: str
 
 
+class PrescriberRegister(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    profession: str
+    organization: str | None = None
+    rpps_adeli: str | None = None
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -18,6 +27,10 @@ class UserResponse(BaseModel):
     name: str
     role: str
     email_verified: bool = False
+    profession: str | None = None
+    organization: str | None = None
+    rpps_adeli: str | None = None
+    is_verified_prescriber: bool = False
 
     model_config = {"from_attributes": True}
 

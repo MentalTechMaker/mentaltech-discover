@@ -1,15 +1,17 @@
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.exc import SQLAlchemyError
 
 from .config import settings
-from .routers import auth, products
+from .routers import auth, products, prescriptions, prescriber, admin
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +21,9 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
 app = FastAPI(
     title="MentalTech Discover API",
     version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
+    docs_url="/api/docs" if settings.DEBUG else None,
+    redoc_url="/api/redoc" if settings.DEBUG else None,
+    openapi_url="/api/openapi.json" if settings.DEBUG else None,
 )
 
 app.state.limiter = limiter
@@ -61,6 +63,14 @@ async def generic_exception_handler(_request: Request, exc: Exception):
 
 app.include_router(auth.router)
 app.include_router(products.router)
+app.include_router(prescriptions.router)
+app.include_router(prescriber.router)
+app.include_router(admin.router)
+
+# Serve uploaded logos as static files (/tmp/uploads est toujours writable)
+UPLOADS_DIR = Path("/tmp/uploads")
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/api/health")

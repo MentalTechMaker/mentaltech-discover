@@ -12,12 +12,40 @@ interface UserResponse {
   name: string;
   role: string;
   email_verified: boolean;
+  is_verified_prescriber?: boolean;
+  profession?: string | null;
+  organization?: string | null;
+  rpps_adeli?: string | null;
 }
 
 export async function register(email: string, password: string, name: string): Promise<TokenResponse> {
   const data = await apiFetch<TokenResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({ email, password, name }),
+    credentials: 'include',
+  });
+  setTokens(data.access_token);
+  return data;
+}
+
+export async function registerPrescriber(
+  email: string,
+  password: string,
+  name: string,
+  profession: string,
+  organization?: string,
+  rppsAdeli?: string,
+): Promise<TokenResponse> {
+  const data = await apiFetch<TokenResponse>('/auth/register-prescriber', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      password,
+      name,
+      profession,
+      organization: organization || null,
+      rpps_adeli: rppsAdeli || null,
+    }),
     credentials: 'include',
   });
   setTokens(data.access_token);

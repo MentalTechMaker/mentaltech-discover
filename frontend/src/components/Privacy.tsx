@@ -12,7 +12,7 @@ export const Privacy: React.FC = () => {
             Politique de confidentialité
           </h1>
           <p className="text-lg text-text-secondary">
-            Ta confidentialité est notre priorité absolue
+            Votre confidentialité est notre priorité absolue
           </p>
         </div>
 
@@ -22,14 +22,38 @@ export const Privacy: React.FC = () => {
               <span className="text-3xl" aria-hidden="true">
                 🔒
               </span>
-              Ce que nous collectons : RIEN
+              Ce que nous collectons
             </h2>
-            <p className="text-text-secondary leading-relaxed">
-              Cet outil ne collecte <strong>aucune donnée personnelle</strong>.
-              Vos réponses restent sur votre appareil et ne sont jamais envoyées
-              à un serveur. Nous ne pouvons pas savoir qui vous êtes, ni ce que
-              vous avez répondu.
-            </p>
+            <div className="space-y-4">
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                <p className="font-semibold text-green-900 mb-1">
+                  👤 Visiteurs et utilisateurs du questionnaire
+                </p>
+                <p className="text-text-secondary">
+                  <strong>Aucune donnée personnelle collectée.</strong> Vos réponses
+                  restent sur votre appareil et ne sont jamais envoyées à un serveur.
+                  Aucun compte requis pour utiliser le questionnaire ou le catalogue.
+                </p>
+              </div>
+              <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+                <p className="font-semibold text-purple-900 mb-1">
+                  🩺 Prescripteurs inscrits
+                </p>
+                <p className="text-text-secondary mb-2">
+                  Pour créer un compte prescripteur, nous collectons :
+                </p>
+                <ul className="list-disc list-inside text-text-secondary space-y-1 text-sm ml-2">
+                  <li>Nom complet et adresse email</li>
+                  <li>Profession et établissement</li>
+                  <li>Numéro RPPS / ADELI (optionnel)</li>
+                </ul>
+                <p className="text-text-secondary text-sm mt-2">
+                  Ces données sont <strong>strictement nécessaires</strong> au
+                  fonctionnement du compte. Elles sont hébergées en France (OVH) et
+                  ne sont jamais revendues ni partagées avec des tiers.
+                </p>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-3">
@@ -39,11 +63,19 @@ export const Privacy: React.FC = () => {
               </span>
               Cookies
             </h2>
-            <p className="text-text-secondary leading-relaxed">
-              Nous n'utilisons <strong>aucun cookie de tracking</strong>. Aucun
-              cookie publicitaire, aucun cookie analytique, aucun cookie de
-              suivi. Votre navigation est 100% privée.
-            </p>
+            <div className="text-text-secondary leading-relaxed space-y-2">
+              <p>
+                Nous n'utilisons <strong>aucun cookie de tracking</strong>. Aucun
+                cookie publicitaire, aucun cookie analytique, aucun cookie de
+                suivi. Votre navigation est 100% privée.
+              </p>
+              <p className="text-sm">
+                Les prescripteurs connectés disposent d'un{" "}
+                <strong>cookie de session sécurisé</strong> (HttpOnly, inaccessible
+                en JavaScript) pour maintenir leur connexion. Ce cookie ne contient
+                aucune donnée personnelle.
+              </p>
+            </div>
           </section>
 
           <section className="space-y-3">
@@ -114,8 +146,19 @@ export const Privacy: React.FC = () => {
                 <li>Droit d'opposition (non applicable)</li>
               </ul>
               <p>
-                Aucune donnée personnelle n'étant collectée, ces droits ne sont
-                pas applicables pour ce site.
+                Pour les <strong>visiteurs anonymes</strong> : aucune donnée
+                n'étant collectée, ces droits ne sont pas applicables.
+              </p>
+              <p>
+                Pour les <strong>prescripteurs inscrits</strong> : vous pouvez
+                exercer vos droits d'accès, de rectification et de suppression en
+                contactant{" "}
+                <a
+                  href="mailto:arnaud@mentaltechmaker.fr"
+                  className="text-primary hover:underline font-semibold"
+                >
+                  arnaud@mentaltechmaker.fr
+                </a>
               </p>
             </div>
           </section>

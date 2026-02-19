@@ -13,14 +13,18 @@ import { ProductCatalog } from "./components/ProductCatalog/ProductCatalog";
 import { Methodology } from "./components/Methodology";
 import { About } from "./components/About";
 import { FAQ } from "./components/FAQ";
-import { LoginPage } from "./components/Auth/LoginPage";
-import { RegisterPage } from "./components/Auth/RegisterPage";
+import { PrescriberAuthPage } from "./components/Auth/PrescriberAuthPage";
 import { ProfilePage } from "./components/Auth/ProfilePage";
 import { ForgotPasswordPage } from "./components/Auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./components/Auth/ResetPasswordPage";
 import { VerifyEmailPage } from "./components/Auth/VerifyEmailPage";
 import { AdminPanel } from "./components/Admin/AdminPanel";
 import { ProductPage } from "./components/ProductPage";
+import { PrescriberDashboard } from "./components/Prescriber/PrescriberDashboard";
+import { NewPrescription } from "./components/Prescriber/NewPrescription";
+import { VeillePage } from "./components/Prescriber/VeillePage";
+import { ComparatorPage } from "./components/Prescriber/ComparatorPage";
+import { PrescriptionViewPage } from "./components/Prescriber/PrescriptionViewPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { analytics } from "./lib/analytics";
 
@@ -56,14 +60,18 @@ function App() {
           {currentView === "methodology" && <Methodology />}
           {currentView === "about" && <About />}
           {currentView === "faq" && <FAQ />}
-          {currentView === "login" && <LoginPage />}
-          {currentView === "register" && <RegisterPage />}
+          {currentView === "prescriber-auth" && <PrescriberAuthPage />}
           {currentView === "profile" && <ProfilePage />}
           {currentView === "forgot-password" && <ForgotPasswordPage />}
           {currentView === "reset-password" && <ResetPasswordPage />}
           {currentView === "verify-email" && <VerifyEmailPage />}
           {currentView === "admin" && <AdminPanel />}
           {currentView === "product" && <ProductPage />}
+          {currentView === "prescriber-dashboard" && <PrescriberDashboard />}
+          {currentView === "new-prescription" && <NewPrescription />}
+          {currentView === "veille" && <VeillePage />}
+          {currentView === "comparator" && <ComparatorPage />}
+          {currentView === "prescription" && <PrescriptionViewPage />}
         </ErrorBoundary>
       </main>
       <Footer />
