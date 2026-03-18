@@ -31,6 +31,10 @@ class UserResponse(BaseModel):
     organization: str | None = None
     rpps_adeli: str | None = None
     is_verified_prescriber: bool = False
+    company_name: str | None = None
+    siret: str | None = None
+    company_website: str | None = None
+    is_verified_publisher: bool = False
 
     model_config = {"from_attributes": True}
 

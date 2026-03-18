@@ -83,7 +83,7 @@ export const PrescriptionViewPage: React.FC = () => {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-3xl mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
-            Prescription MentalTech
+            Prescription MentalTech Discover
           </h1>
           <p className="text-text-secondary text-lg">
             Recommandation de{" "}
@@ -202,16 +202,24 @@ export const PrescriptionViewPage: React.FC = () => {
                   )}
 
                   {/* CTA */}
-                  {safeUrl && (
+                  <div className="flex flex-wrap gap-2">
+                    {safeUrl && (
+                      <a
+                        href={safeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block bg-primary text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+                      >
+                        Decouvrir
+                      </a>
+                    )}
                     <a
-                      href={safeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block bg-primary text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+                      href={`/product/${product.id}`}
+                      className="inline-block bg-gray-100 text-text-primary text-sm font-semibold px-5 py-2 rounded-lg hover:bg-gray-200 transition-colors"
                     >
-                      Decouvrir
+                      Voir la fiche
                     </a>
-                  )}
+                  </div>
                 </div>
               </div>
             );
@@ -228,6 +236,26 @@ export const PrescriptionViewPage: React.FC = () => {
             <span className="font-bold">15</span> (SAMU).
           </p>
         </div>
+
+        {/* ── Quiz CTA ────────────────────────────────────────── */}
+        {!data.expired && (
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">
+            <p className="text-sm font-semibold text-blue-800 mb-1">
+              Vous cherchez d'autres solutions adaptées à votre situation ?
+            </p>
+            <p className="text-xs text-blue-600 mb-4">
+              MentalTech Discover vous aide à trouver les outils digitaux les mieux notés selon vos besoins.
+            </p>
+            <a
+              href="https://discover.mentaltech.fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
+            >
+              Faire le questionnaire personnalisé →
+            </a>
+          </div>
+        )}
 
         {/* ── Medical Disclaimer ──────────────────────────────── */}
         <p className="text-xs text-text-secondary text-center pb-8">

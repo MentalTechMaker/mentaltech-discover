@@ -2,7 +2,7 @@
 -- Encoding: UTF-8
 
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, for_company, pricing_model, pricing_amount, pricing_details, last_updated) VALUES
-('insleep', 'inSleep', 'Téléconsultation',
+('insleep', 'inSleep', 'Plateforme entreprise',
  'Bien dormir, cela s''apprend, Mal dormir cela se soigne',
  'Spécialiste de la prévention des risques liés à la fatigue et à la somnolence en entreprise. Propose une évaluation complète, des formations sur site ou en ligne, ainsi qu''un diagnostic et un contrôle professionnel des troubles du sommeil pour améliorer la santé et la performance des collaborateurs.',
  'https://www.insleeplab.fr', '/logos/insleeplab.png',
@@ -36,7 +36,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  ARRAY['adult'],
  ARRAY['stress-anxiety','sadness','trauma','work','sleep'],
  ARRAY['talk-now','autonomous','understand','program'],
- TRUE, 'subscription', 'à partir de 4€',
+ FALSE, 'subscription', 'à partir de 4€',
  'Sur mesure. Essai gratuit bilan émotionnel. Abonnement, à la séance, sur devis (entreprises)',
  '2025-11-04');
 
@@ -61,7 +61,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  ARRAY['addiction','tabac','sevrage','autonomie','éducation','prévention','bien-être'],
  ARRAY['adult','young'],
  ARRAY['addiction'],
- ARRAY['talk-now','autonomous','understand','program'],
+ ARRAY['autonomous','understand','program'],
  FALSE, 'freemium', '60€/an',
  '3 jours d''essai gratuit. Validée par l''OMS',
  '2025-11-05');
@@ -74,7 +74,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  ARRAY['addiction','alcool','sevrage','autonomie','éducation','prévention','bien-être'],
  ARRAY['adult','young'],
  ARRAY['addiction'],
- ARRAY['talk-now','autonomous','understand','program'],
+ ARRAY['autonomous','understand','program'],
  FALSE, 'subscription', '60€/an',
  '7 jours d''essai gratuits',
  '2025-11-05');
@@ -132,26 +132,26 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  '2025-11-12');
 
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, for_company, pricing_model, pricing_amount, pricing_details, last_updated) VALUES
-('neuredia', 'Neuredia', 'Gestion administrative',
+('neuredia', 'Neuredia', 'Application',
  'La gestion administrative des neuro-atypiques',
  'Première plateforme qui centralise et simplifie la gestion administrative des familles d''enfants neuroatypiques. Offre un parcours guidé et sur mesure pour garantir l''accès à tous les droits et coordonner le parcours de soin. Moteur IA propriétaire pour recycler les données entre démarches.',
  'https://neuredia.fr', '/logos/neuredia.png',
  ARRAY['autonomie'],
  ARRAY['child','young','parent'],
- ARRAY['stress-anxiety'],
+ ARRAY['cognitif'],
  ARRAY['autonomous','program'],
  FALSE, 'freemium', '150€ année 1 puis 9,99€/mois',
  'Accès freemium aux fonctionnalités de base',
  '2025-11-15');
 
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, for_company, pricing_model, pricing_amount, pricing_details, last_updated) VALUES
-('hypnovr', 'HypnoVR', 'Réalité virtuelle',
+('hypnovr', 'HypnoVR', 'Dispositif médical',
  'Améliorer son parcours de soin grâce à son cerveau !',
  'Thérapies digitales certifiées en réalité virtuelle pour la santé mentale. Propose des séances d''hypnose immersives pour gérer le stress, l''anxiété, les troubles du sommeil et la douleur. Plus de 600 hôpitaux et cliniques équipés avec 35+ études cliniques validant l''efficacité.',
  'https://hypnovr.io/', '/logos/hypnovr.png',
  ARRAY['bien-être','entreprise'],
  ARRAY['adult','young','child','senior'],
- ARRAY['stress-anxiety','work','sleep'],
+ ARRAY['stress-anxiety','work','sleep','douleur'],
  ARRAY['autonomous','program'],
  TRUE, 'subscription', NULL,
  'Abonnement sans engagement, possibilité d''essai gratuit pour établissements de santé. Dispositif médical certifié, plus de 35 études cliniques',
@@ -210,7 +210,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  '2025-11-20');
 
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, for_company, pricing_model, pricing_amount, pricing_details, last_updated) VALUES
-('edra', 'EDRA', 'Télésurveillance',
+('edra', 'EDRA', 'Dispositif médical',
  'Télésurveillance psychiatrique des troubles de l''humeur',
  'Dispositif médical certifié de télésurveillance en psychiatrie pour le suivi personnalisé des patients adultes avec troubles psychiatriques sous traitement médicamenteux. Solution professionnelle destinée aux établissements de santé.',
  'https://www.edra.care', '/logos/edra.png',
@@ -223,13 +223,13 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  '2025-11-20');
 
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, for_company, pricing_model, pricing_amount, pricing_details, last_updated) VALUES
-('suricog', 'Suricog', 'Medtech',
+('suricog', 'Suricog', 'Dispositif médical',
  'Diagnostic médical par oculométrie eye-tracking',
  'Technologie innovante d''eye-tracking médical pour quantifier et diagnostiquer les troubles cérébraux en pratique clinique. Dispositif professionnel destiné aux neurologues et praticiens pour l''évaluation objective des fonctions cognitives.',
  'https://www.suricog.fr', '/logos/suricog.png',
  ARRAY['professionnel','médical','diagnostic','neurologie','innovation'],
  ARRAY['adult'],
- ARRAY['stress-anxiety'],
+ ARRAY['cognitif'],
  ARRAY['understand'],
  TRUE, 'enterprise', NULL,
  'Dispositif médical professionnel pour établissements de santé',
@@ -281,7 +281,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
  'https://www.koalou.com', '/logos/koalou.png',
  ARRAY['professionnel','enfants','accompagnement','éducation','prévention'],
  ARRAY['child','parent'],
- ARRAY['stress-anxiety'],
+ ARRAY['stress-anxiety','concentration'],
  ARRAY['program','understand'],
  FALSE, 'custom', NULL,
  'Démo sur demande - destiné aux professionnels de santé et parents',

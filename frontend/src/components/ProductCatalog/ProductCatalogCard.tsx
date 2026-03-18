@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Product } from "../../types";
 import { sanitizeUrl } from "../../utils/security";
-import { getLabelInfo, SCORE_CRITERIA } from "../../utils/scoring";
+import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../../utils/scoring";
 import { useAppStore } from "../../store/useAppStore";
 
 interface ProductCatalogCardProps {
@@ -42,6 +42,9 @@ const problemLabels: Record<string, string> = {
   trauma: "Trauma",
   work: "Travail",
   sleep: "Sommeil",
+  cognitif: "Cognitif",
+  douleur: "Douleur",
+  concentration: "Concentration",
   other: "Autres",
 };
 
@@ -65,20 +68,21 @@ const ScoreDetailPanel: React.FC<{ product: Product }> = ({ product }) => {
       {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
         const score = product.scoring?.[key];
         const justification = product.scoring?.[justKey];
-        if (score == null && !justification) return null;
+        const pillarLabel = getPillarLabelInfo(score);
         return (
           <div key={key}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-text-primary">{criteriaLabel}</span>
-              {score != null && (
-                <span className="text-sm font-bold text-text-primary">{score}/20</span>
-              )}
+              {score != null
+                ? <span className="text-sm font-bold text-text-primary">{score}/5</span>
+                : <span className="text-xs text-text-secondary italic">Non renseigné</span>
+              }
             </div>
             {score != null && (
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
                 <div
                   className="h-1.5 rounded-full transition-all"
-                  style={{ width: `${(score / 20) * 100}%`, backgroundColor: label.bgColor }}
+                  style={{ width: `${(score / 5) * 100}%`, backgroundColor: pillarLabel.bgColor }}
                 />
               </div>
             )}

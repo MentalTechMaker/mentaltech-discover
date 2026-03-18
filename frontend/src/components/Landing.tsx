@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAppStore } from "../store/useAppStore";
+import { useProductsStore } from "../store/useProductsStore";
 import { MedicalDisclaimer } from "./Disclaimer/MedicalDisclaimer";
+import { getPublicStats } from "../api/prescriber";
 
 export const Landing: React.FC = () => {
   const { setView, setUserType } = useAppStore();
+  const products = useProductsStore((s) => s.products);
+  const productCount = Math.floor(products.length / 10) * 10;
+  const [publicStats, setPublicStats] = useState<{ prescribers: number; prescriptions: number } | null>(null);
+
+  useEffect(() => {
+    getPublicStats()
+      .then(setPublicStats)
+      .catch(() => {/* silently ignore if stats unavailable */});
+  }, []);
 
   const handleStart = (userType: "individual" | "company") => {
     setUserType(userType);
@@ -16,7 +27,6 @@ export const Landing: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-280px)]">
-      <MedicalDisclaimer variant="banner" />
       <div className="px-4 py-8 md:py-12">
       <div className="max-w-5xl mx-auto text-center space-y-8 mb-12">
         <div className="space-y-4">
@@ -54,6 +64,20 @@ export const Landing: React.FC = () => {
           <p className="text-lg text-text-secondary">
             Choisissez le parcours qui vous correspond
           </p>
+        </div>
+
+        {/* Third path — visible between the two quiz cards */}
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <div className="h-px bg-gray-200 flex-1 max-w-[120px]" />
+          <button
+            onClick={handleViewCatalog}
+            className="inline-flex items-center gap-2 text-primary font-semibold text-sm px-4 py-2 rounded-xl border-2 border-primary/20 hover:border-primary/80 hover:bg-blue-50 transition-all"
+          >
+            <span>📚</span>
+            <span>Explorer toutes les solutions</span>
+            <span>→</span>
+          </button>
+          <div className="h-px bg-gray-200 flex-1 max-w-[120px]" />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
@@ -123,6 +147,29 @@ export const Landing: React.FC = () => {
           </button>
         </div>
 
+        {publicStats && (publicStats.prescribers > 0 || publicStats.prescriptions > 0) && (
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 py-4 mb-4">
+            {publicStats.prescribers > 0 && (
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">{publicStats.prescribers}+</p>
+                <p className="text-sm text-text-secondary">prescripteurs actifs</p>
+              </div>
+            )}
+            <div className="hidden md:block w-px h-10 bg-gray-200" />
+            {publicStats.prescriptions > 0 && (
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">{publicStats.prescriptions}+</p>
+                <p className="text-sm text-text-secondary">prescriptions créées</p>
+              </div>
+            )}
+            <div className="hidden md:block w-px h-10 bg-gray-200" />
+            <div className="text-center">
+              <p className="text-3xl font-bold text-primary">{productCount > 0 ? `${productCount}+` : "50+"}</p>
+              <p className="text-sm text-text-secondary">solutions évaluées</p>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto mb-12">
           <h2 className="text-3xl font-bold text-text-primary text-center mb-8">
             Comment ça marche ?
@@ -164,18 +211,8 @@ export const Landing: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-center mt-8">
-          <p className="text-text-secondary mb-3">
-            Ou explorez directement toutes les solutions disponibles
-          </p>
-          <button
-            onClick={handleViewCatalog}
-            className="inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-xl border-2 border-primary border-opacity-30 hover:border-opacity-100 hover:shadow-lg transition-all font-semibold"
-          >
-            <span>📚</span>
-            <span>Voir le catalogue complet</span>
-            <span>→</span>
-          </button>
+        <div className="mt-8 max-w-2xl mx-auto px-4">
+          <MedicalDisclaimer variant="compact" />
         </div>
 
         <div className="max-w-3xl mx-auto mt-12 bg-gradient-to-br from-purple-50 to-white p-6 md:p-8 rounded-2xl border-2 border-purple-200">

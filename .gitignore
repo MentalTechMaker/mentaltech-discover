@@ -55,3 +55,6 @@ Thumbs.db
 # Dev local folders (emails fallback + logo uploads)
 dev-emails/
 dev-uploads/
+
+# Internal documents (tests, plans, working notes)
+_docs/

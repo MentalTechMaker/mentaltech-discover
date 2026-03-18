@@ -132,6 +132,83 @@ async def send_prescription_email(
         _write_email_to_file(message_schema.subject, [patient_email], html)
 
 
+async def send_prescription_viewed_email(
+    prescriber_email: str,
+    prescriber_name: str,
+    patient_name: str | None,
+    prescription_link: str,
+) -> None:
+    template = jinja_env.get_template("prescription_viewed.html")
+    html = template.render(
+        prescriber_name=prescriber_name,
+        patient_name=patient_name or "Votre patient",
+        prescription_link=prescription_link,
+    )
+    message = MessageSchema(
+        subject="Votre prescription a été consultée - MentalTech Discover",
+        recipients=[prescriber_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Prescription viewed email sent to {prescriber_email}")
+    except Exception:
+        logger.error(f"Failed to send prescription viewed email to {prescriber_email}", exc_info=True)
+        _write_email_to_file(message.subject, [prescriber_email], html)
+
+
+async def send_prescriber_approved_email(email: str, name: str, dashboard_url: str) -> None:
+    template = jinja_env.get_template("prescriber_approved.html")
+    html = template.render(name=name, dashboard_url=dashboard_url)
+    message = MessageSchema(
+        subject="Votre compte prescripteur est validé - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Prescriber approved email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send prescriber approved email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_publisher_approved_email(email: str, name: str, dashboard_url: str) -> None:
+    template = jinja_env.get_template("publisher_approved.html")
+    html = template.render(name=name, dashboard_url=dashboard_url)
+    message = MessageSchema(
+        subject="Votre compte éditeur est validé - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Publisher approved email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send publisher approved email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_ambassador_trigger_email(email: str, name: str) -> None:
+    template = jinja_env.get_template("ambassador_trigger.html")
+    html = template.render(name=name)
+    message = MessageSchema(
+        subject="Vous faites partie des prescripteurs les plus actifs - MentalTech",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Ambassador trigger email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send ambassador trigger email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
 async def send_reset_password_email(email: str, name: str, user_id: str) -> None:
     token = create_email_token(user_id, "reset_password", expire_hours=1)
     reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"

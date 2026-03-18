@@ -9,7 +9,7 @@ const pricingLabels: Record<string, string> = {
   free: "Gratuit",
   freemium: "Freemium",
   subscription: "Abonnement",
-  "per-session": "Par s\u00e9ance",
+  "per-session": "Par séance",
   enterprise: "Entreprise",
   custom: "Sur mesure",
 };
@@ -23,8 +23,8 @@ const audienceLabels: Record<string, string> = {
 };
 
 const problemLabels: Record<string, string> = {
-  "stress-anxiety": "Stress & Anxi\u00e9t\u00e9",
-  sadness: "Tristesse & D\u00e9pression",
+  "stress-anxiety": "Stress & Anxiété",
+  sadness: "Tristesse & Dépression",
   addiction: "Addictions",
   trauma: "Traumatismes",
   work: "Travail & Burn-out",
@@ -75,7 +75,7 @@ export const ComparatorPage: React.FC = () => {
       const data = await compareProducts(selectedIds);
       // The API may return enriched data; fall back to local products
       const resolved: Product[] = selectedIds.map((id) => {
-        const apiProduct = data.find((d: any) => d.id === id);
+        const apiProduct = data.find((d) => d.id === id);
         const localProduct = products.find((p) => p.id === id);
         return apiProduct ?? localProduct;
       }).filter(Boolean) as Product[];
@@ -130,7 +130,7 @@ export const ComparatorPage: React.FC = () => {
             Comparateur de solutions
           </h1>
           <p className="text-text-secondary">
-            Comparez jusqu'\u00e0 4 solutions c\u00f4te \u00e0 c\u00f4te pour faire le meilleur
+            Comparez jusqu'à 4 solutions côte à côte pour faire le meilleur
             choix
           </p>
         </div>
@@ -162,8 +162,8 @@ export const ComparatorPage: React.FC = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
               />
               <p className="text-xs text-text-secondary mt-2">
-                S\u00e9lectionnez entre 2 et 4 solutions ({selectedIds.length}/4
-                s\u00e9lectionn\u00e9es)
+                Sélectionnez entre 2 et 4 solutions ({selectedIds.length}/4
+                sélectionnées)
               </p>
             </div>
 
@@ -229,7 +229,7 @@ export const ComparatorPage: React.FC = () => {
 
                 {filteredProducts.length === 0 && (
                   <p className="text-center text-text-secondary py-8">
-                    Aucune solution trouv\u00e9e
+                    Aucune solution trouvée
                   </p>
                 )}
               </div>
@@ -275,7 +275,7 @@ export const ComparatorPage: React.FC = () => {
                 Nouvelle comparaison
               </button>
               <span className="text-sm text-text-secondary">
-                {comparedProducts.length} solutions compar\u00e9es
+                {comparedProducts.length} solutions comparées
               </span>
             </div>
 
@@ -346,7 +346,7 @@ export const ComparatorPage: React.FC = () => {
                       className="bg-white rounded-2xl border-2 border-gray-200 p-6"
                     >
                       <h4 className="text-sm font-bold text-text-primary mb-4">
-                        Scores d\u00e9taill\u00e9s
+                        Scores détaillés
                       </h4>
                       <div className="space-y-3">
                         {SCORE_CRITERIA.map(({ key, label: criteriaLabel }) => {
@@ -358,7 +358,7 @@ export const ComparatorPage: React.FC = () => {
                                   {criteriaLabel}
                                 </span>
                                 <span className="text-xs font-bold text-text-primary">
-                                  {score != null ? `${score}/20` : "\u2014"}
+                                  {score != null ? `${score}/5` : "\u2014"}
                                 </span>
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -367,7 +367,7 @@ export const ComparatorPage: React.FC = () => {
                                   style={{
                                     width:
                                       score != null
-                                        ? `${(score / 20) * 100}%`
+                                        ? `${(score / 5) * 100}%`
                                         : "0%",
                                     backgroundColor: label.bgColor,
                                   }}
@@ -409,7 +409,7 @@ export const ComparatorPage: React.FC = () => {
                       </div>
                     ) : (
                       <p className="text-sm text-text-secondary italic">
-                        Non renseign\u00e9
+                        Non renseigné
                       </p>
                     )}
                   </div>
@@ -437,7 +437,7 @@ export const ComparatorPage: React.FC = () => {
                       </div>
                     ) : (
                       <p className="text-sm text-text-secondary italic">
-                        Non renseign\u00e9
+                        Non renseigné
                       </p>
                     )}
                   </div>
@@ -450,7 +450,7 @@ export const ComparatorPage: React.FC = () => {
                     className="bg-white rounded-2xl border-2 border-gray-200 p-6"
                   >
                     <h4 className="text-sm font-bold text-text-primary mb-3">
-                      Probl\u00e8mes trait\u00e9s
+                      Problèmes traités
                     </h4>
                     {product.problemsSolved.length > 0 ? (
                       <div className="flex flex-wrap gap-1.5">
@@ -465,7 +465,7 @@ export const ComparatorPage: React.FC = () => {
                       </div>
                     ) : (
                       <p className="text-sm text-text-secondary italic">
-                        Non renseign\u00e9
+                        Non renseigné
                       </p>
                     )}
                   </div>
@@ -484,7 +484,7 @@ export const ComparatorPage: React.FC = () => {
                         rel="noopener noreferrer"
                         className="block text-center bg-primary text-white px-4 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm"
                       >
-                        D\u00e9couvrir {product.name}
+                        Découvrir {product.name}
                       </a>
                     ) : (
                       <p className="text-center text-sm text-text-secondary italic">

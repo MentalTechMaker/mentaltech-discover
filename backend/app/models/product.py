@@ -2,7 +2,7 @@ from datetime import date, datetime, timezone
 
 from sqlalchemy import String, Text, Boolean, Date, DateTime, Enum as SAEnum, SmallInteger
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 
 from ..database import Base
 
@@ -54,6 +54,10 @@ class Product(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
+    # Visibility & status
+    is_visible: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="true")
+    company_defunct: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, server_default="false")
+
     # Quality scoring (0-20 each, nullable = not yet evaluated)
     score_security: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
     score_efficacy: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
@@ -67,3 +71,6 @@ class Product(Base):
     justification_accessibility: Mapped[str | None] = mapped_column(Text, nullable=True)
     justification_ux: Mapped[str | None] = mapped_column(Text, nullable=True)
     justification_support: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Detailed protocol answers (JSONB, keyed by pillar/criterion)
+    scoring_criteria: Mapped[dict | None] = mapped_column(JSONB, nullable=True)

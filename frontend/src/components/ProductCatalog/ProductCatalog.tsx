@@ -27,15 +27,7 @@ export const ProductCatalog: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"name" | "pricing" | "label">("name");
 
-  const { products: allProducts, isLoading } = useProductsStore();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
-        <p className="text-text-secondary text-lg">Chargement des produits...</p>
-      </div>
-    );
-  }
+  const { products: allProducts, isLoading, error: loadError } = useProductsStore();
 
   const filterOptions = useMemo(() => {
     const types = new Set<string>();
@@ -159,6 +151,26 @@ export const ProductCatalog: React.FC = () => {
       label: [],
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
+        <p className="text-text-secondary text-lg">Chargement des produits...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
+        <div className="text-center">
+          <p className="text-2xl mb-3">⚠️</p>
+          <p className="text-text-primary font-semibold mb-1">Impossible de charger les produits</p>
+          <p className="text-text-secondary text-sm">{loadError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">

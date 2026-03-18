@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { questions } from "../../data/questions";
@@ -27,6 +27,7 @@ export const Quiz: React.FC = () => {
   const questionsList = userType === "company" ? companyQuestions : questions;
   const hasStartedRef = useRef(false);
   const isCompletedRef = useRef(false);
+  const [partialCount, setPartialCount] = useState<number | null>(null);
 
   const getAnswerValue = useCallback((questionId: number): string | undefined => {
     if (userType === "company") {
@@ -89,6 +90,17 @@ export const Quiz: React.FC = () => {
     }
   }, [answers.feeling, answers.urgency, setShowEmergencyBanner]);
 
+  // Compute partial count after Q2 (at least 2 answers)
+  useEffect(() => {
+    const answeredCount = Object.values(answers).filter(Boolean).length;
+    if (answeredCount >= 2 && products.length > 0) {
+      const reco = getRecommendations(answers, userType === "company", products);
+      setPartialCount(reco.products.filter((p) => (p.recommendationScore ?? 0) > 0).length);
+    } else {
+      setPartialCount(null);
+    }
+  }, [answers, products, userType]);
+
   const handleSelect = (value: string) => {
     if (currentQuestion) {
       setAnswer(currentQuestion.id, value);
@@ -113,8 +125,8 @@ export const Quiz: React.FC = () => {
         userType === "company",
         products
       );
-      setRecommendations(recommendations);
       setView("results");
+      setRecommendations(recommendations);
     }
   };
 
@@ -144,6 +156,16 @@ export const Quiz: React.FC = () => {
             current={currentQuestionIndex + 1}
             total={activeQuestions.length}
           />
+          {partialCount !== null && (
+            <div className="flex justify-center">
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-full animate-pulse">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                {partialCount} solution{partialCount > 1 ? "s" : ""} déjà détectée{partialCount > 1 ? "s" : ""}
+              </span>
+            </div>
+          )}
           <QuestionCard
             question={currentQuestion}
             selectedValue={currentAnswer}

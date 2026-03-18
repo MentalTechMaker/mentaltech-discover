@@ -40,7 +40,7 @@ function formatRelativeDate(dateStr: string): string {
   if (diffHours > 1) return `il y a ${diffHours} heures`;
   if (diffHours === 1) return `il y a 1 heure`;
   if (diffMinutes > 1) return `il y a ${diffMinutes} minutes`;
-  return "\u00e0 l'instant";
+  return "à l'instant";
 }
 
 export const VeillePage: React.FC = () => {
@@ -118,7 +118,7 @@ export const VeillePage: React.FC = () => {
             Veille solutions
           </h1>
           <p className="text-text-secondary">
-            Suivez les mises \u00e0 jour des solutions de sant\u00e9 mentale num\u00e9rique
+            Suivez les mises à jour des solutions de santé mentale numérique
           </p>
         </div>
 
@@ -133,7 +133,7 @@ export const VeillePage: React.FC = () => {
                   : "bg-white text-text-secondary hover:bg-gray-50"
               }`}
             >
-              Toutes les mises \u00e0 jour
+              Toutes les mises à jour
             </button>
             <button
               onClick={() => setFavoritesOnly(true)}
@@ -169,12 +169,12 @@ export const VeillePage: React.FC = () => {
               {favoritesOnly ? "\u2B50" : "\uD83D\uDCE1"}
             </div>
             <h3 className="text-xl font-bold text-text-primary mb-2">
-              Aucune mise \u00e0 jour pour le moment
+              Aucune mise à jour pour le moment
             </h3>
             <p className="text-text-secondary">
               {favoritesOnly
-                ? "Ajoutez des solutions en favoris pour suivre leurs mises \u00e0 jour."
-                : "Les mises \u00e0 jour des solutions appara\u00eetront ici."}
+                ? "Ajoutez des solutions en favoris pour suivre leurs mises à jour."
+                : "Les mises à jour des solutions apparaîtront ici."}
             </p>
           </div>
         )}

@@ -7,12 +7,14 @@ ALLOWED_FIELDS = {
     "name", "type", "tagline", "description", "url", "logo",
     "tags", "audience", "problems_solved", "preference_match",
     "for_company", "is_mentaltech_member",
+    "is_visible", "company_defunct",
     "pricing_model", "pricing_amount", "pricing_details",
     "last_updated",
     "score_security", "score_efficacy", "score_accessibility",
     "score_ux", "score_support",
     "justification_security", "justification_efficacy", "justification_accessibility",
     "justification_ux", "justification_support",
+    "scoring_criteria",
 }
 
 
@@ -23,12 +25,15 @@ def compute_label(
     ux: int | None,
     support: int | None,
 ) -> tuple[int | None, str | None]:
-    """Compute total score (0-100) and grade (A-E) from 5 sub-scores (0-20 each).
+    """Compute total score (0-100) and grade (A-E) from filled sub-scores (0-5 each).
     Returns (None, None) if no score has been set."""
     scores = [security, efficacy, accessibility, ux, support]
-    if all(s is None for s in scores):
+    filled = [s for s in scores if s is not None]
+    if not filled:
         return None, None
-    total = sum(s or 0 for s in scores)
+    # Always divide by 5: missing pillars count as 0, not as absent
+    avg = sum(s if s is not None else 0 for s in scores) / len(scores)
+    total = round(avg / 5 * 100)     # scale to 0-100
     if total >= 80:
         return total, "A"
     if total >= 60:
@@ -92,26 +97,35 @@ def _to_response(product: Product) -> ProductResponse:
         preferenceMatch=product.preference_match or [],
         forCompany=product.for_company or False,
         isMentaltechMember=product.is_mentaltech_member or False,
+        isVisible=product.is_visible if product.is_visible is not None else True,
+        companyDefunct=product.company_defunct if product.company_defunct is not None else False,
         pricing=pricing,
         lastUpdated=product.last_updated.isoformat() if product.last_updated else None,
         scoring=scoring,
         scoreTotal=score_total,
         scoreLabel=score_label,
+        scoringCriteria=product.scoring_criteria,
     )
 
 
 def get_all_products(
-    db: Session, limit: int | None = None, offset: int = 0
+    db: Session, limit: int | None = None, offset: int = 0, include_all: bool = False
 ) -> list[ProductResponse]:
-    query = db.query(Product).order_by(Product.name).offset(offset)
+    query = db.query(Product)
+    if not include_all:
+        query = query.filter(Product.is_visible == True, Product.company_defunct == False)
+    query = query.order_by(Product.name).offset(offset)
     if limit is not None:
         query = query.limit(limit)
     products = query.all()
     return [_to_response(p) for p in products]
 
 
-def count_products(db: Session) -> int:
-    return db.query(Product).count()
+def count_products(db: Session, include_all: bool = False) -> int:
+    query = db.query(Product)
+    if not include_all:
+        query = query.filter(Product.is_visible == True, Product.company_defunct == False)
+    return query.count()
 
 
 def get_product_by_id(db: Session, product_id: str) -> ProductResponse | None:
@@ -173,6 +187,8 @@ def update_product(db: Session, product_id: str, data: ProductUpdate) -> Product
         "preferenceMatch": "preference_match",
         "forCompany": "for_company",
         "isMentaltechMember": "is_mentaltech_member",
+        "isVisible": "is_visible",
+        "companyDefunct": "company_defunct",
         "lastUpdated": "last_updated",
         "scoreSecurity": "score_security",
         "scoreEfficacy": "score_efficacy",

@@ -9,8 +9,8 @@ const LABEL_CONFIG: Record<string, LabelInfo> = {
   A: { grade: "A", text: "Validé MentalTech", color: "#FFFFFF", bgColor: "#1B7D3A" },
   B: { grade: "B", text: "Recommandé", color: "#000000", bgColor: "#97C94E" },
   C: { grade: "C", text: "Évalué", color: "#000000", bgColor: "#FECB02" },
-  D: { grade: "D", text: "Insuffisant", color: "#FFFFFF", bgColor: "#EE8100" },
-  E: { grade: "E", text: "Non recommandé", color: "#FFFFFF", bgColor: "#E63E11" },
+  D: { grade: "D", text: "À améliorer", color: "#FFFFFF", bgColor: "#EE8100" },
+  E: { grade: "E", text: "Déconseillé", color: "#FFFFFF", bgColor: "#E63E11" },
 };
 
 const UNRATED: LabelInfo = {
@@ -23,6 +23,16 @@ const UNRATED: LabelInfo = {
 export function getLabelInfo(scoreLabel: string | null | undefined): LabelInfo {
   if (!scoreLabel) return UNRATED;
   return LABEL_CONFIG[scoreLabel] ?? UNRATED;
+}
+
+/** Returns the label info for a single pillar score (0–5), independent of other pillars. */
+export function getPillarLabelInfo(score: number | null | undefined): LabelInfo {
+  if (score == null) return UNRATED;
+  if (score >= 5) return LABEL_CONFIG["A"];
+  if (score >= 4) return LABEL_CONFIG["B"];
+  if (score >= 3) return LABEL_CONFIG["C"];
+  if (score >= 2) return LABEL_CONFIG["D"];
+  return LABEL_CONFIG["E"];
 }
 
 export const SCORE_CRITERIA = [
@@ -41,8 +51,12 @@ export function computeLabelFromScores(
   support: number | null | undefined,
 ): { total: number | null; label: string | null } {
   const scores = [security, efficacy, accessibility, ux, support];
-  if (scores.every((s) => s == null)) return { total: null, label: null };
-  const total = scores.reduce<number>((sum, s) => sum + (s ?? 0), 0);
+  const filled = scores.filter((s): s is number => s != null);
+  if (filled.length === 0) return { total: null, label: null };
+  // Always divide by 5: missing pillars count as 0, not as absent
+  const sum = scores.reduce<number>((acc, s) => acc + (s ?? 0), 0);
+  const avg = sum / scores.length; // average out of 5, denominator always = 5
+  const total = Math.round(avg / 5 * 100); // scale to 0-100
   if (total >= 80) return { total, label: "A" };
   if (total >= 60) return { total, label: "B" };
   if (total >= 40) return { total, label: "C" };

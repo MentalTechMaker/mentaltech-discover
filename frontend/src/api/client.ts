@@ -73,9 +73,10 @@ async function refreshAccessToken(): Promise<string | null> {
   try {
     const res = await fetchWithTimeout(`${API_BASE}/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({}),
+      // Pas de body ni Content-Type : le refresh token vient du cookie HttpOnly.
+      // Envoyer {} avec application/json provoque une 422 FastAPI car
+      // TokenRefresh.refresh_token est requis et absent du body vide.
     });
 
     if (!res.ok) {

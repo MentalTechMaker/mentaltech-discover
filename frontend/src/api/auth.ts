@@ -16,6 +16,10 @@ interface UserResponse {
   profession?: string | null;
   organization?: string | null;
   rpps_adeli?: string | null;
+  company_name?: string | null;
+  siret?: string | null;
+  company_website?: string | null;
+  is_verified_publisher?: boolean;
 }
 
 export async function register(email: string, password: string, name: string): Promise<TokenResponse> {

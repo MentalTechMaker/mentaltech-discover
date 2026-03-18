@@ -13,8 +13,8 @@ Chaque solution est notée sur **5 critères**, chacun noté de **0 à 20 points
 | 80 - 100 | **A** | Validé MentalTech |
 | 60 - 79 | **B** | Recommandé |
 | 40 - 59 | **C** | Évalué |
-| 20 - 39 | **D** | Insuffisant |
-| 0 - 19 | **E** | Non recommandé |
+| 20 - 39 | **D** | À améliorer |
+| 0 - 19 | **E** | Déconseillé |
 
 ---
 

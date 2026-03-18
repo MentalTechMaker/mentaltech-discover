@@ -1,17 +1,24 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { createPrescription } from '../../api/prescriber';
+import { QRCodeSVG } from 'qrcode.react';
+import { createPrescription, listFavorites } from '../../api/prescriber';
 import type { PrescriptionResponse } from '../../api/prescriber';
 import { useAppStore } from '../../store/useAppStore';
 import { useProductsStore } from '../../store/useProductsStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { ProductQuickView } from './ProductQuickView';
 import type { Product } from '../../types';
 
 export const NewPrescription: React.FC = () => {
   const { setView } = useAppStore();
   const { products, fetchProducts, isLoading: productsLoading } = useProductsStore();
 
+  const { isPrescriber } = useAuthStore();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [favoriteProductIds, setFavoriteProductIds] = useState<string[]>([]);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [patientName, setPatientName] = useState('');
   const [patientEmail, setPatientEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -24,18 +31,24 @@ export const NewPrescription: React.FC = () => {
     if (products.length === 0) {
       fetchProducts();
     }
-  }, [products.length, fetchProducts]);
+    if (isPrescriber) {
+      listFavorites().then((favs) => setFavoriteProductIds(favs.map((f) => f.productId))).catch(() => {});
+    }
+  }, [products.length, fetchProducts, isPrescriber]);
 
   const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return products;
+    const base = favoritesOnly
+      ? products.filter((p) => favoriteProductIds.includes(p.id))
+      : products;
+    if (!searchQuery.trim()) return base;
     const q = searchQuery.toLowerCase();
-    return products.filter(
+    return base.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.type.toLowerCase().includes(q) ||
         p.tagline.toLowerCase().includes(q),
     );
-  }, [products, searchQuery]);
+  }, [products, searchQuery, favoritesOnly, favoriteProductIds]);
 
   const selectedProducts = useMemo(
     () => products.filter((p) => selectedProductIds.includes(p.id)),
@@ -209,6 +222,17 @@ export const NewPrescription: React.FC = () => {
             {product.scoreLabel}
           </span>
         )}
+
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setQuickViewProduct(product); }}
+          className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+          title="Aperçu rapide"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
       </button>
     );
   };
@@ -243,6 +267,30 @@ export const NewPrescription: React.FC = () => {
               </button>
             </span>
           ))}
+        </div>
+      )}
+
+      {/* Favorites toggle */}
+      {favoriteProductIds.length > 0 && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly(false)}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${
+              !favoritesOnly ? 'border-primary bg-primary/5 text-primary' : 'border-gray-200 text-gray-500'
+            }`}
+          >
+            Tous les produits
+          </button>
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly(true)}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${
+              favoritesOnly ? 'border-yellow-400 bg-yellow-50 text-yellow-700' : 'border-gray-200 text-gray-500'
+            }`}
+          >
+            ⭐ Mes favoris ({favoriteProductIds.length})
+          </button>
         </div>
       )}
 
@@ -387,6 +435,19 @@ export const NewPrescription: React.FC = () => {
             </p>
           </div>
 
+          {/* QR Code */}
+          <div className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Scanner pour accéder</p>
+            <div className="p-3 bg-white rounded-lg shadow-sm">
+              <QRCodeSVG
+                value={result.link}
+                size={148}
+                level="M"
+                includeMargin={false}
+              />
+            </div>
+          </div>
+
           <div className="bg-gray-50 rounded-lg p-4 text-left">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
               Lien de la prescription
@@ -403,7 +464,7 @@ export const NewPrescription: React.FC = () => {
                 onClick={handleCopyLink}
                 className="bg-primary text-white px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity flex-shrink-0"
               >
-                {copied ? 'Copie !' : 'Copier le lien'}
+                {copied ? 'Copié !' : 'Copier le lien'}
               </button>
             </div>
           </div>
@@ -518,6 +579,15 @@ export const NewPrescription: React.FC = () => {
   };
 
   return (
+    <>
+    {quickViewProduct && (
+      <ProductQuickView
+        product={quickViewProduct}
+        isSelected={selectedProductIds.includes(quickViewProduct.id)}
+        onToggle={() => toggleProduct(quickViewProduct.id)}
+        onClose={() => setQuickViewProduct(null)}
+      />
+    )}
     <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-2xl">
         {/* Back button */}
@@ -547,5 +617,6 @@ export const NewPrescription: React.FC = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };

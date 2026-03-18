@@ -1,6 +1,34 @@
 import { create } from 'zustand';
 import type { AppView, UserAnswers, RecommendationResult, UserType } from '../types';
 
+// Encode/decode quiz answers into URL search params for result sharing
+const ANSWER_PARAM_MAP: Record<string, keyof UserAnswers> = {
+  f: 'feeling', u: 'urgency', p: 'problem', a: 'audience', pref: 'preference',
+  cs: 'companySize', cn: 'companyNeeds',
+};
+
+export function encodeAnswersToParams(answers: UserAnswers, userType: UserType): string {
+  const params = new URLSearchParams();
+  params.set('ut', userType);
+  Object.entries(ANSWER_PARAM_MAP).forEach(([key, answerKey]) => {
+    const val = answers[answerKey];
+    if (val) params.set(key, val);
+  });
+  return params.toString();
+}
+
+export function decodeParamsToAnswers(search: string): { answers: UserAnswers; userType: UserType } | null {
+  const params = new URLSearchParams(search);
+  const userType = (params.get('ut') as UserType) || 'individual';
+  const answers: UserAnswers = {};
+  Object.entries(ANSWER_PARAM_MAP).forEach(([key, answerKey]) => {
+    const val = params.get(key);
+    if (val) (answers as Record<string, string>)[answerKey] = val;
+  });
+  if (Object.keys(answers).length === 0) return null;
+  return { answers, userType };
+}
+
 interface AppState {
   currentView: AppView;
   currentQuestionIndex: number;
@@ -9,9 +37,11 @@ interface AppState {
   recommendations: RecommendationResult | null;
   userType: UserType;
   selectedProductId: string | null;
+  adminEditProductId: string | null;
 
   setView: (view: AppView) => void;
   viewProduct: (productId: string) => void;
+  setAdminEditProductId: (id: string | null) => void;
   setAnswer: (questionId: number, answer: string) => void;
   nextQuestion: () => void;
   previousQuestion: () => void;
@@ -29,6 +59,7 @@ export const useAppStore = create<AppState>((set) => ({
   recommendations: null,
   userType: 'individual',
   selectedProductId: null,
+  adminEditProductId: null,
 
   setView: (view) => {
     set({ currentView: view, selectedProductId: null });
@@ -66,7 +97,17 @@ export const useAppStore = create<AppState>((set) => ({
 
   setShowEmergencyBanner: (show) => set({ showEmergencyBanner: show }),
 
-  setRecommendations: (recommendations) => set({ recommendations }),
+  setRecommendations: (recommendations) => {
+    set({ recommendations });
+    // Encode current answers into URL so results are shareable/bookmarkable
+    if (typeof window !== 'undefined') {
+      const state = useAppStore.getState();
+      const params = encodeAnswersToParams(state.answers, state.userType);
+      window.history.replaceState({ view: 'results' }, '', `/results?${params}`);
+    }
+  },
+
+  setAdminEditProductId: (id) => set({ adminEditProductId: id }),
 
   setUserType: (userType) => set({ userType }),
 
@@ -107,6 +148,7 @@ function parsePathView(): { view: AppView; productId?: string } {
     'methodology', 'about', 'faq', 'login', 'register', 'register-prescriber',
     'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
     'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
+    'register-publisher', 'publisher-dashboard', 'publisher-submission', 'admin-submissions',
   ];
   if (validViews.includes(pathname as AppView)) {
     return { view: pathname as AppView };
@@ -137,7 +179,22 @@ export function initializeAppStore(): (() => void) | undefined {
 
   // On initial load, detect path-based deep links (e.g. /verify-email?token=... or /product/some-id)
   const initial = parsePathView();
-  if (initial.view !== 'landing') {
+  if (initial.view === 'results' && window.location.search) {
+    // Shared result link — decode answers and schedule recommendation computation
+    const decoded = decodeParamsToAnswers(window.location.search);
+    if (decoded) {
+      useAppStore.setState({
+        currentView: 'results',
+        answers: decoded.answers,
+        userType: decoded.userType,
+      });
+      window.history.replaceState({ view: 'results' }, '', window.location.pathname + window.location.search);
+      // Signal App.tsx to compute recommendations on mount
+      (window as unknown as Record<string, unknown>).__pendingResultRestore = decoded;
+    } else {
+      useAppStore.setState({ currentView: 'results' });
+    }
+  } else if (initial.view !== 'landing') {
     useAppStore.setState({
       currentView: initial.view,
       selectedProductId: initial.productId ?? null,

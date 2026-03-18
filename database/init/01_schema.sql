@@ -20,13 +20,18 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin', 'prescriber')),
+    role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin', 'prescriber', 'publisher')),
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     password_changed_at TIMESTAMP WITH TIME ZONE,
     profession VARCHAR(255),
     organization VARCHAR(255),
     rpps_adeli VARCHAR(50),
     is_verified_prescriber BOOLEAN NOT NULL DEFAULT FALSE,
+    -- Publisher fields (migration 009)
+    company_name VARCHAR(255),
+    siret VARCHAR(20),
+    company_website VARCHAR(500),
+    is_verified_publisher BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -65,7 +70,14 @@ CREATE TABLE products (
     justification_efficacy TEXT,
     justification_accessibility TEXT,
     justification_ux TEXT,
-    justification_support TEXT
+    justification_support TEXT,
+
+    -- Visibility (migration 011)
+    is_visible BOOLEAN NOT NULL DEFAULT TRUE,
+    company_defunct BOOLEAN NOT NULL DEFAULT FALSE,
+
+    -- Detailed scoring criteria (protocol answers stored as JSONB)
+    scoring_criteria JSONB DEFAULT NULL
 );
 
 -- GIN indexes for array columns (fast lookups)
@@ -73,6 +85,8 @@ CREATE INDEX idx_products_audience ON products USING GIN (audience);
 CREATE INDEX idx_products_problems_solved ON products USING GIN (problems_solved);
 CREATE INDEX idx_products_tags ON products USING GIN (tags);
 CREATE INDEX idx_products_preference_match ON products USING GIN (preference_match);
+-- Visibility index (migration 011)
+CREATE INDEX idx_products_visibility ON products (is_visible, company_defunct);
 
 -- Index on users email for fast login lookups
 CREATE INDEX idx_users_email ON users (email);
@@ -131,3 +145,78 @@ CREATE TABLE prescriber_notes (
 );
 
 CREATE INDEX idx_notes_prescriber ON prescriber_notes (prescriber_id);
+
+-- ============================================================
+-- Auto-update updated_at trigger (migration 008)
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION trigger_set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at_users
+    BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+CREATE TRIGGER set_updated_at_products
+    BEFORE UPDATE ON products
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+CREATE TRIGGER set_updated_at_prescriptions
+    BEFORE UPDATE ON prescriptions
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+CREATE TRIGGER set_updated_at_prescriber_notes
+    BEFORE UPDATE ON prescriber_notes
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+-- ============================================================
+-- Product submissions table (migration 010)
+-- ============================================================
+
+CREATE TABLE product_submissions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    publisher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id VARCHAR(100) REFERENCES products(id) ON DELETE SET NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'draft'
+        CHECK (status IN ('draft', 'submitted', 'under_review', 'approved', 'rejected', 'changes_requested')),
+
+    -- Basic product info
+    name VARCHAR(255),
+    type VARCHAR(100),
+    tagline TEXT,
+    description TEXT,
+    url VARCHAR(500),
+    logo VARCHAR(500),
+    tags TEXT[] DEFAULT '{}',
+    audience TEXT[] DEFAULT '{}',
+    problems_solved TEXT[] DEFAULT '{}',
+    for_company BOOLEAN DEFAULT FALSE,
+    pricing_model VARCHAR(50),
+    pricing_amount VARCHAR(100),
+    pricing_details TEXT,
+
+    -- Structured protocol answers (JSONB)
+    -- Keys: "1.1" through "5.5" (25 sub-criteria)
+    protocol_answers JSONB NOT NULL DEFAULT '{}',
+
+    -- Admin review
+    admin_notes TEXT,
+    admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_submissions_publisher ON product_submissions (publisher_id);
+CREATE INDEX idx_submissions_status ON product_submissions (status);
+CREATE INDEX idx_submissions_created ON product_submissions (created_at DESC);
+
+CREATE TRIGGER set_updated_at_product_submissions
+    BEFORE UPDATE ON product_submissions
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();

@@ -54,3 +54,12 @@ def require_prescriber_or_admin(user: User = Depends(get_current_user)) -> User:
             detail="Accès réservé aux prescripteurs et administrateurs",
         )
     return user
+
+
+def require_publisher(user: User = Depends(get_current_user)) -> User:
+    if user.role != "publisher" or not user.is_verified_publisher:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux éditeurs vérifiés",
+        )
+    return user

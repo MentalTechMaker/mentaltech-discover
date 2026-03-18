@@ -72,6 +72,10 @@ export async function deletePrescription(id: string): Promise<void> {
   await apiFetch<void>(`/prescriptions/${id}`, { method: 'DELETE' }, true);
 }
 
+export async function renewPrescription(id: string): Promise<PrescriptionResponse> {
+  return apiFetch<PrescriptionResponse>(`/prescriptions/${id}/renew`, { method: 'POST' }, true);
+}
+
 export async function viewPrescription(token: string): Promise<PrescriptionPublicResponse> {
   return apiFetch<PrescriptionPublicResponse>(`/prescriptions/view/${token}`);
 }
@@ -146,8 +150,8 @@ export async function listUpdates(favoritesOnly = false, limit = 50): Promise<Pr
 
 // ─── COMPARATOR ─────────────────────────────────────────────
 
-export async function compareProducts(ids: string[]): Promise<any[]> {
-  return apiFetch<any[]>(`/prescriber/compare?ids=${ids.join(',')}`, {}, true);
+export async function compareProducts(ids: string[]): Promise<Record<string, unknown>[]> {
+  return apiFetch<Record<string, unknown>[]>(`/prescriber/compare?ids=${ids.join(',')}`, {}, true);
 }
 
 // ─── COMMUNITY STATS ────────────────────────────────────────
@@ -161,6 +165,15 @@ export interface CommunityStatsItem {
 
 export async function getCommunityStats(): Promise<CommunityStatsItem[]> {
   return apiFetch<CommunityStatsItem[]>('/prescriber/community-stats', {}, true);
+}
+
+export interface PublicStats {
+  prescribers: number;
+  prescriptions: number;
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+  return apiFetch<PublicStats>('/stats/public');
 }
 
 // ─── ADMIN ──────────────────────────────────────────────────

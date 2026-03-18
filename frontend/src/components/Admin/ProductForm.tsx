@@ -1,6 +1,52 @@
 import React, { useRef, useState } from "react";
 import type { Product } from "../../types";
 import { getLabelInfo, computeLabelFromScores } from "../../utils/scoring";
+import { apiFetch } from "../../api/client";
+
+const SCORING_CRITERIA: Record<string, string[]> = {
+  security: [
+    "Données chiffrées au repos",
+    "Données chiffrées en transit (HTTPS)",
+    "Authentification à deux facteurs disponible",
+    "Conformité RGPD vérifiée",
+    "Hébergement sécurisé (HDS ou équivalent)",
+  ],
+  efficacy: [
+    "Études scientifiques publiées",
+    "Protocoles thérapeutiques validés (TCC, ACT...)",
+    "Résultats mesurables via indicateurs intégrés",
+    "Recommandé ou co-conçu par des professionnels de santé",
+    "Suivi longitudinal de l'état de l'utilisateur",
+  ],
+  accessibility: [
+    "Version gratuite ou essai disponible",
+    "Interface disponible en français",
+    "Compatible iOS et Android",
+    "Fonctions essentielles sans abonnement payant",
+    "Accessible aux personnes en situation de handicap (WCAG)",
+  ],
+  ux: [
+    "Interface intuitive et claire",
+    "Onboarding guidé à la première utilisation",
+    "Personnalisation du parcours selon le profil",
+    "Design apaisant adapté à la santé mentale",
+    "Absence de dark patterns",
+  ],
+  support: [
+    "Service client joignable (email ou chat)",
+    "Délai de réponse annoncé < 48h",
+    "Documentation utilisateur disponible",
+    "Mises à jour régulières du contenu",
+    "Accompagnement humain optionnel disponible",
+  ],
+};
+
+const EMPTY_CRITERIA = [false, false, false, false, false];
+
+function initCriteriaFromScore(score: number | null | undefined): boolean[] {
+  const n = score ?? 0;
+  return EMPTY_CRITERIA.map((_, i) => i < n);
+}
 
 interface ProductFormProps {
   product?: Product;
@@ -30,9 +76,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
   const [url, setUrl] = useState(product?.url ?? "");
   const [logo, setLogo] = useState(product?.logo ?? "");
   const [tags, setTags] = useState(product?.tags?.join(", ") ?? "");
-  const [audience, setAudience] = useState(product?.audience?.join(", ") ?? "");
-  const [problemsSolved, setProblemsSolved] = useState(product?.problemsSolved?.join(", ") ?? "");
-  const [preferenceMatch, setPreferenceMatch] = useState(product?.preferenceMatch?.join(", ") ?? "");
+  const [audience, setAudience] = useState<string[]>(product?.audience ?? []);
+  const [problemsSolved, setProblemsSolved] = useState<string[]>(product?.problemsSolved ?? []);
+  const [preferenceMatch, setPreferenceMatch] = useState<string[]>(product?.preferenceMatch ?? []);
   const [forCompany, setForCompany] = useState(product?.forCompany ?? false);
   const [isMentaltechMember, setIsMentaltechMember] = useState(product?.isMentaltechMember ?? false);
   const [pricingModel, setPricingModel] = useState(product?.pricing?.model ?? "");
@@ -50,11 +96,50 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
   const [justificationUx, setJustificationUx] = useState(product?.scoring?.justificationUx ?? "");
   const [justificationSupport, setJustificationSupport] = useState(product?.scoring?.justificationSupport ?? "");
 
+  const [criteriaChecked, setCriteriaChecked] = useState<Record<string, boolean[]>>({
+    security: initCriteriaFromScore(product?.scoring?.security),
+    efficacy: initCriteriaFromScore(product?.scoring?.efficacy),
+    accessibility: initCriteriaFromScore(product?.scoring?.accessibility),
+    ux: initCriteriaFromScore(product?.scoring?.ux),
+    support: initCriteriaFromScore(product?.scoring?.support),
+  });
+  const [openCriteria, setOpenCriteria] = useState<string | null>(null);
+
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoUploadError, setLogoUploadError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = !!product;
+
+  const handleCriterionToggle = (
+    dimKey: string,
+    idx: number,
+    setter: (v: number | "") => void,
+    justSetter: (v: string) => void,
+  ) => {
+    const updated = [...criteriaChecked[dimKey]];
+    updated[idx] = !updated[idx];
+    setCriteriaChecked((prev) => ({ ...prev, [dimKey]: updated }));
+    const score = updated.filter(Boolean).length; // 1 pt per criterion, max 5
+    setter(score === 0 ? "" : score);
+    const justText = SCORING_CRITERIA[dimKey].filter((_, i) => updated[i]).join(" ; ");
+    justSetter(justText);
+  };
+
+  const dimensions: {
+    dimKey: string;
+    label: string;
+    value: number | "";
+    setter: (v: number | "") => void;
+    justification: string;
+    justSetter: (v: string) => void;
+  }[] = [
+    { dimKey: "security", label: "Sécurité & Confidentialité", value: scoreSecurity, setter: setScoreSecurity, justification: justificationSecurity, justSetter: setJustificationSecurity },
+    { dimKey: "efficacy", label: "Efficacité & Preuves cliniques", value: scoreEfficacy, setter: setScoreEfficacy, justification: justificationEfficacy, justSetter: setJustificationEfficacy },
+    { dimKey: "accessibility", label: "Accessibilité & Inclusion", value: scoreAccessibility, setter: setScoreAccessibility, justification: justificationAccessibility, justSetter: setJustificationAccessibility },
+    { dimKey: "ux", label: "Qualité UX", value: scoreUx, setter: setScoreUx, justification: justificationUx, justSetter: setJustificationUx },
+    { dimKey: "support", label: "Support & Accompagnement", value: scoreSupport, setter: setScoreSupport, justification: justificationSupport, justSetter: setJustificationSupport },
+  ];
 
   const previewLabel = computeLabelFromScores(
     scoreSecurity === "" ? null : scoreSecurity,
@@ -82,9 +167,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         url,
         logo,
         tags: splitAndTrim(tags),
-        audience: splitAndTrim(audience),
-        problemsSolved: splitAndTrim(problemsSolved),
-        preferenceMatch: splitAndTrim(preferenceMatch),
+        audience,
+        problemsSolved,
+        preferenceMatch,
         forCompany,
         isMentaltechMember,
         pricing: pricingModel
@@ -118,6 +203,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
       <h3 className="text-xl font-bold text-text-primary">
         {isEditing ? `Modifier : ${product.name}` : "Nouveau produit"}
       </h3>
+
 
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -218,17 +304,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
               try {
                 const formData = new FormData();
                 formData.append("file", file);
-                const token = localStorage.getItem("access_token");
-                const res = await fetch("/api/admin/upload-logo", {
-                  method: "POST",
-                  headers: token ? { Authorization: `Bearer ${token}` } : {},
+                const data = await apiFetch<{ path: string }>('/admin/upload-logo', {
+                  method: 'POST',
                   body: formData,
-                });
-                if (!res.ok) {
-                  const err = await res.json().catch(() => ({}));
-                  throw new Error(err.detail || "Erreur upload");
-                }
-                const data = await res.json();
+                }, true);
                 setLogo(data.path);
               } catch (err) {
                 setLogoUploadError(err instanceof Error ? err.message : "Erreur upload");
@@ -264,33 +343,88 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold mb-1">Audience (séparés par des virgules)</label>
-          <input
-            value={audience}
-            onChange={(e) => setAudience(e.target.value)}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-            placeholder="adult, young, senior"
-          />
+          <label className="block text-sm font-semibold mb-2">Public cible</label>
+          <div className="space-y-1.5">
+            {([
+              { value: "adult", label: "Adultes" },
+              { value: "young", label: "Adolescents" },
+              { value: "child", label: "Enfants" },
+              { value: "parent", label: "Parents" },
+              { value: "senior", label: "Seniors" },
+            ] as const).map(({ value, label: optLabel }) => (
+              <label key={value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={audience.includes(value)}
+                  onChange={() =>
+                    setAudience((prev) =>
+                      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+                    )
+                  }
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">{optLabel}</span>
+              </label>
+            ))}
+          </div>
         </div>
         <div>
-          <label className="block text-sm font-semibold mb-1">Problèmes résolus (séparés par des virgules)</label>
-          <input
-            value={problemsSolved}
-            onChange={(e) => setProblemsSolved(e.target.value)}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-            placeholder="stress-anxiety, sadness, sleep"
-          />
+          <label className="block text-sm font-semibold mb-2">Problèmes traités</label>
+          <div className="space-y-1.5 max-h-40 overflow-y-auto">
+            {([
+              { value: "stress-anxiety", label: "Stress & Anxiété" },
+              { value: "sadness", label: "Tristesse & Dépression" },
+              { value: "addiction", label: "Addictions" },
+              { value: "trauma", label: "Traumatismes" },
+              { value: "work", label: "Travail & Burn-out" },
+              { value: "sleep", label: "Sommeil" },
+              { value: "cognitif", label: "Troubles cognitifs" },
+              { value: "douleur", label: "Douleur" },
+              { value: "concentration", label: "Concentration & TDAH" },
+              { value: "other", label: "Autres" },
+            ] as const).map(({ value, label: optLabel }) => (
+              <label key={value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={problemsSolved.includes(value)}
+                  onChange={() =>
+                    setProblemsSolved((prev) =>
+                      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+                    )
+                  }
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">{optLabel}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-semibold mb-1">Préférence match (séparés par des virgules)</label>
-        <input
-          value={preferenceMatch}
-          onChange={(e) => setPreferenceMatch(e.target.value)}
-          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-          placeholder="talk-now, autonomous, understand, program"
-        />
+        <label className="block text-sm font-semibold mb-2">Correspondances de préférence</label>
+        <div className="flex flex-wrap gap-4">
+          {([
+            { value: "talk-now", label: "Parler maintenant" },
+            { value: "autonomous", label: "Exercices autonomes" },
+            { value: "understand", label: "Comprendre" },
+            { value: "program", label: "Programme structuré" },
+          ] as const).map(({ value, label: optLabel }) => (
+            <label key={value} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={preferenceMatch.includes(value)}
+                onChange={() =>
+                  setPreferenceMatch((prev) =>
+                    prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+                  )
+                }
+                className="w-4 h-4"
+              />
+              <span className="text-sm">{optLabel}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className="flex items-center gap-6">
@@ -365,32 +499,49 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
       </div>
 
       <div className="border-t-2 border-gray-100 pt-6 mt-6">
-        <h4 className="text-lg font-bold text-text-primary mb-4">Scoring qualité (0-20 par critère)</h4>
+        <h4 className="text-lg font-bold text-text-primary mb-4">Scoring qualité (0–5 par dimension)</h4>
         <div className="space-y-4">
-          {([
-            { label: "Sécurité & Confidentialité", value: scoreSecurity, setter: setScoreSecurity, justification: justificationSecurity, justSetter: setJustificationSecurity },
-            { label: "Efficacité & Preuves cliniques", value: scoreEfficacy, setter: setScoreEfficacy, justification: justificationEfficacy, justSetter: setJustificationEfficacy },
-            { label: "Accessibilité & Inclusion", value: scoreAccessibility, setter: setScoreAccessibility, justification: justificationAccessibility, justSetter: setJustificationAccessibility },
-            { label: "Qualité UX", value: scoreUx, setter: setScoreUx, justification: justificationUx, justSetter: setJustificationUx },
-            { label: "Support & Accompagnement", value: scoreSupport, setter: setScoreSupport, justification: justificationSupport, justSetter: setJustificationSupport },
-          ] as const).map(({ label, value, setter, justification, justSetter }) => (
-            <div key={label} className="p-4 bg-gray-50 rounded-lg space-y-2">
-              <div className="flex items-center gap-4">
+          {dimensions.map(({ dimKey, label, value, setter, justification, justSetter }) => (
+            <div key={dimKey} className="p-4 bg-gray-50 rounded-lg space-y-2">
+              <div className="flex items-center gap-4 flex-wrap">
                 <label className="text-sm font-semibold whitespace-nowrap">{label}</label>
                 <input
                   type="number"
                   min={0}
-                  max={20}
+                  max={5}
                   value={value}
                   onChange={(e) => {
                     const v = e.target.value;
-                    setter(v === "" ? "" : Math.max(0, Math.min(20, Number(v))));
+                    setter(v === "" ? "" : Math.max(0, Math.min(5, Number(v))));
                   }}
                   className="w-20 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white"
                   placeholder="—"
                 />
-                <span className="text-xs text-text-secondary">/ 20</span>
+                <span className="text-xs text-text-secondary">/ 5</span>
+                <button
+                  type="button"
+                  onClick={() => setOpenCriteria(openCriteria === dimKey ? null : dimKey)}
+                  className="ml-auto text-xs text-primary font-semibold hover:underline"
+                >
+                  {openCriteria === dimKey ? "Masquer les critères ▲" : "Critères ▼"}
+                </button>
               </div>
+              {openCriteria === dimKey && (
+                <div className="border-t border-gray-200 pt-2 space-y-1">
+                  {SCORING_CRITERIA[dimKey].map((criterion, i) => (
+                    <label key={i} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5">
+                      <input
+                        type="checkbox"
+                        checked={criteriaChecked[dimKey][i]}
+                        onChange={() => handleCriterionToggle(dimKey, i, setter, justSetter)}
+                        className="w-4 h-4 accent-primary"
+                      />
+                      <span className="text-sm text-text-primary">{criterion}</span>
+                      <span className="text-xs text-gray-400 ml-auto">+1 pt</span>
+                    </label>
+                  ))}
+                </div>
+              )}
               <textarea
                 value={justification}
                 onChange={(e) => justSetter(e.target.value)}

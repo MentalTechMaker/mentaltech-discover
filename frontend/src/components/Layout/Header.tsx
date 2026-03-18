@@ -4,7 +4,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 
 export const Header: React.FC = () => {
   const { currentView, reset, setView } = useAppStore();
-  const { isAuthenticated, isAdmin, isPrescriber, user, logout } = useAuthStore();
+  const { isAuthenticated, isAdmin, isPrescriber, isPublisher, user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -139,7 +139,7 @@ export const Header: React.FC = () => {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-[200]">
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-semibold text-text-primary truncate">{user?.name}</p>
                       <p className="text-xs text-text-secondary truncate">{user?.email}</p>
@@ -178,13 +178,29 @@ export const Header: React.FC = () => {
                         </button>
                       </>
                     )}
-                    {isAdmin && (
+                    {(isPublisher || user?.role === "publisher") && (
                       <button
-                        onClick={() => navigateTo("admin")}
+                        onClick={() => navigateTo("publisher-dashboard")}
                         className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
                       >
-                        Administration
+                        Espace editeur
                       </button>
+                    )}
+                    {isAdmin && (
+                      <>
+                        <button
+                          onClick={() => navigateTo("admin")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
+                          Administration
+                        </button>
+                        <button
+                          onClick={() => navigateTo("admin-submissions")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
+                          Gestion editeurs
+                        </button>
+                      </>
                     )}
                     <div className="border-t border-gray-100 mt-1 pt-1">
                       <button
@@ -273,10 +289,20 @@ export const Header: React.FC = () => {
                       </button>
                     </>
                   )}
-                  {isAdmin && (
-                    <button onClick={() => navigateTo("admin")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                      Administration
+                  {(isPublisher || user?.role === "publisher") && (
+                    <button onClick={() => navigateTo("publisher-dashboard")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
+                      Espace editeur
                     </button>
+                  )}
+                  {isAdmin && (
+                    <>
+                      <button onClick={() => navigateTo("admin")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
+                        Administration
+                      </button>
+                      <button onClick={() => navigateTo("admin-submissions")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
+                        Gestion editeurs
+                      </button>
+                    </>
                   )}
                   <button
                     onClick={handleLogout}

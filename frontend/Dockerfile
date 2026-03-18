@@ -10,7 +10,7 @@ COPY package*.json ./
 
 # Installer toutes les dépendances (y compris devDependencies pour le build)
 # Fix pour Alpine Linux (musl): installer explicitement le package Rollup natif
-RUN npm ci --no-audit --no-fund && \
+RUN npm i --no-audit --no-fund && \
     npm install --no-save @rollup/rollup-linux-x64-musl && \
     npm cache clean --force
 

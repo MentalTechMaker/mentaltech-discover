@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { resetPassword } from "../../api/auth";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
@@ -12,13 +12,19 @@ export const ResetPasswordPage: React.FC = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tokenInvalid, setTokenInvalid] = useState(false);
 
-  const getToken = (): string | null => {
+  const [token] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('token');
-  };
+  });
 
-  const token = getToken();
+  // Auto-redirect to login page 3 seconds after successful reset
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => setView("prescriber-auth"), 3000);
+    return () => clearTimeout(timer);
+  }, [success, setView]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +52,12 @@ export const ResetPasswordPage: React.FC = () => {
       setSuccess(true);
       window.history.replaceState(null, "", "/reset-password");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la réinitialisation");
+      const message = err instanceof Error ? err.message : "Erreur lors de la réinitialisation";
+      if (message.includes("déjà été utilisé") || message.includes("invalide ou expiré")) {
+        setTokenInvalid(true);
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -81,12 +92,30 @@ export const ResetPasswordPage: React.FC = () => {
             Nouveau mot de passe
           </h2>
 
-          {success ? (
+          {tokenInvalid ? (
+            <div className="text-center space-y-4">
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700">
+                <p className="font-semibold">Lien expiré ou déjà utilisé</p>
+                <p className="text-sm mt-1">
+                  Ce lien de réinitialisation a déjà été utilisé ou a expiré. Veuillez en demander un nouveau.
+                </p>
+              </div>
+              <button
+                onClick={() => setView("forgot-password")}
+                className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              >
+                Demander un nouveau lien
+              </button>
+            </div>
+          ) : success ? (
             <div className="text-center space-y-4">
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
                 <p className="font-semibold">Mot de passe réinitialisé</p>
                 <p className="text-sm mt-1">
                   Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter.
+                </p>
+                <p className="text-sm mt-2 text-green-600">
+                  Redirection automatique dans 3 secondes...
                 </p>
               </div>
               <button

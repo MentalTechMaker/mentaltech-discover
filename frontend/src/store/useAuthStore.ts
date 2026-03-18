@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getTokens, clearTokens, setOnUnauthorized, hasSessionFlag, refreshAccessToken } from '../api/client';
 import { login as apiLogin, register as apiRegister, registerPrescriber as apiRegisterPrescriber, getMe } from '../api/auth';
+import { registerPublisher as apiRegisterPublisher } from '../api/publisher';
 
 interface User {
   id: string;
@@ -12,6 +13,8 @@ interface User {
   organization?: string | null;
   rpps_adeli?: string | null;
   is_verified_prescriber?: boolean;
+  company_name?: string | null;
+  is_verified_publisher?: boolean;
 }
 
 interface AuthState {
@@ -19,11 +22,13 @@ interface AuthState {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isPrescriber: boolean;
+  isPublisher: boolean;
   isLoading: boolean;
 
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   registerPrescriber: (email: string, password: string, name: string, profession: string, organization?: string, rppsAdeli?: string) => Promise<void>;
+  registerPublisher: (data: { email: string; password: string; name: string; company_name: string; siret?: string; company_website?: string }) => Promise<void>;
   logout: () => void;
   loadUser: () => Promise<void>;
 }
@@ -31,7 +36,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => {
   // Auto-logout on 401
   setOnUnauthorized(() => {
-    set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false });
+    set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false });
   });
 
   return {
@@ -39,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => {
     isAuthenticated: false,
     isAdmin: false,
     isPrescriber: false,
+    isPublisher: false,
     isLoading: false,
 
     login: async (email: string, password: string) => {
@@ -48,8 +54,13 @@ export const useAuthStore = create<AuthState>((set) => {
         user,
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
-        isPrescriber: user.role === 'prescriber' || user.role === 'admin',
+        isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
+      if (user.role === 'admin') {
+        const { useAppStore } = await import('./useAppStore');
+        useAppStore.getState().setView('admin');
+      }
     },
 
     register: async (email: string, password: string, name: string) => {
@@ -59,7 +70,8 @@ export const useAuthStore = create<AuthState>((set) => {
         user,
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
-        isPrescriber: user.role === 'prescriber' || user.role === 'admin',
+        isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
     },
 
@@ -70,13 +82,26 @@ export const useAuthStore = create<AuthState>((set) => {
         user,
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
-        isPrescriber: true,
+        isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPublisher: false,
+      });
+    },
+
+    registerPublisher: async (data: { email: string; password: string; name: string; company_name: string; siret?: string; company_website?: string }) => {
+      await apiRegisterPublisher(data);
+      const user = await getMe();
+      set({
+        user,
+        isAuthenticated: true,
+        isAdmin: false,
+        isPrescriber: false,
+        isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
     },
 
     logout: () => {
       clearTokens();
-      set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false });
+      set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false });
     },
 
     loadUser: async () => {
@@ -90,7 +115,7 @@ export const useAuthStore = create<AuthState>((set) => {
           const newToken = await refreshAccessToken();
           if (!newToken) {
             clearTokens();
-            set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isLoading: false });
+            set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false, isLoading: false });
             return;
           }
         }
@@ -99,12 +124,17 @@ export const useAuthStore = create<AuthState>((set) => {
           user,
           isAuthenticated: true,
           isAdmin: user.role === 'admin',
-          isPrescriber: user.role === 'prescriber' || user.role === 'admin',
+          isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+          isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
           isLoading: false,
         });
+        if (user.role === 'admin') {
+          const { useAppStore } = await import('./useAppStore');
+          useAppStore.getState().setView('admin');
+        }
       } catch {
         clearTokens();
-        set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isLoading: false });
+        set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false, isLoading: false });
       }
     },
   };

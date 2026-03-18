@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
-import { ProductForm } from "./ProductForm";
+import { SubmissionForm } from "../Publisher/SubmissionForm";
 import * as productsApi from "../../api/products";
 import {
   listPendingPrescribers,
@@ -25,15 +25,19 @@ const UPDATE_TYPES = [
 
 export const AdminPanel: React.FC = () => {
   const { isAdmin } = useAuthStore();
-  const { setView } = useAppStore();
+  const { setView, adminEditProductId, setAdminEditProductId } = useAppStore();
   const { products, fetchProducts } = useProductsStore();
 
   const [activeTab, setActiveTab] = useState<Tab>("products");
 
   // Products tab state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [showForm, setShowForm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [showProtocolForm, setShowProtocolForm] = useState(false);
+  const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [adminProductsLoading, setAdminProductsLoading] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [productSearch, setProductSearch] = useState("");
 
   // Prescribers tab state
   const [prescribers, setPrescribers] = useState<PrescriberListItem[]>([]);
@@ -57,34 +61,68 @@ export const AdminPanel: React.FC = () => {
   }, [isAdmin, setView]);
 
   useEffect(() => {
+    if (adminEditProductId && adminProducts.length > 0) {
+      const prod = adminProducts.find((p) => p.id === adminEditProductId);
+      if (prod) {
+        setEditingProduct(prod);
+        setShowProtocolForm(true);
+        setAdminEditProductId(null);
+      }
+    }
+  }, [adminEditProductId, adminProducts, setAdminEditProductId]);
+
+  useEffect(() => {
     if (activeTab === "prescribers") {
       loadPrescribers();
     }
+    if (activeTab === "products") {
+      loadAdminProducts();
+    }
   }, [activeTab, pendingOnly]);
+
+  const loadAdminProducts = async () => {
+    setAdminProductsLoading(true);
+    try {
+      const data = await productsApi.getAllForAdmin();
+      setAdminProducts(data);
+    } catch {
+      // silently fail
+    } finally {
+      setAdminProductsLoading(false);
+    }
+  };
 
   if (!isAdmin) return null;
 
   // ─── Products tab handlers ───────────────────────────────────
 
-  const handleCreate = async (data: Product) => {
-    await productsApi.create(data);
-    await fetchProducts();
-    setShowForm(false);
-  };
-
-  const handleUpdate = async (data: Product) => {
-    if (!editingProduct) return;
-    const { id: _id, ...updateData } = data;
-    await productsApi.update(editingProduct.id, updateData);
-    await fetchProducts();
-    setEditingProduct(null);
-    setShowForm(false);
-  };
-
   const handleDelete = async (id: string) => {
     await productsApi.remove(id);
     await fetchProducts();
+    await loadAdminProducts();
     setDeleteConfirm(null);
+  };
+
+  const handleToggleVisibility = async (id: string) => {
+    setTogglingId(id);
+    try {
+      const updated = await productsApi.toggleVisibility(id);
+      setAdminProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      await fetchProducts();
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const handleToggleDefunct = async (id: string) => {
+    setTogglingId(id);
+    try {
+      const updated = await productsApi.toggleDefunct(id);
+      setAdminProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      await fetchProducts();
+    } finally {
+      setTogglingId(null);
+    }
   };
 
   // ─── Prescribers tab handlers ────────────────────────────────
@@ -147,22 +185,20 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  // ─── Render product form fullscreen ─────────────────────────
+  // ─── Render protocol form fullscreen (create or edit) ────────
 
-  if (showForm || editingProduct) {
+  if (showProtocolForm) {
     return (
-      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <ProductForm
-            product={editingProduct ?? undefined}
-            onSubmit={editingProduct ? handleUpdate : handleCreate}
-            onCancel={() => {
-              setEditingProduct(null);
-              setShowForm(false);
-            }}
-          />
-        </div>
-      </div>
+      <SubmissionForm
+        adminMode={true}
+        editProduct={editingProduct ?? undefined}
+        onClose={() => {
+          setShowProtocolForm(false);
+          setEditingProduct(null);
+          fetchProducts();
+          loadAdminProducts();
+        }}
+      />
     );
   }
 
@@ -199,47 +235,113 @@ export const AdminPanel: React.FC = () => {
         {/* ── Produits tab ─────────────────────────────────────── */}
         {activeTab === "products" && (
           <>
-            <div className="flex justify-between items-center mb-6">
-              <p className="text-text-secondary">{products.length} produit(s) dans le catalogue</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90"
-              >
-                + Ajouter un produit
-              </button>
+            <div className="mb-4">
+              <input
+                type="text"
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                placeholder="Rechercher par nom..."
+                className="w-full max-w-sm px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm"
+              />
             </div>
 
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-text-secondary">
+                {adminProducts.length} produit(s) au total —{" "}
+                <span className="text-green-600 font-semibold">
+                  {adminProducts.filter((p) => p.isVisible !== false && !p.companyDefunct).length} visibles
+                </span>
+                {adminProducts.filter((p) => p.isVisible === false).length > 0 && (
+                  <span className="text-gray-500 ml-2">
+                    · {adminProducts.filter((p) => p.isVisible === false).length} cachés
+                  </span>
+                )}
+                {adminProducts.filter((p) => p.companyDefunct).length > 0 && (
+                  <span className="text-red-500 ml-2">
+                    · {adminProducts.filter((p) => p.companyDefunct).length} défunts
+                  </span>
+                )}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowProtocolForm(true)}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90"
+                >
+                  + Nouveau produit (protocole)
+                </button>
+              </div>
+            </div>
+
+            {adminProductsLoading ? (
+              <div className="text-center py-12 text-text-secondary">Chargement...</div>
+            ) : (
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">ID</th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Nom</th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Type</th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Entreprise</th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Tarif</th>
-                    <th className="text-right px-6 py-4 text-sm font-semibold text-text-secondary">Actions</th>
+                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Nom / ID</th>
+                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Type</th>
+                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Statut</th>
+                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Tarif</th>
+                    <th className="text-right px-4 py-4 text-sm font-semibold text-text-secondary">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {products.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-mono text-text-secondary">{product.id}</td>
-                      <td className="px-6 py-4 text-sm font-semibold text-text-primary">{product.name}</td>
-                      <td className="px-6 py-4 text-sm text-text-secondary">{product.type}</td>
-                      <td className="px-6 py-4 text-sm">
-                        {product.forCompany ? (
-                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Oui</span>
-                        ) : (
-                          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Non</span>
-                        )}
+                  {adminProducts.filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase())).map((product) => {
+                    const isHidden = product.isVisible === false;
+                    const isDefunct = product.companyDefunct === true;
+                    return (
+                    <tr
+                      key={product.id}
+                      className={`hover:bg-gray-50 ${isHidden || isDefunct ? "opacity-60" : ""}`}
+                    >
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                          {product.name}
+                          {isHidden && (
+                            <span className="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-xs font-semibold">Caché</span>
+                          )}
+                          {isDefunct && (
+                            <span className="bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-semibold">Défunt</span>
+                          )}
+                        </p>
+                        <p className="text-xs font-mono text-text-secondary">{product.id}</p>
                       </td>
-                      <td className="px-6 py-4 text-sm text-text-secondary">{product.pricing?.model || "-"}</td>
-                      <td className="px-6 py-4 text-right space-x-2">
+                      <td className="px-4 py-3 text-sm text-text-secondary">{product.type}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={() => handleToggleVisibility(product.id)}
+                            disabled={togglingId === product.id}
+                            title={isHidden ? "Rendre visible" : "Masquer de la recherche"}
+                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                              isHidden
+                                ? "bg-gray-200 text-gray-600 hover:bg-green-100 hover:text-green-700"
+                                : "bg-green-100 text-green-700 hover:bg-gray-200 hover:text-gray-600"
+                            }`}
+                          >
+                            {isHidden ? "👁 Afficher" : "👁 Visible"}
+                          </button>
+                          <button
+                            onClick={() => handleToggleDefunct(product.id)}
+                            disabled={togglingId === product.id}
+                            title={isDefunct ? "Marquer comme actif" : "Marquer société disparue"}
+                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                              isDefunct
+                                ? "bg-red-100 text-red-600 hover:bg-gray-200 hover:text-gray-600"
+                                : "bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"
+                            }`}
+                          >
+                            {isDefunct ? "💀 Défunt" : "🏢 Actif"}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-text-secondary">{product.pricing?.model || "-"}</td>
+                      <td className="px-4 py-3 text-right space-x-2">
                         <button
                           onClick={() => {
                             setEditingProduct(product);
-                            setShowForm(true);
+                            setShowProtocolForm(true);
                           }}
                           className="bg-primary text-white px-3 py-1 rounded text-sm font-semibold hover:opacity-90"
                         >
@@ -270,14 +372,16 @@ export const AdminPanel: React.FC = () => {
                         )}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
 
-              {products.length === 0 && (
+              {adminProducts.length === 0 && (
                 <div className="p-12 text-center text-text-secondary">Aucun produit trouvé</div>
               )}
             </div>
+            )}
           </>
         )}
 

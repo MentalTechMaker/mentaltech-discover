@@ -3,6 +3,7 @@ import {
   listPrescriptions,
   getPrescriptionStats,
   deletePrescription,
+  renewPrescription,
   listFavorites,
   getCommunityStats,
 } from "../../api/prescriber";
@@ -15,6 +16,7 @@ import type {
 import { useAppStore } from "../../store/useAppStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useProductsStore } from "../../store/useProductsStore";
+import { PrescriberOnboarding } from "./PrescriberOnboarding";
 
 type Tab = "prescriptions" | "favorites" | "community";
 
@@ -54,10 +56,13 @@ function formatDate(dateStr: string): string {
 
 export const PrescriberDashboard: React.FC = () => {
   const { isAuthenticated, isPrescriber } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const setView = useAppStore((s) => s.setView);
   const viewProduct = useAppStore((s) => s.viewProduct);
   const products = useProductsStore((s) => s.products);
   const fetchProducts = useProductsStore((s) => s.fetchProducts);
+
+  const onboardingKey = `prescriber_onboarding_done_${user?.id ?? "unknown"}`;
 
   const [activeTab, setActiveTab] = useState<Tab>("prescriptions");
   const [loading, setLoading] = useState(true);
@@ -69,7 +74,15 @@ export const PrescriberDashboard: React.FC = () => {
   const [communityStats, setCommunityStats] = useState<CommunityStatsItem[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [renewingId, setRenewingId] = useState<string | null>(null);
   const [removingFavoriteId, setRemovingFavoriteId] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const key = `prescriber_onboarding_done_${user.id}`;
+    setShowOnboarding(!localStorage.getItem(key));
+  }, [user?.id]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -127,10 +140,21 @@ export const PrescriberDashboard: React.FC = () => {
     if (!window.confirm("Supprimer cette prescription ?")) return;
     setDeletingId(id);
     try {
+      const deleted = prescriptions.find((p) => p.id === id);
       await deletePrescription(id);
       setPrescriptions((prev) => prev.filter((p) => p.id !== id));
-      if (stats) {
-        setStats({ ...stats, total: stats.total - 1 });
+      if (stats && deleted) {
+        const now = new Date();
+        const createdDate = new Date(deleted.createdAt);
+        const isThisMonth =
+          createdDate.getFullYear() === now.getFullYear() &&
+          createdDate.getMonth() === now.getMonth();
+        setStats({
+          ...stats,
+          total: stats.total - 1,
+          thisMonth: isThisMonth ? stats.thisMonth - 1 : stats.thisMonth,
+          viewed: deleted.viewedAt ? stats.viewed - 1 : stats.viewed,
+        });
       }
     } catch (err) {
       setError(
@@ -140,6 +164,19 @@ export const PrescriberDashboard: React.FC = () => {
       );
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleRenew = async (id: string) => {
+    if (!window.confirm("Renouveler cette prescription pour 30 jours supplémentaires ?")) return;
+    setRenewingId(id);
+    try {
+      const renewed = await renewPrescription(id);
+      setPrescriptions((prev) => prev.map((p) => (p.id === id ? renewed : p)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur lors du renouvellement");
+    } finally {
+      setRenewingId(null);
     }
   };
 
@@ -160,7 +197,23 @@ export const PrescriberDashboard: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated || !isPrescriber) {
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
+        <p className="text-text-secondary">
+          Vous devez être connecté en tant que prescripteur pour accéder à cette page.
+        </p>
+      </div>
+    );
+  }
+
+  if (!isPrescriber && user?.role === 'prescriber' && !user.is_verified_prescriber) {
+    // Unverified prescriber — redirect to profile
+    setView('profile');
+    return null;
+  }
+
+  if (!isPrescriber) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
         <p className="text-text-secondary">
@@ -211,6 +264,15 @@ export const PrescriberDashboard: React.FC = () => {
   ];
 
   return (
+    <>
+    {showOnboarding && (
+      <PrescriberOnboarding
+        onClose={() => {
+          localStorage.setItem(onboardingKey, "1");
+          setShowOnboarding(false);
+        }}
+      />
+    )}
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -363,6 +425,14 @@ export const PrescriberDashboard: React.FC = () => {
                               />
                             </svg>
                             {copiedId === prescription.id ? "Copié !" : "Copier le lien"}
+                          </button>
+                          <button
+                            onClick={() => handleRenew(prescription.id)}
+                            disabled={renewingId === prescription.id}
+                            title="Renouveler pour 30 jours"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-green-200 rounded-lg text-sm font-medium text-green-700 hover:bg-green-50 transition-colors disabled:opacity-50"
+                          >
+                            {renewingId === prescription.id ? "..." : "Renouveler"}
                           </button>
                           <button
                             onClick={() => handleDelete(prescription.id)}
@@ -530,5 +600,6 @@ export const PrescriberDashboard: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };

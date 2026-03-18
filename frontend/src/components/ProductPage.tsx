@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { getLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
+import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
 import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
 
@@ -48,6 +48,7 @@ export const ProductPage: React.FC = () => {
   const products = useProductsStore((s) => s.products);
   const isAdmin = useAuthStore((s) => s.isAdmin);
   const isPrescriber = useAuthStore((s) => s.isPrescriber);
+  const setAdminEditProductId = useAppStore((s) => s.setAdminEditProductId);
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -200,22 +201,23 @@ export const ProductPage: React.FC = () => {
                   {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
                     const score = product.scoring?.[key];
                     const justification = product.scoring?.[justKey];
-                    if (score == null && !justification) return null;
+                    const pillarLabel = getPillarLabelInfo(score);
                     return (
                       <div key={key} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-semibold text-text-primary">{criteriaLabel}</span>
-                          {score != null && (
-                            <span className="text-lg font-bold text-text-primary">{score}/20</span>
-                          )}
+                          {score != null
+                            ? <span className="text-lg font-bold text-text-primary">{score}/5</span>
+                            : <span className="text-xs text-text-secondary italic">Non renseigné</span>
+                          }
                         </div>
                         {score != null && (
                           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
                             <div
                               className="h-2.5 rounded-full transition-all"
                               style={{
-                                width: `${(score / 20) * 100}%`,
-                                backgroundColor: label.bgColor,
+                                width: `${(score / 5) * 100}%`,
+                                backgroundColor: pillarLabel.bgColor,
                               }}
                             />
                           </div>
@@ -254,22 +256,25 @@ export const ProductPage: React.FC = () => {
                 <div className="space-y-3">
                   {SCORE_CRITERIA.map(({ key, label: criteriaLabel }) => {
                     const score = product.scoring?.[key];
-                    if (score == null) return null;
+                    const pillarLabel = getPillarLabelInfo(score);
                     return (
                       <div key={key}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm text-text-primary">{criteriaLabel}</span>
-                          <span className="text-sm font-bold text-text-primary">{score}/20</span>
+                          {score != null
+                            ? <span className="text-sm font-bold text-text-primary">{score}/5</span>
+                            : <span className="text-xs text-text-secondary italic">Non renseigné</span>
+                          }
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        {score != null && <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
                             className="h-2 rounded-full transition-all"
                             style={{
-                              width: `${(score / 20) * 100}%`,
-                              backgroundColor: label.bgColor,
+                              width: `${(score / 5) * 100}%`,
+                              backgroundColor: pillarLabel.bgColor,
                             }}
                           />
-                        </div>
+                        </div>}
                       </div>
                     );
                   })}
@@ -301,6 +306,17 @@ export const ProductPage: React.FC = () => {
           <div className="space-y-6">
             {/* CTA */}
             <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 space-y-3">
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setAdminEditProductId(product.id);
+                    setView("admin");
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 text-text-secondary hover:border-primary hover:text-primary transition-colors"
+                >
+                  ✏️ Modifier ce produit
+                </button>
+              )}
               {safeUrl ? (
                 <a
                   href={safeUrl}
@@ -402,7 +418,7 @@ export const ProductPage: React.FC = () => {
             {product.lastUpdated && (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
                 <p className="text-xs text-text-secondary">
-                  Dernière mise à jour : {product.lastUpdated}
+                  Dernière mise à jour : {new Date(product.lastUpdated).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                 </p>
               </div>
             )}

@@ -19,7 +19,11 @@ from ..schemas.prescription import (
     PrescriptionStats,
 )
 from ..services.product import _to_response
-from ..services.email import send_prescription_email
+from ..services.email import (
+    send_prescription_email,
+    send_prescription_viewed_email,
+    send_ambassador_trigger_email,
+)
 
 router = APIRouter(prefix="/api/prescriptions", tags=["prescriptions"])
 
@@ -81,6 +85,19 @@ async def create_prescription(
     db.add(prescription)
     db.commit()
     db.refresh(prescription)
+
+    # Ambassador trigger on 3rd prescription
+    total_prescriptions = (
+        db.query(func.count(Prescription.id))
+        .filter(Prescription.prescriber_id == user.id)
+        .scalar()
+    )
+    if total_prescriptions == 3:
+        background_tasks.add_task(
+            send_ambassador_trigger_email,
+            email=user.email,
+            name=user.name,
+        )
 
     # Send email to patient if email provided
     if data.patient_email:
@@ -163,6 +180,48 @@ def get_stats(
     )
 
 
+@router.post("/{prescription_id}/renew", response_model=PrescriptionResponse)
+async def renew_prescription(
+    prescription_id: str,
+    background_tasks: BackgroundTasks,
+    user: User = Depends(require_prescriber_or_admin),
+    db: Session = Depends(get_db),
+):
+    prescription = (
+        db.query(Prescription)
+        .filter(Prescription.id == prescription_id, Prescription.prescriber_id == user.id)
+        .first()
+    )
+    if not prescription:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+
+    prescription.token = secrets.token_urlsafe(48)
+    prescription.expires_at = datetime.now(timezone.utc) + timedelta(days=PRESCRIPTION_EXPIRE_DAYS)
+    prescription.viewed_at = None
+    db.commit()
+    db.refresh(prescription)
+
+    if prescription.patient_email:
+        product_rows = db.query(Product).filter(Product.id.in_(prescription.product_ids or [])).all()
+        product_names = [p.name for p in product_rows]
+        link = f"{settings.FRONTEND_URL}/prescription/{prescription.token}"
+        expires_at_str = prescription.expires_at.strftime("%d/%m/%Y")
+        background_tasks.add_task(
+            send_prescription_email,
+            patient_email=prescription.patient_email,
+            patient_name=prescription.patient_name,
+            prescriber_name=user.name,
+            prescriber_profession=user.profession,
+            prescriber_organization=user.organization,
+            link=link,
+            product_names=product_names,
+            message=prescription.message,
+            expires_at=expires_at_str,
+        )
+
+    return _prescription_to_response(prescription, user.name)
+
+
 @router.delete("/{prescription_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_prescription(
     prescription_id: str,
@@ -182,7 +241,7 @@ def delete_prescription(
 
 # Public endpoint - no auth required
 @router.get("/view/{token}", response_model=PrescriptionPublicResponse)
-def view_prescription(token: str, db: Session = Depends(get_db)):
+def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
@@ -190,13 +249,25 @@ def view_prescription(token: str, db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc)
     expired = now > prescription.expires_at
 
-    # Mark as viewed
-    if not prescription.viewed_at and not expired:
+    # Mark as viewed (first time only)
+    first_view = not prescription.viewed_at and not expired
+    if first_view:
         prescription.viewed_at = now
         db.commit()
 
     # Get prescriber info
     prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
+
+    # Notify prescriber on first view
+    if first_view and prescriber and prescriber.email:
+        link = f"{settings.FRONTEND_URL}/prescription/{token}"
+        background_tasks.add_task(
+            send_prescription_viewed_email,
+            prescriber_email=prescriber.email,
+            prescriber_name=prescriber.name,
+            patient_name=prescription.patient_name,
+            prescription_link=link,
+        )
 
     # Get products
     products = []

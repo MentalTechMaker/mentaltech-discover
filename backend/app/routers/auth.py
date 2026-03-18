@@ -19,6 +19,7 @@ from ..schemas.user import (
     ForgotPassword,
     ResetPassword,
 )
+from ..schemas.publisher import PublisherRegister
 from ..schemas.auth import TokenResponse, TokenRefresh
 from ..services.auth import (
     hash_password,
@@ -166,6 +167,59 @@ async def register_prescriber(
     )
 
 
+@router.post("/register-publisher", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
+async def register_publisher(
+    request: Request,
+    data: PublisherRegister,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    password_error = validate_password_strength(data.password)
+    if password_error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=password_error,
+        )
+
+    existing = db.query(User).filter(User.email == data.email).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Un compte avec cet email existe déjà",
+        )
+
+    user = User(
+        email=data.email,
+        password_hash=hash_password(data.password),
+        name=data.name,
+        role="publisher",
+        company_name=data.company_name,
+        siret=data.siret,
+        company_website=data.company_website,
+    )
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Un compte avec cet email existe déjà",
+        )
+
+    background_tasks.add_task(
+        send_verification_email, user.email, user.name, str(user.id)
+    )
+
+    return _set_auth_response(
+        access_token=create_access_token(str(user.id)),
+        refresh_token=create_refresh_token(str(user.id)),
+        status_code=201,
+    )
+
+
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("10/minute")
 def login(request: Request, data: UserLogin, db: Session = Depends(get_db)):
@@ -234,6 +288,10 @@ def me(user: User = Depends(get_current_user)):
         organization=user.organization,
         rpps_adeli=user.rpps_adeli,
         is_verified_prescriber=user.is_verified_prescriber,
+        company_name=user.company_name,
+        siret=user.siret,
+        company_website=user.company_website,
+        is_verified_publisher=user.is_verified_publisher,
     )
 
 

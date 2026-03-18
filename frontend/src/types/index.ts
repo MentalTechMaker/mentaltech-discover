@@ -40,6 +40,8 @@ export interface Product {
   preferenceMatch: string[];
   forCompany?: boolean;
   isMentaltechMember?: boolean;
+  isVisible?: boolean;
+  companyDefunct?: boolean;
   pricing?: {
     model?: 'free' | 'freemium' | 'subscription' | 'per-session' | 'enterprise' | 'custom';
     amount?: string;
@@ -72,6 +74,7 @@ export interface Product {
   justificationAccessibility?: string;
   justificationUx?: string;
   justificationSupport?: string;
+  scoringCriteria?: Record<string, Record<string, unknown>> | null;
 }
 
 export interface RecommendationResult {
@@ -81,4 +84,31 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company';
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription';
+export type SubmissionStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
+
+export interface ProductSubmission {
+  id: string;
+  publisherId: string;
+  productId: string | null;
+  status: SubmissionStatus;
+  name: string | null;
+  type: string | null;
+  tagline: string | null;
+  description: string | null;
+  url: string | null;
+  logo: string | null;
+  tags: string[];
+  audience: string[];
+  problemsSolved: string[];
+  forCompany: boolean;
+  pricingModel: string | null;
+  pricingAmount: string | null;
+  pricingDetails: string | null;
+  protocolAnswers: Record<string, Record<string, unknown>>;
+  adminNotes: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'register-publisher' | 'publisher-dashboard' | 'publisher-submission' | 'admin-submissions';

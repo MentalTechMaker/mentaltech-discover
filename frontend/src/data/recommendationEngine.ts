@@ -202,6 +202,9 @@ function generateExplanation(answers: UserAnswers): string {
       'trauma': 'surmonter ce traumatisme',
       'work': 'améliorer ton bien-être au travail',
       'sleep': 'retrouver un meilleur sommeil',
+      'cognitif': 'explorer les pistes cognitives',
+      'douleur': 'mieux gérer la douleur',
+      'concentration': 'améliorer ta concentration',
       'other': 'comprendre ce qui se passe'
     };
     if (problemLabels[answers.problem]) {

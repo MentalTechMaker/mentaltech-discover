@@ -151,8 +151,10 @@ export const LegalNotice: React.FC = () => {
             <p className="text-text-secondary leading-relaxed">
               Les <strong>prescripteurs inscrits</strong> acceptent que leur nom,
               email et profession soient stockés pour le fonctionnement du compte.
-              Ces données sont hébergées en France et peuvent être supprimées sur
-              demande.
+              Les <strong>éditeurs inscrits</strong> acceptent que leur nom, email,
+              nom d'entreprise et numéro SIRET soient stockés pour la gestion de
+              leurs soumissions de solutions. Ces données sont hébergées en France
+              et peuvent être supprimées sur demande.
             </p>
             <p className="text-text-secondary leading-relaxed">
               Pour plus d'informations, consultez notre{" "}

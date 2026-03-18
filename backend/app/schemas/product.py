@@ -35,11 +35,14 @@ class ProductResponse(BaseModel):
     preferenceMatch: list[str]
     forCompany: bool
     isMentaltechMember: bool
+    isVisible: bool = True
+    companyDefunct: bool = False
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
     scoring: ScoringSchema | None = None
     scoreTotal: int | None = None
     scoreLabel: str | None = None
+    scoringCriteria: dict | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -60,16 +63,17 @@ class ProductCreate(BaseModel):
     isMentaltechMember: bool = False
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
-    scoreSecurity: int | None = Field(None, ge=0, le=20)
-    scoreEfficacy: int | None = Field(None, ge=0, le=20)
-    scoreAccessibility: int | None = Field(None, ge=0, le=20)
-    scoreUx: int | None = Field(None, ge=0, le=20)
-    scoreSupport: int | None = Field(None, ge=0, le=20)
+    scoreSecurity: int | None = Field(None, ge=0, le=5)
+    scoreEfficacy: int | None = Field(None, ge=0, le=5)
+    scoreAccessibility: int | None = Field(None, ge=0, le=5)
+    scoreUx: int | None = Field(None, ge=0, le=5)
+    scoreSupport: int | None = Field(None, ge=0, le=5)
     justificationSecurity: str | None = None
     justificationEfficacy: str | None = None
     justificationAccessibility: str | None = None
     justificationUx: str | None = None
     justificationSupport: str | None = None
+    scoringCriteria: dict | None = None
 
 
 class ProductUpdate(BaseModel):
@@ -85,18 +89,21 @@ class ProductUpdate(BaseModel):
     preferenceMatch: list[str] | None = None
     forCompany: bool | None = None
     isMentaltechMember: bool | None = None
+    isVisible: bool | None = None
+    companyDefunct: bool | None = None
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
-    scoreSecurity: int | None = Field(None, ge=0, le=20)
-    scoreEfficacy: int | None = Field(None, ge=0, le=20)
-    scoreAccessibility: int | None = Field(None, ge=0, le=20)
-    scoreUx: int | None = Field(None, ge=0, le=20)
-    scoreSupport: int | None = Field(None, ge=0, le=20)
+    scoreSecurity: int | None = Field(None, ge=0, le=5)
+    scoreEfficacy: int | None = Field(None, ge=0, le=5)
+    scoreAccessibility: int | None = Field(None, ge=0, le=5)
+    scoreUx: int | None = Field(None, ge=0, le=5)
+    scoreSupport: int | None = Field(None, ge=0, le=5)
     justificationSecurity: str | None = None
     justificationEfficacy: str | None = None
     justificationAccessibility: str | None = None
     justificationUx: str | None = None
     justificationSupport: str | None = None
+    scoringCriteria: dict | None = None
 
 
 class PaginatedProducts(BaseModel):

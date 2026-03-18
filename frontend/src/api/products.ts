@@ -36,3 +36,19 @@ export async function remove(id: string): Promise<void> {
     method: 'DELETE',
   }, true);
 }
+
+export async function getAllForAdmin(): Promise<Product[]> {
+  return apiFetch<Product[]>('/admin/products', {}, true);
+}
+
+export async function toggleVisibility(id: string): Promise<Product> {
+  return apiFetch<Product>(`/admin/products/${id}/visibility`, {
+    method: 'PATCH',
+  }, true);
+}
+
+export async function toggleDefunct(id: string): Promise<Product> {
+  return apiFetch<Product>(`/admin/products/${id}/defunct`, {
+    method: 'PATCH',
+  }, true);
+}

@@ -4,9 +4,14 @@ import { ProductCard } from "./ProductCard";
 import { ExplanationBox } from "./ExplanationBox";
 import { MedicalDisclaimer } from "../Disclaimer/MedicalDisclaimer";
 
+type PricingFilter = "all" | "free" | "paid";
+type ContactFilter = "all" | "human" | "autonomous";
+
 export const RecommendationList: React.FC = () => {
   const { recommendations, reset, setView } = useAppStore();
   const [showAdditional, setShowAdditional] = useState(false);
+  const [pricingFilter, setPricingFilter] = useState<PricingFilter>("all");
+  const [contactFilter, setContactFilter] = useState<ContactFilter>("all");
 
   if (!recommendations) {
     return (
@@ -20,8 +25,16 @@ export const RecommendationList: React.FC = () => {
     reset();
   };
 
-  const topProducts = recommendations.products.slice(0, 3);
-  const additionalProducts = recommendations.products.slice(3, 9);
+  const filteredAllProducts = recommendations.products.filter((p) => {
+    if (pricingFilter === "free" && p.pricing?.model !== "free" && p.pricing?.model !== "freemium") return false;
+    if (pricingFilter === "paid" && (!p.pricing?.model || p.pricing.model === "free" || p.pricing.model === "freemium")) return false;
+    if (contactFilter === "human" && !p.preferenceMatch?.includes("talk-now")) return false;
+    if (contactFilter === "autonomous" && p.preferenceMatch?.includes("talk-now") && !p.preferenceMatch?.includes("autonomous")) return false;
+    return true;
+  });
+
+  const topProducts = filteredAllProducts.slice(0, 3);
+  const additionalProducts = filteredAllProducts.slice(3, 9);
 
   const hasAdditionalProducts = additionalProducts.length > 0;
 
@@ -59,6 +72,61 @@ export const RecommendationList: React.FC = () => {
             </p>
           )}
         </div>
+
+        {/* Quick filters */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <span className="text-sm text-gray-500 font-medium">Affiner :</span>
+          <div className="flex gap-2">
+            {(["all", "free", "paid"] as PricingFilter[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => { setPricingFilter(v); setShowAdditional(false); }}
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${
+                  pricingFilter === v
+                    ? "bg-primary text-white border-primary"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-primary/50"
+                }`}
+              >
+                {v === "all" ? "Tous" : v === "free" ? "💚 Gratuit" : "💳 Payant"}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            {(["all", "human", "autonomous"] as ContactFilter[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => { setContactFilter(v); setShowAdditional(false); }}
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${
+                  contactFilter === v
+                    ? "bg-purple-600 text-white border-purple-600"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-purple-400"
+                }`}
+              >
+                {v === "all" ? "Tous" : v === "human" ? "🧑‍⚕️ Avec un humain" : "📱 En autonomie"}
+              </button>
+            ))}
+          </div>
+          {(pricingFilter !== "all" || contactFilter !== "all") && (
+            <button
+              onClick={() => { setPricingFilter("all"); setContactFilter("all"); setShowAdditional(false); }}
+              className="text-xs text-gray-400 hover:text-red-500 transition-colors underline"
+            >
+              Réinitialiser
+            </button>
+          )}
+        </div>
+
+        {filteredAllProducts.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg mb-2">Aucune solution ne correspond à ces filtres.</p>
+            <button
+              onClick={() => { setPricingFilter("all"); setContactFilter("all"); }}
+              className="text-primary font-semibold hover:underline"
+            >
+              Retirer les filtres
+            </button>
+          </div>
+        )}
 
         <MedicalDisclaimer variant="card" className="max-w-4xl mx-auto" />
 

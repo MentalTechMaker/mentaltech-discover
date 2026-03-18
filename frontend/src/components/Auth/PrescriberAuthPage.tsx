@@ -44,11 +44,20 @@ export const PrescriberAuthPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(loginEmail)) {
+      setLoginError("Veuillez saisir une adresse email valide");
+      return;
+    }
+
     setLoginLoading(true);
     try {
       await login(loginEmail, loginPassword);
       const { user } = useAuthStore.getState();
-      if (user?.role === "prescriber" || user?.role === "admin") {
+      if (user?.role === "admin") {
+        setView("admin");
+      } else if (user?.role === "prescriber") {
         setView("prescriber-dashboard");
       } else {
         setView("landing");
@@ -63,6 +72,12 @@ export const PrescriberAuthPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(registerEmail)) {
+      setRegisterError("Veuillez saisir une adresse email valide");
+      return;
+    }
 
     if (!profession) {
       setRegisterError("Veuillez indiquer votre profession");
@@ -143,12 +158,7 @@ export const PrescriberAuthPage: React.FC = () => {
           {/* LOGIN TAB */}
           {activeTab === "login" && (
             <>
-              {loginError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                  {loginError}
-                </div>
-              )}
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} noValidate className="space-y-4">
                 <div>
                   <label
                     htmlFor="login-email"
@@ -183,6 +193,11 @@ export const PrescriberAuthPage: React.FC = () => {
                     placeholder="Votre mot de passe"
                   />
                 </div>
+                {loginError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {loginError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   disabled={loginLoading}
@@ -205,12 +220,7 @@ export const PrescriberAuthPage: React.FC = () => {
           {/* REGISTER TAB */}
           {activeTab === "register" && (
             <>
-              {registerError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                  {registerError}
-                </div>
-              )}
-              <form onSubmit={handleRegister} className="space-y-4">
+              <form onSubmit={handleRegister} noValidate className="space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4 space-y-4">
                   <h3 className="text-sm font-bold text-text-primary">
                     Informations personnelles
@@ -356,6 +366,11 @@ export const PrescriberAuthPage: React.FC = () => {
                   </div>
                 </div>
 
+                {registerError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {registerError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   disabled={registerLoading}

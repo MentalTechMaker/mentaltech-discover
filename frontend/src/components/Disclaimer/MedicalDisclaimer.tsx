@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface MedicalDisclaimerProps {
-  variant?: "banner" | "card" | "compact";
+  variant?: "banner" | "card" | "compact" | "collapsible";
   className?: string;
 }
 
@@ -9,6 +9,39 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
   variant = "banner",
   className = "",
 }) => {
+  const [open, setOpen] = useState(false);
+
+  if (variant === "collapsible") {
+    return (
+      <div className={`${className}`}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex items-center gap-2 text-amber-700 text-xs font-medium hover:text-amber-900 transition-colors"
+          aria-expanded={open}
+        >
+          <span>⚠️</span>
+          <span>Information importante — pas un dispositif médical</span>
+          <svg
+            className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {open && (
+          <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 leading-relaxed">
+            MentalTech Discover est un outil de découverte, pas un dispositif médical certifié.
+            Pour un diagnostic, traitement ou urgence, consultez un professionnel de santé.{" "}
+            <span className="font-bold">Numéro national de prévention du suicide : 3114 (gratuit 24h/24)</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (variant === "compact") {
     return (
       <div
@@ -19,7 +52,9 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
           <div className="text-sm text-amber-900">
             <p className="font-semibold">Outil de découverte, pas un dispositif médical</p>
             <p className="mt-1">
-              Pour un diagnostic ou traitement, consultez un professionnel de santé.{" "}
+              Pour un diagnostic ou traitement, consultez un professionnel de santé.
+            </p>
+            <p className="mt-1">
               <span className="font-bold">Urgence : 3114</span> (gratuit 24h/24)
             </p>
           </div>

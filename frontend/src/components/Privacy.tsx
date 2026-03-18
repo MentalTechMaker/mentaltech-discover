@@ -53,6 +53,24 @@ export const Privacy: React.FC = () => {
                   ne sont jamais revendues ni partagées avec des tiers.
                 </p>
               </div>
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <p className="font-semibold text-blue-900 mb-1">
+                  🏢 Éditeurs inscrits
+                </p>
+                <p className="text-text-secondary mb-2">
+                  Pour créer un compte éditeur (soumission de solutions), nous collectons :
+                </p>
+                <ul className="list-disc list-inside text-text-secondary space-y-1 text-sm ml-2">
+                  <li>Nom complet et adresse email</li>
+                  <li>Nom de l'entreprise et numéro SIRET</li>
+                  <li>Site web de l'entreprise (optionnel)</li>
+                </ul>
+                <p className="text-text-secondary text-sm mt-2">
+                  Ces données sont utilisées uniquement pour identifier l'entreprise
+                  soumettant une solution. Elles sont hébergées en France (OVH) et
+                  ne sont jamais revendues ni partagées avec des tiers.
+                </p>
+              </div>
             </div>
           </section>
 
@@ -150,7 +168,7 @@ export const Privacy: React.FC = () => {
                 n'étant collectée, ces droits ne sont pas applicables.
               </p>
               <p>
-                Pour les <strong>prescripteurs inscrits</strong> : vous pouvez
+                Pour les <strong>prescripteurs et éditeurs inscrits</strong> : vous pouvez
                 exercer vos droits d'accès, de rectification et de suppression en
                 contactant{" "}
                 <a

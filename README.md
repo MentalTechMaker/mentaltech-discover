@@ -8,7 +8,7 @@
 
 ## 🎯 À propos
 
-MentalTech Discover référence **22 solutions** des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
+MentalTech Discover référence les solutions des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
 
 - 🧭 **Questionnaire personnalisé** - Recommandations sur-mesure en 3-5 minutes
 - 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique, label qualité
@@ -18,6 +18,7 @@ MentalTech Discover référence **22 solutions** des membres du Collectif Mental
 - 💙 **Collectif MentalTech** - Badge d'appartenance au collectif
 - 🔒 **Authentification** - Inscription, connexion, panel d'administration
 - 🩺 **Espace Prescripteur** - Prescriptions digitales, favoris, notes, veille, comparateur
+- 🏢 **Espace Éditeur** - Soumission de produits par les éditeurs de solutions
 - 📖 **Open Source** - Code transparent sous licence MIT
 
 ---
@@ -33,6 +34,8 @@ Un questionnaire rapide analyse vos besoins selon :
 - **Préférences** : Accompagnement autonome, thérapie immédiate, programmes structurés
 - **Contexte** : Solutions individuelles ou entreprise
 
+Pendant le quiz, un **compteur en temps réel** affiche le nombre de solutions déjà détectées à mesure que l'utilisateur répond.
+
 ### 📚 Catalogue interactif
 
 Explorez toutes les solutions avec filtres puissants :
@@ -46,17 +49,22 @@ Explorez toutes les solutions avec filtres puissants :
 - **Label qualité** - Filtrer par grade (A, B, C, D, E, Non évalué)
 - **Tri par label** - Trier par meilleur score qualité
 
+### 📊 Résultats et partage
+
+- **Filtres rapides** sur les résultats : Gratuit / Payant et Avec un humain / En autonomie
+- **Lien partageable** : l'URL `/results?f=...` encode les réponses du quiz pour partager ou sauvegarder ses résultats
+
 ### ⭐ Labels qualité (Nutriscore)
 
-Chaque solution est évaluée sur 5 piliers, chacun noté de 0 à 20, pour un score total sur 100 :
+Chaque solution est évaluée sur 5 piliers, chacun noté de 0 à 5, pour un score total sur 100 :
 
 | Score | Grade | Label |
 |-------|-------|-------|
 | 80-100 | **A** | Validé MentalTech |
 | 60-79 | **B** | Recommandé |
 | 40-59 | **C** | Évalué |
-| 20-39 | **D** | Insuffisant |
-| 0-19 | **E** | Non recommandé |
+| 20-39 | **D** | À améliorer |
+| 0-19 | **E** | Déconseillé |
 
 Les 5 piliers d'évaluation :
 
@@ -88,7 +96,8 @@ Chaque solution dispose d'une page dédiée accessible depuis le catalogue ou le
 - **Mot de passe oublié** - Réinitialisation par email avec lien temporaire (1h)
 - **Panel Admin** - CRUD complet sur les produits (ajout, modification, suppression)
 - **Scoring admin** - Saisie des 5 scores qualité + justifications par produit avec preview en temps réel
-- **Rôles** - Utilisateur standard, prescripteur (professionnel de santé) et administrateur
+- **Visibilité produits** - Masquer/afficher un produit ou le marquer "Entreprise défunte" sans le supprimer
+- **Rôles** - Utilisateur standard, prescripteur (professionnel de santé), éditeur et administrateur
 
 ### 🩺 Espace Prescripteur (Premium)
 
@@ -99,13 +108,21 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 - **Formulaire dédié** - Inscription avec profession, organisation et numéro RPPS/ADELI
 - **Validation admin** - Les prescripteurs doivent être vérifiés par un administrateur
 - **Rôle spécifique** - Accès aux fonctionnalités premium après validation
+- **Onboarding guidé** - 3 étapes au premier login pour découvrir les fonctionnalités (catalogue → favoris → prescription)
 
 #### Ordonnance digitale
 
 - **Création de prescriptions** - Sélection de 1 à 5 solutions avec message personnalisé
 - **Lien partageable** - Lien unique sécurisé (token 48 caractères) valide 30 jours
+- **QR code** - Code QR généré automatiquement à la confirmation pour faciliter le partage en consultation
 - **Page patient** - Le patient voit les solutions recommandées avec infos du prescripteur
 - **Suivi** - Notification quand le patient consulte la prescription
+
+#### Workflows prescripteur optimisés
+
+- **Favoris en tête** - Les solutions favorites apparaissent en priorité lors de la création d'une prescription
+- **Vue rapide produit** - Panneau latéral (drawer) pour consulter les détails d'un produit sans quitter la prescription en cours
+- **Filtre favoris** - Bascule "Tous les produits / ⭐ Mes favoris" dans la liste de sélection
 
 #### Tableau de bord
 
@@ -137,9 +154,18 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 - **Données anonymisées** - Nombre de prescripteurs et prescriptions par solution
 - **Top solutions** - Les 20 solutions les plus prescrites
 
+### 🏢 Espace Éditeur (Publisher)
+
+Un espace dédié aux éditeurs de solutions de santé mentale qui souhaitent soumettre leur produit pour référencement :
+
+- **Inscription éditeur** - Formulaire dédié avec nom d'entreprise et rôle
+- **Soumission de produit** - Formulaire guidé basé sur le protocole d'évaluation (questions sur sécurité, preuves cliniques, accessibilité, UX, support)
+- **Suivi des soumissions** - Dashboard éditeur avec statut des demandes (en attente / accepté / refusé)
+- **Révision admin** - L'administrateur examine les soumissions et les valide ou les refuse
+
 ### 🛡️ Sécurité et Transparence
 
-- ✅ **Disclaimers médicaux** - Numéros d'urgence (3114, 15, 112)
+- ✅ **Disclaimers médicaux** - Avertissement compact visible sur la page d'accueil + numéros d'urgence (3114, 15, 112)
 - ✅ **Critères de référencement** - Page "Notre Démarche" transparente
 - ✅ **FAQ complète** - Questions fréquentes organisées
 - ✅ **Signalement facile** - Boutons de signalement sur chaque solution
@@ -160,6 +186,7 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 - **Zustand 5** - State management
 - **Tailwind CSS 4** - Styling
 - **Vite 7** - Build tool
+- **qrcode.react** - Génération de QR codes
 - **Plausible** - Analytics privacy-first
 
 ### Backend
@@ -207,8 +234,8 @@ L'application sera disponible sur :
 
 ```bash
 cd frontend
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 Le proxy Vite redirige `/api` vers `http://localhost:8000`.
@@ -228,8 +255,8 @@ uvicorn app.main:app --reload --port 8000
 ### Pour les utilisateurs
 
 1. **Questionnaire** - Cliquez sur "Trouver ma solution" depuis la page d'accueil, répondez aux questions en 3-5 minutes
-2. **Résultats** - Consultez les solutions recommandées, triées par pertinence
-3. **Catalogue** - Explorez toutes les solutions avec les filtres (type, audience, tarification, label qualité)
+2. **Résultats** - Consultez les solutions recommandées, triées par pertinence — utilisez les filtres Gratuit/Payant et Autonomie/Humain pour affiner
+3. **Catalogue** - Cliquez sur "Explorer toutes les solutions" pour parcourir le catalogue avec les filtres (type, audience, tarification, label qualité)
 4. **Fiche produit** - Cliquez sur une solution pour voir le détail : scoring, description, tarification, lien direct
 
 ### Pour les prescripteurs (professionnels de santé)
@@ -237,16 +264,26 @@ uvicorn app.main:app --reload --port 8000
 1. **Inscription** - Cliquez sur "Mon compte" > "Inscription", puis choisissez "Inscription Prescripteur"
 2. **Renseignez vos informations** - Profession, organisation, numéro RPPS/ADELI
 3. **Validation** - Un administrateur valide votre compte (nécessaire pour accéder aux fonctionnalités premium)
-4. **Tableau de bord** - Accédez à vos stats, prescriptions, favoris et données communautaires
-5. **Nouvelle prescription** - Sélectionnez 1-5 solutions, ajoutez un message, envoyez le lien au patient
-6. **Veille** - Consultez les mises à jour des solutions (tarifs, études, scores)
-7. **Comparateur** - Comparez 2-4 solutions côte-à-côte sur tous les critères
+4. **Onboarding** - Dès votre premier login, un guide en 3 étapes vous présente les fonctionnalités clés
+5. **Tableau de bord** - Accédez à vos stats, prescriptions, favoris et données communautaires
+6. **Nouvelle prescription** - Sélectionnez 1-5 solutions (vos favoris sont en tête de liste), utilisez le panneau rapide pour consulter un produit, ajoutez un message, copiez le lien ou scannez le QR code pour l'envoyer au patient
+7. **Veille** - Consultez les mises à jour des solutions (tarifs, études, scores)
+8. **Comparateur** - Comparez 2-4 solutions côte-à-côte sur tous les critères
+
+### Pour les éditeurs (publishers)
+
+1. **Inscription** - Cliquez sur "Mon compte" > "Inscription Éditeur"
+2. **Soumission** - Remplissez le formulaire de soumission basé sur le protocole d'évaluation MentalTech
+3. **Suivi** - Consultez le statut de votre soumission depuis votre tableau de bord éditeur
+4. **Validation** - Un administrateur examine et valide (ou refuse) votre soumission
 
 ### Pour les administrateurs
 
 1. **Panel admin** - CRUD complet sur les produits (ajout, modification, suppression, scoring)
-2. **Gestion prescripteurs** - Valider ou refuser les inscriptions prescripteurs
-3. **Veille** - Créer des mises à jour produits visibles par les prescripteurs
+2. **Visibilité** - Masquer/afficher un produit ou le marquer "Entreprise défunte" sans supprimer les données
+3. **Gestion prescripteurs** - Valider ou refuser les inscriptions prescripteurs
+4. **Gestion soumissions** - Examiner les soumissions des éditeurs, les valider ou les refuser
+5. **Veille** - Créer des mises à jour produits visibles par les prescripteurs
 
 ---
 
@@ -256,16 +293,18 @@ uvicorn app.main:app --reload --port 8000
 mentaltech-discover/
 ├── frontend/                # Application React
 │   ├── src/
-│   │   ├── api/            # Couche API (client, auth, products)
+│   │   ├── api/            # Couche API (client, auth, products, prescriber, publisher)
 │   │   ├── components/     # Composants React
-│   │   │   ├── Admin/      # Panel d'administration
-│   │   │   ├── Auth/       # Pages login / register / profil / reset password
+│   │   │   ├── Admin/      # Panel admin (produits, prescripteurs, soumissions)
+│   │   │   ├── Auth/       # Pages login / register / profil / reset password / publisher register
+│   │   │   ├── Disclaimer/ # Avertissement médical compact (non-collapsible)
 │   │   │   ├── Layout/     # Header, Footer
-│   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, comparateur
+│   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, comparateur, quick view, onboarding
+│   │   │   ├── Publisher/  # Dashboard éditeur, formulaire de soumission
 │   │   │   ├── ProductCatalog/
 │   │   │   ├── Quiz/
 │   │   │   └── Results/
-│   │   ├── data/           # Questions et moteur de recommandation
+│   │   ├── data/           # Questions, moteur de recommandation, questions protocole
 │   │   ├── lib/            # Analytics
 │   │   ├── store/          # Zustand (app, auth, products)
 │   │   ├── types/          # Types TypeScript
@@ -277,14 +316,14 @@ mentaltech-discover/
 │
 ├── backend/                 # API FastAPI
 │   ├── app/
-│   │   ├── models/         # Modèles SQLAlchemy (User, Product, Prescription, etc.)
+│   │   ├── models/         # Modèles SQLAlchemy (User, Product, Prescription, ProductSubmission, etc.)
 │   │   ├── schemas/        # Schémas Pydantic (validation)
-│   │   ├── routers/        # Endpoints API (auth, products, prescriptions, prescriber, admin)
+│   │   ├── routers/        # Endpoints API (auth, products, prescriptions, prescriber, admin, publisher)
 │   │   ├── services/       # Logique métier (JWT, CRUD, email)
 │   │   ├── templates/      # Templates HTML emails (Jinja2)
 │   │   ├── config.py       # Configuration (pydantic-settings)
 │   │   ├── database.py     # Connexion SQLAlchemy
-│   │   ├── dependencies.py # Guards (auth, admin)
+│   │   ├── dependencies.py # Guards (auth, admin, prescriber, publisher)
 │   │   └── main.py         # Point d'entrée FastAPI
 │   ├── scripts/            # Scripts utilitaires
 │   │   └── create_admin.py # Création admin initial
@@ -292,17 +331,9 @@ mentaltech-discover/
 │   └── requirements.txt
 │
 ├── database/                # PostgreSQL
-│   ├── init/
-│   │   ├── 01_schema.sql   # Tables users, products, prescriptions, favorites, notes, updates
-│   │   └── 02_seed_products.sql  # 22 produits pré-chargés
-│   └── migrations/
-│       ├── 001_add_email_verified.sql
-│       ├── 002_add_password_changed_at.sql
-│       ├── 003_add_indexes.sql
-│       ├── 004_add_scoring.sql
-│       ├── 005_add_mentaltech_member.sql
-│       ├── 006_add_prescriber_fields.sql  # Champs prescripteur (profession, RPPS)
-│       └── 007_premium_prescriber_features.sql  # Prescriptions, favoris, notes, veille
+│   └── init/
+│       ├── 01_schema.sql   # Schéma complet (users, products, prescriptions, favoris, notes, veille, soumissions, triggers)
+│       └── 02_seed_products.sql  # Produits pré-chargés
 │
 ├── protocole.md              # Protocole d'évaluation des solutions
 ├── docker-compose.yml        # Orchestration 3 services
@@ -317,6 +348,7 @@ mentaltech-discover/
 |---------|-------|------|-------------|
 | `POST` | `/api/auth/register` | - | Inscription utilisateur (+ email vérification) |
 | `POST` | `/api/auth/register-prescriber` | - | Inscription prescripteur (profession, RPPS) |
+| `POST` | `/api/auth/register-publisher` | - | Inscription éditeur |
 | `POST` | `/api/auth/login` | - | Connexion (retourne JWT) |
 | `POST` | `/api/auth/refresh` | - | Renouveler l'access token |
 | `GET` | `/api/auth/me` | JWT | Profil utilisateur courant |
@@ -325,7 +357,7 @@ mentaltech-discover/
 | `POST` | `/api/auth/reset-password` | - | Réinitialiser le mot de passe (via token) |
 | `GET` | `/api/auth/verify-email` | - | Vérifier l'adresse email (via token) |
 | `POST` | `/api/auth/resend-verification` | JWT | Renvoyer l'email de vérification |
-| `GET` | `/api/products` | - | Liste tous les produits |
+| `GET` | `/api/products` | - | Liste les produits visibles (hors défunts et masqués) |
 | `GET` | `/api/products/{id}` | - | Détail d'un produit |
 | `POST` | `/api/products` | Admin | Créer un produit |
 | `PUT` | `/api/products/{id}` | Admin | Modifier un produit |
@@ -336,7 +368,8 @@ mentaltech-discover/
 | `GET` | `/api/prescriptions` | Prescriber | Lister ses prescriptions |
 | `GET` | `/api/prescriptions/stats` | Prescriber | Statistiques du tableau de bord |
 | `DELETE` | `/api/prescriptions/{id}` | Prescriber | Supprimer une prescription |
-| `GET` | `/api/prescriptions/view/{token}` | - | Vue publique patient (marque comme consultée) |
+| `POST` | `/api/prescriptions/{id}/renew` | Prescriber | Renouveler une prescription (+30 jours, nouveau lien) |
+| `GET` | `/api/prescriptions/view/{token}` | - | Vue publique patient (marque comme consultée à la 1ère visite) |
 | | | | |
 | **Espace Prescripteur** | | | |
 | `GET` | `/api/prescriber/favorites` | Prescriber | Lister ses favoris |
@@ -349,11 +382,22 @@ mentaltech-discover/
 | `GET` | `/api/prescriber/compare?ids=...` | Prescriber | Comparateur (2-4 produits) |
 | `GET` | `/api/prescriber/community-stats` | Prescriber | Statistiques communauté anonymisées |
 | | | | |
+| **Espace Éditeur** | | | |
+| `POST` | `/api/publisher/submissions` | Publisher | Soumettre un produit |
+| `GET` | `/api/publisher/submissions` | Publisher | Lister ses soumissions |
+| | | | |
 | **Administration** | | | |
+| `GET` | `/api/admin/products` | Admin | Tous les produits (y compris masqués et défunts) |
+| `PATCH` | `/api/admin/products/{id}/visibility` | Admin | Basculer la visibilité d'un produit |
+| `PATCH` | `/api/admin/products/{id}/defunct` | Admin | Marquer/démarquer une entreprise défunte |
 | `GET` | `/api/admin/prescribers` | Admin | Lister les prescripteurs |
 | `POST` | `/api/admin/prescribers/{id}/verify` | Admin | Valider un prescripteur |
 | `POST` | `/api/admin/prescribers/{id}/reject` | Admin | Refuser un prescripteur |
 | `POST` | `/api/admin/product-updates` | Admin | Créer une mise à jour produit (veille) |
+| `GET` | `/api/admin/submissions` | Admin | Lister les soumissions éditeurs |
+| `POST` | `/api/admin/submissions/{id}/approve` | Admin | Approuver une soumission |
+| `POST` | `/api/admin/submissions/{id}/reject` | Admin | Refuser une soumission |
+| `GET` | `/api/stats/public` | - | Statistiques publiques (prescripteurs actifs, prescriptions créées) |
 | `GET` | `/api/health` | - | Health check |
 
 Documentation interactive : http://localhost:8000/api/docs
@@ -377,11 +421,9 @@ docker compose down
 
 # Arrêter et supprimer les données
 docker compose down -v
-
-# Exécuter les migrations (base existante)
-docker compose exec db psql -U mentaltech -d mentaltech -f /migrations/006_add_prescriber_fields.sql
-docker compose exec db psql -U mentaltech -d mentaltech -f /migrations/007_premium_prescriber_features.sql
 ```
+
+> **💡 Base de données :** Le schéma V2.5 complet est dans `database/init/01_schema.sql`. Il est appliqué automatiquement à la création du container. Aucune migration manuelle n'est nécessaire.
 
 ### Services
 
@@ -424,6 +466,7 @@ Chaque solution comprend :
 - **Tarification** : Modèle économique clair
 - **Contexte** : Individuel ou entreprise
 - **Appartenance** : Membre du Collectif MentalTech (badge 💙)
+- **Visibilité** : Produit actif, masqué ou entreprise défunte
 - **Score de match** : Pourcentage de pertinence (0-100%)
 - **Label qualité** : Grade A-E basé sur 5 critères (0-20 chacun)
 - **Justifications** : Texte libre par critère (recherche, preuves, témoignages)
@@ -463,7 +506,7 @@ Chaque solution comprend :
 
 ### Responsabilité
 
-- **Disclaimers** - Avertissements médicaux
+- **Disclaimers** - Avertissements médicaux compacts (toujours visibles)
 - **Numéros d'urgence** - 3114, 15, 112 affichés
 - **Limitations claires** - Outil de découverte uniquement
 
@@ -523,7 +566,7 @@ Premier écosystème français de santé mentale digitale
 ### ✅ V1.0 - Frontend (Novembre 2025)
 
 - [x] Questionnaire personnalisé (particuliers + entreprises)
-- [x] Catalogue avec 22 solutions référencées
+- [x] Catalogue avec solutions référencées
 - [x] Algorithme de scoring plafonné à 100%
 - [x] Randomisation des ex-aequo
 - [x] Disclaimers médicaux et numéros d'urgence
@@ -534,7 +577,7 @@ Premier écosystème français de santé mentale digitale
 
 - [x] Architecture monorepo (frontend / backend / database)
 - [x] API REST FastAPI avec documentation Swagger
-- [x] Base de données PostgreSQL avec 22 produits pré-chargés
+- [x] Base de données PostgreSQL avec produits pré-chargés
 - [x] Authentification JWT (inscription, connexion, refresh)
 - [x] Panel d'administration (CRUD produits)
 - [x] Docker Compose 3 services
@@ -559,7 +602,7 @@ Premier écosystème français de santé mentale digitale
 - [x] Filtre et tri par label qualité dans le catalogue
 - [x] Bonus label dans l'algorithme de recommandation
 - [x] Badge "Membre du Collectif MentalTech" (💙)
-- [x] Protocole d'évaluation documenté ([`protocole.md`](protocole.md))
+- [x] Protocole d'évaluation documenté
 
 ### ✅ V2.3 - Espace Prescripteur Premium (Février 2026)
 
@@ -575,6 +618,32 @@ Premier écosystème français de santé mentale digitale
 - [x] Statistiques communauté anonymisées
 - [x] API Admin : gestion des prescripteurs et des mises à jour produits
 
+### ✅ V2.4 - UX, Éditeurs & Visibilité (Février 2026)
+
+- [x] **Résultats partageables** — URL `/results?f=...` encode les réponses pour partager ou sauvegarder
+- [x] **Compteur temps réel** — Le quiz affiche le nombre de solutions détectées en cours de réponse
+- [x] **3ème chemin landing** — Bouton "Explorer toutes les solutions" visible dès la page d'accueil
+- [x] **Filtres résultats** — Filtres rapides Gratuit/Payant et Avec un humain/En autonomie
+- [x] **Disclaimer médical** — Avertissement compact toujours visible sur la page d'accueil
+- [x] **Favoris dans la prescription** — Les favoris apparaissent en tête lors de la création
+- [x] **Quick view drawer** — Panneau latéral pour consulter un produit sans quitter la prescription
+- [x] **QR code prescription** — QR code généré à la confirmation pour partage instantané en consultation
+- [x] **Onboarding prescripteur** — Guide 3 étapes au premier login
+- [x] **Visibilité produits** — Masquer/afficher un produit ou marquer une entreprise défunte
+- [x] **Rôle Éditeur** — Inscription dédiée et dashboard de suivi des soumissions
+- [x] **Soumission de produit** — Formulaire guidé basé sur le protocole d'évaluation
+- [x] **Révision admin des soumissions** — Interface d'examen et validation/refus
+
+### ✅ V2.5 - Engagement & Notifications (Février 2026)
+
+- [x] **Email "prescription consultée"** — Notification automatique au prescripteur lors de la première consultation
+- [x] **Email "compte validé"** — Confirmation d'activation envoyée au prescripteur et à l'éditeur après validation admin
+- [x] **Programme ambassadeur** — Déclenchement automatique d'un email dès la 3e prescription créée
+- [x] **Renouvellement de prescription** — Bouton "Renouveler" générant un nouveau lien valable 30 jours
+- [x] **CTA quiz sur la prescription** — Lien vers le questionnaire personnalisé en bas de chaque prescription
+- [x] **Social proof landing** — Compteurs dynamiques (prescripteurs actifs, prescriptions créées, solutions évaluées)
+- [x] **Endpoint stats publiques** — `GET /api/stats/public` pour alimenter le social proof
+
 ### 🔮 V3 - Expansion
 
 - [ ] Tests unitaires (Vitest + pytest)
@@ -582,9 +651,10 @@ Premier écosystème français de santé mentale digitale
 - [ ] CI/CD (GitHub Actions)
 - [ ] Monitoring (Sentry)
 - [ ] Multi-langue (EN, ES, DE)
+- [ ] OG meta tags dynamiques (par produit)
 
 ---
 
-**Version actuelle** : V2.3.0
-**Dernière mise à jour** : Février 2026
+**Version actuelle** : V2.0.0
+**Dernière mise à jour** : Mars 2026
 **Status** : ✅ Production Ready
