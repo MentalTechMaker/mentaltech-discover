@@ -252,7 +252,6 @@ def admin_create_and_publish(
         tags=data.tags,
         audience=data.audience,
         problems_solved=data.problems_solved,
-        for_company=data.for_company,
         pricing_model=data.pricing_model,
         pricing_amount=data.pricing_amount,
         pricing_details=data.pricing_details,
@@ -275,7 +274,6 @@ def admin_create_and_publish(
         existing.audience = data.audience
         existing.problems_solved = data.problems_solved
         existing.preference_match = data.preference_match
-        existing.for_company = data.for_company
         existing.is_mentaltech_member = data.is_mentaltech_member
         existing.pricing_model = data.pricing_model
         existing.pricing_amount = data.pricing_amount
@@ -307,7 +305,6 @@ def admin_create_and_publish(
             audience=data.audience,
             problems_solved=data.problems_solved,
             preference_match=data.preference_match,
-            for_company=data.for_company,
             is_mentaltech_member=data.is_mentaltech_member,
             pricing_model=data.pricing_model,
             pricing_amount=data.pricing_amount,
@@ -350,7 +347,6 @@ def _sub_to_response(sub: ProductSubmission) -> SubmissionResponse:
         tags=sub.tags or [],
         audience=sub.audience or [],
         problemsSolved=sub.problems_solved or [],
-        forCompany=sub.for_company or False,
         pricingModel=sub.pricing_model,
         pricingAmount=sub.pricing_amount,
         pricingDetails=sub.pricing_details,
@@ -443,7 +439,6 @@ def approve_submission(
     product.tags = submission.tags or []
     product.audience = submission.audience or []
     product.problems_solved = submission.problems_solved or []
-    product.for_company = submission.for_company or False
     product.pricing_model = submission.pricing_model
     product.pricing_amount = submission.pricing_amount
     product.pricing_details = submission.pricing_details

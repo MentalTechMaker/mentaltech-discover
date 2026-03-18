@@ -79,7 +79,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
   const [audience, setAudience] = useState<string[]>(product?.audience ?? []);
   const [problemsSolved, setProblemsSolved] = useState<string[]>(product?.problemsSolved ?? []);
   const [preferenceMatch, setPreferenceMatch] = useState<string[]>(product?.preferenceMatch ?? []);
-  const [forCompany, setForCompany] = useState(product?.forCompany ?? false);
   const [isMentaltechMember, setIsMentaltechMember] = useState(product?.isMentaltechMember ?? false);
   const [pricingModel, setPricingModel] = useState(product?.pricing?.model ?? "");
   const [pricingAmount, setPricingAmount] = useState(product?.pricing?.amount ?? "");
@@ -170,7 +169,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         audience,
         problemsSolved,
         preferenceMatch,
-        forCompany,
         isMentaltechMember,
         pricing: pricingModel
           ? {
@@ -345,27 +343,81 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         <div>
           <label className="block text-sm font-semibold mb-2">Public cible</label>
           <div className="space-y-1.5">
-            {([
-              { value: "adult", label: "Adultes" },
-              { value: "young", label: "Adolescents" },
-              { value: "child", label: "Enfants" },
-              { value: "parent", label: "Parents" },
-              { value: "senior", label: "Seniors" },
-            ] as const).map(({ value, label: optLabel }) => (
-              <label key={value} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={audience.includes(value)}
-                  onChange={() =>
-                    setAudience((prev) =>
-                      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-                    )
-                  }
-                  className="w-4 h-4"
-                />
-                <span className="text-sm">{optLabel}</span>
-              </label>
-            ))}
+            {/* Groupe Particulier avec toggle tout sélectionner */}
+            {(() => {
+              const particulierValues = ["adult", "young", "child", "parent", "senior"] as const;
+              const allParticulierChecked = particulierValues.every(v => audience.includes(v));
+              const someParticulierChecked = particulierValues.some(v => audience.includes(v));
+              return (
+                <>
+                  <label className="flex items-center gap-2 cursor-pointer font-medium">
+                    <input
+                      type="checkbox"
+                      checked={allParticulierChecked}
+                      ref={(el) => { if (el) el.indeterminate = someParticulierChecked && !allParticulierChecked; }}
+                      onChange={() => {
+                        if (allParticulierChecked) {
+                          setAudience((prev) => prev.filter((v) => !particulierValues.includes(v as typeof particulierValues[number])));
+                        } else {
+                          setAudience((prev) => Array.from(new Set([...prev, ...particulierValues])));
+                        }
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">Particulier</span>
+                  </label>
+                  {([
+                    { value: "adult", label: "Adultes" },
+                    { value: "young", label: "Adolescents" },
+                    { value: "child", label: "Enfants" },
+                    { value: "parent", label: "Parents" },
+                    { value: "senior", label: "Seniors" },
+                  ] as const).map(({ value, label: optLabel }) => (
+                    <label key={value} className="flex items-center gap-2 cursor-pointer ml-4">
+                      <input
+                        type="checkbox"
+                        checked={audience.includes(value)}
+                        onChange={() =>
+                          setAudience((prev) =>
+                            prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+                          )
+                        }
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">{optLabel}</span>
+                    </label>
+                  ))}
+                </>
+              );
+            })()}
+            {/* Entreprise standalone */}
+            <label className="flex items-center gap-2 cursor-pointer mt-1">
+              <input
+                type="checkbox"
+                checked={audience.includes("entreprise")}
+                onChange={() =>
+                  setAudience((prev) =>
+                    prev.includes("entreprise") ? prev.filter((v) => v !== "entreprise") : [...prev, "entreprise"]
+                  )
+                }
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Entreprises</span>
+            </label>
+            {/* Etablissement de sante standalone */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={audience.includes("etablissement-sante")}
+                onChange={() =>
+                  setAudience((prev) =>
+                    prev.includes("etablissement-sante") ? prev.filter((v) => v !== "etablissement-sante") : [...prev, "etablissement-sante"]
+                  )
+                }
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Etablissements de sante</span>
+            </label>
           </div>
         </div>
         <div>
@@ -428,18 +480,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
       </div>
 
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="forCompany"
-            checked={forCompany}
-            onChange={(e) => setForCompany(e.target.checked)}
-            className="w-4 h-4"
-          />
-          <label htmlFor="forCompany" className="text-sm font-semibold">
-            Solution pour entreprise
-          </label>
-        </div>
         <div className="flex items-center gap-2">
           <input
             type="checkbox"

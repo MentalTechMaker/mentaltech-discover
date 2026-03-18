@@ -135,7 +135,6 @@ export const SubmissionReview: React.FC<Props> = ({
                     .filter(Boolean)
                     .join(" - "),
                 },
-                { label: "B2B", value: submission.forCompany ? "Oui" : "Non" },
                 { label: "Public", value: submission.audience?.join(", ") },
                 { label: "Problemes", value: submission.problemsSolved?.join(", ") },
               ].map(({ label, value }) => (

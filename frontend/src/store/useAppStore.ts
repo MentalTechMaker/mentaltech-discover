@@ -5,6 +5,7 @@ import type { AppView, UserAnswers, RecommendationResult, UserType } from '../ty
 const ANSWER_PARAM_MAP: Record<string, keyof UserAnswers> = {
   f: 'feeling', u: 'urgency', p: 'problem', a: 'audience', pref: 'preference',
   cs: 'companySize', cn: 'companyNeeds',
+  hot: 'healthOrgType', hon: 'healthOrgNeeds',
 };
 
 export function encodeAnswersToParams(answers: UserAnswers, userType: UserType): string {
@@ -221,6 +222,15 @@ function getAnswerKey(questionId: number, userType: UserType): keyof UserAnswers
       3: 'preference'
     };
     return companyMapping[questionId] || 'companySize';
+  }
+
+  if (userType === 'health-decision-maker') {
+    const healthMapping: Record<number, keyof UserAnswers> = {
+      1: 'healthOrgType',
+      2: 'healthOrgNeeds',
+      3: 'preference'
+    };
+    return healthMapping[questionId] || 'healthOrgType';
   }
 
   const individualMapping: Record<number, keyof UserAnswers> = {

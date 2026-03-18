@@ -24,7 +24,7 @@ It is NOT a medical device. It is a discovery and information tool.
 ## What MentalTech Discover does
 
 - References digital mental health solutions (apps, online therapy platforms, meditation tools, TCC digital tools)
-- Provides a recommendation quiz (5 dimensions) to match users with solutions
+- Provides a recommendation quiz (3 user profiles: individual, company, health decision-maker) to match users with solutions
 - Applies a quality scoring system (grades A to E) based on 5 pillars: clinical evidence, user experience, ethics, accessibility, professional integration
 - Offers a prescriber portal for healthcare professionals to compare and recommend products
 - Maintains a publicly accessible product catalogue with filters

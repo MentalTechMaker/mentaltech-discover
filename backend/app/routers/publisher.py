@@ -27,7 +27,6 @@ def _to_response(sub: ProductSubmission) -> SubmissionResponse:
         tags=sub.tags or [],
         audience=sub.audience or [],
         problemsSolved=sub.problems_solved or [],
-        forCompany=sub.for_company or False,
         pricingModel=sub.pricing_model,
         pricingAmount=sub.pricing_amount,
         pricingDetails=sub.pricing_details,
@@ -71,7 +70,6 @@ def create_submission(
         tags=data.tags,
         audience=data.audience,
         problems_solved=data.problems_solved,
-        for_company=data.for_company,
         pricing_model=data.pricing_model,
         pricing_amount=data.pricing_amount,
         pricing_details=data.pricing_details,
@@ -137,8 +135,6 @@ def update_submission(
         submission.audience = data.audience
     if data.problems_solved is not None:
         submission.problems_solved = data.problems_solved
-    if data.for_company is not None:
-        submission.for_company = data.for_company
     if data.pricing_model is not None:
         submission.pricing_model = data.pricing_model
     if data.pricing_amount is not None:

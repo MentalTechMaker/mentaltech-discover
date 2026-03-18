@@ -1,4 +1,6 @@
-import type { UserAnswers, Product, RecommendationResult } from '../types';
+import type { UserAnswers, Product, RecommendationResult, UserType } from '../types';
+
+const INSTITUTIONAL_AUDIENCES = new Set(['entreprise', 'etablissement-sante']);
 
 interface ScoredProduct extends Product {
   score: number;
@@ -18,16 +20,33 @@ function getLabelBonus(scoreLabel: string | null | undefined): number {
   }
 }
 
-export function getRecommendations(answers: UserAnswers, isCompany: boolean = false, products: Product[]): RecommendationResult {
+export function getRecommendations(answers: UserAnswers, userType: UserType = 'individual', products: Product[]): RecommendationResult {
 
-  const filteredProducts = isCompany
-    ? products.filter(p => p.forCompany === true)
-    : products;
+  // ISC-5/6/7: Audience-based filtering per userType
+  let filteredProducts: Product[];
+  if (userType === 'company') {
+    filteredProducts = products.filter(p =>
+      p.audience.includes('entreprise')
+    );
+  } else if (userType === 'health-decision-maker') {
+    filteredProducts = products.filter(p =>
+      p.audience.includes('etablissement-sante')
+    );
+  } else {
+    // individual: exclude products with exclusively institutional audience
+    filteredProducts = products.filter(p =>
+      p.audience.length === 0 || !p.audience.every(a => INSTITUTIONAL_AUDIENCES.has(a))
+    );
+  }
 
   const scoredProducts: ScoredProduct[] = filteredProducts.map(product => ({
     ...product,
-    score: isCompany ? calculateCompanyScore(product, answers, isCompany) : calculateScore(product, answers, isCompany),
-    randomTieBreaker: Math.random() // Valeur aléatoire pour départager les ex-aequo
+    score: userType === 'company'
+      ? calculateCompanyScore(product, answers)
+      : userType === 'health-decision-maker'
+        ? calculateHealthDecisionMakerScore(product, answers)
+        : calculateScore(product, answers),
+    randomTieBreaker: Math.random()
   }));
 
   scoredProducts.sort((a, b) => {
@@ -49,11 +68,13 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
 
   const recommendedProducts = topProducts.length > 0
     ? topProducts
-    : filteredProducts.slice(0, isCompany ? 2 : 9);
+    : filteredProducts.slice(0, 9);
 
-  const explanation = isCompany
+  const explanation = userType === 'company'
     ? generateCompanyExplanation(answers)
-    : generateExplanation(answers);
+    : userType === 'health-decision-maker'
+      ? generateHealthDecisionMakerExplanation(answers)
+      : generateExplanation(answers);
 
   return {
     products: recommendedProducts,
@@ -74,7 +95,7 @@ export function getRecommendations(answers: UserAnswers, isCompany: boolean = fa
  *
  * Score maximum : 100 points (plafonné)
  */
-function calculateScore(product: Product, answers: UserAnswers, isCompany: boolean = false): number {
+function calculateScore(product: Product, answers: UserAnswers): number {
   let score = 0;
 
   // 1. AUDIENCE MATCHING (10 points)
@@ -167,14 +188,10 @@ function calculateScore(product: Product, answers: UserAnswers, isCompany: boole
     }
   }
 
-  // 9. CORRESPONDANCE TYPE UTILISATEUR (20 points)
-  // Bonus si le produit correspond au contexte (individuel vs entreprise)
-  if (product.forCompany === false && !isCompany) {
-    // Produit individuel pour utilisateur individuel
+  // 9. BONUS PRODUIT INDIVIDUEL (20 points)
+  // Produits sans audience institutionnelle sont avantagés pour le segment individuel
+  if (!product.audience.includes('entreprise') && !product.audience.includes('etablissement-sante')) {
     score += 20;
-  } else if (product.forCompany === false && isCompany) {
-    // Pénalité : produit individuel pour une entreprise
-    score -= 10;
   }
 
   // 10. BONUS LABEL QUALITÉ (0-5 points)
@@ -231,7 +248,7 @@ function generateExplanation(answers: UserAnswers): string {
   return `${needsText}\n\nCes outils ont été recommandés par des professionnels de santé et ont aidé des centaines de personnes dans des situations similaires.`;
 }
 
-function calculateCompanyScore(product: Product, answers: UserAnswers, isCompany: boolean = true): number {
+function calculateCompanyScore(product: Product, answers: UserAnswers): number {
   let score = 0;
 
   if (answers.companySize) {
@@ -271,14 +288,9 @@ function calculateCompanyScore(product: Product, answers: UserAnswers, isCompany
     }
   }
 
-  // CORRESPONDANCE TYPE UTILISATEUR (20 points)
-  // Bonus si le produit correspond au contexte entreprise
-  if (product.forCompany === true && isCompany) {
-    // Produit entreprise pour une entreprise
+  // BONUS AUDIENCE ENTREPRISE (20 points)
+  if (product.audience.includes('entreprise')) {
     score += 20;
-  } else if (product.forCompany === true && !isCompany) {
-    // Pénalité : produit entreprise pour utilisateur individuel (ne devrait pas arriver avec le filtre)
-    score -= 10;
   }
 
   // BONUS LABEL QUALITÉ (0-5 points)
@@ -286,6 +298,91 @@ function calculateCompanyScore(product: Product, answers: UserAnswers, isCompany
 
   // Plafond à 100 points
   return Math.min(score, 100);
+}
+
+// ISC-8
+function calculateHealthDecisionMakerScore(product: Product, answers: UserAnswers): number {
+  let score = 0;
+
+  // healthOrgNeeds matching
+  if (answers.healthOrgNeeds) {
+    if (answers.healthOrgNeeds === 'burnout-soignants' && product.problemsSolved.includes('work')) {
+      score += 10;
+    }
+    if (answers.healthOrgNeeds === 'accompagnement-equipes' && product.tags.includes('accompagnement')) {
+      score += 10;
+    }
+    if (answers.healthOrgNeeds === 'outils-patients' && product.audience.some(a => ['adult', 'young', 'senior'].includes(a))) {
+      score += 10;
+    }
+    if (answers.healthOrgNeeds === 'formation' && product.tags.includes('formation')) {
+      score += 10;
+    }
+    if (answers.healthOrgNeeds === 'gestion-crise' && product.preferenceMatch.includes('talk-now')) {
+      score += 10;
+    }
+  }
+
+  // preference (type de solution) matching
+  if (answers.preference) {
+    if (answers.preference === 'platform' && (product.tags.includes('entreprise') || product.audience.includes('etablissement-sante'))) {
+      score += 8;
+    }
+    if (answers.preference === 'training' && product.tags.includes('formation')) {
+      score += 8;
+    }
+    if (answers.preference === 'therapy' && product.preferenceMatch.includes('talk-now')) {
+      score += 8;
+    }
+    if (answers.preference === 'tools' && product.preferenceMatch.includes('autonomous')) {
+      score += 8;
+    }
+  }
+
+  // etablissement-sante audience bonus
+  if (product.audience.includes('etablissement-sante')) {
+    score += 20;
+  }
+
+  score += getLabelBonus(product.scoreLabel);
+
+  return Math.min(score, 100);
+}
+
+// ISC-9
+function generateHealthDecisionMakerExplanation(answers: UserAnswers): string {
+  const needs: string[] = [];
+
+  if (answers.healthOrgNeeds) {
+    const needsLabels: Record<string, string> = {
+      'burnout-soignants': 'prévenir le burn-out des soignants',
+      'accompagnement-equipes': 'accompagner psychologiquement vos équipes',
+      'outils-patients': 'proposer des outils digitaux aux patients',
+      'formation': 'former et sensibiliser votre personnel',
+      'gestion-crise': 'gérer les situations de crise'
+    };
+    if (needsLabels[answers.healthOrgNeeds]) {
+      needs.push(needsLabels[answers.healthOrgNeeds]);
+    }
+  }
+
+  if (answers.preference) {
+    const preferenceLabels: Record<string, string> = {
+      'platform': 'déployer une plateforme complète',
+      'training': 'mettre en place des formations',
+      'therapy': 'faciliter l\'accès à des professionnels',
+      'tools': 'intégrer des outils digitaux spécialisés'
+    };
+    if (preferenceLabels[answers.preference]) {
+      needs.push(preferenceLabels[answers.preference]);
+    }
+  }
+
+  const needsText = needs.length > 0
+    ? `En fonction de vos réponses, nous avons identifié que vous souhaitez ${needs.join(', et ')}.`
+    : 'En fonction de vos réponses, voici des solutions adaptées à votre établissement de santé.';
+
+  return `${needsText}\n\nCes solutions ont été sélectionnées pour leur pertinence dans le contexte hospitalier et médico-social.`;
 }
 
 function generateCompanyExplanation(answers: UserAnswers): string {

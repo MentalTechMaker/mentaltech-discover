@@ -22,6 +22,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isPrescriber: boolean;
+  isPrescriberPending: boolean;
   isPublisher: boolean;
   isLoading: boolean;
 
@@ -36,7 +37,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => {
   // Auto-logout on 401
   setOnUnauthorized(() => {
-    set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false });
+    set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPrescriberPending: false, isPublisher: false });
   });
 
   return {
@@ -44,6 +45,7 @@ export const useAuthStore = create<AuthState>((set) => {
     isAuthenticated: false,
     isAdmin: false,
     isPrescriber: false,
+    isPrescriberPending: false,
     isPublisher: false,
     isLoading: false,
 
@@ -55,6 +57,7 @@ export const useAuthStore = create<AuthState>((set) => {
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
         isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPrescriberPending: user.role === 'prescriber' && !(user.is_verified_prescriber ?? false),
         isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
       if (user.role === 'admin') {
@@ -71,6 +74,7 @@ export const useAuthStore = create<AuthState>((set) => {
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
         isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPrescriberPending: user.role === 'prescriber' && !(user.is_verified_prescriber ?? false),
         isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
     },
@@ -83,6 +87,7 @@ export const useAuthStore = create<AuthState>((set) => {
         isAuthenticated: true,
         isAdmin: user.role === 'admin',
         isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+        isPrescriberPending: user.role === 'prescriber' && !(user.is_verified_prescriber ?? false),
         isPublisher: false,
       });
     },
@@ -101,7 +106,7 @@ export const useAuthStore = create<AuthState>((set) => {
 
     logout: () => {
       clearTokens();
-      set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPublisher: false });
+      set({ user: null, isAuthenticated: false, isAdmin: false, isPrescriber: false, isPrescriberPending: false, isPublisher: false });
     },
 
     loadUser: async () => {
@@ -125,6 +130,7 @@ export const useAuthStore = create<AuthState>((set) => {
           isAuthenticated: true,
           isAdmin: user.role === 'admin',
           isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
+          isPrescriberPending: user.role === 'prescriber' && !(user.is_verified_prescriber ?? false),
           isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
           isLoading: false,
         });

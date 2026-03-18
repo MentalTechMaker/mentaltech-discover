@@ -45,7 +45,6 @@ export async function createSubmission(data: Partial<ProductSubmission>): Promis
       tags: data.tags ?? [],
       audience: data.audience ?? [],
       problems_solved: data.problemsSolved ?? [],
-      for_company: data.forCompany ?? false,
       pricing_model: data.pricingModel,
       pricing_amount: data.pricingAmount,
       pricing_details: data.pricingDetails,
@@ -67,7 +66,6 @@ export async function updateSubmission(id: string, data: Partial<ProductSubmissi
       tags: data.tags,
       audience: data.audience,
       problems_solved: data.problemsSolved,
-      for_company: data.forCompany,
       pricing_model: data.pricingModel,
       pricing_amount: data.pricingAmount,
       pricing_details: data.pricingDetails,
@@ -148,7 +146,6 @@ export async function createAndPublishAdmin(data: {
   audience: string[];
   problems_solved: string[];
   preference_match: string[];
-  for_company: boolean;
   is_mentaltech_member: boolean;
   pricing_model?: string;
   pricing_amount?: string;

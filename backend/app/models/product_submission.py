@@ -30,7 +30,6 @@ class ProductSubmission(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audience: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
-    for_company: Mapped[bool] = mapped_column(Boolean, default=False)
     pricing_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
     pricing_amount: Mapped[str | None] = mapped_column(String(100), nullable=True)
     pricing_details: Mapped[str | None] = mapped_column(Text, nullable=True)

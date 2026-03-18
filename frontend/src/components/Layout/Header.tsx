@@ -4,7 +4,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 
 export const Header: React.FC = () => {
   const { currentView, reset, setView } = useAppStore();
-  const { isAuthenticated, isAdmin, isPrescriber, isPublisher, user, logout } = useAuthStore();
+  const { isAuthenticated, isAdmin, isPrescriber, isPrescriberPending, isPublisher, user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -150,7 +150,7 @@ export const Header: React.FC = () => {
                     >
                       Mon profil
                     </button>
-                    {isPrescriber && (
+                    {(isPrescriber || isPrescriberPending) && (
                       <>
                         <button
                           onClick={() => navigateTo("prescriber-dashboard")}
@@ -279,7 +279,7 @@ export const Header: React.FC = () => {
                   >
                     Mon profil
                   </button>
-                  {isPrescriber && (
+                  {(isPrescriber || isPrescriberPending) && (
                     <>
                       <button onClick={() => navigateTo("prescriber-dashboard")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
                         Tableau de bord

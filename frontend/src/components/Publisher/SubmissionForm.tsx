@@ -27,13 +27,15 @@ const PRODUCT_TYPES = [
   "Autre",
 ];
 
-const AUDIENCE_OPTIONS = [
+const PARTICULIER_AUDIENCE_OPTIONS = [
   { value: "adult", label: "Adultes" },
   { value: "young", label: "Adolescents" },
   { value: "child", label: "Enfants" },
   { value: "parent", label: "Parents" },
   { value: "senior", label: "Seniors" },
-];
+] as const;
+
+const PARTICULIER_VALUES = PARTICULIER_AUDIENCE_OPTIONS.map(o => o.value);
 
 const PROBLEM_OPTIONS = [
   { value: "stress-anxiety", label: "Stress & Anxiété" },
@@ -151,7 +153,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
-  const [forCompany, setForCompany] = useState(false);
   const [audience, setAudience] = useState<string[]>([]);
   const [problemsSolved, setProblemsSolved] = useState<string[]>([]);
   const [pricingModel, setPricingModel] = useState("");
@@ -197,7 +198,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     setDescription(editProduct.description || "");
     setUrl(editProduct.url || "");
     setLogoPath(editProduct.logo || "");
-    setForCompany(editProduct.forCompany || false);
     setIsMentaltechMember(editProduct.isMentaltechMember || false);
     setPreferenceMatch(editProduct.preferenceMatch || []);
     setAudience(editProduct.audience || []);
@@ -245,7 +245,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       setTagline(data.tagline || "");
       setDescription(data.description || "");
       setUrl(data.url || "");
-      setForCompany(data.forCompany);
       setAudience(data.audience || []);
       setProblemsSolved(data.problemsSolved || []);
       setPricingModel(data.pricingModel || "");
@@ -269,7 +268,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       tagline: tagline || undefined,
       description: description || undefined,
       url: url || undefined,
-      forCompany,
       audience,
       problemsSolved,
       pricingModel: pricingModel || undefined,
@@ -278,7 +276,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       protocolAnswers,
     };
   }, [
-    name, type, tagline, description, url, forCompany, audience,
+    name, type, tagline, description, url, audience,
     problemsSolved, pricingModel, pricingAmount, pricingDetails, protocolAnswers,
   ]);
 
@@ -354,7 +352,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         audience,
         problems_solved: problemsSolved,
         preference_match: preferenceMatch,
-        for_company: forCompany,
         is_mentaltech_member: isMentaltechMember,
         pricing_model: pricingModel || undefined,
         pricing_amount: pricingAmount || undefined,
@@ -577,26 +574,55 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             </div>
 
             <div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={forCompany}
-                  onChange={(e) => setForCompany(e.target.checked)}
-                  disabled={readOnly}
-                  className="w-4 h-4 text-primary"
-                />
-                <span className="text-sm font-semibold text-text-primary">
-                  Solution destinee aux entreprises (B2B)
-                </span>
-              </label>
-            </div>
-
-            <div>
               <label className="block text-sm font-semibold text-text-primary mb-2">
                 Public cible
               </label>
+              {/* Groupe Particulier */}
+              <div className="mb-2">
+                <button
+                  type="button"
+                  disabled={readOnly}
+                  onClick={() => {
+                    if (readOnly) return;
+                    const allChecked = PARTICULIER_VALUES.every(v => audience.includes(v));
+                    if (allChecked) {
+                      setAudience((prev) => prev.filter(v => !PARTICULIER_VALUES.includes(v as typeof PARTICULIER_VALUES[number])));
+                    } else {
+                      setAudience((prev) => Array.from(new Set([...prev, ...PARTICULIER_VALUES])));
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors mb-1 ${
+                    PARTICULIER_VALUES.some(v => audience.includes(v))
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 text-text-secondary hover:bg-gray-200"
+                  } disabled:opacity-50`}
+                >
+                  Particulier
+                </button>
+                <div className="flex flex-wrap gap-2 ml-4">
+                  {PARTICULIER_AUDIENCE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => !readOnly && toggleArrayItem(audience, setAudience, opt.value)}
+                      disabled={readOnly}
+                      className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+                        audience.includes(opt.value)
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 text-text-secondary hover:bg-gray-200"
+                      } disabled:opacity-50`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Entreprise standalone */}
               <div className="flex flex-wrap gap-2">
-                {AUDIENCE_OPTIONS.map((opt) => (
+                {([
+                  { value: "entreprise", label: "Entreprises" },
+                  { value: "etablissement-sante", label: "Etablissements de sante" },
+                ] as const).map((opt) => (
                   <button
                     key={opt.value}
                     type="button"

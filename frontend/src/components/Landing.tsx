@@ -4,6 +4,7 @@ import { useProductsStore } from "../store/useProductsStore";
 import { MedicalDisclaimer } from "./Disclaimer/MedicalDisclaimer";
 import { getPublicStats } from "../api/prescriber";
 import { setPageMeta, setCanonical } from "../utils/meta";
+import type { UserType } from "../types";
 
 export const Landing: React.FC = () => {
   const { setView, setUserType } = useAppStore();
@@ -25,7 +26,7 @@ export const Landing: React.FC = () => {
       .catch(() => {/* silently ignore if stats unavailable */});
   }, []);
 
-  const handleStart = (userType: "individual" | "company") => {
+  const handleStart = (userType: UserType) => {
     setUserType(userType);
     setView("quiz");
   };
@@ -89,7 +90,7 @@ export const Landing: React.FC = () => {
           <div className="h-px bg-gray-200 flex-1 max-w-[120px]" />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           <button
             onClick={() => handleStart("individual")}
             className="group relative bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border-3 border-primary border-opacity-20 hover:border-opacity-100 hover:shadow-xl transition-all text-left space-y-4 transform hover:-translate-y-1"
@@ -150,6 +151,38 @@ export const Landing: React.FC = () => {
                 Commencer maintenant
               </span>
               <span className="text-secondary text-xl group-hover:translate-x-2 transition-transform">
+                →
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => handleStart("health-decision-maker")}
+            className="group relative bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl border-3 border-purple-400 border-opacity-20 hover:border-opacity-100 hover:shadow-xl transition-all text-left space-y-4 transform hover:-translate-y-1"
+            aria-label="Commencer le questionnaire pour un établissement de santé"
+          >
+            <div className="absolute top-4 right-4">
+              <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">
+                ÉTABLISSEMENT
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="bg-purple-100 p-4 rounded-2xl">
+                <span className="text-5xl">🏥</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-text-primary">
+                Pour mon établissement
+              </h3>
+            </div>
+            <p className="text-text-secondary text-base leading-relaxed">
+              Je suis <strong>décideur de santé</strong> et cherche des solutions
+              pour mon hôpital, clinique ou MSP
+            </p>
+            <div className="flex items-center gap-2 pt-4">
+              <span className="text-purple-600 font-bold text-lg group-hover:gap-3 transition-all">
+                Commencer maintenant
+              </span>
+              <span className="text-purple-600 text-xl group-hover:translate-x-2 transition-transform">
                 →
               </span>
             </div>

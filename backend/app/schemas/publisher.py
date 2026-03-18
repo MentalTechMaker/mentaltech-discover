@@ -21,7 +21,6 @@ class SubmissionCreate(BaseModel):
     tags: list[str] = []
     audience: list[str] = []
     problems_solved: list[str] = []
-    for_company: bool = False
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
@@ -39,7 +38,6 @@ class SubmissionUpdate(BaseModel):
     tags: list[str] | None = None
     audience: list[str] | None = None
     problems_solved: list[str] | None = None
-    for_company: bool | None = None
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
@@ -60,7 +58,6 @@ class SubmissionResponse(BaseModel):
     tags: list[str]
     audience: list[str]
     problemsSolved: list[str]
-    forCompany: bool
     pricingModel: str | None
     pricingAmount: str | None
     pricingDetails: str | None
@@ -100,7 +97,6 @@ class AdminCreateAndPublishSchema(BaseModel):
     tags: list[str] = []
     audience: list[str] = []
     problems_solved: list[str] = []
-    for_company: bool = False
     is_mentaltech_member: bool = False
     preference_match: list[str] = []
     pricing_model: str | None = None

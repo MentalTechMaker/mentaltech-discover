@@ -53,7 +53,7 @@ function App() {
       | undefined;
     if (pending && products.length > 0) {
       delete (window as unknown as Record<string, unknown>).__pendingResultRestore;
-      const reco = getRecommendations(pending.answers, pending.userType === 'company', products);
+      const reco = getRecommendations(pending.answers, pending.userType, products);
       setRecommendations(reco);
     }
   }, [products, setRecommendations]);

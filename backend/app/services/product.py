@@ -6,7 +6,7 @@ from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse, Pri
 ALLOWED_FIELDS = {
     "name", "type", "tagline", "description", "url", "logo",
     "tags", "audience", "problems_solved", "preference_match",
-    "for_company", "is_mentaltech_member",
+    "is_mentaltech_member",
     "is_visible", "company_defunct",
     "pricing_model", "pricing_amount", "pricing_details",
     "last_updated",
@@ -95,7 +95,6 @@ def _to_response(product: Product) -> ProductResponse:
         audience=product.audience or [],
         problemsSolved=product.problems_solved or [],
         preferenceMatch=product.preference_match or [],
-        forCompany=product.for_company or False,
         isMentaltechMember=product.is_mentaltech_member or False,
         isVisible=product.is_visible if product.is_visible is not None else True,
         companyDefunct=product.company_defunct if product.company_defunct is not None else False,
@@ -150,7 +149,6 @@ def create_product(db: Session, data: ProductCreate) -> ProductResponse:
         audience=data.audience,
         problems_solved=data.problemsSolved,
         preference_match=data.preferenceMatch,
-        for_company=data.forCompany,
         is_mentaltech_member=data.isMentaltechMember,
         pricing_model=data.pricing.model if data.pricing else None,
         pricing_amount=data.pricing.amount if data.pricing else None,
@@ -185,7 +183,6 @@ def update_product(db: Session, product_id: str, data: ProductUpdate) -> Product
     field_mapping = {
         "problemsSolved": "problems_solved",
         "preferenceMatch": "preference_match",
-        "forCompany": "for_company",
         "isMentaltechMember": "is_mentaltech_member",
         "isVisible": "is_visible",
         "companyDefunct": "company_defunct",

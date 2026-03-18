@@ -9,6 +9,8 @@ const AUDIENCE_LABELS: Record<string, string> = {
   child: 'Enfants',
   parent: 'Parents',
   senior: 'Seniors',
+  'etablissement-sante': 'Établissements de santé',
+  entreprise: 'Entreprises',
 };
 
 interface ProductQuickViewProps {

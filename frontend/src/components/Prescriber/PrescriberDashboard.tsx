@@ -55,7 +55,7 @@ function formatDate(dateStr: string): string {
 }
 
 export const PrescriberDashboard: React.FC = () => {
-  const { isAuthenticated, isPrescriber } = useAuthStore();
+  const { isAuthenticated, isPrescriber, isPrescriberPending } = useAuthStore();
   const user = useAuthStore((s) => s.user);
   const setView = useAppStore((s) => s.setView);
   const viewProduct = useAppStore((s) => s.viewProduct);
@@ -207,13 +207,7 @@ export const PrescriberDashboard: React.FC = () => {
     );
   }
 
-  if (!isPrescriber && user?.role === 'prescriber' && !user.is_verified_prescriber) {
-    // Unverified prescriber — redirect to profile
-    setView('profile');
-    return null;
-  }
-
-  if (!isPrescriber) {
+  if (!isPrescriber && !isPrescriberPending) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
         <p className="text-text-secondary">
@@ -275,6 +269,19 @@ export const PrescriberDashboard: React.FC = () => {
     )}
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-6xl mx-auto">
+        {/* Pending verification banner */}
+        {isPrescriberPending && (
+          <div className="mb-6 flex items-start gap-3 bg-amber-50 border-2 border-amber-300 rounded-xl px-5 py-4">
+            <span className="text-2xl flex-shrink-0 mt-0.5">🔒</span>
+            <div>
+              <p className="font-semibold text-amber-900">Compte en attente de vérification</p>
+              <p className="text-sm text-amber-800 mt-1">
+                Vous pouvez explorer toutes les fonctionnalités, mais la <strong>finalisation des prescriptions</strong> sera disponible une fois votre compte validé par notre équipe. Vous recevrez un email de confirmation.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-text-primary mb-2">

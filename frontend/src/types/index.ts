@@ -24,6 +24,8 @@ export interface UserAnswers {
   preference?: string;
   companySize?: string;
   companyNeeds?: string;
+  healthOrgType?: string;
+  healthOrgNeeds?: string;
 }
 
 export interface Product {
@@ -38,7 +40,6 @@ export interface Product {
   audience: string[];
   problemsSolved: string[];
   preferenceMatch: string[];
-  forCompany?: boolean;
   isMentaltechMember?: boolean;
   isVisible?: boolean;
   companyDefunct?: boolean;
@@ -82,7 +83,7 @@ export interface RecommendationResult {
   explanation: string;
 }
 
-export type UserType = 'individual' | 'company';
+export type UserType = 'individual' | 'company' | 'health-decision-maker';
 
 export type SubmissionStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
 
@@ -100,7 +101,6 @@ export interface ProductSubmission {
   tags: string[];
   audience: string[];
   problemsSolved: string[];
-  forCompany: boolean;
   pricingModel: string | null;
   pricingAmount: string | null;
   pricingDetails: string | null;

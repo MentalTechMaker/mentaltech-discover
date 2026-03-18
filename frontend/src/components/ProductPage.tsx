@@ -31,6 +31,8 @@ const audienceLabels: Record<string, string> = {
   child: "Enfants",
   parent: "Parents",
   senior: "Seniors",
+  "etablissement-sante": "Établissements de santé",
+  entreprise: "Entreprises",
 };
 
 const problemLabels: Record<string, string> = {
@@ -189,7 +191,7 @@ export const ProductPage: React.FC = () => {
                     💙 Collectif MentalTech
                   </span>
                 )}
-                {product.forCompany && (
+                {product.audience.includes('entreprise') && (
                   <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold">
                     🏢 ENTREPRISE
                   </span>

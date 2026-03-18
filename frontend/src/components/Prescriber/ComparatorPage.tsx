@@ -20,6 +20,8 @@ const audienceLabels: Record<string, string> = {
   child: "Enfants",
   parent: "Parents",
   senior: "Seniors",
+  "etablissement-sante": "Établissements de santé",
+  entreprise: "Entreprises",
 };
 
 const problemLabels: Record<string, string> = {

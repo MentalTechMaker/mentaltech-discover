@@ -33,6 +33,8 @@ const audienceLabels: Record<string, string> = {
   child: "Enfants",
   parent: "Parents",
   senior: "Seniors",
+  "etablissement-sante": "Établissements de santé",
+  entreprise: "Entreprises",
 };
 
 const problemLabels: Record<string, string> = {
@@ -180,7 +182,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                   <p className="text-sm text-text-secondary">{product.type}</p>
                 </div>
                 <div className="flex flex-col gap-2 items-end">
-                  {product.forCompany && (
+                  {product.audience.includes('entreprise') && (
                     <div className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                       🏢 ENTREPRISE
                     </div>
@@ -338,7 +340,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                 </span>
               )}
             </div>
-            {product.forCompany && (
+            {product.audience.includes('entreprise') && (
               <div className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-bold">
                 🏢
               </div>

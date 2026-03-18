@@ -33,7 +33,6 @@ class ProductResponse(BaseModel):
     audience: list[str]
     problemsSolved: list[str]
     preferenceMatch: list[str]
-    forCompany: bool
     isMentaltechMember: bool
     isVisible: bool = True
     companyDefunct: bool = False
@@ -59,7 +58,6 @@ class ProductCreate(BaseModel):
     audience: list[str] = []
     problemsSolved: list[str] = []
     preferenceMatch: list[str] = []
-    forCompany: bool = False
     isMentaltechMember: bool = False
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
@@ -87,7 +85,6 @@ class ProductUpdate(BaseModel):
     audience: list[str] | None = None
     problemsSolved: list[str] | None = None
     preferenceMatch: list[str] | None = None
-    forCompany: bool | None = None
     isMentaltechMember: bool | None = None
     isVisible: bool | None = None
     companyDefunct: bool | None = None

@@ -10,9 +10,11 @@ export interface Filters {
   audience: string[];
   problemsSolved: string[];
   pricingModel: string[];
-  forCompany: string;
+  segment: 'all' | 'particulier' | 'company' | 'health';
   label: string[];
 }
+
+const INSTITUTIONAL_AUDIENCES = new Set(['entreprise', 'etablissement-sante']);
 
 export const ProductCatalog: React.FC = () => {
   useEffect(() => {
@@ -29,7 +31,7 @@ export const ProductCatalog: React.FC = () => {
     audience: [],
     problemsSolved: [],
     pricingModel: [],
-    forCompany: "all",
+    segment: "all",
     label: [],
   });
 
@@ -40,13 +42,11 @@ export const ProductCatalog: React.FC = () => {
 
   const filterOptions = useMemo(() => {
     const types = new Set<string>();
-    const audiences = new Set<string>();
     const problems = new Set<string>();
     const pricingModels = new Set<string>();
 
     allProducts.forEach((product) => {
       types.add(product.type);
-      product.audience.forEach((aud) => audiences.add(aud));
       product.problemsSolved.forEach((prob) => problems.add(prob));
       if (product.pricing?.model) {
         pricingModels.add(product.pricing.model);
@@ -55,7 +55,6 @@ export const ProductCatalog: React.FC = () => {
 
     return {
       types: Array.from(types).sort(),
-      audiences: Array.from(audiences).sort(),
       problems: Array.from(problems).sort(),
       pricingModels: Array.from(pricingModels).sort(),
     };
@@ -77,7 +76,15 @@ export const ProductCatalog: React.FC = () => {
         return false;
       }
 
-      if (filters.audience.length > 0) {
+      if (filters.segment === 'company') {
+        if (!product.audience.includes('entreprise')) return false;
+      } else if (filters.segment === 'health') {
+        if (!product.audience.includes('etablissement-sante')) return false;
+      } else if (filters.segment === 'particulier') {
+        if (product.audience.length > 0 && product.audience.every(a => INSTITUTIONAL_AUDIENCES.has(a))) return false;
+      }
+
+      if (filters.audience.length > 0 && filters.segment === 'particulier') {
         const hasMatchingAudience = filters.audience.some((aud) =>
           product.audience.includes(aud)
         );
@@ -98,13 +105,6 @@ export const ProductCatalog: React.FC = () => {
         ) {
           return false;
         }
-      }
-
-      if (filters.forCompany === "company" && !product.forCompany) {
-        return false;
-      }
-      if (filters.forCompany === "individual" && product.forCompany) {
-        return false;
       }
 
       if (filters.label.length > 0) {
@@ -156,7 +156,7 @@ export const ProductCatalog: React.FC = () => {
       audience: [],
       problemsSolved: [],
       pricingModel: [],
-      forCompany: "all",
+      segment: "all",
       label: [],
     });
   };

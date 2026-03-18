@@ -32,7 +32,6 @@ class Product(Base):
     audience: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     preference_match: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
-    for_company: Mapped[bool] = mapped_column(Boolean, default=False)
     is_mentaltech_member: Mapped[bool] = mapped_column(Boolean, default=False)
     pricing_model: Mapped[str | None] = mapped_column(
         SAEnum(

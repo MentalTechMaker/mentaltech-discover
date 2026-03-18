@@ -14,6 +14,8 @@ Disallow: /publisher-submission
 Disallow: /admin-submissions
 Disallow: /reset-password
 Disallow: /verify-email
+Disallow: /veille
+Disallow: /profile
 
 # Sitemaps
 Sitemap: https://discover.mentaltech.fr/sitemap.xml

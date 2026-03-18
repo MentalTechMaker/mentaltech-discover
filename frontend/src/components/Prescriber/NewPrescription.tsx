@@ -12,7 +12,7 @@ export const NewPrescription: React.FC = () => {
   const { setView } = useAppStore();
   const { products, fetchProducts, isLoading: productsLoading } = useProductsStore();
 
-  const { isPrescriber } = useAuthStore();
+  const { isPrescriber, isPrescriberPending } = useAuthStore();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -565,14 +565,23 @@ export const NewPrescription: React.FC = () => {
           >
             Retour
           </button>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={handleSubmit}
-            className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {loading ? 'Creation...' : 'Creer la prescription'}
-          </button>
+          {isPrescriberPending ? (
+            <div className="flex items-center gap-2 bg-amber-50 border-2 border-amber-300 rounded-lg px-4 py-3">
+              <span>🔒</span>
+              <p className="text-sm text-amber-800 font-medium">
+                Compte en attente de validation - prescription bloquée
+              </p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleSubmit}
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {loading ? 'Creation...' : 'Creer la prescription'}
+            </button>
+          )}
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { questions } from "../../data/questions";
 import { companyQuestions } from "../../data/companyQuestions";
+import { healthDecisionMakerQuestions } from "../../data/healthDecisionMakerQuestions";
 import { getRecommendations } from "../../data/recommendationEngine";
 import { QuestionCard } from "./QuestionCard";
 import { ProgressBar } from "./ProgressBar";
@@ -25,7 +26,11 @@ export const Quiz: React.FC = () => {
   } = useAppStore();
 
   const { products } = useProductsStore();
-  const questionsList = userType === "company" ? companyQuestions : questions;
+  const questionsList = userType === "company"
+    ? companyQuestions
+    : userType === "health-decision-maker"
+      ? healthDecisionMakerQuestions
+      : questions;
   const hasStartedRef = useRef(false);
 
   useEffect(() => {
@@ -46,6 +51,16 @@ export const Quiz: React.FC = () => {
         3: "preference",
       };
       const key = companyMapping[questionId];
+      return answers[key];
+    }
+
+    if (userType === "health-decision-maker") {
+      const healthMapping: Record<number, keyof typeof answers> = {
+        1: "healthOrgType",
+        2: "healthOrgNeeds",
+        3: "preference",
+      };
+      const key = healthMapping[questionId];
       return answers[key];
     }
 
@@ -103,7 +118,7 @@ export const Quiz: React.FC = () => {
   useEffect(() => {
     const answeredCount = Object.values(answers).filter(Boolean).length;
     if (answeredCount >= 2 && products.length > 0) {
-      const reco = getRecommendations(answers, userType === "company", products);
+      const reco = getRecommendations(answers, userType, products);
       setPartialCount(reco.products.filter((p) => (p.recommendationScore ?? 0) > 0).length);
     } else {
       setPartialCount(null);
@@ -131,7 +146,7 @@ export const Quiz: React.FC = () => {
 
       const recommendations = getRecommendations(
         answers,
-        userType === "company",
+        userType,
         products
       );
       setView("results");
