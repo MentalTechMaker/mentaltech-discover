@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../../store/useAppStore";
+import { setPageMeta, setCanonical } from "../../utils/meta";
 import { ProductCard } from "./ProductCard";
 import { ExplanationBox } from "./ExplanationBox";
 import { MedicalDisclaimer } from "../Disclaimer/MedicalDisclaimer";
@@ -10,6 +11,14 @@ type ContactFilter = "all" | "human" | "autonomous";
 export const RecommendationList: React.FC = () => {
   const { recommendations, reset, setView } = useAppStore();
   const [showAdditional, setShowAdditional] = useState(false);
+
+  useEffect(() => {
+    setPageMeta(
+      "Vos recommandations personnalisees",
+      "Decouvrez les solutions de sante mentale selectionnees pour vous par MentalTech Discover, evaluees et classees selon vos besoins."
+    );
+    setCanonical("/results");
+  }, []);
   const [pricingFilter, setPricingFilter] = useState<PricingFilter>("all");
   const [contactFilter, setContactFilter] = useState<ContactFilter>("all");
 

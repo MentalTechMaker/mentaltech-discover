@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { setPageMeta, setCanonical } from "../utils/meta";
 
 export const Methodology: React.FC = () => {
+  useEffect(() => {
+    setPageMeta(
+      "Methodologie d'evaluation",
+      "Comment MentalTech Discover evalue les solutions digitales de sante mentale : 5 piliers, protocole transparent, labels A a E."
+    );
+    setCanonical("/methodology");
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">

@@ -3,12 +3,21 @@ import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { MedicalDisclaimer } from "./Disclaimer/MedicalDisclaimer";
 import { getPublicStats } from "../api/prescriber";
+import { setPageMeta, setCanonical } from "../utils/meta";
 
 export const Landing: React.FC = () => {
   const { setView, setUserType } = useAppStore();
   const products = useProductsStore((s) => s.products);
   const productCount = Math.floor(products.length / 10) * 10;
   const [publicStats, setPublicStats] = useState<{ prescribers: number; prescriptions: number } | null>(null);
+
+  useEffect(() => {
+    setPageMeta(
+      "Trouvez votre solution en sante mentale",
+      "Decouvrez les meilleures solutions digitales en sante mentale adaptees a vos besoins. Questionnaire gratuit, catalogue complet, evaluations par des experts."
+    );
+    setCanonical("/");
+  }, []);
 
   useEffect(() => {
     getPublicStats()

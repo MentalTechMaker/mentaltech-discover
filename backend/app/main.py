@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -91,6 +91,43 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/api/sitemap.xml", response_class=Response)
+def sitemap_xml():
+    from .database import get_db
+    from .models.product import Product as ProductModel
+    from datetime import date
+    db = next(get_db())
+    try:
+        products_list = db.query(ProductModel.id, ProductModel.updated_at).filter(
+            ProductModel.company_defunct.is_(False),
+            ProductModel.is_visible.is_(True),
+        ).all()
+    finally:
+        db.close()
+
+    base = "https://discover.mentaltech.fr"
+    today = date.today().isoformat()
+    urls = []
+    for p in products_list:
+        lastmod = p.updated_at.date().isoformat() if p.updated_at else today
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{base}/produit/{p.id}</loc>\n"
+            f"    <lastmod>{lastmod}</lastmod>\n"
+            f"    <changefreq>monthly</changefreq>\n"
+            f"    <priority>0.6</priority>\n"
+            f"  </url>"
+        )
+
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>"
+    )
+    return Response(content=xml, media_type="application/xml")
 
 
 @app.get("/api/stats/public")

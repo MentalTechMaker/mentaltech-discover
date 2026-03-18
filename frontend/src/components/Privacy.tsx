@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
+import { setPageMeta, setCanonical } from "../utils/meta";
 
 export const Privacy: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
+
+  useEffect(() => {
+    setPageMeta("Politique de confidentialite");
+    setCanonical("/privacy");
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-200px)] px-4 py-8">

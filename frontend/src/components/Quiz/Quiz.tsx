@@ -8,6 +8,7 @@ import { QuestionCard } from "./QuestionCard";
 import { ProgressBar } from "./ProgressBar";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { analytics } from "../../lib/analytics";
+import { setPageMeta, setCanonical } from "../../utils/meta";
 
 export const Quiz: React.FC = () => {
   const {
@@ -26,6 +27,14 @@ export const Quiz: React.FC = () => {
   const { products } = useProductsStore();
   const questionsList = userType === "company" ? companyQuestions : questions;
   const hasStartedRef = useRef(false);
+
+  useEffect(() => {
+    setPageMeta(
+      "Questionnaire - trouvez votre solution",
+      "Repondez a quelques questions pour decouvrir les solutions de sante mentale adaptees a vos besoins. Gratuit, sans inscription."
+    );
+    setCanonical("/quiz");
+  }, []);
   const isCompletedRef = useRef(false);
   const [partialCount, setPartialCount] = useState<number | null>(null);
 

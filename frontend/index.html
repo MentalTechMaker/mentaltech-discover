@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo_mt.png" />
+    <link rel="canonical" href="https://discover.mentaltech.fr/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -27,6 +28,58 @@
     <meta name="twitter:title" content="MentalTech Discover - Trouvez votre solution en santé mentale" />
     <meta name="twitter:description" content="Découvrez les solutions digitales en santé mentale adaptées à vos besoins. Créé par MentalTechMaker pour le Collectif MentalTech." />
     <meta name="twitter:image" content="https://discover.mentaltech.fr/og-image.png" />
+
+    <!-- Structured data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Collectif MentalTech",
+      "url": "https://mentaltech.fr",
+      "logo": "https://discover.mentaltech.fr/logo_mt.png",
+      "foundingDate": "2023",
+      "description": "Premier ecosysteme francais de sante mentale digitale",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "arnaud@mentaltechmaker.fr",
+        "contactType": "customer support",
+        "availableLanguage": "French"
+      },
+      "sameAs": [
+        "https://github.com/mentaltechmaker/mentaltech-discover"
+      ]
+    }
+    </script>
+
+    <!-- Structured data: WebSite + SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "MentalTech Discover",
+      "url": "https://discover.mentaltech.fr",
+      "description": "Annuaire et moteur de recommandation de solutions digitales en sante mentale pour la France.",
+      "inLanguage": "fr",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Collectif MentalTech",
+        "url": "https://mentaltech.fr",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "arnaud@mentaltechmaker.fr",
+          "contactType": "customer support"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://discover.mentaltech.fr/catalogue?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://plausible.io/js/pa-lRzI12Da2RVbd6brhmLIF.js"></script>

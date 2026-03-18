@@ -2,5 +2,19 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# Block auth and private routes from indexing
+Disallow: /admin
+Disallow: /prescriber-dashboard
+Disallow: /new-prescription
+Disallow: /comparator
+Disallow: /prescriber-auth
+Disallow: /register-publisher
+Disallow: /publisher-dashboard
+Disallow: /publisher-submission
+Disallow: /admin-submissions
+Disallow: /reset-password
+Disallow: /verify-email
+
+# Sitemaps
 Sitemap: https://discover.mentaltech.fr/sitemap.xml
+Sitemap: https://discover.mentaltech.fr/api/sitemap.xml

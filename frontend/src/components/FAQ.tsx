@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
+import { setPageMeta, setCanonical, injectJsonLd, removeJsonLd } from "../utils/meta";
 
 interface FAQItem {
   question: string;
@@ -7,9 +8,40 @@ interface FAQItem {
   category: string;
 }
 
+const FAQ_SCHEMA_DATA = [
+  { q: "Comment sont selectionnees les solutions ?", a: "Nous referençons les membres du Collectif MentalTech qui respectent nos criteres : conformite RGPD, hebergement HDS si donnees de sante, transparence tarifaire, entreprise active." },
+  { q: "Comment fonctionne l'algorithme de recommandation ?", a: "Nous analysons 5 dimensions : public cible, problematiques, preferences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance." },
+  { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de sante peuvent creer un compte prescripteur gratuit." },
+  { q: "Mes donnees sont-elles collectees ?", a: "Pour les visiteurs, aucune donnee n'est collectee. Les reponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectes de maniere securisee." },
+  { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisees uniquement pour ameliorer le service." },
+  { q: "Est-ce un dispositif medical ?", a: "Non. MentalTech Discover est un outil de decouverte, pas un dispositif medical certifie. Il aide a explorer les solutions disponibles sans fournir de service medical." },
+  { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prevention du suicide), le 15 (SAMU) ou le 112 (urgences europeennes). Ces numeros sont gratuits et disponibles 24h/24." },
+  { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est disponible en V2 : tableau de bord, prescriptions numeriques, veille solutions, comparateur. Gratuit, inscription requise." },
+  { q: "Comment etre reference sur MentalTech Discover ?", a: "La solution doit rejoindre le Collectif MentalTech via mentaltech.fr, puis etre evaluee selon le protocole de qualite." },
+  { q: "Le code est-il open-source ?", a: "Oui, transparence totale. Le code est disponible sur GitHub : github.com/mentaltechmaker/mentaltech-discover sous licence MIT." },
+];
+
 export const FAQ: React.FC = () => {
   const { setView } = useAppStore();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    setPageMeta(
+      "Questions frequentes",
+      "Toutes les reponses sur MentalTech Discover : selection des solutions, algorithme, confidentialite, aspect medical, espace prescripteur."
+    );
+    setCanonical("/faq");
+    injectJsonLd("faq-schema", {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": FAQ_SCHEMA_DATA.map(({ q, a }) => ({
+        "@type": "Question",
+        "name": q,
+        "acceptedAnswer": { "@type": "Answer", "text": a },
+      })),
+    });
+    return () => removeJsonLd("faq-schema");
+  }, []);
 
   const faqData: FAQItem[] = [
     {

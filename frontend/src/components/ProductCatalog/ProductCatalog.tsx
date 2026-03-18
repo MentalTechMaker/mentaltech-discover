@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useProductsStore } from "../../store/useProductsStore";
 import { ProductCatalogCard } from "./ProductCatalogCard";
 import { FilterSection } from "./FilterSection";
+import { setPageMeta, setCanonical } from "../../utils/meta";
 
 export interface Filters {
   search: string;
@@ -14,6 +15,14 @@ export interface Filters {
 }
 
 export const ProductCatalog: React.FC = () => {
+  useEffect(() => {
+    setPageMeta(
+      "Catalogue des solutions",
+      "Explorez toutes les solutions digitales de sante mentale : applications, therapies en ligne, meditation, TCC. Filtres par type, audience, tarif et label qualite."
+    );
+    setCanonical("/catalog");
+  }, []);
+
   const [filters, setFilters] = useState<Filters>({
     search: "",
     type: [],

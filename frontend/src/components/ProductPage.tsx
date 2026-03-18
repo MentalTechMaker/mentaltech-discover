@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
 import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
+import { setPageMeta, setCanonical, injectJsonLd, removeJsonLd } from "../utils/meta";
 
 const pricingLabels: Record<string, string> = {
   free: "Gratuit",
@@ -53,6 +54,40 @@ export const ProductPage: React.FC = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
+  const product = products.find((p) => p.id === selectedProductId);
+
+  useEffect(() => {
+    if (!product) return;
+    const desc = product.tagline || product.description?.slice(0, 155) || "";
+    setPageMeta(`${product.name} - ${product.type}`, desc);
+    setCanonical(`/product/${product.id}`);
+    injectJsonLd("product-schema", {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": product.name,
+      "description": product.description,
+      "applicationCategory": "HealthApplication",
+      "inLanguage": "fr",
+      "url": product.url,
+      "offers": product.pricing ? {
+        "@type": "Offer",
+        "price": product.pricing.model === "free" ? "0" : undefined,
+        "priceCurrency": "EUR",
+        "description": product.pricing.amount || product.pricing.model,
+      } : undefined,
+    });
+    injectJsonLd("breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://discover.mentaltech.fr/" },
+        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": "https://discover.mentaltech.fr/catalog" },
+        { "@type": "ListItem", "position": 3, "name": product.name },
+      ],
+    });
+    return () => { removeJsonLd("product-schema"); removeJsonLd("breadcrumb-schema"); };
+  }, [product]);
+
   useEffect(() => {
     if (!isPrescriber || !selectedProductId) return;
     listFavorites().then((favs) => {
@@ -77,8 +112,6 @@ export const ProductPage: React.FC = () => {
       setFavoriteLoading(false);
     }
   };
-
-  const product = products.find((p) => p.id === selectedProductId);
 
   if (!product) {
     return (

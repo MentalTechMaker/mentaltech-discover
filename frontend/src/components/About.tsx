@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { setPageMeta, setCanonical } from "../utils/meta";
 
 export const About: React.FC = () => {
+  useEffect(() => {
+    setPageMeta(
+      "Notre demarche",
+      "Decouvrez comment MentalTech Discover selectionne et evalue les solutions de sante mentale numerique en France."
+    );
+    setCanonical("/about");
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-12">
       <div className="max-w-4xl mx-auto space-y-12">
