@@ -280,6 +280,29 @@ export const Landing: React.FC = () => {
             </button>
           </div>
         </div>
+
+        <div className="max-w-3xl mx-auto mt-6 bg-gradient-to-br from-amber-50 to-white p-6 md:p-8 rounded-2xl border-2 border-amber-200">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-shrink-0 bg-amber-100 p-4 rounded-2xl">
+              <span className="text-4xl">🚀</span>
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-xl font-bold text-text-primary mb-2">
+                Vous avez une solution à référencer ?
+              </h3>
+              <p className="text-text-secondary text-sm leading-relaxed">
+                Soumettez votre solution pour qu'elle soit évaluée et visible par les professionnels de santé et les particuliers.
+              </p>
+            </div>
+            <button
+              onClick={() => setView("join-collective")}
+              className="flex-shrink-0 inline-flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-amber-700 transition-colors"
+            >
+              <span>Rejoindre le collectif</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
       </div>
       </div>
     </div>

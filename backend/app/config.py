@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False
 
+    ADMIN_EMAIL: str = "contact@mentaltechmaker.fr"
+
     DEBUG: bool = False
 
     model_config = {"env_file": ".env", "extra": "ignore"}

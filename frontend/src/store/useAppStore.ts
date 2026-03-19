@@ -1,6 +1,23 @@
 import { create } from 'zustand';
 import type { AppView, UserAnswers, RecommendationResult, UserType } from '../types';
 
+// Clean URL mapping for public-facing views
+const VIEW_TO_URL: Partial<Record<AppView, string>> = {
+  'public-submission': '/soumettre-solution',
+  'health-pro-application': '/pro-sante',
+  'join-collective': '/rejoindre',
+  'confirm-submission': '/confirmer-soumission',
+  'confirm-health-pro': '/confirmer-candidature',
+};
+
+const URL_TO_VIEW: Record<string, AppView> = {
+  'soumettre-solution': 'public-submission',
+  'pro-sante': 'health-pro-application',
+  'rejoindre': 'join-collective',
+  'confirmer-soumission': 'confirm-submission',
+  'confirmer-candidature': 'confirm-health-pro',
+};
+
 // Encode/decode quiz answers into URL search params for result sharing
 const ANSWER_PARAM_MAP: Record<string, keyof UserAnswers> = {
   f: 'feeling', u: 'urgency', p: 'problem', a: 'audience', pref: 'preference',
@@ -65,7 +82,8 @@ export const useAppStore = create<AppState>((set) => ({
   setView: (view) => {
     set({ currentView: view, selectedProductId: null });
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view }, '', `/${view}`);
+      const urlPath = VIEW_TO_URL[view] ?? `/${view}`;
+      window.history.pushState({ view }, '', urlPath);
       window.scrollTo({top: 0,left: 0});
     }
   },
@@ -144,12 +162,19 @@ function parsePathView(): { view: AppView; productId?: string } {
     return { view: 'landing' };
   }
 
+  // Check clean URL aliases (soumettre-solution, pro-sante, rejoindre, etc.)
+  if (URL_TO_VIEW[pathname]) {
+    return { view: URL_TO_VIEW[pathname] };
+  }
+
   const validViews: AppView[] = [
     'landing', 'quiz', 'results', 'privacy', 'legal', 'catalog',
     'methodology', 'about', 'faq', 'login', 'register', 'register-prescriber',
     'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
     'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
     'register-publisher', 'publisher-dashboard', 'publisher-submission', 'admin-submissions',
+    'public-submission', 'health-pro-application', 'confirm-submission', 'confirm-health-pro',
+    'join-collective',
   ];
   if (validViews.includes(pathname as AppView)) {
     return { view: pathname as AppView };

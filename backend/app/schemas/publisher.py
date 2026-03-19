@@ -72,6 +72,8 @@ class SubmissionResponse(BaseModel):
 
 class AdminReviewAction(BaseModel):
     admin_notes: str | None = None
+    # Link to an already-created product instead of creating from submission data
+    product_id: str | None = None
     # For approve: also set scores on the product
     score_security: int | None = None
     score_efficacy: int | None = None

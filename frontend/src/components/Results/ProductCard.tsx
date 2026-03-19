@@ -156,14 +156,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-text-primary">{criteriaLabel}</span>
                       {score != null && (
-                        <span className="text-sm font-bold text-text-primary">{score}/20</span>
+                        <span className="text-sm font-bold text-text-primary">{score}/5</span>
                       )}
                     </div>
                     {score != null && (
                       <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
                         <div
                           className="h-1.5 rounded-full transition-all"
-                          style={{ width: `${(score / 20) * 100}%`, backgroundColor: label.bgColor }}
+                          style={{ width: `${(score / 5) * 100}%`, backgroundColor: label.bgColor }}
                         />
                       </div>
                     )}

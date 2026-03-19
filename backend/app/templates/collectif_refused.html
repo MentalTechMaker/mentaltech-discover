@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .notes-block { background: #fafafa; border-left: 4px solid #e5e7eb; border-radius: 8px; padding: 16px; margin: 20px 0; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #2c3e50;">Réponse à votre candidature au Collectif MentalTech</h2>
+            <p>Bonjour <strong>{{ name }}</strong>,</p>
+            <p>Après délibération du bureau, nous ne sommes pas en mesure d'accepter votre candidature au Collectif MentalTech pour le moment.</p>
+            {% if admin_notes %}
+            <div class="notes-block">
+                <p style="margin: 0 0 8px 0; font-weight: 600;">Retour du bureau :</p>
+                <p style="margin: 0;">{{ admin_notes }}</p>
+            </div>
+            {% endif %}
+            <p>Si vous souhaitez en savoir plus ou renouveler votre candidature ultérieurement, contactez-nous à <a href="mailto:contact@mentaltech.fr">contact@mentaltech.fr</a>.</p>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover - Collectif MentalTech</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useAppStore } from "../../store/useAppStore";
+import { PublicSubmissionsAdmin } from "./PublicSubmissionsAdmin";
 import {
   listSubmissions,
   getAdminSubmission,
@@ -30,7 +31,7 @@ const STATUS_FILTERS: { value: string; label: string }[] = [
   { value: "changes_requested", label: "Modifs demandees" },
 ];
 
-type Tab = "submissions" | "publishers";
+type Tab = "submissions" | "publishers" | "public";
 
 export const SubmissionsList: React.FC = () => {
   const { isAdmin } = useAuthStore();
@@ -145,8 +146,9 @@ export const SubmissionsList: React.FC = () => {
         <div className="flex gap-1 mb-8 border-b-2 border-gray-200">
           {(
             [
-              { key: "submissions", label: "Soumissions" },
+              { key: "submissions", label: "Soumissions (compte)" },
               { key: "publishers", label: "Editeurs" },
+              { key: "public", label: "Soumissions publiques & Collectif" },
             ] as { key: Tab; label: string }[]
           ).map(({ key, label }) => (
             <button
@@ -366,6 +368,9 @@ export const SubmissionsList: React.FC = () => {
             )}
           </>
         )}
+
+        {/* Public submissions & collectif tab */}
+        {activeTab === "public" && <PublicSubmissionsAdmin />}
       </div>
     </div>
   );

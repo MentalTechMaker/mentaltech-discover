@@ -10,9 +10,7 @@ export const Header: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleLogoClick = () => {
-    if (currentView !== "landing") {
-      reset();
-    }
+    if (currentView !== "landing") reset();
   };
 
   const handleLogout = () => {
@@ -28,186 +26,146 @@ export const Header: React.FC = () => {
     setMobileOpen(false);
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
       }
     };
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
-  return (
-    <header className="bg-primary shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+  const navLink = (view: string, label: string) => (
+    <button
+      onClick={() => setView(view as Parameters<typeof setView>[0])}
+      className={`relative px-4 py-1.5 text-sm font-bold transition-all group text-white`}
+    >
+      {label}
+      <span className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full transition-all duration-200 ${
+        currentView === view ? "bg-white opacity-100" : "bg-white opacity-0 group-hover:opacity-60"
+      }`} />
+    </button>
+  );
 
+  return (
+    <header className="bg-primary sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between h-16 gap-6">
+
+          {/* Logo */}
           <button
             onClick={handleLogoClick}
-            className="flex items-center gap-3 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary rounded-lg px-2 py-1"
+            className="flex items-center gap-2.5 flex-shrink-0 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-white/50 rounded-lg px-1"
             aria-label="Retour à l'accueil"
           >
-            <div className="bg-white rounded-full p-2">
-              <span className="text-2xl">💙</span>
+            <div className="bg-white rounded-full p-2 shadow-sm">
+              <span className="text-base leading-none">💙</span>
             </div>
-            <div className="text-left">
-              <h1 className="text-2xl font-bold text-white">
-                MentalTech Discover
-              </h1>
-              <p className="text-xs text-white text-opacity-90">
-                Trouvez votre solution en santé mentale
-              </p>
-            </div>
+            <span className="text-white font-black text-lg tracking-tight">
+              MentalTech Discover
+            </span>
           </button>
 
-          {/* Right side — always visible wrapper */}
-          <div className="flex items-center gap-2">
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center justify-center gap-1 flex-1">
+            {navLink("about", "🎯 Démarche")}
+            {navLink("faq", "❓ FAQ")}
+            {navLink("catalog", "📚 Catalogue")}
+          </nav>
 
-            {/* Desktop nav links — hidden on mobile */}
-            <div className="hidden md:flex items-center gap-4">
-              <button
-                onClick={() => setView("about")}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  currentView === "about"
-                    ? "bg-white text-primary"
-                    : "text-white hover:bg-white/20"
-                }`}
-              >
-                🎯 Notre démarche
-              </button>
-              <button
-                onClick={() => setView("faq")}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  currentView === "faq"
-                    ? "bg-white text-primary"
-                    : "text-white hover:bg-white/20"
-                }`}
-              >
-                ❓ FAQ
-              </button>
-              <button
-                onClick={() => setView("catalog")}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  currentView === "catalog"
-                    ? "bg-white text-primary"
-                    : "text-white hover:bg-white/20"
-                }`}
-              >
-                📚 Catalogue
-              </button>
-            </div>
+          {/* Right side */}
+          <div className="flex items-center gap-2 flex-shrink-0">
 
-            {/* Account area */}
+            {/* CTA - desktop */}
+            <button
+              onClick={() => setView("public-submission")}
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold bg-secondary text-white hover:opacity-90 transition-opacity shadow-sm"
+            >
+              <span>➕</span>
+              <span>Référencer</span>
+            </button>
+
+            {/* Account */}
             {isAuthenticated ? (
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors border ${
                     menuOpen
-                      ? "bg-white text-primary"
-                      : "bg-white/20 text-white hover:bg-white/30"
+                      ? "bg-white text-primary border-white"
+                      : "text-white border-white/30 hover:bg-white/10 hover:border-white/50"
                   }`}
                   aria-expanded={menuOpen}
                   aria-haspopup="true"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span className="hidden lg:inline">{user?.name}</span>
+                  <span className="hidden lg:inline max-w-[100px] truncate">{user?.name}</span>
                   <svg
-                    className={`w-4 h-4 transition-transform ${menuOpen ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                    className={`w-3 h-3 transition-transform flex-shrink-0 ${menuOpen ? "rotate-180" : ""}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-[200]">
-                    <div className="px-4 py-2 border-b border-gray-100">
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[200]">
+                    <div className="px-4 py-2.5 border-b border-gray-100 mb-1">
                       <p className="text-sm font-semibold text-text-primary truncate">{user?.name}</p>
                       <p className="text-xs text-text-secondary truncate">{user?.email}</p>
                     </div>
-                    <button
-                      onClick={() => navigateTo("profile")}
-                      className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                    >
-                      Mon profil
+                    <button onClick={() => navigateTo("profile")}
+                      className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                      👤 Profil
                     </button>
                     {(isPrescriber || isPrescriberPending) && (
                       <>
-                        <button
-                          onClick={() => navigateTo("prescriber-dashboard")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Tableau de bord
+                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Prescripteur</p>
+                        <button onClick={() => navigateTo("prescriber-dashboard")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          📊 Tableau de bord
                         </button>
-                        <button
-                          onClick={() => navigateTo("new-prescription")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Nouvelle prescription
+                        <button onClick={() => navigateTo("new-prescription")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          📝 Prescrire
                         </button>
-                        <button
-                          onClick={() => navigateTo("veille")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Veille solutions
+                        <button onClick={() => navigateTo("veille")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          🔍 Veille
                         </button>
-                        <button
-                          onClick={() => navigateTo("comparator")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Comparateur
+                        <button onClick={() => navigateTo("comparator")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          ⚖️ Comparer
                         </button>
                       </>
                     )}
                     {(isPublisher || user?.role === "publisher") && (
-                      <button
-                        onClick={() => navigateTo("publisher-dashboard")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                      >
-                        Espace editeur
+                      <button onClick={() => navigateTo("publisher-dashboard")}
+                        className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                        ✏️ Editeur
                       </button>
                     )}
                     {isAdmin && (
                       <>
-                        <button
-                          onClick={() => navigateTo("admin")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Administration
+                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Admin</p>
+                        <button onClick={() => navigateTo("admin")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          ⚙️ Admin
                         </button>
-                        <button
-                          onClick={() => navigateTo("admin-submissions")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                        >
-                          Gestion editeurs
+                        <button onClick={() => navigateTo("admin-submissions")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                          📋 Editeurs
                         </button>
                       </>
                     )}
                     <div className="border-t border-gray-100 mt-1 pt-1">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        Déconnexion
+                      <button onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
+                        🚪 Déconnexion
                       </button>
                     </div>
                   </div>
@@ -216,107 +174,110 @@ export const Header: React.FC = () => {
             ) : (
               <button
                 onClick={() => setView("prescriber-auth")}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold bg-white text-purple-700 hover:bg-purple-50 shadow-sm transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white bg-purple-500 hover:opacity-90 transition-opacity shadow-sm"
               >
-                <span className="text-lg">🩺</span>
-                <span className="hidden lg:inline">Espace prescripteur</span>
+                <span>🩺</span>
+                <span className="hidden lg:inline">Prescripteur</span>
               </button>
             )}
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg text-white hover:bg-white/20 transition-colors"
+              className="md:hidden p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Menu"
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
             </button>
-
           </div>
         </div>
 
-        {/* Mobile menu panel */}
+        {/* Mobile menu */}
         {mobileOpen && (
-          <nav className="md:hidden border-t border-white/20 py-2">
+          <nav className="md:hidden border-t border-white/20 pb-3 pt-2 space-y-0.5">
+            {[
+              { view: "about", label: "🎯 Démarche" },
+              { view: "faq", label: "❓ FAQ" },
+              { view: "catalog", label: "📚 Catalogue" },
+            ].map(({ view, label }) => (
+              <button
+                key={view}
+                onClick={() => navigateTo(view as Parameters<typeof setView>[0])}
+                className={`w-full text-left px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                  currentView === view
+                    ? "text-white bg-white/20"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
             <button
-              onClick={() => navigateTo("about")}
-              className="w-full text-left px-4 py-3 text-white font-semibold hover:bg-white/10 transition-colors"
+              onClick={() => navigateTo("public-submission")}
+              className="w-full text-left px-4 py-2.5 text-sm font-bold text-white bg-emerald-500/30 hover:bg-emerald-500/40 rounded-full transition-colors"
             >
-              🎯 Notre démarche
-            </button>
-            <button
-              onClick={() => navigateTo("faq")}
-              className="w-full text-left px-4 py-3 text-white font-semibold hover:bg-white/10 transition-colors"
-            >
-              ❓ FAQ
-            </button>
-            <button
-              onClick={() => navigateTo("catalog")}
-              className="w-full text-left px-4 py-3 text-white font-semibold hover:bg-white/10 transition-colors"
-            >
-              📚 Catalogue
+              ➕ Référencer
             </button>
 
-            <div className="border-t border-white/20 mt-1 pt-1">
+            <div className="border-t border-white/20 mt-2 pt-2 space-y-0.5">
               {isAuthenticated ? (
                 <>
                   <div className="px-4 py-2">
                     <p className="text-sm font-semibold text-white">{user?.name}</p>
-                    <p className="text-xs text-white/70">{user?.email}</p>
+                    <p className="text-xs text-white/60">{user?.email}</p>
                   </div>
-                  <button
-                    onClick={() => navigateTo("profile")}
-                    className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors"
-                  >
-                    Mon profil
+                  <button onClick={() => navigateTo("profile")}
+                    className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                    👤 Profil
                   </button>
                   {(isPrescriber || isPrescriberPending) && (
                     <>
-                      <button onClick={() => navigateTo("prescriber-dashboard")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                        Tableau de bord
+                      <button onClick={() => navigateTo("prescriber-dashboard")}
+                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                        📊 Tableau de bord
                       </button>
-                      <button onClick={() => navigateTo("new-prescription")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                        Nouvelle prescription
+                      <button onClick={() => navigateTo("new-prescription")}
+                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                        📝 Prescrire
                       </button>
                     </>
                   )}
                   {(isPublisher || user?.role === "publisher") && (
-                    <button onClick={() => navigateTo("publisher-dashboard")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                      Espace editeur
+                    <button onClick={() => navigateTo("publisher-dashboard")}
+                      className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                      ✏️ Editeur
                     </button>
                   )}
                   {isAdmin && (
                     <>
-                      <button onClick={() => navigateTo("admin")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                        Administration
+                      <button onClick={() => navigateTo("admin")}
+                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                        ⚙️ Admin
                       </button>
-                      <button onClick={() => navigateTo("admin-submissions")} className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors">
-                        Gestion editeurs
+                      <button onClick={() => navigateTo("admin-submissions")}
+                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                        📋 Editeurs
                       </button>
                     </>
                   )}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-red-300 hover:bg-white/10 transition-colors font-semibold"
-                  >
-                    Déconnexion
+                  <button onClick={handleLogout}
+                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-300 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors">
+                    🚪 Déconnexion
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => navigateTo("prescriber-auth")}
-                  className="w-full text-left px-4 py-3 font-bold text-purple-200 hover:bg-white/10 transition-colors"
-                >
-                  🩺 Espace prescripteur
+                <button onClick={() => navigateTo("prescriber-auth")}
+                  className="w-full text-left px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                  🩺 Prescripteur
                 </button>
               )}
             </div>

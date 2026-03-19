@@ -111,4 +111,50 @@ export interface ProductSubmission {
   updatedAt: string;
 }
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'register-publisher' | 'publisher-dashboard' | 'publisher-submission' | 'admin-submissions';
+export type PublicSubmissionStatus = 'pending_email' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
+
+export interface PublicSubmission {
+  id: string;
+  contactName: string;
+  contactEmail: string;
+  status: PublicSubmissionStatus;
+  name: string | null;
+  type: string | null;
+  tagline: string | null;
+  description: string | null;
+  url: string | null;
+  logo: string | null;
+  tags: string[];
+  audience: string[];
+  problemsSolved: string[];
+  pricingModel: string | null;
+  pricingAmount: string | null;
+  pricingDetails: string | null;
+  protocolAnswers: Record<string, Record<string, unknown>>;
+  collectifRequested: boolean;
+  collectifStatus: string;
+  collectifContactEmail: string | null;
+  adminNotes: string | null;
+  productId: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HealthProfApplication {
+  id: string;
+  name: string;
+  email: string;
+  profession: string;
+  rppsAdeli: string | null;
+  organization: string | null;
+  motivation: string | null;
+  status: string;
+  emailConfirmed: boolean;
+  isCollectiveMember: boolean;
+  adminNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'register-publisher' | 'publisher-dashboard' | 'publisher-submission' | 'admin-submissions' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';

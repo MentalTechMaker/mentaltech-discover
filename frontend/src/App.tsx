@@ -29,6 +29,11 @@ import { RegisterPublisherPage } from "./components/Auth/RegisterPublisherPage";
 import { PublisherDashboard } from "./components/Publisher/PublisherDashboard";
 import { SubmissionForm } from "./components/Publisher/SubmissionForm";
 import { SubmissionsList } from "./components/Admin/SubmissionsList";
+import { PublicSubmissionForm } from "./components/Public/PublicSubmissionForm";
+import { HealthProApplicationForm } from "./components/Public/HealthProApplicationForm";
+import { ConfirmSubmissionPage } from "./components/Public/ConfirmSubmissionPage";
+import { ConfirmHealthProPage } from "./components/Public/ConfirmHealthProPage";
+import { JoinCollectivePage } from "./components/Public/JoinCollectivePage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { analytics } from "./lib/analytics";
 import { getRecommendations } from "./data/recommendationEngine";
@@ -97,6 +102,11 @@ function App() {
             <SubmissionForm onClose={() => useAppStore.getState().setView("publisher-dashboard")} />
           )}
           {currentView === "admin-submissions" && <SubmissionsList />}
+          {currentView === "join-collective" && <JoinCollectivePage />}
+          {currentView === "public-submission" && <PublicSubmissionForm />}
+          {currentView === "health-pro-application" && <HealthProApplicationForm />}
+          {currentView === "confirm-submission" && <ConfirmSubmissionPage />}
+          {currentView === "confirm-health-pro" && <ConfirmHealthProPage />}
         </ErrorBoundary>
       </main>
       <Footer />

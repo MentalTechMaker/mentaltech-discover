@@ -209,6 +209,177 @@ async def send_ambassador_trigger_email(email: str, name: str) -> None:
         _write_email_to_file(message.subject, [email], html)
 
 
+async def send_submission_confirmation_email(email: str, name: str, confirm_token: str) -> None:
+    confirm_url = f"{settings.FRONTEND_URL}/confirmer-soumission?token={confirm_token}"
+    template = jinja_env.get_template("submission_confirmation.html")
+    html = template.render(name=name, confirm_url=confirm_url)
+    message = MessageSchema(
+        subject="Confirmez votre demande de référencement - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Submission confirmation email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send submission confirmation email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_submission_received_admin_email(
+    admin_email: str,
+    contact_name: str,
+    contact_email: str,
+    product_name: str | None,
+    collectif_requested: bool,
+    collectif_ca_range: str | None,
+) -> None:
+    admin_url = f"{settings.FRONTEND_URL}/admin"
+    template = jinja_env.get_template("admin_submission_received.html")
+    html = template.render(
+        contact_name=contact_name,
+        contact_email=contact_email,
+        product_name=product_name,
+        collectif_requested=collectif_requested,
+        collectif_ca_range=collectif_ca_range,
+        admin_url=admin_url,
+    )
+    message = MessageSchema(
+        subject=f"Nouvelle soumission : {product_name or contact_name} - MentalTech Discover",
+        recipients=[admin_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Admin submission notification sent to {admin_email}")
+    except Exception:
+        logger.error(f"Failed to send admin submission notification", exc_info=True)
+        _write_email_to_file(message.subject, [admin_email], html)
+
+
+async def send_submission_approved_email(email: str, name: str, product_name: str | None) -> None:
+    catalog_url = f"{settings.FRONTEND_URL}/catalogue"
+    template = jinja_env.get_template("submission_approved.html")
+    html = template.render(name=name, product_name=product_name, catalog_url=catalog_url)
+    message = MessageSchema(
+        subject="Votre solution a été acceptée ! - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Submission approved email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send submission approved email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_submission_rejected_email(email: str, name: str, product_name: str | None, admin_notes: str | None) -> None:
+    template = jinja_env.get_template("submission_rejected.html")
+    html = template.render(name=name, product_name=product_name, admin_notes=admin_notes)
+    message = MessageSchema(
+        subject="Réponse à votre demande de référencement - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Submission rejected email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send submission rejected email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_collectif_invite_email(email: str, name: str, helloasso_url: str) -> None:
+    template = jinja_env.get_template("collectif_invite.html")
+    html = template.render(name=name, helloasso_url=helloasso_url)
+    message = MessageSchema(
+        subject="Bienvenue dans le Collectif MentalTech !",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Collectif invite email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send collectif invite email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_collectif_refused_email(email: str, name: str, admin_notes: str | None) -> None:
+    template = jinja_env.get_template("collectif_refused.html")
+    html = template.render(name=name, admin_notes=admin_notes)
+    message = MessageSchema(
+        subject="Réponse à votre candidature au Collectif MentalTech",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Collectif refused email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send collectif refused email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_health_pro_confirmation_email(email: str, name: str, confirm_token: str) -> None:
+    confirm_url = f"{settings.FRONTEND_URL}/confirmer-candidature?token={confirm_token}"
+    template = jinja_env.get_template("health_pro_confirmation.html")
+    html = template.render(name=name, confirm_url=confirm_url)
+    message = MessageSchema(
+        subject="Confirmez votre candidature au Collectif MentalTech",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Health pro confirmation email sent to {email}")
+    except Exception:
+        logger.error(f"Failed to send health pro confirmation email to {email}", exc_info=True)
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_health_pro_admin_notification(
+    admin_email: str,
+    name: str,
+    email: str,
+    profession: str,
+    rpps_adeli: str | None = None,
+    organization: str | None = None,
+    motivation: str | None = None,
+) -> None:
+    admin_url = f"{settings.FRONTEND_URL}/admin"
+    template = jinja_env.get_template("admin_health_pro_received.html")
+    html = template.render(
+        name=name,
+        email=email,
+        profession=profession,
+        rpps_adeli=rpps_adeli,
+        organization=organization,
+        motivation=motivation,
+        admin_url=admin_url,
+    )
+    message = MessageSchema(
+        subject=f"Nouvelle candidature professionnelle : {name} - MentalTech Discover",
+        recipients=[admin_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Health pro admin notification sent to {admin_email}")
+    except Exception:
+        logger.error(f"Failed to send health pro admin notification", exc_info=True)
+        _write_email_to_file(message.subject, [admin_email], html)
+
+
 async def send_reset_password_email(email: str, name: str, user_id: str) -> None:
     token = create_email_token(user_id, "reset_password", expire_hours=1)
     reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"

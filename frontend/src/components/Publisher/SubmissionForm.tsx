@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import {
   createSubmission,
@@ -8,6 +8,7 @@ import {
   createAndPublishAdmin,
   uploadLogoAdmin,
 } from "../../api/publisher";
+import { submitPublicSolution, uploadLogoPublic, approvePublicSubmission } from "../../api/public";
 import {
   computeLabelFromScores,
   getLabelInfo,
@@ -57,6 +58,13 @@ const PRICING_MODELS = [
   { value: "per-session", label: "A la seance" },
   { value: "enterprise", label: "Entreprise" },
   { value: "custom", label: "Sur mesure" },
+];
+
+const CA_RANGES = [
+  { value: "less-100k", label: "Moins de 100 000 €" },
+  { value: "100k-500k", label: "100 000 € - 500 000 €" },
+  { value: "500k-1m", label: "500 000 € - 1 000 000 €" },
+  { value: "more-1m", label: "Plus de 1 000 000 €" },
 ];
 
 const PREFERENCE_OPTIONS = [
@@ -134,10 +142,13 @@ interface Props {
   onClose: () => void;
   adminMode?: boolean;
   editProduct?: import("../../types").Product;
+  publicMode?: boolean;
+  submissionId?: string; // links this adminMode form to a PublicSubmission
 }
 
-export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, editProduct }) => {
-  const submissionId = useAppStore((s) => s.selectedProductId);
+export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, editProduct, publicMode = false, submissionId }) => {
+  const publisherSubmissionId = useAppStore((s) => s.selectedProductId);
+  const loadedAt = useRef(Date.now() / 1000);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -181,12 +192,22 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [justUx, setJustUx] = useState("");
   const [justSupport, setJustSupport] = useState("");
 
+  // Public mode fields
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [publicSubmitted, setPublicSubmitted] = useState(false);
+  const [collectifRequested, setCollectifRequested] = useState(false);
+  const [collectifCaRange, setCollectifCaRange] = useState("");
+  const [collectifContactEmail, setCollectifContactEmail] = useState("");
+  const [stepError, setStepError] = useState("");
+
   // Load existing submission (skip in admin mode — always new)
   useEffect(() => {
-    if (submissionId && !adminMode) {
-      loadSubmission(submissionId);
+    if (publisherSubmissionId && !adminMode) {
+      loadSubmission(publisherSubmissionId);
     }
-  }, [submissionId, adminMode]);
+  }, [publisherSubmissionId, adminMode]);
 
   // Pre-populate form when editing an existing product
   useEffect(() => {
@@ -336,11 +357,26 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     }
   };
 
+  const handlePublicLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUploading(true);
+    setError("");
+    try {
+      const path = await uploadLogoPublic(file);
+      setLogoPath(path);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur lors de l'upload du logo");
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
   const handleAdminCreateAndPublish = async () => {
     setSaving(true);
     setError("");
     try {
-      await createAndPublishAdmin({
+      const product = await createAndPublishAdmin({
         id: adminProductId || undefined,
         name,
         type,
@@ -369,9 +405,60 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         justification_ux: justUx || undefined,
         justification_support: justSupport || undefined,
       });
+      if (submissionId) {
+        await approvePublicSubmission(submissionId, {
+          product_id: product.id,
+          score_security: scoresSecurity === "" ? undefined : scoresSecurity,
+          score_efficacy: scoresEfficacy === "" ? undefined : scoresEfficacy,
+          score_accessibility: scoresAccessibility === "" ? undefined : scoresAccessibility,
+          score_ux: scoresUx === "" ? undefined : scoresUx,
+          score_support: scoresSupport === "" ? undefined : scoresSupport,
+          justification_security: justSecurity || undefined,
+          justification_efficacy: justEfficacy || undefined,
+          justification_accessibility: justAccessibility || undefined,
+          justification_ux: justUx || undefined,
+          justification_support: justSupport || undefined,
+        });
+      }
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la creation du produit");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePublicSubmit = async () => {
+    if (!contactName.trim()) { setError("Votre nom est requis."); return; }
+    if (!contactEmail.trim()) { setError("Votre email est requis."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) { setError("L'adresse email n'est pas valide."); return; }
+    setSaving(true);
+    setError("");
+    try {
+      await submitPublicSolution({
+        contact_name: contactName.trim(),
+        contact_email: contactEmail.trim(),
+        honeypot,
+        submitted_at_ts: loadedAt.current,
+        name: name || undefined,
+        type: type || undefined,
+        tagline: tagline || undefined,
+        description: description || undefined,
+        url: url || undefined,
+        logo: logoPath || undefined,
+        tags: [],
+        audience,
+        problems_solved: problemsSolved,
+        pricing_model: pricingModel || undefined,
+        pricing_amount: pricingAmount || undefined,
+        protocol_answers: protocolAnswers,
+        collectif_requested: collectifRequested,
+        collectif_ca_range: collectifRequested && collectifCaRange ? collectifCaRange : undefined,
+        collectif_contact_email: collectifRequested && collectifContactEmail ? collectifContactEmail : undefined,
+      });
+      setPublicSubmitted(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Une erreur est survenue. Réessayez.");
     } finally {
       setSaving(false);
     }
@@ -430,7 +517,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     );
   }).length;
 
-  if (loading) {
+  if (loading && !publicMode) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
         <div className="text-text-secondary">Chargement...</div>
@@ -438,8 +525,31 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     );
   }
 
+  if (publicSubmitted) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center p-4">
+        <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-200">
+          <div className="text-5xl mb-4">📬</div>
+          <h2 className="text-2xl font-bold text-text-primary mb-3">Vérifiez votre boîte mail</h2>
+          <p className="text-text-secondary mb-6">
+            Un email de confirmation a été envoyé à <strong>{contactEmail}</strong>.
+            Cliquez sur le lien pour finaliser votre soumission.
+          </p>
+          <p className="text-sm text-text-secondary">Le lien est valable 48 heures. Vérifiez aussi vos spams.</p>
+          <button onClick={onClose} className="mt-6 text-primary hover:underline text-sm">
+            Retour au catalogue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+      {publicMode && (
+        <input type="text" name="website_url" value={honeypot} onChange={e => setHoneypot(e.target.value)}
+          style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
+      )}
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -447,9 +557,11 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <h1 className="text-2xl font-bold text-text-primary">
               {adminMode
                 ? "Nouveau produit (protocole)"
-                : submission
-                  ? "Modifier la soumission"
-                  : "Nouvelle soumission"}
+                : publicMode
+                  ? "Référencer votre solution"
+                  : submission
+                    ? "Modifier la soumission"
+                    : "Nouvelle soumission"}
             </h1>
             {submission?.status === "changes_requested" && submission.adminNotes && (
               <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
@@ -496,6 +608,23 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {/* Step 1: Basic Info */}
         {step === 1 && (
           <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+            {publicMode && (
+              <div className="pb-4 border-b border-gray-200 space-y-4">
+                <h3 className="font-semibold text-text-primary">Vos coordonnées</h3>
+                <div>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Votre nom <span className="text-red-500">*</span></label>
+                  <input type="text" value={contactName} onChange={e => setContactName(e.target.value)}
+                    placeholder="Prénom Nom"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Email de contact <span className="text-red-500">*</span></label>
+                  <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)}
+                    placeholder="vous@entreprise.fr"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                </div>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
                 Nom de la solution *
@@ -572,6 +701,33 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 placeholder="https://votre-solution.com"
               />
             </div>
+
+            {publicMode && (
+              <div>
+                <p className="block text-sm font-semibold text-text-primary mb-1">
+                  Logo <span className="font-normal text-text-secondary">(PNG, JPEG ou WebP, max 2 Mo)</span>
+                </p>
+                <div className="flex items-center gap-4">
+                  <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
+                    {logoUploading ? "Upload en cours..." : "Choisir un fichier"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handlePublicLogoUpload}
+                      disabled={logoUploading}
+                      className="sr-only"
+                    />
+                  </label>
+                  {logoPath && (
+                    <img
+                      src={logoPath}
+                      alt="Logo"
+                      className="w-10 h-10 object-contain rounded border"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-2">
@@ -744,7 +900,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                       className="w-4 h-4 text-primary"
                     />
                     <span className="text-sm font-semibold text-text-primary">
-                      Membre du Collectif MentalTech
+                      Membre du Collectif
                     </span>
                   </label>
                 </div>
@@ -775,20 +931,20 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-text-primary mb-1">
+                  <p className="block text-sm font-semibold text-text-primary mb-1">
                     Logo
-                  </label>
+                  </p>
                   <div className="flex items-center gap-4">
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                      onChange={handleLogoUpload}
-                      disabled={logoUploading}
-                      className="text-sm"
-                    />
-                    {logoUploading && (
-                      <span className="text-xs text-text-secondary">Upload en cours...</span>
-                    )}
+                    <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
+                      {logoUploading ? "Upload en cours..." : "Choisir un fichier"}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                        onChange={handleLogoUpload}
+                        disabled={logoUploading}
+                        className="sr-only"
+                      />
+                    </label>
                     {logoPath && (
                       <img
                         src={logoPath}
@@ -1129,7 +1285,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               </div>
             )}
 
-            {!readOnly && !adminMode && (
+            {!readOnly && !adminMode && !publicMode && (
               <>
                 <div className="border-t border-gray-200 pt-4">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1165,6 +1321,53 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               </>
             )}
 
+            {publicMode && (
+              <>
+                <div className="border-t border-gray-200 pt-4 space-y-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 className="font-semibold text-amber-900 mb-1">Rejoindre le Collectif MentalTech</h4>
+                    <p className="text-sm text-amber-700 mb-3">Le Collectif MentalTech réunit des solutions engagées pour une santé mentale accessible et de qualité.</p>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input type="checkbox" checked={collectifRequested} onChange={e => setCollectifRequested(e.target.checked)}
+                        className="mt-0.5 accent-primary w-4 h-4" />
+                      <div>
+                        <span className="font-medium text-amber-900">Je souhaite rejoindre le Collectif MentalTech</span>
+                        <p className="text-xs text-amber-700 mt-0.5">Notre bureau vous contactera pour discuter de votre candidature.</p>
+                      </div>
+                    </label>
+                    {collectifRequested && (
+                      <div className="mt-4 space-y-3">
+                        <div>
+                          <label className="block text-sm font-semibold text-text-primary mb-2">Chiffre d'affaires annuel approximatif</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {CA_RANGES.map(r => (
+                              <label key={r.value} className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${collectifCaRange === r.value ? "border-primary bg-primary/5" : "border-gray-200 hover:border-primary/50"}`}>
+                                <input type="radio" name="ca_range" value={r.value} checked={collectifCaRange === r.value} onChange={() => setCollectifCaRange(r.value)} className="accent-primary" />
+                                <span className="text-sm">{r.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                          <p className="text-xs text-text-secondary mt-1">🔒 Information confidentielle - transmise uniquement à notre équipe.</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-text-primary mb-1">Email dédié pour le collectif <span className="text-text-secondary font-normal">(optionnel)</span></label>
+                          <input type="email" value={collectifContactEmail} onChange={e => setCollectifContactEmail(e.target.value)}
+                            placeholder="contact@votre-solution.fr"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <button onClick={handlePublicSubmit} disabled={saving}
+                    className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50">
+                    {saving ? "Envoi en cours..." : "Envoyer ma demande"}
+                  </button>
+                </div>
+              </>
+            )}
+
             {adminMode && (
               <div className="border-t border-gray-200 pt-4">
                 <button
@@ -1172,7 +1375,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                   disabled={saving || !name}
                   className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50"
                 >
-                  {saving ? (editProduct ? "Modification..." : "Création...") : (editProduct ? "Modifier le produit" : "Créer le produit")}
+                  {saving
+                    ? (submissionId ? "Approbation..." : editProduct?.id ? "Modification..." : "Création...")
+                    : (submissionId ? "Approuver la soumission" : editProduct?.id ? "Modifier le produit" : "Créer le produit")}
                 </button>
               </div>
             )}
@@ -1192,12 +1397,27 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <div />
           )}
           {step < 3 && (
-            <button
-              onClick={() => setStep(step + 1)}
-              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90"
-            >
-              Suivant
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              {stepError && (
+                <p className="text-xs text-red-600 font-medium">{stepError}</p>
+              )}
+              <button
+                onClick={() => {
+                  if (publicMode && step === 1) {
+                    if (!name.trim()) { setStepError("Le nom de la solution est requis."); return; }
+                    if (!type) { setStepError("Le type de solution est requis."); return; }
+                    if (!url.trim()) { setStepError("L'URL de la solution est requise."); return; }
+                    if (!contactName.trim()) { setStepError("Votre nom est requis."); return; }
+                    if (!contactEmail.trim()) { setStepError("Votre email est requis."); return; }
+                  }
+                  setStepError("");
+                  setStep(step + 1);
+                }}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90"
+              >
+                Suivant
+              </button>
+            </div>
           )}
         </div>
       </div>

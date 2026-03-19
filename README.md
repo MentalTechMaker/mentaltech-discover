@@ -163,6 +163,34 @@ Un espace dédié aux éditeurs de solutions de santé mentale qui souhaitent so
 - **Suivi des soumissions** - Dashboard éditeur avec statut des demandes (en attente / accepté / refusé)
 - **Révision admin** - L'administrateur examine les soumissions et les valide ou les refuse
 
+### 🌐 Soumission Publique (sans compte)
+
+Un parcours ouvert permettant à tout éditeur de soumettre sa solution sans créer de compte :
+
+- **Formulaire multi-étapes** - Informations produit complètes basées sur le protocole d'évaluation
+- **Anti-bot** - Honeypot champ caché + délai minimum de soumission (3s)
+- **Confirmation par email** - Lien de confirmation (48h) avant transmission à l'admin
+- **Demande d'adhésion au Collectif** - Option pour demander à rejoindre le MentalTech Collectif lors de la soumission
+- **Notifications admin** - Email reçu à chaque soumission confirmée (nom contact, produit, statut collectif)
+- **Gestion admin** - Interface dédiée dans le panel admin pour examiner, approuver ou refuser les soumissions publiques
+
+### 🤝 Candidature Professionnel de Santé
+
+Un formulaire dédié aux professionnels de santé souhaitant rejoindre le MentalTech Collectif :
+
+- **Formulaire de candidature** - Nom, email, profession, numéro RPPS/ADELI, établissement, motivation
+- **Anti-bot** - Honeypot + délai minimum de soumission
+- **Confirmation par email** - Lien de confirmation (48h) avant transmission à l'admin
+- **Notification admin** - Email avec toutes les informations de candidature à la confirmation
+- **Gestion admin** - Interface pour accepter ou refuser les candidatures
+
+### 🚪 Page "Rejoindre le Collectif"
+
+Point d'entrée unique pour intégrer l'écosystème MentalTech :
+
+- **Deux parcours** - Éditeur de solution (soumission produit) et Professionnel de santé (candidature)
+- **Accessible depuis le header** - Bouton "Référencer" dans la navigation
+
 ### 🛡️ Sécurité et Transparence
 
 - ✅ **Disclaimers médicaux** - Avertissement compact visible sur la page d'accueil + numéros d'urgence (3114, 15, 112)
@@ -295,12 +323,13 @@ mentaltech-discover/
 │   ├── src/
 │   │   ├── api/            # Couche API (client, auth, products, prescriber, publisher)
 │   │   ├── components/     # Composants React
-│   │   │   ├── Admin/      # Panel admin (produits, prescripteurs, soumissions)
+│   │   │   ├── Admin/      # Panel admin (produits, prescripteurs, soumissions, candidatures)
 │   │   │   ├── Auth/       # Pages login / register / profil / reset password / publisher register
 │   │   │   ├── Disclaimer/ # Avertissement médical compact (non-collapsible)
 │   │   │   ├── Layout/     # Header, Footer
 │   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, comparateur, quick view, onboarding
 │   │   │   ├── Publisher/  # Dashboard éditeur, formulaire de soumission
+│   │   │   ├── Public/     # Soumission publique, candidature pro santé, page collectif
 │   │   │   ├── ProductCatalog/
 │   │   │   ├── Quiz/
 │   │   │   └── Results/
@@ -316,9 +345,9 @@ mentaltech-discover/
 │
 ├── backend/                 # API FastAPI
 │   ├── app/
-│   │   ├── models/         # Modèles SQLAlchemy (User, Product, Prescription, ProductSubmission, etc.)
+│   │   ├── models/         # Modèles SQLAlchemy (User, Product, Prescription, ProductSubmission, PublicSubmission, HealthProfApplication, etc.)
 │   │   ├── schemas/        # Schémas Pydantic (validation)
-│   │   ├── routers/        # Endpoints API (auth, products, prescriptions, prescriber, admin, publisher)
+│   │   ├── routers/        # Endpoints API (auth, products, prescriptions, prescriber, admin, publisher, public)
 │   │   ├── services/       # Logique métier (JWT, CRUD, email)
 │   │   ├── templates/      # Templates HTML emails (Jinja2)
 │   │   ├── config.py       # Configuration (pydantic-settings)
@@ -399,6 +428,23 @@ mentaltech-discover/
 | `POST` | `/api/admin/submissions/{id}/reject` | Admin | Refuser une soumission |
 | `GET` | `/api/stats/public` | - | Statistiques publiques (prescripteurs actifs, prescriptions créées) |
 | `GET` | `/api/health` | - | Health check |
+| | | | |
+| **Soumission Publique** | | | |
+| `POST` | `/api/public/upload-logo` | - | Upload logo (soumission publique, sans auth) |
+| `POST` | `/api/public/submissions` | - | Créer une soumission publique (anti-bot, confirmation email) |
+| `GET` | `/api/public/submissions/confirm` | - | Confirmer la soumission via token email (48h) |
+| `POST` | `/api/public/health-pro/apply` | - | Candidature professionnel de santé (anti-bot, confirmation email) |
+| `GET` | `/api/public/health-pro/confirm` | - | Confirmer la candidature via token email (48h) |
+| | | | |
+| **Admin - Soumissions & Candidatures** | | | |
+| `GET` | `/api/admin/public-submissions` | Admin | Lister les soumissions publiques (filtre par statut) |
+| `GET` | `/api/admin/public-submissions/{id}` | Admin | Détail d'une soumission publique |
+| `POST` | `/api/admin/public-submissions/{id}/approve` | Admin | Approuver une soumission publique |
+| `POST` | `/api/admin/public-submissions/{id}/reject` | Admin | Refuser une soumission publique |
+| `GET` | `/api/admin/health-pro-applications` | Admin | Lister les candidatures pro de santé |
+| `GET` | `/api/admin/health-pro-applications/{id}` | Admin | Détail d'une candidature |
+| `POST` | `/api/admin/health-pro-applications/{id}/accept` | Admin | Accepter une candidature |
+| `POST` | `/api/admin/health-pro-applications/{id}/refuse` | Admin | Refuser une candidature |
 
 Documentation interactive : http://localhost:8000/api/docs
 
@@ -644,7 +690,20 @@ Premier écosystème français de santé mentale digitale
 - [x] **Social proof landing** — Compteurs dynamiques (prescripteurs actifs, prescriptions créées, solutions évaluées)
 - [x] **Endpoint stats publiques** — `GET /api/stats/public` pour alimenter le social proof
 
-### 🔮 V3 - Expansion
+### ✅ V3.0 - Ouverture Publique & Collectif (Mars 2026)
+
+- [x] **Soumission publique sans compte** - Formulaire multi-étapes accessible depuis le header (bouton "Référencer")
+- [x] **Anti-bot** - Honeypot + délai minimum de soumission (3 secondes)
+- [x] **Confirmation email soumission** - Lien de validation 48h avant transmission à l'admin
+- [x] **Demande d'adhésion au Collectif** - Option intégrée à la soumission publique
+- [x] **Candidature professionnel de santé** - Formulaire dédié (profession, RPPS/ADELI, motivation)
+- [x] **Confirmation email candidature** - Lien de validation 48h + notification admin complète
+- [x] **Page "Rejoindre le Collectif"** - Point d'entrée unique pour éditeurs et pros de santé
+- [x] **Gestion admin soumissions publiques** - Interface dédiée (approuver, refuser, filtrer par statut)
+- [x] **Gestion admin candidatures** - Interface dédiée (accepter, refuser)
+- [x] **Emails dédiés** - submission_confirmation, admin_submission_received, health_pro_confirmation, admin_health_pro_received, submission_approved, submission_rejected, collectif_invite, collectif_refused
+
+### 🔮 V4 - Expansion
 
 - [ ] Tests unitaires (Vitest + pytest)
 - [ ] Tests E2E (Playwright)
@@ -655,6 +714,6 @@ Premier écosystème français de santé mentale digitale
 
 ---
 
-**Version actuelle** : V2.0.0
+**Version actuelle** : V3.0.0
 **Dernière mise à jour** : Mars 2026
 **Status** : ✅ Production Ready

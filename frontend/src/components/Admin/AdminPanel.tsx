@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { SubmissionForm } from "../Publisher/SubmissionForm";
+import { PublicSubmissionsAdmin } from "./PublicSubmissionsAdmin";
 import * as productsApi from "../../api/products";
 import {
   listPendingPrescribers,
@@ -13,7 +14,7 @@ import {
 } from "../../api/prescriber";
 import type { Product } from "../../types";
 
-type Tab = "products" | "prescribers" | "veille";
+type Tab = "products" | "prescribers" | "veille" | "soumissions";
 
 const UPDATE_TYPES = [
   { value: "price_change", label: "Changement de tarif" },
@@ -32,12 +33,15 @@ export const AdminPanel: React.FC = () => {
 
   // Products tab state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [currentSubmissionId, setCurrentSubmissionId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showProtocolForm, setShowProtocolForm] = useState(false);
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [adminProductsLoading, setAdminProductsLoading] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [productSearch, setProductSearch] = useState("");
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Prescribers tab state
   const [prescribers, setPrescribers] = useState<PrescriberListItem[]>([]);
@@ -80,6 +84,32 @@ export const AdminPanel: React.FC = () => {
     }
   }, [activeTab, pendingOnly]);
 
+  const handleCreateFromSubmission = (sub: import("../../types").PublicSubmission) => {
+    const product: Product = {
+      id: "",
+      name: sub.name || "",
+      type: sub.type || "",
+      tagline: sub.tagline || "",
+      description: sub.description || "",
+      url: sub.url || "",
+      logo: sub.logo || "",
+      tags: sub.tags || [],
+      audience: sub.audience || [],
+      problemsSolved: sub.problemsSolved || [],
+      preferenceMatch: [],
+      isMentaltechMember: sub.collectifStatus === "accepted",
+      pricing: {
+        model: (sub.pricingModel as NonNullable<Product["pricing"]>["model"]) ?? undefined,
+        amount: sub.pricingAmount ?? undefined,
+        details: sub.pricingDetails ?? undefined,
+      },
+      scoringCriteria: sub.protocolAnswers,
+    };
+    setEditingProduct(product);
+    setCurrentSubmissionId(sub.id);
+    setShowProtocolForm(true);
+  };
+
   const loadAdminProducts = async () => {
     setAdminProductsLoading(true);
     try {
@@ -103,12 +133,19 @@ export const AdminPanel: React.FC = () => {
     setDeleteConfirm(null);
   };
 
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 3500);
+  };
+
   const handleToggleVisibility = async (id: string) => {
     setTogglingId(id);
     try {
       const updated = await productsApi.toggleVisibility(id);
       setAdminProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
       await fetchProducts();
+      showToast(updated.isVisible ? "Solution publiée" : "Solution dépubliée");
     } finally {
       setTogglingId(null);
     }
@@ -192,9 +229,11 @@ export const AdminPanel: React.FC = () => {
       <SubmissionForm
         adminMode={true}
         editProduct={editingProduct ?? undefined}
+        submissionId={currentSubmissionId ?? undefined}
         onClose={() => {
           setShowProtocolForm(false);
           setEditingProduct(null);
+          setCurrentSubmissionId(null);
           fetchProducts();
           loadAdminProducts();
         }}
@@ -206,6 +245,14 @@ export const AdminPanel: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-sm font-semibold ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          <span>{toast.type === "success" ? "✓" : "✕"}</span>
+          <span>{toast.message}</span>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-text-primary mb-6">Administration</h1>
 
@@ -216,6 +263,7 @@ export const AdminPanel: React.FC = () => {
               { key: "products", label: "Produits" },
               { key: "prescribers", label: "Prescripteurs" },
               { key: "veille", label: "Veille / Mises à jour" },
+              { key: "soumissions", label: "Soumissions & Collectif" },
             ] as { key: Tab; label: string }[]
           ).map(({ key, label }) => (
             <button
@@ -313,14 +361,14 @@ export const AdminPanel: React.FC = () => {
                           <button
                             onClick={() => handleToggleVisibility(product.id)}
                             disabled={togglingId === product.id}
-                            title={isHidden ? "Rendre visible" : "Masquer de la recherche"}
+                            title={isHidden ? "Publier dans le catalogue" : "Retirer du catalogue"}
                             className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
                               isHidden
                                 ? "bg-gray-200 text-gray-600 hover:bg-green-100 hover:text-green-700"
                                 : "bg-green-100 text-green-700 hover:bg-gray-200 hover:text-gray-600"
                             }`}
                           >
-                            {isHidden ? "👁 Afficher" : "👁 Visible"}
+                            {isHidden ? "Publier" : "Depublier"}
                           </button>
                           <button
                             onClick={() => handleToggleDefunct(product.id)}
@@ -477,6 +525,9 @@ export const AdminPanel: React.FC = () => {
             )}
           </>
         )}
+
+        {/* ── Soumissions & Collectif tab ──────────────────────── */}
+        {activeTab === "soumissions" && <PublicSubmissionsAdmin onCreateProduct={handleCreateFromSubmission} />}
 
         {/* ── Veille tab ───────────────────────────────────────── */}
         {activeTab === "veille" && (

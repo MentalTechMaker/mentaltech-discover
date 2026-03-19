@@ -218,3 +218,74 @@ CREATE INDEX idx_submissions_created ON product_submissions (created_at DESC);
 CREATE TRIGGER set_updated_at_product_submissions
     BEFORE UPDATE ON product_submissions
     FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+-- ============================================================
+-- Public submissions (formulaire anonyme sans compte)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public_submissions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    contact_name VARCHAR(255) NOT NULL,
+    contact_email VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending_email',
+    confirm_token VARCHAR(500) UNIQUE,
+    email_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
+    name VARCHAR(255),
+    type VARCHAR(100),
+    tagline TEXT,
+    description TEXT,
+    url VARCHAR(500),
+    logo VARCHAR(500),
+    tags TEXT[] DEFAULT '{}',
+    audience TEXT[] DEFAULT '{}',
+    problems_solved TEXT[] DEFAULT '{}',
+    pricing_model VARCHAR(50),
+    pricing_amount VARCHAR(100),
+    pricing_details TEXT,
+    protocol_answers JSONB NOT NULL DEFAULT '{}',
+    collectif_requested BOOLEAN NOT NULL DEFAULT FALSE,
+    collectif_status VARCHAR(30) NOT NULL DEFAULT 'none',
+    collectif_contact_email VARCHAR(255),
+    admin_notes TEXT,
+    admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    product_id VARCHAR(100) REFERENCES products(id) ON DELETE SET NULL,
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_public_submissions_email ON public_submissions (contact_email);
+CREATE INDEX IF NOT EXISTS idx_public_submissions_status ON public_submissions (status);
+CREATE INDEX IF NOT EXISTS idx_public_submissions_token ON public_submissions (confirm_token);
+
+CREATE TRIGGER set_updated_at_public_submissions
+    BEFORE UPDATE ON public_submissions
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
+
+-- ============================================================
+-- Health professional applications (pros de santé - collectif)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS health_prof_applications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    profession VARCHAR(255) NOT NULL,
+    rpps_adeli VARCHAR(50),
+    organization VARCHAR(255),
+    motivation TEXT,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending_email',
+    confirm_token VARCHAR(500) UNIQUE,
+    email_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
+    is_collective_member BOOLEAN NOT NULL DEFAULT FALSE,
+    admin_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_health_prof_applications_email ON health_prof_applications (email);
+CREATE INDEX IF NOT EXISTS idx_health_prof_applications_status ON health_prof_applications (status);
+
+CREATE TRIGGER set_updated_at_health_prof_applications
+    BEFORE UPDATE ON health_prof_applications
+    FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();

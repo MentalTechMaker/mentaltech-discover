@@ -12,7 +12,7 @@ from slowapi.errors import RateLimitExceeded
 from sqlalchemy.exc import SQLAlchemyError
 
 from .config import settings
-from .routers import auth, products, prescriptions, prescriber, admin, publisher
+from .routers import auth, products, prescriptions, prescriber, admin, publisher, public
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +81,7 @@ app.include_router(prescriptions.router)
 app.include_router(prescriber.router)
 app.include_router(admin.router)
 app.include_router(publisher.router)
+app.include_router(public.router)
 
 # Serve uploaded logos as static files (/tmp/uploads est toujours writable)
 UPLOADS_DIR = Path("/tmp/uploads")

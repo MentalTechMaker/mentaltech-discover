@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .info-block { background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 16px 0; }
+        .info-row { display: flex; margin-bottom: 8px; }
+        .info-label { font-weight: 600; min-width: 160px; color: #555; }
+        .badge { display: inline-block; background: #e8f4fd; color: #1a6fb3; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .badge-collectif { background: #fef3c7; color: #d97706; }
+        .btn { display: inline-block; background-color: #4a90e2; color: white !important; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #2c3e50;">Nouvelle soumission de solution</h2>
+            <p>Une nouvelle demande de référencement a été confirmée et est en attente de validation.</p>
+
+            <div class="info-block">
+                <div class="info-row">
+                    <span class="info-label">Contact :</span>
+                    <span>{{ contact_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email :</span>
+                    <span><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></span>
+                </div>
+                {% if product_name %}
+                <div class="info-row">
+                    <span class="info-label">Solution :</span>
+                    <span>{{ product_name }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if collectif_requested %}
+            <div class="info-block" style="border-left: 4px solid #d97706;">
+                <p style="margin: 0 0 8px 0;"><span class="badge badge-collectif">Souhaite rejoindre le Collectif</span></p>
+                {% if collectif_ca_range %}
+                <div class="info-row">
+                    <span class="info-label">CA annuel :</span>
+                    <span>{{ collectif_ca_range }}</span>
+                </div>
+                {% endif %}
+                <p style="font-size: 12px; color: #888; margin: 8px 0 0 0;">Information confidentielle - non stockée en base de données</p>
+            </div>
+            {% endif %}
+
+            <div style="text-align: center;">
+                <a href="{{ admin_url }}" class="btn" style="color: white;">Voir dans le panel admin</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover - Administration</p>
+        </div>
+    </div>
+</body>
+</html>
