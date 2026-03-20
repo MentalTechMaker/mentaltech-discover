@@ -100,6 +100,7 @@ def _to_response(product: Product) -> ProductResponse:
         companyDefunct=product.company_defunct if product.company_defunct is not None else False,
         pricing=pricing,
         lastUpdated=product.last_updated.isoformat() if product.last_updated else None,
+        updatedAt=product.updated_at.isoformat() if product.updated_at else None,
         scoring=scoring,
         scoreTotal=score_total,
         scoreLabel=score_label,

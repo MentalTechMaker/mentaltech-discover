@@ -36,9 +36,9 @@ export const Quiz: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Questionnaire - trouvez votre solution",
-      "Repondez a quelques questions pour decouvrir les solutions de sante mentale adaptees a vos besoins. Gratuit, sans inscription."
+      "Répondez à quelques questions pour découvrir les solutions de santé mentale adaptées à vos besoins. Gratuit, sans inscription."
     );
-    setCanonical("/quiz");
+    setCanonical("/questionnaire");
   }, []);
   const isCompletedRef = useRef(false);
   const [partialCount, setPartialCount] = useState<number | null>(null);
@@ -109,8 +109,12 @@ export const Quiz: React.FC = () => {
   }, [currentQuestionIndex]);
 
   useEffect(() => {
-    if (answers.feeling === "very-bad" && answers.urgency === "dark-thoughts") {
-      setShowEmergencyBanner(true);
+    if (answers.feeling === "very-bad") {
+      if (answers.urgency === "dark-thoughts") {
+        setShowEmergencyBanner(true);
+      } else if (answers.urgency) {
+        setShowEmergencyBanner(true);
+      }
     }
   }, [answers.feeling, answers.urgency, setShowEmergencyBanner]);
 

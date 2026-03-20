@@ -1,10 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useAppStore } from "../../store/useAppStore";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  createSubmission,
-  getSubmission,
-  updateSubmission,
-  submitForReview,
   createAndPublishAdmin,
   uploadLogoAdmin,
 } from "../../api/publisher";
@@ -18,7 +13,6 @@ import {
   allSubCriteria,
 } from "../../data/protocolQuestions";
 import type { ProtocolQuestion } from "../../data/protocolQuestions";
-import type { ProductSubmission } from "../../types";
 
 const PRODUCT_TYPES = [
   "Téléconsultation",
@@ -146,16 +140,18 @@ interface Props {
   submissionId?: string; // links this adminMode form to a PublicSubmission
 }
 
+const DRAFT_KEY = 'mentaltech-submission-draft';
+const STEP_NAMES = ["Informations de base", "Protocole d'evaluation", "Recapitulatif"];
+const TOTAL_STEPS = STEP_NAMES.length;
+
 export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, editProduct, publicMode = false, submissionId }) => {
-  const publisherSubmissionId = useAppStore((s) => s.selectedProductId);
   const loadedAt = useRef(Date.now() / 1000);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [submission, setSubmission] = useState<ProductSubmission | null>(null);
-  const [readOnly, setReadOnly] = useState(false);
+  const readOnly = false;
   const [certified, setCertified] = useState(false);
 
   // Basic info state
@@ -202,12 +198,68 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [collectifContactEmail, setCollectifContactEmail] = useState("");
   const [stepError, setStepError] = useState("");
 
-  // Load existing submission (skip in admin mode — always new)
+  // Draft auto-save state
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [draftSavedNotice, setDraftSavedNotice] = useState(false);
+
+  // Collect all saveable form data into an object
+  const collectFormData = () => ({
+    step, name, type, tagline, description, url, audience, problemsSolved,
+    pricingModel, pricingAmount, pricingDetails, protocolAnswers,
+    contactName, contactEmail, collectifRequested, collectifCaRange,
+    collectifContactEmail, logoPath,
+  });
+
+  // Restore form data from a saved draft
+  const restoreDraft = (data: Record<string, unknown>) => {
+    if (data.step != null) setStep(data.step as number);
+    if (data.name != null) setName(data.name as string);
+    if (data.type != null) setType(data.type as string);
+    if (data.tagline != null) setTagline(data.tagline as string);
+    if (data.description != null) setDescription(data.description as string);
+    if (data.url != null) setUrl(data.url as string);
+    if (data.audience != null) setAudience(data.audience as string[]);
+    if (data.problemsSolved != null) setProblemsSolved(data.problemsSolved as string[]);
+    if (data.pricingModel != null) setPricingModel(data.pricingModel as string);
+    if (data.pricingAmount != null) setPricingAmount(data.pricingAmount as string);
+    if (data.pricingDetails != null) setPricingDetails(data.pricingDetails as string);
+    if (data.protocolAnswers != null) setProtocolAnswers(data.protocolAnswers as Record<string, Record<string, unknown>>);
+    if (data.contactName != null) setContactName(data.contactName as string);
+    if (data.contactEmail != null) setContactEmail(data.contactEmail as string);
+    if (data.collectifRequested != null) setCollectifRequested(data.collectifRequested as boolean);
+    if (data.collectifCaRange != null) setCollectifCaRange(data.collectifCaRange as string);
+    if (data.collectifContactEmail != null) setCollectifContactEmail(data.collectifContactEmail as string);
+    if (data.logoPath != null) setLogoPath(data.logoPath as string);
+  };
+
+  // Check for existing draft on mount (only in non-edit mode)
   useEffect(() => {
-    if (publisherSubmissionId && !adminMode) {
-      loadSubmission(publisherSubmissionId);
-    }
-  }, [publisherSubmissionId, adminMode]);
+    if (editProduct || adminMode) return;
+    try {
+      const draft = localStorage.getItem(DRAFT_KEY);
+      if (draft) {
+        setShowDraftPrompt(true);
+      }
+    } catch { /* localStorage unavailable */ }
+  }, []);
+
+  // Auto-save draft every 30 seconds (only for public/non-edit mode)
+  useEffect(() => {
+    if (editProduct || adminMode) return;
+    const interval = setInterval(() => {
+      try {
+        const draftData = collectFormData();
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
+        setDraftSavedNotice(true);
+        setTimeout(() => setDraftSavedNotice(false), 2000);
+      } catch { /* localStorage unavailable */ }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [step, name, type, tagline, description, url, audience, problemsSolved,
+      pricingModel, pricingAmount, pricingDetails, protocolAnswers,
+      contactName, contactEmail, collectifRequested, collectifCaRange,
+      collectifContactEmail, logoPath]);
+
 
   // Pre-populate form when editing an existing product
   useEffect(() => {
@@ -256,91 +308,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     justSupport: computePillarJustification("5", protocolAnswers),
   } : null;
 
-  const loadSubmission = async (id: string) => {
-    setLoading(true);
-    try {
-      const data = await getSubmission(id);
-      setSubmission(data);
-      setName(data.name || "");
-      setType(data.type || "");
-      setTagline(data.tagline || "");
-      setDescription(data.description || "");
-      setUrl(data.url || "");
-      setAudience(data.audience || []);
-      setProblemsSolved(data.problemsSolved || []);
-      setPricingModel(data.pricingModel || "");
-      setPricingAmount(data.pricingAmount || "");
-      setPricingDetails(data.pricingDetails || "");
-      setProtocolAnswers(data.protocolAnswers || {});
-      setReadOnly(
-        data.status !== "draft" && data.status !== "changes_requested"
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de chargement");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const buildPayload = useCallback((): Partial<ProductSubmission> => {
-    return {
-      name: name || undefined,
-      type: type || undefined,
-      tagline: tagline || undefined,
-      description: description || undefined,
-      url: url || undefined,
-      audience,
-      problemsSolved,
-      pricingModel: pricingModel || undefined,
-      pricingAmount: pricingAmount || undefined,
-      pricingDetails: pricingDetails || undefined,
-      protocolAnswers,
-    };
-  }, [
-    name, type, tagline, description, url, audience,
-    problemsSolved, pricingModel, pricingAmount, pricingDetails, protocolAnswers,
-  ]);
-
-  const handleSaveDraft = async () => {
-    setSaving(true);
-    setError("");
-    try {
-      if (submission) {
-        const updated = await updateSubmission(submission.id, buildPayload());
-        setSubmission(updated);
-      } else {
-        const created = await createSubmission(buildPayload());
-        setSubmission(created);
-        // Update the selectedProductId so subsequent saves go to update
-        useAppStore.setState({ selectedProductId: created.id });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de sauvegarde");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleSubmitForReview = async () => {
-    setSaving(true);
-    setError("");
-    try {
-      // Save first
-      let sub = submission;
-      if (sub) {
-        sub = await updateSubmission(sub.id, buildPayload());
-      } else {
-        sub = await createSubmission(buildPayload());
-      }
-      // Then submit
-      await submitForReview(sub.id);
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la soumission");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -420,6 +387,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           justification_support: justSupport || undefined,
         });
       }
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la creation du produit");
@@ -456,6 +424,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         collectif_ca_range: collectifRequested && collectifCaRange ? collectifCaRange : undefined,
         collectif_contact_email: collectifRequested && collectifContactEmail ? collectifContactEmail : undefined,
       });
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       setPublicSubmitted(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Une erreur est survenue. Réessayez.");
@@ -557,18 +526,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <h1 className="text-2xl font-bold text-text-primary">
               {adminMode
                 ? "Nouveau produit (protocole)"
-                : publicMode
-                  ? "Référencer votre solution"
-                  : submission
-                    ? "Modifier la soumission"
-                    : "Nouvelle soumission"}
+                : "Référencer votre solution"}
             </h1>
-            {submission?.status === "changes_requested" && submission.adminNotes && (
-              <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
-                <span className="font-semibold">Notes de l'administrateur :</span>{" "}
-                {submission.adminNotes}
-              </div>
-            )}
           </div>
           <button
             onClick={onClose}
@@ -578,9 +537,66 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           </button>
         </div>
 
+        {/* Draft resume prompt */}
+        {showDraftPrompt && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-blue-900">Brouillon trouve</p>
+              <p className="text-xs text-blue-700">Vous avez un brouillon sauvegarde. Souhaitez-vous le reprendre ?</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                onClick={() => {
+                  try {
+                    const raw = localStorage.getItem(DRAFT_KEY);
+                    if (raw) restoreDraft(JSON.parse(raw));
+                  } catch { /* ignore */ }
+                  setShowDraftPrompt(false);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Reprendre
+              </button>
+              <button
+                onClick={() => {
+                  try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+                  setShowDraftPrompt(false);
+                }}
+                className="px-4 py-2 bg-white text-blue-700 text-sm font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+              >
+                Non merci
+              </button>
+            </div>
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div className="flex justify-between text-sm text-gray-500 mb-2">
+            <span>Etape {step} sur {TOTAL_STEPS}</span>
+            <span>{STEP_NAMES[step - 1]}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Auto-save notification */}
+        {draftSavedNotice && (
+          <div className="mb-4 flex items-center gap-2 text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2 animate-pulse">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Brouillon sauvegarde
           </div>
         )}
 
@@ -1285,41 +1301,6 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               </div>
             )}
 
-            {!readOnly && !adminMode && !publicMode && (
-              <>
-                <div className="border-t border-gray-200 pt-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={certified}
-                      onChange={(e) => setCertified(e.target.checked)}
-                      className="w-4 h-4 text-primary"
-                    />
-                    <span className="text-sm text-text-primary">
-                      Je certifie que toutes les informations fournies sont exactes
-                      et verifiables
-                    </span>
-                  </label>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleSaveDraft}
-                    disabled={saving}
-                    className="px-6 py-3 bg-gray-100 text-text-primary rounded-lg font-semibold hover:bg-gray-200 disabled:opacity-50"
-                  >
-                    {saving ? "Sauvegarde..." : "Sauvegarder en brouillon"}
-                  </button>
-                  <button
-                    onClick={handleSubmitForReview}
-                    disabled={saving || !certified}
-                    className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50"
-                  >
-                    {saving ? "Envoi..." : "Soumettre pour review"}
-                  </button>
-                </div>
-              </>
-            )}
 
             {publicMode && (
               <>

@@ -27,6 +27,8 @@ from ..config import settings
 
 router = APIRouter(prefix="/api/public", tags=["public"])
 
+from ..rate_limit import limiter
+
 BOT_MIN_SECONDS = 3.0
 
 PUBLIC_LOGO_ALLOWED_TYPES = {"image/png", "image/jpeg", "image/webp"}
@@ -71,6 +73,7 @@ def _to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
         pricingDetails=sub.pricing_details,
         protocolAnswers=sub.protocol_answers or {},
         collectifRequested=sub.collectif_requested,
+        collectifCaRange=sub.collectif_ca_range,
         collectifStatus=sub.collectif_status,
         collectifContactEmail=sub.collectif_contact_email,
         adminNotes=sub.admin_notes,
@@ -114,6 +117,7 @@ async def public_upload_logo(file: UploadFile = File(...)):
 
 
 @router.post("/submissions", status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/hour")
 async def create_public_submission(
     data: PublicSubmissionCreate,
     background_tasks: BackgroundTasks,
@@ -141,6 +145,7 @@ async def create_public_submission(
         pricing_details=data.pricing_details,
         protocol_answers=data.protocol_answers,
         collectif_requested=data.collectif_requested,
+        collectif_ca_range=data.collectif_ca_range,
         collectif_contact_email=str(data.collectif_contact_email) if data.collectif_contact_email else None,
     )
     db.add(submission)
@@ -212,13 +217,14 @@ async def confirm_submission(
         contact_email=submission.contact_email,
         product_name=submission.name,
         collectif_requested=submission.collectif_requested,
-        collectif_ca_range=None,  # CA range not stored - not available at confirm time
+        collectif_ca_range=submission.collectif_ca_range,
     )
 
     return {"message": "Soumission confirmée avec succès", "submission_id": str(submission.id)}
 
 
 @router.post("/health-pro/apply", status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/hour")
 async def apply_health_pro(
     data: HealthProfApplicationCreate,
     background_tasks: BackgroundTasks,

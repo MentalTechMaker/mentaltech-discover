@@ -14,8 +14,8 @@ export const Landing: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Trouvez votre solution en sante mentale",
-      "Decouvrez les meilleures solutions digitales en sante mentale adaptees a vos besoins. Questionnaire gratuit, catalogue complet, evaluations par des experts."
+      "Trouvez votre solution en santé mentale",
+      "Découvrez les meilleures solutions digitales en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, évaluations par des experts."
     );
     setCanonical("/");
   }, []);

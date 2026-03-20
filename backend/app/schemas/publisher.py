@@ -1,13 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
-
-
-class PublisherRegister(BaseModel):
-    email: EmailStr
-    password: str
-    name: str
-    company_name: str
-    siret: str | None = None
-    company_website: str | None = None
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SubmissionCreate(BaseModel):
@@ -75,11 +66,11 @@ class AdminReviewAction(BaseModel):
     # Link to an already-created product instead of creating from submission data
     product_id: str | None = None
     # For approve: also set scores on the product
-    score_security: int | None = None
-    score_efficacy: int | None = None
-    score_accessibility: int | None = None
-    score_ux: int | None = None
-    score_support: int | None = None
+    score_security: int | None = Field(default=None, ge=0, le=5)
+    score_efficacy: int | None = Field(default=None, ge=0, le=5)
+    score_accessibility: int | None = Field(default=None, ge=0, le=5)
+    score_ux: int | None = Field(default=None, ge=0, le=5)
+    score_support: int | None = Field(default=None, ge=0, le=5)
     justification_security: str | None = None
     justification_efficacy: str | None = None
     justification_accessibility: str | None = None
@@ -107,11 +98,11 @@ class AdminCreateAndPublishSchema(BaseModel):
     protocol_answers: dict = {}
     last_updated: str | None = None
     # Scores (admin sets directly)
-    score_security: int | None = None
-    score_efficacy: int | None = None
-    score_accessibility: int | None = None
-    score_ux: int | None = None
-    score_support: int | None = None
+    score_security: int | None = Field(default=None, ge=0, le=5)
+    score_efficacy: int | None = Field(default=None, ge=0, le=5)
+    score_accessibility: int | None = Field(default=None, ge=0, le=5)
+    score_ux: int | None = Field(default=None, ge=0, le=5)
+    score_support: int | None = Field(default=None, ge=0, le=5)
     justification_security: str | None = None
     justification_efficacy: str | None = None
     justification_accessibility: str | None = None
@@ -120,14 +111,3 @@ class AdminCreateAndPublishSchema(BaseModel):
     scoring_criteria: dict | None = None
 
 
-class PublisherListItem(BaseModel):
-    id: str
-    email: str
-    name: str
-    company_name: str | None
-    siret: str | None
-    company_website: str | None
-    is_verified_publisher: bool
-    created_at: str
-
-    model_config = ConfigDict(from_attributes=True)

@@ -60,6 +60,7 @@ class PublicSubmissionResponse(BaseModel):
     pricingDetails: str | None
     protocolAnswers: dict
     collectifRequested: bool
+    collectifCaRange: str | None
     collectifStatus: str
     collectifContactEmail: str | None
     adminNotes: str | None

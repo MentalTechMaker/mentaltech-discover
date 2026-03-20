@@ -154,14 +154,17 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 - **Données anonymisées** - Nombre de prescripteurs et prescriptions par solution
 - **Top solutions** - Les 20 solutions les plus prescrites
 
-### 🏢 Espace Éditeur (Publisher)
+### 🏢 Soumission de solutions (Editeurs)
 
-Un espace dédié aux éditeurs de solutions de santé mentale qui souhaitent soumettre leur produit pour référencement :
+Un parcours ouvert permettant a tout editeur de soumettre sa solution :
 
-- **Inscription éditeur** - Formulaire dédié avec nom d'entreprise et rôle
-- **Soumission de produit** - Formulaire guidé basé sur le protocole d'évaluation (questions sur sécurité, preuves cliniques, accessibilité, UX, support)
-- **Suivi des soumissions** - Dashboard éditeur avec statut des demandes (en attente / accepté / refusé)
-- **Révision admin** - L'administrateur examine les soumissions et les valide ou les refuse
+- **Formulaire public** - Soumission sans compte via le bouton "Referencer" dans le header
+- **Multi-etapes** - Informations produit, tarification, protocole d'evaluation
+- **Sauvegarde automatique** - Brouillon sauvegarde toutes les 30 secondes dans le navigateur
+- **Barre de progression** - Etape X sur Y visible en permanence
+- **Anti-bot** - Honeypot + delai minimum de soumission
+- **Confirmation email** - Lien de validation 48h avant transmission a l'admin
+- **Option Collectif** - Demande d'adhesion au Collectif MentalTech integree
 
 ### 🌐 Soumission Publique (sans compte)
 
@@ -298,12 +301,12 @@ uvicorn app.main:app --reload --port 8000
 7. **Veille** - Consultez les mises à jour des solutions (tarifs, études, scores)
 8. **Comparateur** - Comparez 2-4 solutions côte-à-côte sur tous les critères
 
-### Pour les éditeurs (publishers)
+### Pour les editeurs (soumission publique)
 
-1. **Inscription** - Cliquez sur "Mon compte" > "Inscription Éditeur"
-2. **Soumission** - Remplissez le formulaire de soumission basé sur le protocole d'évaluation MentalTech
-3. **Suivi** - Consultez le statut de votre soumission depuis votre tableau de bord éditeur
-4. **Validation** - Un administrateur examine et valide (ou refuse) votre soumission
+1. **Acceder au formulaire** - Cliquez sur "Referencer" dans le header ou via la page "Rejoindre le Collectif"
+2. **Remplir le formulaire** - Suivez les etapes : informations produit, tarification, protocole d'evaluation
+3. **Confirmer par email** - Un lien de confirmation (48h) vous est envoye pour valider la soumission
+4. **Validation admin** - Un administrateur examine et valide (ou refuse) votre soumission
 
 ### Pour les administrateurs
 
@@ -324,11 +327,11 @@ mentaltech-discover/
 │   │   ├── api/            # Couche API (client, auth, products, prescriber, publisher)
 │   │   ├── components/     # Composants React
 │   │   │   ├── Admin/      # Panel admin (produits, prescripteurs, soumissions, candidatures)
-│   │   │   ├── Auth/       # Pages login / register / profil / reset password / publisher register
+│   │   │   ├── Auth/       # Pages login / register / profil / reset password
 │   │   │   ├── Disclaimer/ # Avertissement médical compact (non-collapsible)
 │   │   │   ├── Layout/     # Header, Footer
 │   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, comparateur, quick view, onboarding
-│   │   │   ├── Publisher/  # Dashboard éditeur, formulaire de soumission
+│   │   │   ├── Publisher/  # Formulaire de soumission
 │   │   │   ├── Public/     # Soumission publique, candidature pro santé, page collectif
 │   │   │   ├── ProductCatalog/
 │   │   │   ├── Quiz/
@@ -469,7 +472,7 @@ docker compose down
 docker compose down -v
 ```
 
-> **💡 Base de données :** Le schéma V2.5 complet est dans `database/init/01_schema.sql`. Il est appliqué automatiquement à la création du container. Aucune migration manuelle n'est nécessaire.
+> **💡 Base de données :** Le schéma V2 complet est dans `database/init/01_schema.sql`. Il est appliqué automatiquement à la création du container. Aucune migration manuelle n'est nécessaire.
 
 ### Services
 
@@ -619,101 +622,93 @@ Premier écosystème français de santé mentale digitale
 - [x] Analytics privacy-first (Plausible)
 - [x] Open source (MIT)
 
-### ✅ V2.0 - Monorepo Full-Stack (Janvier 2026)
+### ✅ V2.0 - Plateforme Complete (Mars 2026)
 
+#### Architecture & Infrastructure
 - [x] Architecture monorepo (frontend / backend / database)
 - [x] API REST FastAPI avec documentation Swagger
-- [x] Base de données PostgreSQL avec produits pré-chargés
-- [x] Authentification JWT (inscription, connexion, refresh)
-- [x] Panel d'administration (CRUD produits)
+- [x] Base de donnees PostgreSQL avec produits pre-charges
 - [x] Docker Compose 3 services
 - [x] Proxy Nginx vers le backend
 
-### ✅ V2.1 - Gestion de compte (Janvier 2026)
+#### Authentification & Comptes
+- [x] Authentification JWT (inscription, connexion, refresh)
+- [x] Page profil utilisateur + changement de mot de passe
+- [x] Verification d'email a l'inscription (lien par email, 24h)
+- [x] Mot de passe oublie (reinitialisation par email, 1h)
+- [x] Roles : utilisateur, prescripteur, editeur, administrateur
 
-- [x] Page profil utilisateur (consultation des informations)
-- [x] Changement de mot de passe (depuis le profil)
-- [x] Vérification d'email à l'inscription (lien par email, 24h)
-- [x] Mot de passe oublié (réinitialisation par email, 1h)
-- [x] Envoi d'emails transactionnels (fastapi-mail + Jinja2)
-- [x] Scripts de migration SQL
-
-### ✅ V2.2 - Scoring & Labels qualité (Février 2026)
-
-- [x] Système de scoring qualité sur 5 piliers (0-20 chacun, total /100)
+#### Scoring & Labels qualite
+- [x] Systeme de scoring qualite sur 5 piliers (0-20 chacun, total /100)
 - [x] Labels Nutriscore (A-E) avec couleurs et badges
-- [x] Justifications textuelles par critère (recherche, preuves, témoignages)
-- [x] Formulaire admin avec saisie des scores et preview en temps réel
-- [x] Fiches produit dédiées avec scoring détaillé (justifications admin-only)
-- [x] Filtre et tri par label qualité dans le catalogue
-- [x] Bonus label dans l'algorithme de recommandation
-- [x] Badge "Membre du Collectif MentalTech" (💙)
-- [x] Protocole d'évaluation documenté
+- [x] Justifications textuelles par critere
+- [x] Protocole d'evaluation documente
 
-### ✅ V2.3 - Espace Prescripteur Premium (Février 2026)
-
+#### Espace Prescripteur
 - [x] Inscription prescripteur (profession, organisation, RPPS/ADELI)
-- [x] Validation des prescripteurs par l'administrateur
-- [x] Ordonnance digitale (lien sécurisé 30 jours, 1-5 solutions)
-- [x] Page publique patient (vue prescription avec infos prescripteur)
-- [x] Tableau de bord prescripteur (stats, historique, favoris, communauté)
-- [x] Système de favoris (ajout/retrait rapide)
-- [x] Notes cliniques par solution (upsert)
-- [x] Veille solutions (mises à jour produits, filtre favoris)
-- [x] Comparateur côte-à-côte (2-4 solutions)
-- [x] Statistiques communauté anonymisées
-- [x] API Admin : gestion des prescripteurs et des mises à jour produits
+- [x] Validation RPPS/ADELI (format 11 ou 9 chiffres)
+- [x] Ordonnance digitale (lien securise 30 jours, 1-5 solutions, QR code)
+- [x] Tableau de bord prescripteur (stats, historique, favoris, communaute)
+- [x] Notes cliniques par solution
+- [x] Veille solutions (mises a jour produits)
+- [x] Comparateur cote-a-cote (2-4 solutions)
+- [x] Onboarding oriente action (guide vers premiere ordonnance)
+- [x] Renouvellement de prescription
 
-### ✅ V2.4 - UX, Éditeurs & Visibilité (Février 2026)
+#### Soumission Publique & Collectif
+- [x] Soumission publique sans compte (formulaire multi-etapes)
+- [x] Anti-bot (honeypot + delai minimum)
+- [x] Confirmation email soumission (48h)
+- [x] Demande d'adhesion au Collectif MentalTech
+- [x] Candidature professionnel de sante
+- [x] Page "Rejoindre le Collectif" (point d'entree unique)
+- [x] Gestion admin des soumissions et candidatures
+- [x] Sauvegarde automatique du formulaire (localStorage)
+- [x] Barre de progression multi-etapes
 
-- [x] **Résultats partageables** — URL `/results?f=...` encode les réponses pour partager ou sauvegarder
-- [x] **Compteur temps réel** — Le quiz affiche le nombre de solutions détectées en cours de réponse
-- [x] **3ème chemin landing** — Bouton "Explorer toutes les solutions" visible dès la page d'accueil
-- [x] **Filtres résultats** — Filtres rapides Gratuit/Payant et Avec un humain/En autonomie
-- [x] **Disclaimer médical** — Avertissement compact toujours visible sur la page d'accueil
-- [x] **Favoris dans la prescription** — Les favoris apparaissent en tête lors de la création
-- [x] **Quick view drawer** — Panneau latéral pour consulter un produit sans quitter la prescription
-- [x] **QR code prescription** — QR code généré à la confirmation pour partage instantané en consultation
-- [x] **Onboarding prescripteur** — Guide 3 étapes au premier login
-- [x] **Visibilité produits** — Masquer/afficher un produit ou marquer une entreprise défunte
-- [x] **Rôle Éditeur** — Inscription dédiée et dashboard de suivi des soumissions
-- [x] **Soumission de produit** — Formulaire guidé basé sur le protocole d'évaluation
-- [x] **Révision admin des soumissions** — Interface d'examen et validation/refus
+#### UX & Accessibilite
+- [x] Resultats partageables (URL encode les reponses)
+- [x] Compteur temps reel (solutions detectees pendant le quiz)
+- [x] Modal de crise (numeros d'urgence bloquant pour reponses "tres mal")
+- [x] Touch targets minimum 44px (WCAG)
+- [x] Emojis avec aria-hidden pour lecteurs d'ecran
+- [x] Lien actif visible dans le menu mobile
+- [x] Badges statut avec icones (pas couleur seule)
 
-### ✅ V2.5 - Engagement & Notifications (Février 2026)
+#### Securite
+- [x] Rate limiting sur soumissions publiques (3/heure)
+- [x] Validation magic bytes sur uploads (PNG, JPEG, WebP)
+- [x] Rejection wildcards CORS en production
+- [x] Credentials exclusivement via .env (pas de defauts en dur)
+- [x] Validation scores admin (0-5 via Pydantic)
 
-- [x] **Email "prescription consultée"** — Notification automatique au prescripteur lors de la première consultation
-- [x] **Email "compte validé"** — Confirmation d'activation envoyée au prescripteur et à l'éditeur après validation admin
-- [x] **Programme ambassadeur** — Déclenchement automatique d'un email dès la 3e prescription créée
-- [x] **Renouvellement de prescription** — Bouton "Renouveler" générant un nouveau lien valable 30 jours
-- [x] **CTA quiz sur la prescription** — Lien vers le questionnaire personnalisé en bas de chaque prescription
-- [x] **Social proof landing** — Compteurs dynamiques (prescripteurs actifs, prescriptions créées, solutions évaluées)
-- [x] **Endpoint stats publiques** — `GET /api/stats/public` pour alimenter le social proof
+#### Contenu & Legal
+- [x] Section "Pour les professionnels de sante" (page About)
+- [x] FAQ alignee avec les fonctionnalites actuelles
+- [x] Mentions DPIA et hebergement HDS (page Privacy)
+- [x] Textes cookies alignes (Plausible Analytics sans cookies)
 
-### ✅ V3.0 - Ouverture Publique & Collectif (Mars 2026)
+#### Administration
+- [x] Panel d'administration (CRUD complet produits)
+- [x] Scoring admin avec preview temps reel
+- [x] Visibilite produits (masquer/afficher, entreprise defunte)
+- [x] Gestion prescripteurs (valider, revoquer)
+- [x] Emails transactionnels (12 templates)
 
-- [x] **Soumission publique sans compte** - Formulaire multi-étapes accessible depuis le header (bouton "Référencer")
-- [x] **Anti-bot** - Honeypot + délai minimum de soumission (3 secondes)
-- [x] **Confirmation email soumission** - Lien de validation 48h avant transmission à l'admin
-- [x] **Demande d'adhésion au Collectif** - Option intégrée à la soumission publique
-- [x] **Candidature professionnel de santé** - Formulaire dédié (profession, RPPS/ADELI, motivation)
-- [x] **Confirmation email candidature** - Lien de validation 48h + notification admin complète
-- [x] **Page "Rejoindre le Collectif"** - Point d'entrée unique pour éditeurs et pros de santé
-- [x] **Gestion admin soumissions publiques** - Interface dédiée (approuver, refuser, filtrer par statut)
-- [x] **Gestion admin candidatures** - Interface dédiée (accepter, refuser)
-- [x] **Emails dédiés** - submission_confirmation, admin_submission_received, health_pro_confirmation, admin_health_pro_received, submission_approved, submission_rejected, collectif_invite, collectif_refused
+### 🔮 V3 - Expansion (prevu)
 
-### 🔮 V4 - Expansion
-
+- [ ] Systeme d'abonnement (gratuit / pro / equipe)
+- [ ] Integration paiement (Stripe)
 - [ ] Tests unitaires (Vitest + pytest)
 - [ ] Tests E2E (Playwright)
 - [ ] CI/CD (GitHub Actions)
 - [ ] Monitoring (Sentry)
 - [ ] Multi-langue (EN, ES, DE)
-- [ ] OG meta tags dynamiques (par produit)
+- [ ] Export PDF ordonnance
+- [ ] Blog SEO
 
 ---
 
-**Version actuelle** : V3.0.0
-**Dernière mise à jour** : Mars 2026
-**Status** : ✅ Production Ready
+**Version actuelle** : V2.0.0
+**Derniere mise a jour** : Mars 2026
+**Status** : Production Ready

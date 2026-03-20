@@ -17,7 +17,6 @@ from ..schemas.prescriber import PrescriberListItem, ProductUpdateCreate, Produc
 from ..schemas.publisher import (
     AdminCreateAndPublishSchema,
     AdminReviewAction,
-    PublisherListItem,
     SubmissionResponse,
 )
 from ..schemas.product import ProductResponse
@@ -32,7 +31,6 @@ from ..schemas.public_submission import (
 )
 from ..services.email import (
     send_prescriber_approved_email,
-    send_publisher_approved_email,
     send_submission_approved_email,
     send_submission_rejected_email,
     send_collectif_invite_email,
@@ -41,8 +39,20 @@ from ..services.email import (
 )
 from ..config import settings
 
+
+def _validate_magic_bytes(content: bytes, content_type: str) -> bool:
+    """Validate file content matches declared MIME type via magic bytes."""
+    if content_type == "image/png":
+        return content[:4] == b'\x89PNG'
+    elif content_type == "image/jpeg":
+        return content[:3] == b'\xff\xd8\xff'
+    elif content_type == "image/webp":
+        return content[:4] == b'RIFF' and content[8:12] == b'WEBP'
+    return False
+
+
 LOGO_UPLOAD_DIR = Path("/tmp/uploads/logos")
-LOGO_ALLOWED_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
+LOGO_ALLOWED_TYPES = {"image/png", "image/jpeg", "image/webp"}
 LOGO_MAX_SIZE = 2 * 1024 * 1024  # 2 MB
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -101,7 +111,7 @@ async def upload_logo(
     if file.content_type not in LOGO_ALLOWED_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Type de fichier non supporté. Types acceptés : PNG, JPEG, SVG, WebP",
+            detail="Type de fichier non supporté. Types acceptés : PNG, JPEG, WebP",
         )
 
     content = await file.read()
@@ -109,6 +119,12 @@ async def upload_logo(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Fichier trop volumineux (max 2 Mo)",
+        )
+
+    if not _validate_magic_bytes(content, file.content_type):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Contenu du fichier invalide",
         )
 
     ext = Path(file.filename or "logo").suffix or ".png"
@@ -549,75 +565,6 @@ def request_changes(
     return _sub_to_response(submission)
 
 
-# ─── PUBLISHER VALIDATION ───────────────────────────────────
-
-@router.get("/publishers", response_model=list[PublisherListItem])
-def list_publishers(
-    pending_only: bool = Query(default=False),
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    query = db.query(User).filter(User.role == "publisher")
-    if pending_only:
-        query = query.filter(User.is_verified_publisher == False)
-    publishers = query.order_by(User.created_at.desc()).all()
-
-    return [
-        PublisherListItem(
-            id=str(p.id),
-            email=p.email,
-            name=p.name,
-            company_name=p.company_name,
-            siret=p.siret,
-            company_website=p.company_website,
-            is_verified_publisher=p.is_verified_publisher,
-            created_at=p.created_at.isoformat(),
-        )
-        for p in publishers
-    ]
-
-
-@router.post("/publishers/{publisher_id}/verify")
-async def verify_publisher(
-    publisher_id: str,
-    background_tasks: BackgroundTasks,
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    user = db.query(User).filter(User.id == publisher_id, User.role == "publisher").first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Éditeur introuvable")
-
-    user.is_verified_publisher = True
-    db.commit()
-
-    dashboard_url = f"{settings.FRONTEND_URL}/publisher"
-    background_tasks.add_task(
-        send_publisher_approved_email,
-        email=user.email,
-        name=user.name,
-        dashboard_url=dashboard_url,
-    )
-
-    return {"message": f"Éditeur {user.name} validé avec succès"}
-
-
-@router.post("/publishers/{publisher_id}/reject")
-def reject_publisher(
-    publisher_id: str,
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    user = db.query(User).filter(User.id == publisher_id, User.role == "publisher").first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Éditeur introuvable")
-
-    user.is_verified_publisher = False
-    db.commit()
-
-    return {"message": f"Éditeur {user.name} refusé"}
-
-
 # ─── PUBLIC SUBMISSIONS (formulaire anonyme sans compte) ─────────────────────
 
 def _pub_sub_to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
@@ -640,6 +587,7 @@ def _pub_sub_to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
         pricingDetails=sub.pricing_details,
         protocolAnswers=sub.protocol_answers or {},
         collectifRequested=sub.collectif_requested,
+        collectifCaRange=sub.collectif_ca_range,
         collectifStatus=sub.collectif_status,
         collectifContactEmail=sub.collectif_contact_email,
         adminNotes=sub.admin_notes,
@@ -785,6 +733,25 @@ async def reject_public_submission(
         admin_notes=data.admin_notes,
     )
 
+    return _pub_sub_to_response(sub)
+
+
+@router.post("/public-submissions/{submission_id}/under-review", response_model=PublicSubmissionResponse)
+def mark_public_submission_under_review(
+    submission_id: str,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+    if sub.status != "submitted":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Statut incompatible")
+    sub.status = "under_review"
+    sub.admin_id = admin.id
+    sub.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(sub)
     return _pub_sub_to_response(sub)
 
 

@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { getTokens, clearTokens, setOnUnauthorized, hasSessionFlag, refreshAccessToken } from '../api/client';
 import { login as apiLogin, register as apiRegister, registerPrescriber as apiRegisterPrescriber, getMe } from '../api/auth';
-import { registerPublisher as apiRegisterPublisher } from '../api/publisher';
 
 interface User {
   id: string;
@@ -29,7 +28,6 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   registerPrescriber: (email: string, password: string, name: string, profession: string, organization?: string, rppsAdeli?: string) => Promise<void>;
-  registerPublisher: (data: { email: string; password: string; name: string; company_name: string; siret?: string; company_website?: string }) => Promise<void>;
   logout: () => void;
   loadUser: () => Promise<void>;
 }
@@ -89,18 +87,6 @@ export const useAuthStore = create<AuthState>((set) => {
         isPrescriber: (user.role === 'prescriber' && (user.is_verified_prescriber ?? false)) || user.role === 'admin',
         isPrescriberPending: user.role === 'prescriber' && !(user.is_verified_prescriber ?? false),
         isPublisher: false,
-      });
-    },
-
-    registerPublisher: async (data: { email: string; password: string; name: string; company_name: string; siret?: string; company_website?: string }) => {
-      await apiRegisterPublisher(data);
-      const user = await getMe();
-      set({
-        user,
-        isAuthenticated: true,
-        isAdmin: false,
-        isPrescriber: false,
-        isPublisher: user.role === 'publisher' && (user.is_verified_publisher ?? false),
       });
     },
 

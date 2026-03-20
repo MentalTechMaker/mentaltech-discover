@@ -36,7 +36,8 @@ services:
       MAIL_SSL_TLS: ${MAIL_SSL_TLS:-false}
     volumes:
       - ./dev-emails:/tmp/mentaltech_emails
-      - ./dev-uploads:/tmp/uploads
+      - uploads_data:/tmp/uploads
+      - logs_data:/var/log/mentaltech
     depends_on:
       db:
         condition: service_healthy
@@ -118,6 +119,8 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:
+  logs_data:
 
 networks:
   mentaltech-network:

@@ -29,18 +29,18 @@ function getStatusInfo(prescription: PrescriptionResponse): {
 
   if (prescription.viewedAt) {
     return {
-      label: "Consultée",
+      label: "\u2713 Consultee",
       className: "bg-green-100 text-green-800",
     };
   }
   if (expiresAt < now) {
     return {
-      label: "Expirée",
+      label: "\u2717 Expiree",
       className: "bg-red-100 text-red-800",
     };
   }
   return {
-    label: "En attente",
+    label: "\u23F1 En attente",
     className: "bg-yellow-100 text-yellow-800",
   };
 }
@@ -282,6 +282,25 @@ export const PrescriberDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Nudge banner for validated prescribers with 0 prescriptions */}
+        {isPrescriber && !isPrescriberPending && prescriptions.length === 0 && !showOnboarding && (
+          <div className="mb-6 flex items-start gap-3 bg-blue-50 border-2 border-blue-200 rounded-xl px-5 py-4">
+            <span className="text-2xl flex-shrink-0 mt-0.5">💡</span>
+            <div className="flex-1">
+              <p className="font-semibold text-blue-900">Astuce : commencez par une ordonnance test</p>
+              <p className="text-sm text-blue-800 mt-1">
+                Envoyez-vous une ordonnance a votre propre email pour voir ce que votre patient recevra. Ca prend 30 secondes.
+              </p>
+            </div>
+            <button
+              onClick={() => setView("new-prescription")}
+              className="flex-shrink-0 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              Essayer
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-text-primary mb-2">
@@ -367,18 +386,26 @@ export const PrescriberDashboard: React.FC = () => {
 
             {prescriptions.length === 0 ? (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
-                <div className="text-5xl mb-4">📋</div>
+                <div className="text-5xl mb-4">🩺</div>
                 <h3 className="text-xl font-bold text-text-primary mb-2">
-                  Aucune prescription
+                  Envoyez votre premiere recommandation
                 </h3>
-                <p className="text-text-secondary mb-6">
-                  Créez votre première prescription pour recommander des solutions à vos patients.
+                <p className="text-text-secondary mb-4">
+                  La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", vous aurez la reponse en 30 secondes.
                 </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left max-w-md mx-auto">
+                  <p className="text-sm font-semibold text-blue-900 mb-2">Comment ca marche :</p>
+                  <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                    <li>Selectionnez 1 a 5 solutions dans le catalogue</li>
+                    <li>Ajoutez un message personnalise (optionnel)</li>
+                    <li>Partagez le lien ou le QR code au patient</li>
+                  </ol>
+                </div>
                 <button
                   onClick={() => setView("new-prescription")}
-                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                  className="bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition-opacity text-lg"
                 >
-                  Créer une prescription
+                  Creer ma premiere ordonnance
                 </button>
               </div>
             ) : (

@@ -58,3 +58,11 @@ export function setCanonical(path: string): void {
   const twUrl = document.querySelector('meta[name="twitter:url"]');
   if (twUrl) twUrl.setAttribute("content", href);
 }
+
+/** Update the OG and Twitter image meta tags. */
+export function setOgImage(imageUrl: string): void {
+  const ogImage = document.querySelector('meta[property="og:image"]');
+  if (ogImage) ogImage.setAttribute("content", imageUrl);
+  const twImage = document.querySelector('meta[name="twitter:image"]');
+  if (twImage) twImage.setAttribute("content", imageUrl);
+}

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { applyHealthPro } from "../../api/public";
 import { useAppStore } from "../../store/useAppStore";
+import { setPageMeta, setCanonical } from "../../utils/meta";
 
 const PROFESSIONS = [
   { value: "medecin-generaliste", label: "Médecin généraliste" },
@@ -25,6 +26,14 @@ export const HealthProApplicationForm: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setPageMeta(
+      "Candidature professionnel de santé - MentalTech Collectif",
+      "Rejoignez le réseau des professionnels de santé engagés dans le numérique en santé mentale. Candidatez gratuitement au Collectif MentalTech."
+    );
+    setCanonical("/pro-sante");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

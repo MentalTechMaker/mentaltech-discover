@@ -57,12 +57,12 @@ CREATE TABLE products (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
-    -- Quality scoring (0-20 per pillar)
-    score_security SMALLINT CHECK (score_security BETWEEN 0 AND 20),
-    score_efficacy SMALLINT CHECK (score_efficacy BETWEEN 0 AND 20),
-    score_accessibility SMALLINT CHECK (score_accessibility BETWEEN 0 AND 20),
-    score_ux SMALLINT CHECK (score_ux BETWEEN 0 AND 20),
-    score_support SMALLINT CHECK (score_support BETWEEN 0 AND 20),
+    -- Quality scoring (0-5 per pillar)
+    score_security SMALLINT CHECK (score_security BETWEEN 0 AND 5),
+    score_efficacy SMALLINT CHECK (score_efficacy BETWEEN 0 AND 5),
+    score_accessibility SMALLINT CHECK (score_accessibility BETWEEN 0 AND 5),
+    score_ux SMALLINT CHECK (score_ux BETWEEN 0 AND 5),
+    score_support SMALLINT CHECK (score_support BETWEEN 0 AND 5),
 
     -- Justifications (research references, testimonials, etc.)
     justification_security TEXT,
@@ -74,6 +74,7 @@ CREATE TABLE products (
     -- Visibility (migration 011)
     is_visible BOOLEAN NOT NULL DEFAULT TRUE,
     company_defunct BOOLEAN NOT NULL DEFAULT FALSE,
+    is_demo BOOLEAN NOT NULL DEFAULT FALSE,
 
     -- Detailed scoring criteria (protocol answers stored as JSONB)
     scoring_criteria JSONB DEFAULT NULL
@@ -244,6 +245,7 @@ CREATE TABLE IF NOT EXISTS public_submissions (
     pricing_details TEXT,
     protocol_answers JSONB NOT NULL DEFAULT '{}',
     collectif_requested BOOLEAN NOT NULL DEFAULT FALSE,
+    collectif_ca_range VARCHAR(100),
     collectif_status VARCHAR(30) NOT NULL DEFAULT 'none',
     collectif_contact_email VARCHAR(255),
     admin_notes TEXT,

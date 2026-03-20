@@ -4,10 +4,10 @@ import { setPageMeta, setCanonical } from "../utils/meta";
 export const Methodology: React.FC = () => {
   useEffect(() => {
     setPageMeta(
-      "Methodologie d'evaluation",
-      "Comment MentalTech Discover evalue les solutions digitales de sante mentale : 5 piliers, protocole transparent, labels A a E."
+      "Méthodologie d'évaluation",
+      "Comment MentalTech Discover évalue les solutions digitales de santé mentale : 5 piliers, protocole transparent, labels A à E."
     );
-    setCanonical("/methodology");
+    setCanonical("/methodologie");
   }, []);
 
   return (

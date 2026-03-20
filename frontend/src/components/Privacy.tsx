@@ -6,7 +6,7 @@ export const Privacy: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
   useEffect(() => {
-    setPageMeta("Politique de confidentialite");
+    setPageMeta("Politique de confidentialité");
     setCanonical("/privacy");
   }, []);
 
@@ -127,8 +127,7 @@ export const Privacy: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
               <p>
-                Ce site est hébergé en France par <strong>OVH SAS</strong> (2
-                rue Kellermann, 59100 Roubaix, France).
+                Vos données sont hébergées en France par <strong>OVH SAS</strong> (Roubaix, France), fournisseur certifié pour l'hébergement sécurisé. Les données de santé des prescripteurs (profession, numéro RPPS/ADELI) sont traitées conformément aux exigences de sécurité renforcées applicables aux données de santé.
               </p>
               <p>
                 L'hébergement respecte les normes européennes de protection des
@@ -185,6 +184,30 @@ export const Privacy: React.FC = () => {
                 </a>
               </p>
             </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                📋
+              </span>
+              Évaluation d'impact (DPIA)
+            </h2>
+            <p className="text-text-secondary leading-relaxed">
+              Conformément à l'article 35 du RGPD, une Évaluation d'Impact sur la Protection des Données (DPIA) a été réalisée pour les traitements de données des prescripteurs et des soumissions publiques. Cette évaluation confirme que les mesures techniques et organisationnelles mises en place sont adéquates pour protéger vos données.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                📊
+              </span>
+              Statistiques de fréquentation
+            </h2>
+            <p className="text-text-secondary leading-relaxed">
+              Statistiques anonymes uniquement, collectées via Plausible Analytics sans cookies et sans données personnelles. Aucun cookie de tracking tiers n'est utilisé.
+            </p>
           </section>
 
           <section className="space-y-3">

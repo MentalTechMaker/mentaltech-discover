@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr
+import re
+
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class UserRegister(BaseModel):
@@ -14,6 +16,18 @@ class PrescriberRegister(BaseModel):
     profession: str
     organization: str | None = None
     rpps_adeli: str | None = None
+
+    @field_validator("rpps_adeli")
+    @classmethod
+    def validate_rpps_adeli(cls, v: str | None) -> str | None:
+        if v is None or v.strip() == "":
+            return v
+        v = v.strip()
+        if re.fullmatch(r"\d{11}", v):
+            return v  # Valid RPPS (11 digits)
+        if re.fullmatch(r"\d{9}", v):
+            return v  # Valid ADELI (9 digits)
+        raise ValueError("Format RPPS (11 chiffres) ou ADELI (9 chiffres) invalide")
 
 
 class UserLogin(BaseModel):

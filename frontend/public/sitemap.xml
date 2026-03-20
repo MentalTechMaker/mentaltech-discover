@@ -2,45 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://discover.mentaltech.fr/</loc>
-    <lastmod>2026-03-18</lastmod>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://discover.mentaltech.fr/catalog</loc>
-    <lastmod>2026-03-18</lastmod>
+    <loc>https://discover.mentaltech.fr/catalogue</loc>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://discover.mentaltech.fr/rejoindre</loc>
+    <lastmod>2026-03-19</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://discover.mentaltech.fr/methodology</loc>
-    <lastmod>2026-03-18</lastmod>
+    <loc>https://discover.mentaltech.fr/notre-demarche</loc>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://discover.mentaltech.fr/about</loc>
-    <lastmod>2026-03-18</lastmod>
+    <loc>https://discover.mentaltech.fr/methodologie</loc>
+    <lastmod>2026-03-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://discover.mentaltech.fr/faq</loc>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://discover.mentaltech.fr/faq</loc>
-    <lastmod>2026-03-18</lastmod>
+    <loc>https://discover.mentaltech.fr/soumettre-solution</loc>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://discover.mentaltech.fr/privacy</loc>
-    <lastmod>2026-03-18</lastmod>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://discover.mentaltech.fr/legal</loc>
-    <lastmod>2026-03-18</lastmod>
+    <lastmod>2026-03-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <!-- Dynamic product pages are listed via /api/sitemap.xml -->
+  <!-- Fiches solution dynamiques via /api/sitemap.xml -->
 </urlset>

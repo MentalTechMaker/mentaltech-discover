@@ -14,8 +14,8 @@ export const RecommendationList: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Vos recommandations personnalisees",
-      "Decouvrez les solutions de sante mentale selectionnees pour vous par MentalTech Discover, evaluees et classees selon vos besoins."
+      "Vos recommandations personnalisées",
+      "Découvrez les solutions de santé mentale sélectionnées pour vous par MentalTech Discover, évaluées et classées selon vos besoins."
     );
     setCanonical("/results");
   }, []);
@@ -139,31 +139,59 @@ export const RecommendationList: React.FC = () => {
 
         <MedicalDisclaimer variant="card" className="max-w-4xl mx-auto" />
 
-        <div>
-          <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
-              <span className="text-3xl">⭐</span>
-              Top 3 des meilleures solutions pour vous
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Ces solutions présentent le meilleur score de correspondance avec
-              vos besoins
-            </p>
+        {recommendations.products.length === 0 && (
+          <div className="max-w-lg mx-auto text-center py-6 space-y-5">
+            <div className="text-5xl">🔨</div>
+            <div>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Catalogue en cours de construction</h2>
+              <p className="text-text-secondary leading-relaxed">
+                Nos équipes référencent actuellement les premières solutions. Revenez dans quelques semaines pour découvrir le catalogue complet.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => setView("catalog")}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity"
+              >
+                📚 Explorer le catalogue
+              </button>
+              <button
+                onClick={() => setView("public-submission")}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-secondary text-secondary rounded-xl font-semibold hover:bg-secondary/5 transition-colors"
+              >
+                ➕ Soumettre une solution
+              </button>
+            </div>
+          </div>
+        )}
+
+        {recommendations.products.length > 0 && (
+          <>
+          <div>
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
+                <span className="text-3xl">⭐</span>
+                Top 3 des meilleures solutions pour vous
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Ces solutions présentent le meilleur score de correspondance avec
+                vos besoins
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topProducts.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
-        </div>
+          <ExplanationBox
+            explanation={recommendations.explanation}
+            setView={setView}
+          />
 
-        <ExplanationBox
-          explanation={recommendations.explanation}
-          setView={setView}
-        />
-
-        {hasAdditionalProducts && !showAdditional && (
+          {hasAdditionalProducts && !showAdditional && (
           <div className="flex flex-col items-center gap-4 pt-8">
             <div className="text-center">
               <p className="text-gray-600 mb-2">
@@ -252,6 +280,8 @@ export const RecommendationList: React.FC = () => {
               </button>
             </div>
           </div>
+        )}
+          </>
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 pt-6 justify-center items-center">

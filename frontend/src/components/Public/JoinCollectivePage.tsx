@@ -1,8 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
+import { useProductsStore } from "../../store/useProductsStore";
+import { setPageMeta, setCanonical } from "../../utils/meta";
+import { getPublicStats } from "../../api/prescriber";
 
 export const JoinCollectivePage: React.FC = () => {
   const { setView } = useAppStore();
+  const products = useProductsStore((s) => s.products);
+  const [publicStats, setPublicStats] = useState<{ prescribers: number; prescriptions: number } | null>(null);
+
+  useEffect(() => {
+    setPageMeta(
+      "Rejoindre le Collectif MentalTech",
+      "Rejoignez le Collectif MentalTech : référencez votre solution de santé mentale numérique ou candidatez en tant que professionnel de santé engagé."
+    );
+    setCanonical("/rejoindre");
+  }, []);
+
+  useEffect(() => {
+    getPublicStats().then(setPublicStats).catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-280px)] bg-gradient-to-b from-purple-50/50 to-white">
@@ -24,6 +41,28 @@ export const JoinCollectivePage: React.FC = () => {
             numériques de qualité en santé mentale.
           </p>
         </div>
+
+        {/* Stats - seulement si données disponibles */}
+        {(products.length > 0 || (publicStats && publicStats.prescribers > 0)) && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+            {products.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <p className="text-3xl font-bold text-primary">{products.length}</p>
+                <p className="text-sm text-text-secondary mt-1">solutions évaluées</p>
+              </div>
+            )}
+            {publicStats && publicStats.prescribers > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <p className="text-3xl font-bold text-purple-600">{publicStats.prescribers}</p>
+                <p className="text-sm text-text-secondary mt-1">professionnels membres</p>
+              </div>
+            )}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+              <p className="text-3xl font-bold text-amber-600">25+</p>
+              <p className="text-sm text-text-secondary mt-1">entreprises du collectif</p>
+            </div>
+          </div>
+        )}
 
         {/* Two cards */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
@@ -95,6 +134,64 @@ export const JoinCollectivePage: React.FC = () => {
               <span className="text-amber-600 text-xl group-hover:translate-x-2 transition-transform">→</span>
             </div>
           </button>
+        </div>
+
+        {/* Comment ça marche */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-8">
+          <h2 className="text-2xl font-bold text-text-primary text-center mb-8">
+            Comment ça marche ?
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { step: "1", icon: "📝", title: "Vous candidatez", desc: "Remplissez le formulaire en ligne en moins de 10 minutes. C'est gratuit." },
+              { step: "2", icon: "🔍", title: "On examine", desc: "Notre équipe examine votre dossier sous 5 jours ouvrés et vous contacte par email." },
+              { step: "3", icon: "🎉", title: "Bienvenue !", desc: "Votre solution est référencée ou vous rejoignez le réseau des professionnels engagés." },
+            ].map(({ step, icon, title, desc }) => (
+              <div key={step} className="text-center space-y-3">
+                <div className="mx-auto w-12 h-12 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xl font-bold">
+                  {step}
+                </div>
+                <div className="text-3xl">{icon}</div>
+                <h3 className="font-bold text-text-primary">{title}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6">
+          <h2 className="text-2xl font-bold text-text-primary text-center mb-6">
+            Questions fréquentes
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "Qui peut rejoindre le Collectif MentalTech ?",
+                a: "Toute entreprise ou startup proposant une solution numérique en santé mentale (application, plateforme, dispositif médical…), et tout professionnel de santé mentale (médecin, psychiatre, psychologue, infirmier…) engagé dans le numérique en santé.",
+              },
+              {
+                q: "C'est gratuit ?",
+                a: "Le processus de candidature est 100% gratuit. L'adhésion au Collectif MentalTech pour les éditeurs implique une cotisation annuelle, dont le montant est communiqué lors de l'examen de votre dossier.",
+              },
+              {
+                q: "Ma solution sera-t-elle visible immédiatement ?",
+                a: "Après approbation de votre candidature, votre solution est évaluée selon notre protocole MentalTech (5 piliers : sécurité, efficacité, accessibilité, UX, support) avant publication sur le catalogue.",
+              },
+              {
+                q: "Quels sont les avantages pour un professionnel de santé ?",
+                a: "Accès aux évaluations détaillées des solutions, outil de prescription numérique pour vos patients, participation aux groupes de travail du collectif et réseau de 25+ entreprises innovantes en santé mentale.",
+              },
+            ].map(({ q, a }, i) => (
+              <details key={i} className="group border border-gray-200 rounded-xl">
+                <summary className="flex items-center justify-between p-4 cursor-pointer font-semibold text-text-primary hover:bg-gray-50 rounded-xl">
+                  <span>{q}</span>
+                  <span className="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+                </summary>
+                <div className="px-4 pb-4 text-sm text-text-secondary leading-relaxed">{a}</div>
+              </details>
+            ))}
+          </div>
         </div>
 
         {/* Footer info */}

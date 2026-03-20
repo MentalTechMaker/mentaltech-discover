@@ -3,6 +3,7 @@ import {
   listPublicSubmissions,
   approvePublicSubmission,
   rejectPublicSubmission,
+  markSubmissionUnderReview,
   updateCollectifStatus,
   listHealthProApplications,
   acceptHealthProApplication,
@@ -159,7 +160,7 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({ onCreateProduct }) => 
               <div key={sub.id} className="border border-gray-200 rounded-xl bg-white overflow-hidden">
                 {/* Main clickable area → opens SubmissionForm */}
                 <div
-                  className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                  className={`p-4 transition-colors ${onCreateProduct ? "hover:bg-gray-50 cursor-pointer" : ""}`}
                   onClick={() => onCreateProduct?.(sub)}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -172,7 +173,7 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({ onCreateProduct }) => 
                       <Badge {...st} />
                       {sub.collectifRequested && (
                         <Badge
-                          label={`Collectif: ${COLLECTIF_BADGES[sub.collectifStatus]?.label ?? sub.collectifStatus}`}
+                          label={`Collectif${sub.collectifCaRange ? ` · ${sub.collectifCaRange}` : ""}: ${COLLECTIF_BADGES[sub.collectifStatus]?.label ?? sub.collectifStatus}`}
                           cls="bg-amber-100 text-amber-700"
                         />
                       )}
@@ -192,6 +193,15 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({ onCreateProduct }) => 
                         >
                           Approuver
                         </button>
+                        {sub.status === "submitted" && (
+                          <button
+                            onClick={e => { e.stopPropagation(); withLoading(async () => { refreshSub(await markSubmissionUnderReview(sub.id)); showToast("Mise en review"); }); }}
+                            disabled={actionLoading}
+                            className="text-xs text-orange-600 hover:text-orange-700 font-semibold disabled:opacity-50"
+                          >
+                            En review
+                          </button>
+                        )}
                         <button
                           onClick={e => { e.stopPropagation(); setRejectingSubId(isRejecting ? null : sub.id); setAdminNotes(""); setCollectifSubId(null); }}
                           className="text-xs text-red-600 hover:text-red-700 font-semibold"

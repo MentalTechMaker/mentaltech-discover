@@ -3,6 +3,10 @@ import type { AppView, UserAnswers, RecommendationResult, UserType } from '../ty
 
 // Clean URL mapping for public-facing views
 const VIEW_TO_URL: Partial<Record<AppView, string>> = {
+  'catalog': '/catalogue',
+  'about': '/notre-demarche',
+  'methodology': '/methodologie',
+  'quiz': '/questionnaire',
   'public-submission': '/soumettre-solution',
   'health-pro-application': '/pro-sante',
   'join-collective': '/rejoindre',
@@ -11,6 +15,17 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
 };
 
 const URL_TO_VIEW: Record<string, AppView> = {
+  // Nouveaux
+  'catalogue': 'catalog',
+  'notre-demarche': 'about',
+  'methodologie': 'methodology',
+  'questionnaire': 'quiz',
+  // Anciens (backward compat)
+  'catalog': 'catalog',
+  'about': 'about',
+  'methodology': 'methodology',
+  'quiz': 'quiz',
+  // Existants
   'soumettre-solution': 'public-submission',
   'pro-sante': 'health-pro-application',
   'rejoindre': 'join-collective',
@@ -91,7 +106,7 @@ export const useAppStore = create<AppState>((set) => ({
   viewProduct: (productId) => {
     set({ currentView: 'product', selectedProductId: productId });
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view: 'product', productId }, '', `/product/${productId}`);
+      window.history.pushState({ view: 'product', productId }, '', `/solution/${productId}`);
       window.scrollTo({ top: 0, left: 0 });
     }
   },
@@ -148,7 +163,14 @@ export const useAppStore = create<AppState>((set) => ({
 function parsePathView(): { view: AppView; productId?: string } {
   const pathname = window.location.pathname.replace(/^\//, '');
 
-  // Handle /product/some-id
+  // Handle /solution/some-id (new canonical URL)
+  if (pathname.startsWith('solution/')) {
+    const productId = pathname.slice('solution/'.length);
+    if (productId) return { view: 'product', productId };
+    return { view: 'catalog' };
+  }
+
+  // Handle /product/some-id (backward compat)
   if (pathname.startsWith('product/')) {
     const productId = pathname.slice('product/'.length);
     if (productId) return { view: 'product', productId };
@@ -172,7 +194,7 @@ function parsePathView(): { view: AppView; productId?: string } {
     'methodology', 'about', 'faq', 'login', 'register', 'register-prescriber',
     'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
     'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
-    'register-publisher', 'publisher-dashboard', 'publisher-submission', 'admin-submissions',
+    'admin-submissions',
     'public-submission', 'health-pro-application', 'confirm-submission', 'confirm-health-pro',
     'join-collective',
   ];

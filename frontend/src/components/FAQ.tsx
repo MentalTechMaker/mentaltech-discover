@@ -14,10 +14,11 @@ const FAQ_SCHEMA_DATA = [
   { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de sante peuvent creer un compte prescripteur gratuit." },
   { q: "Mes donnees sont-elles collectees ?", a: "Pour les visiteurs, aucune donnee n'est collectee. Les reponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectes de maniere securisee." },
   { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisees uniquement pour ameliorer le service." },
+  { q: "Mes donnees de quiz sont-elles conservees ?", a: "Non. Vos reponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyees a nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire." },
   { q: "Est-ce un dispositif medical ?", a: "Non. MentalTech Discover est un outil de decouverte, pas un dispositif medical certifie. Il aide a explorer les solutions disponibles sans fournir de service medical." },
   { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prevention du suicide), le 15 (SAMU) ou le 112 (urgences europeennes). Ces numeros sont gratuits et disponibles 24h/24." },
   { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est disponible en V2 : tableau de bord, prescriptions numeriques, veille solutions, comparateur. Gratuit, inscription requise." },
-  { q: "Comment etre reference sur MentalTech Discover ?", a: "La solution doit rejoindre le Collectif MentalTech via mentaltech.fr, puis etre evaluee selon le protocole de qualite." },
+  { q: "Comment etre reference sur MentalTech Discover ?", a: "Toute solution peut etre soumise via notre formulaire public (bouton 'Referencer' dans le menu). Elle sera evaluee selon notre protocole de qualite. Les membres du Collectif MentalTech beneficient du badge niveau 2." },
   { q: "Le code est-il open-source ?", a: "Oui, transparence totale. Le code est disponible sur GitHub : github.com/mentaltechmaker/mentaltech-discover sous licence MIT." },
 ];
 
@@ -27,8 +28,8 @@ export const FAQ: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Questions frequentes",
-      "Toutes les reponses sur MentalTech Discover : selection des solutions, algorithme, confidentialite, aspect medical, espace prescripteur."
+      "Questions fréquentes",
+      "Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur."
     );
     setCanonical("/faq");
     injectJsonLd("faq-schema", {
@@ -220,6 +221,19 @@ export const FAQ: React.FC = () => {
     },
 
     {
+      category: "Confidentialité",
+      question: "Mes données de quiz sont-elles conservées ?",
+      answer: (
+        <p>
+          <strong>Non.</strong> Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs.
+          <br />
+          <br />
+          Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire.
+        </p>
+      ),
+    },
+
+    {
       category: "Aspect médical",
       question: "Est-ce un dispositif médical ?",
       answer: (
@@ -348,11 +362,13 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            Pour être référencé, votre solution doit{" "}
-            <strong>rejoindre le Collectif MentalTech</strong>.
+            Toute solution peut être soumise via notre <strong>formulaire public</strong> (bouton "Référencer" dans le menu). Elle sera évaluée selon notre protocole de qualité.
           </p>
           <p>
-            → Candidature :{" "}
+            Les <strong>membres du Collectif MentalTech</strong> bénéficient du badge niveau 2.
+          </p>
+          <p className="text-sm text-text-secondary mt-2">
+            → En savoir plus sur le Collectif :{" "}
             <a
               href="https://mentaltech.fr"
               target="_blank"
@@ -361,10 +377,6 @@ export const FAQ: React.FC = () => {
             >
               mentaltech.fr
             </a>
-          </p>
-          <p className="text-sm text-text-secondary mt-2">
-            Une fois membre, votre solution sera évaluée selon nos critères de
-            référencement (conformité RGPD, transparence tarifaire, etc.).
           </p>
         </div>
       ),

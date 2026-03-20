@@ -1,4 +1,6 @@
 import logging
+import logging.handlers
+import time
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -6,18 +8,39 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.exc import SQLAlchemyError
 
 from .config import settings
-from .routers import auth, products, prescriptions, prescriber, admin, publisher, public
+from .rate_limit import limiter
+from .routers import auth, products, prescriptions, prescriber, admin, public
+
+
+# --- Logging configuration ---
+LOG_DIR = Path("/var/log/mentaltech")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+
+# File handler: rotating, 10MB max, keep 5 files
+file_handler = logging.handlers.RotatingFileHandler(
+    LOG_DIR / "app.log", maxBytes=10_000_000, backupCount=5, encoding="utf-8"
+)
+file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+logging.getLogger().addHandler(file_handler)
+
+# Error-only file for quick incident review
+error_handler = logging.handlers.RotatingFileHandler(
+    LOG_DIR / "error.log", maxBytes=5_000_000, backupCount=3, encoding="utf-8"
+)
+error_handler.setLevel(logging.ERROR)
+error_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+logging.getLogger().addHandler(error_handler)
 
 logger = logging.getLogger(__name__)
-
-# Rate limiter
-limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
 
 app = FastAPI(
     title="MentalTech Discover API",
@@ -41,9 +64,26 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        duration_ms = round((time.time() - start) * 1000)
+        # Skip noisy health checks and static files
+        path = request.url.path
+        if path not in ("/api/health", "/health") and not path.startswith("/uploads/"):
+            logger.info(
+                "%s %s %s %dms",
+                request.method, path, response.status_code, duration_ms,
+            )
+        return response
+
+
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 
 origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",")]
+origins = [o for o in origins if o and o != "*"]  # Reject wildcard
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,7 +120,6 @@ app.include_router(products.router)
 app.include_router(prescriptions.router)
 app.include_router(prescriber.router)
 app.include_router(admin.router)
-app.include_router(publisher.router)
 app.include_router(public.router)
 
 # Serve uploaded logos as static files (/tmp/uploads est toujours writable)
@@ -115,7 +154,7 @@ def sitemap_xml():
         lastmod = p.updated_at.date().isoformat() if p.updated_at else today
         urls.append(
             f"  <url>\n"
-            f"    <loc>{base}/produit/{p.id}</loc>\n"
+            f"    <loc>{base}/solution/{p.id}</loc>\n"
             f"    <lastmod>{lastmod}</lastmod>\n"
             f"    <changefreq>monthly</changefreq>\n"
             f"    <priority>0.6</priority>\n"

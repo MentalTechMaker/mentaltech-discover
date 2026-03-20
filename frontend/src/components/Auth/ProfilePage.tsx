@@ -165,6 +165,24 @@ export const ProfilePage: React.FC = () => {
           )}
         </div>
 
+        {/* Pending prescriber banner */}
+        {user.role === "prescriber" && !user.is_verified_prescriber && (
+          <div className="bg-amber-50 rounded-xl border border-amber-200 p-6">
+            <div className="flex items-start gap-3">
+              <span className="text-xl flex-shrink-0">⏳</span>
+              <div>
+                <h3 className="text-base font-bold text-amber-900 mb-1">Dossier en cours d'examen</h3>
+                <p className="text-sm text-amber-800">
+                  Votre dossier est en cours d'examen par notre équipe. Vous recevrez un email de confirmation dès validation de votre compte prescripteur (généralement sous 48h).
+                </p>
+                <p className="text-xs text-amber-700 mt-2">
+                  En attendant, vous pouvez explorer le catalogue et accéder aux fiches produits.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* User benefits hint (for non-prescribers) */}
         {user.role === "user" && (
           <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">

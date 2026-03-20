@@ -15,26 +15,26 @@ export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
 
   const STEPS = [
     {
-      icon: '🔍',
-      title: 'Le catalogue évalué',
-      description: `${countLabel} solutions de santé mentale évaluées selon notre grille de qualité : confidentialité des données, preuves cliniques, accessibilité, UX et support.`,
+      icon: '🩺',
+      title: 'Recommandez en 30 secondes',
+      description: `La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", selectionnez 1 a 3 solutions et envoyez-lui un lien personnalise. C'est plus rapide que de chercher de memoire.`,
       cta: 'Suivant',
       action: null,
+    },
+    {
+      icon: '📋',
+      title: 'Creez votre premiere ordonnance',
+      description:
+        'Choisissez des solutions dans le catalogue, ajoutez un message pour votre patient, et partagez le lien ou le QR code directement en consultation. Votre patient recoit les recommandations avec vos coordonnees.',
+      cta: 'Creer ma premiere ordonnance',
+      action: 'new-prescription' as const,
     },
     {
       icon: '⭐',
-      title: 'Favoris et prescriptions',
+      title: 'Construisez votre bibliotheque',
       description:
-        'Ajoutez vos solutions préférées en favoris pour les retrouver rapidement. Créez ensuite des prescriptions personnalisées à partager avec vos patients via un lien ou un QR code.',
-      cta: 'Suivant',
-      action: null,
-    },
-    {
-      icon: '📊',
-      title: 'Veille et comparateur',
-      description:
-        "Comparez plusieurs solutions côte à côte et suivez leurs mises à jour (nouveaux tarifs, études cliniques, nouvelles fonctionnalités) grâce à l'espace Veille.",
-      cta: 'Voir le catalogue',
+        'Au fil du temps, ajoutez vos solutions preferees en favoris et prenez des notes cliniques. Elles apparaitront en priorite lors de vos prochaines prescriptions.',
+      cta: 'Explorer le catalogue',
       action: 'catalog' as const,
     },
   ];

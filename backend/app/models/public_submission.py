@@ -37,8 +37,9 @@ class PublicSubmission(Base):
     pricing_details: Mapped[str | None] = mapped_column(Text, nullable=True)
     protocol_answers: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
 
-    # Collectif (CA range is NEVER stored - email only)
+    # Collectif
     collectif_requested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    collectif_ca_range: Mapped[str | None] = mapped_column(String(100), nullable=True)
     collectif_status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="none"
     )

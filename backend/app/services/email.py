@@ -175,40 +175,6 @@ async def send_prescriber_approved_email(email: str, name: str, dashboard_url: s
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_publisher_approved_email(email: str, name: str, dashboard_url: str) -> None:
-    template = jinja_env.get_template("publisher_approved.html")
-    html = template.render(name=name, dashboard_url=dashboard_url)
-    message = MessageSchema(
-        subject="Votre compte éditeur est validé - MentalTech Discover",
-        recipients=[email],
-        body=html,
-        subtype=MessageType.html,
-    )
-    try:
-        await fm.send_message(message)
-        logger.info(f"Publisher approved email sent to {email}")
-    except Exception:
-        logger.error(f"Failed to send publisher approved email to {email}", exc_info=True)
-        _write_email_to_file(message.subject, [email], html)
-
-
-async def send_ambassador_trigger_email(email: str, name: str) -> None:
-    template = jinja_env.get_template("ambassador_trigger.html")
-    html = template.render(name=name)
-    message = MessageSchema(
-        subject="Vous faites partie des prescripteurs les plus actifs - MentalTech",
-        recipients=[email],
-        body=html,
-        subtype=MessageType.html,
-    )
-    try:
-        await fm.send_message(message)
-        logger.info(f"Ambassador trigger email sent to {email}")
-    except Exception:
-        logger.error(f"Failed to send ambassador trigger email to {email}", exc_info=True)
-        _write_email_to_file(message.subject, [email], html)
-
-
 async def send_submission_confirmation_email(email: str, name: str, confirm_token: str) -> None:
     confirm_url = f"{settings.FRONTEND_URL}/confirmer-soumission?token={confirm_token}"
     template = jinja_env.get_template("submission_confirmation.html")

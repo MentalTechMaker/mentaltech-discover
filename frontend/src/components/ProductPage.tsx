@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
 import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
-import { setPageMeta, setCanonical, injectJsonLd, removeJsonLd } from "../utils/meta";
+import { setPageMeta, setCanonical, setOgImage, injectJsonLd, removeJsonLd } from "../utils/meta";
 
 const pricingLabels: Record<string, string> = {
   free: "Gratuit",
@@ -55,6 +55,7 @@ export const ProductPage: React.FC = () => {
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [favoriteError, setFavoriteError] = useState(false);
 
   const product = products.find((p) => p.id === selectedProductId);
 
@@ -62,7 +63,13 @@ export const ProductPage: React.FC = () => {
     if (!product) return;
     const desc = product.tagline || product.description?.slice(0, 155) || "";
     setPageMeta(`${product.name} - ${product.type}`, desc);
-    setCanonical(`/product/${product.id}`);
+    setCanonical(`/solution/${product.id}`);
+    if (product.logo) {
+      const logoUrl = product.logo.startsWith('http')
+        ? product.logo
+        : `https://discover.mentaltech.fr${product.logo}`;
+      setOgImage(logoUrl);
+    }
     injectJsonLd("product-schema", {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -83,7 +90,7 @@ export const ProductPage: React.FC = () => {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://discover.mentaltech.fr/" },
-        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": "https://discover.mentaltech.fr/catalog" },
+        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": "https://discover.mentaltech.fr/catalogue" },
         { "@type": "ListItem", "position": 3, "name": product.name },
       ],
     });
@@ -100,6 +107,8 @@ export const ProductPage: React.FC = () => {
   const handleToggleFavorite = async () => {
     if (!selectedProductId) return;
     setFavoriteLoading(true);
+    setFavoriteError(false);
+    const previous = isFavorite;
     try {
       if (isFavorite) {
         await removeFavorite(selectedProductId);
@@ -109,7 +118,8 @@ export const ProductPage: React.FC = () => {
         setIsFavorite(true);
       }
     } catch {
-      // silently fail
+      setIsFavorite(previous);
+      setFavoriteError(true);
     } finally {
       setFavoriteLoading(false);
     }
@@ -142,6 +152,17 @@ export const ProductPage: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
+        {product.isDemo && (
+          <div className="flex items-start gap-3 px-4 py-3 mb-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-sm">
+            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <span>
+              Cette fiche est presentee a titre d'exemple pour illustrer le catalogue.
+              Les informations n'ont pas ete soumises ni validees par l'editeur.
+            </span>
+          </div>
+        )}
         {/* Back button */}
         <button
           onClick={() => setView("catalog")}
@@ -229,6 +250,11 @@ export const ProductPage: React.FC = () => {
                     <p className="text-text-secondary text-sm">
                       Score global : {product.scoreTotal}/100
                     </p>
+                    {product.updatedAt && (
+                      <p className="text-xs text-text-secondary mt-0.5">
+                        Évalué en {new Date(product.updatedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -286,14 +312,20 @@ export const ProductPage: React.FC = () => {
                     <p className="text-text-secondary text-sm">
                       Score global : {product.scoreTotal}/100
                     </p>
+                    {product.updatedAt && (
+                      <p className="text-xs text-text-secondary mt-0.5">
+                        Évalué en {new Date(product.updatedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="space-y-3">
-                  {SCORE_CRITERIA.map(({ key, label: criteriaLabel }) => {
+                <div className="space-y-4">
+                  {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
                     const score = product.scoring?.[key];
+                    const justification = product.scoring?.[justKey];
                     const pillarLabel = getPillarLabelInfo(score);
                     return (
-                      <div key={key}>
+                      <div key={key} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm text-text-primary">{criteriaLabel}</span>
                           {score != null
@@ -310,6 +342,11 @@ export const ProductPage: React.FC = () => {
                             }}
                           />
                         </div>}
+                        {justification && (
+                          <p className="mt-2 text-xs text-text-secondary whitespace-pre-line leading-relaxed bg-gray-50 rounded px-2 py-1.5">
+                            {justification}
+                          </p>
+                        )}
                       </div>
                     );
                   })}
@@ -377,6 +414,11 @@ export const ProductPage: React.FC = () => {
                   <span>{isFavorite ? "★" : "☆"}</span>
                   <span>{isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
                 </button>
+              )}
+              {favoriteError && (
+                <p className="text-xs text-red-500 text-center mt-1">
+                  Impossible de mettre a jour les favoris. Reessayez.
+                </p>
               )}
             </div>
 

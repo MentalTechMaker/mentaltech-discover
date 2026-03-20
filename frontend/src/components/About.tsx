@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
+import { useAppStore } from "../store/useAppStore";
 import { setPageMeta, setCanonical } from "../utils/meta";
 
 export const About: React.FC = () => {
+  const { setView } = useAppStore();
+
   useEffect(() => {
     setPageMeta(
-      "Notre demarche",
-      "Decouvrez comment MentalTech Discover selectionne et evalue les solutions de sante mentale numerique en France."
+      "Notre démarche",
+      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France."
     );
-    setCanonical("/about");
+    setCanonical("/notre-demarche");
   }, []);
 
   return (
@@ -71,6 +74,51 @@ export const About: React.FC = () => {
               >
                 → mentaltech.fr
               </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+          <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
+            <span>🩺</span>
+            Pour les professionnels de sante
+          </h2>
+          <div className="space-y-4 text-text-secondary leading-relaxed">
+            <p className="text-lg italic">
+              Comment recommandez-vous des applications a vos patients aujourd'hui ? De memoire, sans criteres objectifs, sans suivi ?
+            </p>
+            <p>
+              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numerique adaptee a chaque patient - parmi un catalogue verifie, score sur 5 piliers, avec une ordonnance numerique que votre patient recoit directement.
+            </p>
+            <div className="grid md:grid-cols-2 gap-3 mt-4">
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
+                <span className="text-xl">🏷️</span>
+                <span className="text-sm font-medium">Catalogue verifie A-E</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
+                <span className="text-xl">📋</span>
+                <span className="text-sm font-medium">Ordonnance numerique en 30 secondes</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
+                <span className="text-xl">⭐</span>
+                <span className="text-sm font-medium">Favoris et notes cliniques</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
+                <span className="text-xl">⚖️</span>
+                <span className="text-sm font-medium">Comparateur cote-a-cote</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200 md:col-span-2">
+                <span className="text-xl">🔔</span>
+                <span className="text-sm font-medium">Veille solutions</span>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setView("prescriber-auth")}
+                className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg"
+              >
+                Creer mon compte prescripteur gratuitement
+              </button>
             </div>
           </div>
         </section>
@@ -157,9 +205,7 @@ export const About: React.FC = () => {
                   Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Nous référençons les membres du Collectif MentalTech selon nos
-                  critères. Un scoring détaillé (sécurité, efficacité, UX) est en
-                  cours de développement.
+                  Notre systeme de scoring qualite est disponible : chaque solution est evaluee sur 5 piliers (securite, efficacite, accessibilite, UX, support) pour un label A a E. Cependant, nous ne sommes pas un organisme de certification officiel.
                 </p>
               </div>
             </div>
@@ -309,8 +355,8 @@ export const About: React.FC = () => {
 
               <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-blue-100">
                 <h3 className="text-xl font-bold text-blue-500 mb-3 flex items-center gap-2">
-                  <span>🔜</span>
-                  Scoring détaillé (en développement)
+                  <span>✅</span>
+                  Scoring qualité A-E
                 </h3>
                 <p className="text-sm text-text-secondary mb-4">
                   Inspiration <strong>ORCHA</strong> (UK) et{" "}

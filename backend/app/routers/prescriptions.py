@@ -4,7 +4,6 @@ from collections import Counter
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from ..database import get_db
 from ..dependencies import require_prescriber_or_admin
@@ -22,7 +21,6 @@ from ..services.product import _to_response
 from ..services.email import (
     send_prescription_email,
     send_prescription_viewed_email,
-    send_ambassador_trigger_email,
 )
 
 router = APIRouter(prefix="/api/prescriptions", tags=["prescriptions"])
@@ -85,19 +83,6 @@ async def create_prescription(
     db.add(prescription)
     db.commit()
     db.refresh(prescription)
-
-    # Ambassador trigger on 3rd prescription
-    total_prescriptions = (
-        db.query(func.count(Prescription.id))
-        .filter(Prescription.prescriber_id == user.id)
-        .scalar()
-    )
-    if total_prescriptions == 3:
-        background_tasks.add_task(
-            send_ambassador_trigger_email,
-            email=user.email,
-            name=user.name,
-        )
 
     # Send email to patient if email provided
     if data.patient_email:

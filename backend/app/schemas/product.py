@@ -36,8 +36,10 @@ class ProductResponse(BaseModel):
     isMentaltechMember: bool
     isVisible: bool = True
     companyDefunct: bool = False
+    isDemo: bool = False
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
+    updatedAt: str | None = None
     scoring: ScoringSchema | None = None
     scoreTotal: int | None = None
     scoreLabel: str | None = None

@@ -92,6 +92,12 @@ export async function rejectPublicSubmission(id: string, adminNotes: string): Pr
   }, true);
 }
 
+export async function markSubmissionUnderReview(id: string): Promise<PublicSubmission> {
+  return apiFetch<PublicSubmission>(`/admin/public-submissions/${id}/under-review`, {
+    method: 'POST',
+  }, true);
+}
+
 export async function updateCollectifStatus(
   id: string,
   collectifStatus: string,

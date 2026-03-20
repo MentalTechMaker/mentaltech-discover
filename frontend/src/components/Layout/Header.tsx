@@ -4,7 +4,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 
 export const Header: React.FC = () => {
   const { currentView, reset, setView } = useAppStore();
-  const { isAuthenticated, isAdmin, isPrescriber, isPrescriberPending, isPublisher, user, logout } = useAuthStore();
+  const { isAuthenticated, isAdmin, isPrescriber, isPrescriberPending, user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -36,12 +36,12 @@ export const Header: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
-  const navLink = (view: string, label: string) => (
+  const navLink = (view: string, emoji: string, text: string) => (
     <button
       onClick={() => setView(view as Parameters<typeof setView>[0])}
       className={`relative px-4 py-1.5 text-sm font-bold transition-all group text-white`}
     >
-      {label}
+      <span aria-hidden="true">{emoji}</span> {text}
       <span className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full transition-all duration-200 ${
         currentView === view ? "bg-white opacity-100" : "bg-white opacity-0 group-hover:opacity-60"
       }`} />
@@ -60,7 +60,7 @@ export const Header: React.FC = () => {
             aria-label="Retour à l'accueil"
           >
             <div className="bg-white rounded-full p-2 shadow-sm">
-              <span className="text-base leading-none">💙</span>
+              <span className="text-base leading-none" aria-hidden="true">💙</span>
             </div>
             <span className="text-white font-black text-lg tracking-tight">
               MentalTech Discover
@@ -69,9 +69,9 @@ export const Header: React.FC = () => {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center justify-center gap-1 flex-1">
-            {navLink("about", "🎯 Démarche")}
-            {navLink("faq", "❓ FAQ")}
-            {navLink("catalog", "📚 Catalogue")}
+            {navLink("about", "🎯", "Démarche")}
+            {navLink("faq", "❓", "FAQ")}
+            {navLink("catalog", "📚", "Catalogue")}
           </nav>
 
           {/* Right side */}
@@ -82,7 +82,7 @@ export const Header: React.FC = () => {
               onClick={() => setView("public-submission")}
               className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold bg-secondary text-white hover:opacity-90 transition-opacity shadow-sm"
             >
-              <span>➕</span>
+              <span aria-hidden="true">➕</span>
               <span>Référencer</span>
             </button>
 
@@ -120,52 +120,46 @@ export const Header: React.FC = () => {
                     </div>
                     <button onClick={() => navigateTo("profile")}
                       className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                      👤 Profil
+                      <span aria-hidden="true">👤</span> Profil
                     </button>
                     {(isPrescriber || isPrescriberPending) && (
                       <>
                         <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Prescripteur</p>
                         <button onClick={() => navigateTo("prescriber-dashboard")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          📊 Tableau de bord
+                          <span aria-hidden="true">📊</span> Tableau de bord
                         </button>
                         <button onClick={() => navigateTo("new-prescription")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          📝 Prescrire
+                          <span aria-hidden="true">📝</span> Prescrire
                         </button>
                         <button onClick={() => navigateTo("veille")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          🔍 Veille
+                          <span aria-hidden="true">🔍</span> Veille
                         </button>
                         <button onClick={() => navigateTo("comparator")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          ⚖️ Comparer
+                          <span aria-hidden="true">⚖️</span> Comparer
                         </button>
                       </>
-                    )}
-                    {(isPublisher || user?.role === "publisher") && (
-                      <button onClick={() => navigateTo("publisher-dashboard")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                        ✏️ Editeur
-                      </button>
                     )}
                     {isAdmin && (
                       <>
                         <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Admin</p>
                         <button onClick={() => navigateTo("admin")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          ⚙️ Admin
+                          <span aria-hidden="true">⚙️</span> Admin
                         </button>
                         <button onClick={() => navigateTo("admin-submissions")}
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          📋 Editeurs
+                          <span aria-hidden="true">📋</span> Soumissions
                         </button>
                       </>
                     )}
                     <div className="border-t border-gray-100 mt-1 pt-1">
                       <button onClick={handleLogout}
                         className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
-                        🚪 Déconnexion
+                        <span aria-hidden="true">🚪</span> Déconnexion
                       </button>
                     </div>
                   </div>
@@ -176,7 +170,7 @@ export const Header: React.FC = () => {
                 onClick={() => setView("prescriber-auth")}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white bg-purple-500 hover:opacity-90 transition-opacity shadow-sm"
               >
-                <span>🩺</span>
+                <span aria-hidden="true">🩺</span>
                 <span className="hidden lg:inline">Prescripteur</span>
               </button>
             )}
@@ -205,27 +199,31 @@ export const Header: React.FC = () => {
         {mobileOpen && (
           <nav className="md:hidden border-t border-white/20 pb-3 pt-2 space-y-0.5">
             {[
-              { view: "about", label: "🎯 Démarche" },
-              { view: "faq", label: "❓ FAQ" },
-              { view: "catalog", label: "📚 Catalogue" },
-            ].map(({ view, label }) => (
+              { view: "about", emoji: "🎯", text: "Démarche" },
+              { view: "faq", emoji: "❓", text: "FAQ" },
+              { view: "catalog", emoji: "📚", text: "Catalogue" },
+            ].map(({ view, emoji, text }) => (
               <button
                 key={view}
                 onClick={() => navigateTo(view as Parameters<typeof setView>[0])}
-                className={`w-full text-left px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                   currentView === view
-                    ? "text-white bg-white/20"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
+                    ? "text-white font-bold bg-white/10"
+                    : "text-white/80 font-semibold hover:text-white hover:bg-white/10"
                 }`}
               >
-                {label}
+                <span aria-hidden="true">{emoji}</span> {text}
               </button>
             ))}
             <button
               onClick={() => navigateTo("public-submission")}
-              className="w-full text-left px-4 py-2.5 text-sm font-bold text-white bg-emerald-500/30 hover:bg-emerald-500/40 rounded-full transition-colors"
+              className={`w-full text-left px-4 py-3 min-h-[44px] text-sm font-bold rounded-full transition-colors ${
+                currentView === "public-submission"
+                  ? "text-white bg-emerald-500/50"
+                  : "text-white bg-emerald-500/30 hover:bg-emerald-500/40"
+              }`}
             >
-              ➕ Référencer
+              <span aria-hidden="true">➕</span> Référencer
             </button>
 
             <div className="border-t border-white/20 mt-2 pt-2 space-y-0.5">
@@ -236,48 +234,66 @@ export const Header: React.FC = () => {
                     <p className="text-xs text-white/60">{user?.email}</p>
                   </div>
                   <button onClick={() => navigateTo("profile")}
-                    className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                    👤 Profil
+                    className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
+                      currentView === "profile"
+                        ? "text-white font-bold bg-white/10"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
+                    }`}>
+                    <span aria-hidden="true">👤</span> Profil
                   </button>
                   {(isPrescriber || isPrescriberPending) && (
                     <>
                       <button onClick={() => navigateTo("prescriber-dashboard")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                        📊 Tableau de bord
+                        className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
+                          currentView === "prescriber-dashboard"
+                            ? "text-white font-bold bg-white/10"
+                            : "text-white/80 hover:text-white hover:bg-white/10"
+                        }`}>
+                        <span aria-hidden="true">📊</span> Tableau de bord
                       </button>
                       <button onClick={() => navigateTo("new-prescription")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                        📝 Prescrire
+                        className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
+                          currentView === "new-prescription"
+                            ? "text-white font-bold bg-white/10"
+                            : "text-white/80 hover:text-white hover:bg-white/10"
+                        }`}>
+                        <span aria-hidden="true">📝</span> Prescrire
                       </button>
                     </>
-                  )}
-                  {(isPublisher || user?.role === "publisher") && (
-                    <button onClick={() => navigateTo("publisher-dashboard")}
-                      className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                      ✏️ Editeur
-                    </button>
                   )}
                   {isAdmin && (
                     <>
                       <button onClick={() => navigateTo("admin")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                        ⚙️ Admin
+                        className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
+                          currentView === "admin"
+                            ? "text-white font-bold bg-white/10"
+                            : "text-white/80 hover:text-white hover:bg-white/10"
+                        }`}>
+                        <span aria-hidden="true">⚙️</span> Admin
                       </button>
                       <button onClick={() => navigateTo("admin-submissions")}
-                        className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                        📋 Editeurs
+                        className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
+                          currentView === "admin-submissions"
+                            ? "text-white font-bold bg-white/10"
+                            : "text-white/80 hover:text-white hover:bg-white/10"
+                        }`}>
+                        <span aria-hidden="true">📋</span> Soumissions
                       </button>
                     </>
                   )}
                   <button onClick={handleLogout}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-300 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors">
-                    🚪 Déconnexion
+                    className="w-full text-left px-4 py-3 min-h-[44px] text-sm font-semibold text-red-300 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors">
+                    <span aria-hidden="true">🚪</span> Déconnexion
                   </button>
                 </>
               ) : (
                 <button onClick={() => navigateTo("prescriber-auth")}
-                  className="w-full text-left px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                  🩺 Prescripteur
+                  className={`w-full text-left px-4 py-3 min-h-[44px] text-sm font-semibold rounded-lg transition-colors ${
+                    currentView === "prescriber-auth"
+                      ? "text-white font-bold bg-white/10"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  }`}>
+                  <span aria-hidden="true">🩺</span> Prescripteur
                 </button>
               )}
             </div>

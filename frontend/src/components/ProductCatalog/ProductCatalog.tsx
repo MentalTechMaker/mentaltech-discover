@@ -1,8 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useProductsStore } from "../../store/useProductsStore";
+import { useAppStore } from "../../store/useAppStore";
 import { ProductCatalogCard } from "./ProductCatalogCard";
 import { FilterSection } from "./FilterSection";
 import { setPageMeta, setCanonical } from "../../utils/meta";
+
+const LAUNCH_THRESHOLD = 10;
 
 export interface Filters {
   search: string;
@@ -17,12 +20,14 @@ export interface Filters {
 const INSTITUTIONAL_AUDIENCES = new Set(['entreprise', 'etablissement-sante']);
 
 export const ProductCatalog: React.FC = () => {
+  const setView = useAppStore((s) => s.setView);
+
   useEffect(() => {
     setPageMeta(
       "Catalogue des solutions",
       "Explorez toutes les solutions digitales de sante mentale : applications, therapies en ligne, meditation, TCC. Filtres par type, audience, tarif et label qualite."
     );
-    setCanonical("/catalog");
+    setCanonical("/catalogue");
   }, []);
 
   const [filters, setFilters] = useState<Filters>({
@@ -181,6 +186,33 @@ export const ProductCatalog: React.FC = () => {
     );
   }
 
+  if (allProducts.length === 0) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-16">
+        <div className="max-w-lg w-full text-center space-y-6">
+          <div className="text-6xl">🔨</div>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary mb-3">Catalogue en cours de construction</h1>
+            <p className="text-text-secondary leading-relaxed">
+              Nous référençons actuellement les premières solutions du catalogue. Les éditeurs du Collectif MentalTech sont en train de soumettre leurs solutions.
+            </p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-left">
+            <p className="text-sm font-semibold text-blue-900 mb-1">Vous êtes éditeur de solution santé mentale ?</p>
+            <p className="text-sm text-blue-800">Soumettez votre solution en 15 minutes pour être parmi les premiers référencés.</p>
+          </div>
+          <button
+            onClick={() => setView("public-submission")}
+            className="inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+          >
+            <span>➕</span>
+            <span>Soumettre votre solution</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
@@ -212,6 +244,25 @@ export const ProductCatalog: React.FC = () => {
             <span className="text-text-secondary ml-2">total</span>
           </div>
         </div>
+
+        {allProducts.length < LAUNCH_THRESHOLD && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="font-semibold text-amber-900 text-sm">
+                Catalogue en cours de construction — {allProducts.length} solution{allProducts.length > 1 ? "s" : ""} référencée{allProducts.length > 1 ? "s" : ""}
+              </p>
+              <p className="text-amber-800 text-xs mt-0.5">
+                Nous enrichissons le catalogue chaque semaine. Revenez bientôt pour plus de solutions.
+              </p>
+            </div>
+            <button
+              onClick={() => setView("public-submission")}
+              className="flex-shrink-0 text-xs font-bold bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors whitespace-nowrap"
+            >
+              ➕ Soumettre une solution
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-80 flex-shrink-0">

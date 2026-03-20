@@ -6,7 +6,7 @@ export const LegalNotice: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
   useEffect(() => {
-    setPageMeta("Mentions legales");
+    setPageMeta("Mentions légales");
     setCanonical("/legal");
   }, []);
 
@@ -182,10 +182,7 @@ export const LegalNotice: React.FC = () => {
               Cookies
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Ce site n'utilise aucun cookie de tracking, publicitaire ou
-              analytique. Le stockage local du navigateur peut être utilisé
-              temporairement pour sauvegarder votre progression dans le
-              questionnaire.
+              Ce site n'utilise aucun cookie de tracking, publicitaire ou de profilage. Les statistiques de frequentation sont collectees de maniere anonyme via Plausible Analytics, un outil respectueux de la vie privee qui fonctionne sans cookies et sans collecte de donnees personnelles.
             </p>
             <p className="text-text-secondary leading-relaxed text-sm">
               Les prescripteurs connectés disposent d'un cookie de session

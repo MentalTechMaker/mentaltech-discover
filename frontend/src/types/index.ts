@@ -43,12 +43,14 @@ export interface Product {
   isMentaltechMember?: boolean;
   isVisible?: boolean;
   companyDefunct?: boolean;
+  isDemo?: boolean;
   pricing?: {
     model?: 'free' | 'freemium' | 'subscription' | 'per-session' | 'enterprise' | 'custom';
     amount?: string;
     details?: string;
   };
   lastUpdated?: string; // YYYY-MM-DD
+  updatedAt?: string; // ISO datetime, auto-updated by DB
   recommendationScore?: number;
   scoring?: {
     security: number | null;
@@ -85,32 +87,6 @@ export interface RecommendationResult {
 
 export type UserType = 'individual' | 'company' | 'health-decision-maker';
 
-export type SubmissionStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
-
-export interface ProductSubmission {
-  id: string;
-  publisherId: string;
-  productId: string | null;
-  status: SubmissionStatus;
-  name: string | null;
-  type: string | null;
-  tagline: string | null;
-  description: string | null;
-  url: string | null;
-  logo: string | null;
-  tags: string[];
-  audience: string[];
-  problemsSolved: string[];
-  pricingModel: string | null;
-  pricingAmount: string | null;
-  pricingDetails: string | null;
-  protocolAnswers: Record<string, Record<string, unknown>>;
-  adminNotes: string | null;
-  reviewedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export type PublicSubmissionStatus = 'pending_email' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
 
 export interface PublicSubmission {
@@ -132,6 +108,7 @@ export interface PublicSubmission {
   pricingDetails: string | null;
   protocolAnswers: Record<string, Record<string, unknown>>;
   collectifRequested: boolean;
+  collectifCaRange: string | null;
   collectifStatus: string;
   collectifContactEmail: string | null;
   adminNotes: string | null;
@@ -157,4 +134,4 @@ export interface HealthProfApplication {
   updatedAt: string;
 }
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'register-publisher' | 'publisher-dashboard' | 'publisher-submission' | 'admin-submissions' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'admin-submissions' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';
