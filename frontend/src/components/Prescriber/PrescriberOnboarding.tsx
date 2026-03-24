@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { useProductsStore } from '../../store/useProductsStore';
 
 interface Props {
   onClose: () => void;
@@ -8,10 +7,6 @@ interface Props {
 
 export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
   const setView = useAppStore((s) => s.setView);
-  const products = useProductsStore((s) => s.products);
-  const productCount = products.filter((p) => !p.companyDefunct).length;
-  const roundedCount = Math.floor(productCount / 10) * 10;
-  const countLabel = roundedCount > 0 ? `Plus de ${roundedCount}` : 'Des dizaines de';
 
   const STEPS = [
     {

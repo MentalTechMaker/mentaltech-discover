@@ -148,11 +148,10 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const loadedAt = useRef(Date.now() / 1000);
 
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const readOnly = false;
-  const [certified, setCertified] = useState(false);
 
   // Basic info state
   const [name, setName] = useState("");
