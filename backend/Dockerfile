@@ -1,6 +1,8 @@
 FROM python:3.11-slim
 
-RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
+RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser && \
+    mkdir -p /var/log/mentaltech /tmp/uploads && \
+    chown appuser:appuser /var/log/mentaltech /tmp/uploads
 
 WORKDIR /app
 
