@@ -7,6 +7,7 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
   'about': '/notre-demarche',
   'methodology': '/methodologie',
   'quiz': '/questionnaire',
+  'results': '/resultats',
   'public-submission': '/soumettre-solution',
   'health-pro-application': '/pro-sante',
   'join-collective': '/rejoindre',
@@ -15,22 +16,16 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
 };
 
 const URL_TO_VIEW: Record<string, AppView> = {
-  // Nouveaux
   'catalogue': 'catalog',
   'notre-demarche': 'about',
   'methodologie': 'methodology',
   'questionnaire': 'quiz',
-  // Anciens (backward compat)
-  'catalog': 'catalog',
-  'about': 'about',
-  'methodology': 'methodology',
-  'quiz': 'quiz',
-  // Existants
   'soumettre-solution': 'public-submission',
   'pro-sante': 'health-pro-application',
   'rejoindre': 'join-collective',
   'confirmer-soumission': 'confirm-submission',
   'confirmer-candidature': 'confirm-health-pro',
+  'resultats': 'results',
 };
 
 // Encode/decode quiz answers into URL search params for result sharing
@@ -137,7 +132,7 @@ export const useAppStore = create<AppState>((set) => ({
     if (typeof window !== 'undefined') {
       const state = useAppStore.getState();
       const params = encodeAnswersToParams(state.answers, state.userType);
-      window.history.replaceState({ view: 'results' }, '', `/results?${params}`);
+      window.history.replaceState({ view: 'results' }, '', `/resultats?${params}`);
     }
   },
 
@@ -190,13 +185,10 @@ function parsePathView(): { view: AppView; productId?: string } {
   }
 
   const validViews: AppView[] = [
-    'landing', 'quiz', 'results', 'privacy', 'legal', 'catalog',
-    'methodology', 'about', 'faq', 'login', 'register', 'register-prescriber',
+    'landing', 'privacy', 'legal',
+    'faq', 'login', 'register', 'register-prescriber',
     'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
     'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
-    'admin-submissions',
-    'public-submission', 'health-pro-application', 'confirm-submission', 'confirm-health-pro',
-    'join-collective',
   ];
   if (validViews.includes(pathname as AppView)) {
     return { view: pathname as AppView };
@@ -228,7 +220,7 @@ export function initializeAppStore(): (() => void) | undefined {
   // On initial load, detect path-based deep links (e.g. /verify-email?token=... or /product/some-id)
   const initial = parsePathView();
   if (initial.view === 'results' && window.location.search) {
-    // Shared result link — decode answers and schedule recommendation computation
+    // Shared result link - decode answers and schedule recommendation computation
     const decoded = decodeParamsToAnswers(window.location.search);
     if (decoded) {
       useAppStore.setState({

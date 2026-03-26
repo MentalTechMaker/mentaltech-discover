@@ -134,4 +134,4 @@ export interface HealthProfApplication {
   updatedAt: string;
 }
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'admin-submissions' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';

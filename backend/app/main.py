@@ -128,6 +128,27 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
+@app.on_event("startup")
+def cleanup_expired_prescriptions():
+    """RGPD: delete prescriptions expired for more than 7 days."""
+    from .database import SessionLocal
+    from .models.prescription import Prescription
+    from datetime import datetime, timedelta, timezone
+
+    db = SessionLocal()
+    try:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+        deleted = db.query(Prescription).filter(Prescription.expires_at < cutoff).delete()
+        db.commit()
+        if deleted:
+            logger.info(f"RGPD cleanup: deleted {deleted} expired prescriptions")
+    except Exception:
+        db.rollback()
+        logger.error("Failed to cleanup expired prescriptions", exc_info=True)
+    finally:
+        db.close()
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
@@ -149,7 +170,27 @@ def sitemap_xml():
 
     base = "https://discover.mentaltech.fr"
     today = date.today().isoformat()
+    static_pages = [
+        ("/", "weekly", "1.0"),
+        ("/catalogue", "weekly", "0.9"),
+        ("/rejoindre", "monthly", "0.8"),
+        ("/notre-demarche", "monthly", "0.7"),
+        ("/methodologie", "monthly", "0.7"),
+        ("/faq", "monthly", "0.6"),
+        ("/soumettre-solution", "monthly", "0.6"),
+        ("/privacy", "yearly", "0.3"),
+        ("/legal", "yearly", "0.3"),
+    ]
     urls = []
+    for path, freq, priority in static_pages:
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{base}{path}</loc>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"    <changefreq>{freq}</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            f"  </url>"
+        )
     for p in products_list:
         lastmod = p.updated_at.date().isoformat() if p.updated_at else today
         urls.append(

@@ -90,6 +90,7 @@ class ProductUpdate(BaseModel):
     isMentaltechMember: bool | None = None
     isVisible: bool | None = None
     companyDefunct: bool | None = None
+    isDemo: bool | None = None
     pricing: PricingSchema | None = None
     lastUpdated: str | None = None
     scoreSecurity: int | None = Field(None, ge=0, le=5)

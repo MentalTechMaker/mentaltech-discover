@@ -32,7 +32,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
-        {!product.lastUpdated && (
+        {product.isDemo && (
+          <div className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-semibold rounded-full shadow-sm">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Demo
+          </div>
+        )}
+        {!product.lastUpdated && !product.isDemo && (
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 text-orange-700 text-xs font-semibold rounded-full backdrop-blur-sm shadow-sm">
             <svg
               className="w-3.5 h-3.5"
@@ -76,7 +84,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                 onClick={() => setShowScoreDetail((v) => !v)}
                 className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
                 style={{ backgroundColor: label.bgColor, color: label.color }}
-                title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} — Cliquez pour voir le détail`}
+                title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} - Cliquez pour voir le détail`}
               >
                 {label.grade}
               </button>

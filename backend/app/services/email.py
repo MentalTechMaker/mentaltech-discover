@@ -96,7 +96,6 @@ async def send_verification_email(email: str, name: str, user_id: str) -> None:
 
 async def send_prescription_email(
     patient_email: str,
-    patient_name: str | None,
     prescriber_name: str,
     prescriber_profession: str | None,
     prescriber_organization: str | None,
@@ -107,7 +106,6 @@ async def send_prescription_email(
 ) -> None:
     template = jinja_env.get_template("prescription.html")
     html = template.render(
-        patient_name=patient_name or "Cher patient",
         prescriber_name=prescriber_name,
         prescriber_profession=prescriber_profession,
         prescriber_organization=prescriber_organization,
@@ -135,13 +133,11 @@ async def send_prescription_email(
 async def send_prescription_viewed_email(
     prescriber_email: str,
     prescriber_name: str,
-    patient_name: str | None,
     prescription_link: str,
 ) -> None:
     template = jinja_env.get_template("prescription_viewed.html")
     html = template.render(
         prescriber_name=prescriber_name,
-        patient_name=patient_name or "Votre patient",
         prescription_link=prescription_link,
     )
     message = MessageSchema(

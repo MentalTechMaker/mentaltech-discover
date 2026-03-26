@@ -2,8 +2,7 @@ from datetime import date, datetime, timezone
 
 from sqlalchemy import String, Text, Boolean, Date, DateTime, Enum as SAEnum, SmallInteger
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-
+from ..compat_types import CompatibleArray as ARRAY, CompatibleJSONB as JSONB
 from ..database import Base
 
 import enum
@@ -56,6 +55,7 @@ class Product(Base):
     # Visibility & status
     is_visible: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="true")
     company_defunct: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, server_default="false")
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, server_default="false")
 
     # Quality scoring (0-20 each, nullable = not yet evaluated)
     score_security: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)

@@ -2,12 +2,12 @@ const API_BASE = '/api';
 const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_RETRIES = 1;
 
-// Access token in memory — not persisted to localStorage (XSS-safe)
+// Access token in memory - not persisted to localStorage (XSS-safe)
 // Refresh token lives in HttpOnly cookie set by the backend
 let _accessToken: string | null = null;
 
 // Non-sensitive session flag: just tells us whether to attempt a refresh on page load
-// Does NOT contain the token itself — safe in localStorage
+// Does NOT contain the token itself - safe in localStorage
 const SESSION_FLAG = 'has_session';
 
 let onUnauthorized: (() => void) | null = null;

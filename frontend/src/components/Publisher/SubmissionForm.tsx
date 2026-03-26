@@ -49,7 +49,7 @@ const PRICING_MODELS = [
   { value: "free", label: "Gratuit" },
   { value: "freemium", label: "Freemium" },
   { value: "subscription", label: "Abonnement" },
-  { value: "per-session", label: "A la seance" },
+  { value: "per-session", label: "À la séance" },
   { value: "enterprise", label: "Entreprise" },
   { value: "custom", label: "Sur mesure" },
 ];
@@ -75,7 +75,7 @@ function computePillarScore(pillarId: string, answers: Record<string, Record<str
   // Skip if nothing has been answered in this pillar
   const hasAnyAnswer = pillar.subCriteria.some(sc => {
     const a = answers[sc.id];
-    return a && Object.values(a).some(v => v !== "" && v !== false && v !== null && v !== undefined);
+    return a && Object.entries(a).some(([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined);
   });
   if (!hasAnyAnswer) return "";
 
@@ -93,7 +93,7 @@ function computePillarScore(pillarId: string, answers: Record<string, Record<str
 
     if (visibleQuestions.length === 0) continue;
 
-    // Only select and checkbox carry semantic quality — text/url/email/number are documentation/proof
+    // Only select and checkbox carry semantic quality - text/url/email/number are documentation/proof
     const scoringQuestions = visibleQuestions.filter(q => q.type === 'select' || q.type === 'checkbox');
     if (scoringQuestions.length === 0) continue;
 
@@ -126,7 +126,7 @@ function computePillarJustification(pillarId: string, answers: Record<string, Re
   if (!pillar) return "";
   const answered = pillar.subCriteria.filter(sc => {
     const a = answers[sc.id];
-    return a && Object.values(a).some(v => v !== "" && v !== false && v !== null && v !== undefined);
+    return a && Object.entries(a).some(([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined);
   });
   if (answered.length === 0) return "";
   return answered.map(sc => `- ${sc.title}`).join("\n");
@@ -141,7 +141,7 @@ interface Props {
 }
 
 const DRAFT_KEY = 'mentaltech-submission-draft';
-const STEP_NAMES = ["Informations de base", "Protocole d'evaluation", "Recapitulatif"];
+const STEP_NAMES = ["Informations de base", "Protocole d'évaluation", "Récapitulatif"];
 const TOTAL_STEPS = STEP_NAMES.length;
 
 export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, editProduct, publicMode = false, submissionId }) => {
@@ -480,8 +480,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const answeredSubCriteriaCount = allSubCriteria.filter((sc) => {
     const answers = protocolAnswers[sc.id];
     if (!answers) return false;
-    return Object.values(answers).some(
-      (v) => v !== "" && v !== false && v !== null && v !== undefined
+    return Object.entries(answers).some(
+      ([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined
     );
   }).length;
 
@@ -540,8 +540,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {showDraftPrompt && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-blue-900">Brouillon trouve</p>
-              <p className="text-xs text-blue-700">Vous avez un brouillon sauvegarde. Souhaitez-vous le reprendre ?</p>
+              <p className="text-sm font-semibold text-blue-900">Brouillon trouvé</p>
+              <p className="text-xs text-blue-700">Vous avez un brouillon sauvegardé. Souhaitez-vous le reprendre ?</p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <button
@@ -578,7 +578,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>Etape {step} sur {TOTAL_STEPS}</span>
+            <span>Étape {step} sur {TOTAL_STEPS}</span>
             <span>{STEP_NAMES[step - 1]}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -595,7 +595,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Brouillon sauvegarde
+            Brouillon sauvegardé
           </div>
         )}
 
@@ -603,8 +603,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         <div className="flex gap-1 mb-8">
           {[
             { n: 1, label: "Informations de base" },
-            { n: 2, label: "Protocole d'evaluation" },
-            { n: 3, label: "Recapitulatif" },
+            { n: 2, label: "Protocole d'évaluation" },
+            { n: 3, label: "Récapitulatif" },
           ].map(({ n, label }) => (
             <button
               key={n}
@@ -664,7 +664,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 disabled={readOnly}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white disabled:bg-gray-50"
               >
-                <option value="">Selectionnez un type</option>
+                <option value="">Sélectionnez un type</option>
                 {PRODUCT_TYPES.map((t) => (
                   <option key={t} value={t}>
                     {t}
@@ -698,7 +698,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 disabled={readOnly}
                 rows={4}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
-                placeholder="Decrivez votre solution en detail..."
+                placeholder="Décrivez votre solution en détail..."
               />
               <p className="text-xs text-text-secondary mt-1">{description.length} car.</p>
             </div>
@@ -724,7 +724,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 </p>
                 <div className="flex items-center gap-4">
                   <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
-                    {logoUploading ? "Upload en cours..." : "Choisir un fichier"}
+                    {logoUploading ? "Chargement du logo..." : "Choisir un fichier"}
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
@@ -792,7 +792,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               <div className="flex flex-wrap gap-2">
                 {([
                   { value: "entreprise", label: "Entreprises" },
-                  { value: "etablissement-sante", label: "Etablissements de sante" },
+                  { value: "etablissement-sante", label: "Établissements de santé" },
                 ] as const).map((opt) => (
                   <button
                     key={opt.value}
@@ -837,7 +837,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-1">
-                  Modele tarifaire
+                  Modèle tarifaire
                 </label>
                 <select
                   value={pricingModel}
@@ -845,7 +845,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                   disabled={readOnly}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white disabled:bg-gray-50"
                 >
-                  <option value="">Selectionnez...</option>
+                  <option value="">Sélectionnez...</option>
                   {PRICING_MODELS.map((m) => (
                     <option key={m.value} value={m.value}>
                       {m.label}
@@ -870,7 +870,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
-                Details tarifaires
+                Détails tarifaires
               </label>
               <textarea
                 value={pricingDetails}
@@ -878,7 +878,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 disabled={readOnly}
                 rows={2}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
-                placeholder="Decrivez les differentes formules..."
+                placeholder="Décrivez les différentes formules..."
               />
             </div>
 
@@ -951,7 +951,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                   </p>
                   <div className="flex items-center gap-4">
                     <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
-                      {logoUploading ? "Upload en cours..." : "Choisir un fichier"}
+                      {logoUploading ? "Chargement du logo..." : "Choisir un fichier"}
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/svg+xml,image/webp"
@@ -1054,7 +1054,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                                     disabled={readOnly}
                                     className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white text-sm disabled:bg-gray-50"
                                   >
-                                    <option value="">Selectionnez...</option>
+                                    <option value="">Sélectionnez...</option>
                                     {q.options?.map((opt) => (
                                       <option key={opt.value} value={opt.value}>
                                         {opt.label}
@@ -1094,6 +1094,19 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                             </div>
                           );
                         })}
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <label className="block text-sm font-semibold text-text-primary mb-1">
+                            Arguments a mettre en avant
+                          </label>
+                          <textarea
+                            value={(getProtocolAnswer(sc.id, "_arguments") as string) || ""}
+                            onChange={(e) => setProtocolAnswer(sc.id, "_arguments", e.target.value)}
+                            disabled={readOnly}
+                            placeholder="Arguments a mettre en avant pour ce critere"
+                            rows={3}
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm disabled:bg-gray-50 resize-y"
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1206,7 +1219,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {step === 3 && (
           <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
             <h3 className="text-lg font-bold text-text-primary">
-              Recapitulatif de la soumission
+              Récapitulatif de la soumission
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1247,11 +1260,11 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             <div>
               <p className="text-xs text-text-secondary font-semibold mb-1">
-                Protocole d'evaluation
+                Protocole d'évaluation
               </p>
               <p className="text-sm text-text-primary">
-                {answeredSubCriteriaCount}/{allSubCriteria.length} sous-criteres
-                avec au moins une reponse
+                {answeredSubCriteriaCount}/{allSubCriteria.length} sous-critères
+                avec au moins une réponse
               </p>
             </div>
 
@@ -1371,7 +1384,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               onClick={() => setStep(step - 1)}
               className="px-6 py-3 bg-gray-100 text-text-primary rounded-lg font-semibold hover:bg-gray-200"
             >
-              Precedent
+              Précédent
             </button>
           ) : (
             <div />

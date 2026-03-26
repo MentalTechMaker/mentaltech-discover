@@ -51,6 +51,24 @@
     }
     </script>
 
+    <!-- Structured data: WebSite + SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "MentalTech Discover",
+      "url": "https://discover.mentaltech.fr/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://discover.mentaltech.fr/catalog?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://plausible.io/js/pa-lRzI12Da2RVbd6brhmLIF.js"></script>
     <script>

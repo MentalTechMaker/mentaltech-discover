@@ -25,7 +25,7 @@ export const ProductCatalog: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Catalogue des solutions",
-      "Explorez toutes les solutions digitales de sante mentale : applications, therapies en ligne, meditation, TCC. Filtres par type, audience, tarif et label qualite."
+      "Explorez toutes les solutions digitales de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience, tarif et label qualité."
     );
     setCanonical("/catalogue");
   }, []);
@@ -249,7 +249,7 @@ export const ProductCatalog: React.FC = () => {
           <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
               <p className="font-semibold text-amber-900 text-sm">
-                Catalogue en cours de construction — {allProducts.length} solution{allProducts.length > 1 ? "s" : ""} référencée{allProducts.length > 1 ? "s" : ""}
+                Catalogue en cours de construction - {allProducts.length} solution{allProducts.length > 1 ? "s" : ""} référencée{allProducts.length > 1 ? "s" : ""}
               </p>
               <p className="text-amber-800 text-xs mt-0.5">
                 Nous enrichissons le catalogue chaque semaine. Revenez bientôt pour plus de solutions.
@@ -294,7 +294,7 @@ export const ProductCatalog: React.FC = () => {
                 </select>
               </div>
 
-              <div className="bg-white border-2 border-gray-200 rounded-lg p-1 flex gap-1">
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-1 hidden sm:flex gap-1">
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`px-4 py-2 rounded ${

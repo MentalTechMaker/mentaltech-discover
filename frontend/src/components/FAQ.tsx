@@ -9,16 +9,16 @@ interface FAQItem {
 }
 
 const FAQ_SCHEMA_DATA = [
-  { q: "Comment sont selectionnees les solutions ?", a: "Nous referençons les membres du Collectif MentalTech qui respectent nos criteres : conformite RGPD, hebergement HDS si donnees de sante, transparence tarifaire, entreprise active." },
-  { q: "Comment fonctionne l'algorithme de recommandation ?", a: "Nous analysons 5 dimensions : public cible, problematiques, preferences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance." },
-  { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de sante peuvent creer un compte prescripteur gratuit." },
-  { q: "Mes donnees sont-elles collectees ?", a: "Pour les visiteurs, aucune donnee n'est collectee. Les reponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectes de maniere securisee." },
-  { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisees uniquement pour ameliorer le service." },
-  { q: "Mes donnees de quiz sont-elles conservees ?", a: "Non. Vos reponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyees a nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire." },
-  { q: "Est-ce un dispositif medical ?", a: "Non. MentalTech Discover est un outil de decouverte, pas un dispositif medical certifie. Il aide a explorer les solutions disponibles sans fournir de service medical." },
-  { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prevention du suicide), le 15 (SAMU) ou le 112 (urgences europeennes). Ces numeros sont gratuits et disponibles 24h/24." },
-  { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est disponible en V2 : tableau de bord, prescriptions numeriques, veille solutions, comparateur. Gratuit, inscription requise." },
-  { q: "Comment etre reference sur MentalTech Discover ?", a: "Toute solution peut etre soumise via notre formulaire public (bouton 'Referencer' dans le menu). Elle sera evaluee selon notre protocole de qualite. Les membres du Collectif MentalTech beneficient du badge niveau 2." },
+  { q: "Comment sont sélectionnées les solutions ?", a: "Nous référençons les membres du Collectif MentalTech qui respectent nos critères : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active." },
+  { q: "Comment fonctionne l'algorithme de recommandation ?", a: "Nous analysons 5 dimensions : public cible, problématiques, préférences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance." },
+  { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de santé peuvent créer un compte prescripteur gratuit." },
+  { q: "Mes données sont-elles collectées ?", a: "Pour les visiteurs, aucune donnée n'est collectée. Les réponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectés de manière sécurisée." },
+  { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisées uniquement pour améliorer le service." },
+  { q: "Mes données de quiz sont-elles conservées ?", a: "Non. Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire." },
+  { q: "Est-ce un dispositif médical ?", a: "Non. MentalTech Discover est un outil de découverte, pas un dispositif médical certifié. Il aide à explorer les solutions disponibles sans fournir de service médical." },
+  { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prévention du suicide), le 15 (SAMU) ou le 112 (urgences européennes). Ces numéros sont gratuits et disponibles 24h/24." },
+  { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est maintenant disponible : tableau de bord, prescriptions numériques, veille solutions, comparateur. Gratuit, inscription requise." },
+  { q: "Comment être référencé sur MentalTech Discover ?", a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2." },
   { q: "Le code est-il open-source ?", a: "Oui, transparence totale. Le code est disponible sur GitHub : github.com/mentaltechmaker/mentaltech-discover sous licence MIT." },
 ];
 
@@ -336,7 +336,7 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            <strong>Oui !</strong> L'espace prescripteur est disponible en V2.
+            <strong>Oui !</strong> L'espace prescripteur est maintenant disponible.
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Tableau de bord personnel</li>
@@ -345,7 +345,7 @@ export const FAQ: React.FC = () => {
             <li>Comparateur de solutions côte à côte</li>
           </ul>
           <p className="mt-2">
-            → <strong>Gratuit</strong> — créez votre compte sur l'{" "}
+            → <strong>Gratuit</strong> - créez votre compte sur l'{" "}
             <button
               onClick={() => setView("prescriber-auth")}
               className="text-primary hover:underline font-semibold"

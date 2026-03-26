@@ -151,7 +151,7 @@ export const LegalNotice: React.FC = () => {
             </h2>
             <p className="text-text-secondary leading-relaxed">
               Conformément au RGPD, les visiteurs anonymes n'ont{" "}
-              <strong>aucune donnée collectée</strong> — le questionnaire reste
+              <strong>aucune donnée collectée</strong> - le questionnaire reste
               dans votre navigateur.
             </p>
             <p className="text-text-secondary leading-relaxed">
@@ -182,7 +182,7 @@ export const LegalNotice: React.FC = () => {
               Cookies
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Ce site n'utilise aucun cookie de tracking, publicitaire ou de profilage. Les statistiques de frequentation sont collectees de maniere anonyme via Plausible Analytics, un outil respectueux de la vie privee qui fonctionne sans cookies et sans collecte de donnees personnelles.
+              Ce site n'utilise aucun cookie de tracking, publicitaire ou de profilage. Les statistiques de fréquentation sont collectées de manière anonyme via Plausible Analytics, un outil respectueux de la vie privée qui fonctionne sans cookies et sans collecte de données personnelles.
             </p>
             <p className="text-text-secondary leading-relaxed text-sm">
               Les prescripteurs connectés disposent d'un cookie de session

@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 
 from sqlalchemy import String, Text, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
+from ..compat_types import CompatibleUUID as UUID
+from ..compat_types import CompatibleArray as ARRAY, CompatibleJSONB as JSONB
 
 from ..database import Base
 

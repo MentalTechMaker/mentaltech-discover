@@ -90,7 +90,7 @@ Chaque solution dispose d'une page dédiée accessible depuis le catalogue ou le
 
 ### 🔐 Authentification et Administration
 
-- **Inscription / Connexion** - JWT avec access token (30 min) + refresh token (7 jours)
+- **Inscription / Connexion** - JWT avec access token (30 min) + refresh token (7 jours, HttpOnly cookie)
 - **Page profil** - Consultation des informations du compte et changement de mot de passe
 - **Vérification email** - Email de confirmation envoyé à l'inscription avec lien sécurisé (24h)
 - **Mot de passe oublié** - Réinitialisation par email avec lien temporaire (1h)
@@ -286,7 +286,7 @@ uvicorn app.main:app --reload --port 8000
 ### Pour les utilisateurs
 
 1. **Questionnaire** - Cliquez sur "Trouver ma solution" depuis la page d'accueil, répondez aux questions en 3-5 minutes
-2. **Résultats** - Consultez les solutions recommandées, triées par pertinence — utilisez les filtres Gratuit/Payant et Autonomie/Humain pour affiner
+2. **Résultats** - Consultez les solutions recommandées, triées par pertinence - utilisez les filtres Gratuit/Payant et Autonomie/Humain pour affiner
 3. **Catalogue** - Cliquez sur "Explorer toutes les solutions" pour parcourir le catalogue avec les filtres (type, audience, tarification, label qualité)
 4. **Fiche produit** - Cliquez sur une solution pour voir le détail : scoring, description, tarification, lien direct
 
@@ -301,11 +301,11 @@ uvicorn app.main:app --reload --port 8000
 7. **Veille** - Consultez les mises à jour des solutions (tarifs, études, scores)
 8. **Comparateur** - Comparez 2-4 solutions côte-à-côte sur tous les critères
 
-### Pour les editeurs (soumission publique)
+### Pour les éditeurs (soumission publique)
 
-1. **Acceder au formulaire** - Cliquez sur "Referencer" dans le header ou via la page "Rejoindre le Collectif"
-2. **Remplir le formulaire** - Suivez les etapes : informations produit, tarification, protocole d'evaluation
-3. **Confirmer par email** - Un lien de confirmation (48h) vous est envoye pour valider la soumission
+1. **Accéder au formulaire** - Cliquez sur "Référencer" dans le header ou via la page "Rejoindre le Collectif"
+2. **Remplir le formulaire** - Suivez les étapes : informations produit, tarification, protocole d'évaluation
+3. **Confirmer par email** - Un lien de confirmation (48h) vous est envoyé pour valider la soumission
 4. **Validation admin** - Un administrateur examine et valide (ou refuse) votre soumission
 
 ### Pour les administrateurs
@@ -402,6 +402,7 @@ mentaltech-discover/
 | `DELETE` | `/api/prescriptions/{id}` | Prescriber | Supprimer une prescription |
 | `POST` | `/api/prescriptions/{id}/renew` | Prescriber | Renouveler une prescription (+30 jours, nouveau lien) |
 | `GET` | `/api/prescriptions/view/{token}` | - | Vue publique patient (marque comme consultée à la 1ère visite) |
+| `DELETE` | `/api/prescriptions/revoke/{token}` | - | Suppression par le patient (RGPD droit à l'effacement) |
 | | | | |
 | **Espace Prescripteur** | | | |
 | `GET` | `/api/prescriber/favorites` | Prescriber | Lister ses favoris |
@@ -547,16 +548,27 @@ Chaque solution comprend :
 
 - ✅ **Analytics sans cookies** (Plausible)
 - ✅ **Pas de tracking tiers** - Aucun pixel externe
-- ✅ **Mots de passe hashés** - bcrypt
-- ✅ **JWT sécurisés** - Access token courte durée + refresh
+- ✅ **Mots de passe hashés** - bcrypt avec protection timing attack
+- ✅ **JWT sécurisés** - Access token en mémoire (pas localStorage) + refresh HttpOnly cookie
 - ✅ **Vérification email** - Tokens signés avec expiration
 - ✅ **Anti-énumération** - Réponse identique que l'email existe ou non (forgot password)
+- ✅ **Rate limiting** - Global (200/min) + par endpoint (register 5/min, login 10/min, etc.)
+- ✅ **Security headers** - CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options
 - ✅ **Open source** - Code transparent sur GitHub
+
+### RGPD
+
+- ✅ **Zéro donnée patient en base** - L'email patient est purgé après envoi de la prescription
+- ✅ **Droit à l'effacement** - Le patient peut supprimer sa prescription en un clic
+- ✅ **Suppression automatique** - Les prescriptions expirées sont supprimées sous 7 jours
+- ✅ **Quiz anonyme** - Les réponses restent dans le navigateur, jamais envoyées au serveur
+- ✅ **Liens privacy/legal** - Présents dans tous les emails transactionnels
 
 ### Responsabilité
 
 - **Disclaimers** - Avertissements médicaux compacts (toujours visibles)
 - **Numéros d'urgence** - 3114, 15, 112 affichés
+- **Bannière de crise** - Détection de pensées sombres avec ressources immédiates
 - **Limitations claires** - Outil de découverte uniquement
 
 ---
@@ -610,6 +622,71 @@ Premier écosystème français de santé mentale digitale
 
 ---
 
+## 🚀 Déploiement en production
+
+### Prérequis serveur
+
+- Docker + Docker Compose
+- Domaine pointé vers le serveur (ex: discover.mentaltech.fr)
+- Reverse proxy HTTPS (Caddy, Traefik ou Nginx + Let's Encrypt)
+
+### Étapes
+
+```bash
+# 1. Cloner et configurer
+git clone https://github.com/mentaltechmaker/mentaltech-discover.git
+cd mentaltech-discover
+cp .env.example .env
+
+# 2. Générer les vrais secrets
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"   # -> SECRET_KEY
+python3 -c "import secrets; print(secrets.token_urlsafe(24))"   # -> POSTGRES_PASSWORD
+
+# 3. Éditer .env avec les valeurs de production
+#    SECRET_KEY=<valeur générée>
+#    POSTGRES_PASSWORD=<valeur générée>
+#    DATABASE_URL=postgresql://mentaltech:<password>@db:5432/mentaltech
+#    CORS_ORIGINS=https://discover.mentaltech.fr
+#    FRONTEND_URL=https://discover.mentaltech.fr
+#    MAIL_USERNAME=<email SMTP>
+#    MAIL_PASSWORD=<app password SMTP>
+
+# 4. Lancer
+docker compose up -d --build
+
+# 5. Vérifier
+docker compose ps                    # 3 services healthy
+curl http://localhost:3033/api/health # 200
+
+# 6. Créer le premier admin
+docker compose exec backend python -m scripts.create_admin
+```
+
+### Backup et restauration
+
+```bash
+# Backup quotidien (ajouter au cron)
+./scripts/backup.sh
+
+# Restauration
+./scripts/restore.sh backups/backup_YYYYMMDD.sql.gz
+```
+
+### Tests
+
+```bash
+# Backend (27 tests)
+docker compose exec backend python -m pytest
+
+# Frontend (81 tests)
+cd frontend && bun test tests/v2-auto.test.ts
+
+# TypeScript
+cd frontend && npx tsc --noEmit
+```
+
+---
+
 ## 🗺️ Roadmap
 
 ### ✅ V1.0 - Frontend (Novembre 2025)
@@ -622,7 +699,7 @@ Premier écosystème français de santé mentale digitale
 - [x] Analytics privacy-first (Plausible)
 - [x] Open source (MIT)
 
-### ✅ V2.0 - Plateforme Complete (Mars 2026)
+### ✅ V2.0 - Plateforme Complète (Mars 2026)
 
 #### Architecture & Infrastructure
 - [x] Architecture monorepo (frontend / backend / database)
@@ -695,7 +772,7 @@ Premier écosystème français de santé mentale digitale
 - [x] Gestion prescripteurs (valider, revoquer)
 - [x] Emails transactionnels (12 templates)
 
-### 🔮 V3 - Expansion (prevu)
+### 🔮 V3 - Expansion (prévu)
 
 - [ ] Systeme d'abonnement (gratuit / pro / equipe)
 - [ ] Integration paiement (Stripe)
@@ -709,6 +786,6 @@ Premier écosystème français de santé mentale digitale
 
 ---
 
-**Version actuelle** : V2.0.0
-**Derniere mise a jour** : Mars 2026
+**Version actuelle** : V2.1.0
+**Dernière mise à jour** : Mars 2026
 **Status** : Production Ready

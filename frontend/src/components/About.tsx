@@ -81,23 +81,23 @@ export const About: React.FC = () => {
         <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🩺</span>
-            Pour les professionnels de sante
+            Pour les professionnels de santé
           </h2>
           <div className="space-y-4 text-text-secondary leading-relaxed">
             <p className="text-lg italic">
-              Comment recommandez-vous des applications a vos patients aujourd'hui ? De memoire, sans criteres objectifs, sans suivi ?
+              Comment recommandez-vous des applications à vos patients aujourd'hui ? De mémoire, sans critères objectifs, sans suivi ?
             </p>
             <p>
-              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numerique adaptee a chaque patient - parmi un catalogue verifie, score sur 5 piliers, avec une ordonnance numerique que votre patient recoit directement.
+              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numérique adaptée à chaque patient - parmi un catalogue vérifié, score sur 5 piliers, avec une ordonnance numérique que votre patient recoit directement.
             </p>
             <div className="grid md:grid-cols-2 gap-3 mt-4">
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">🏷️</span>
-                <span className="text-sm font-medium">Catalogue verifie A-E</span>
+                <span className="text-sm font-medium">Catalogue vérifié A-E</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">📋</span>
-                <span className="text-sm font-medium">Ordonnance numerique en 30 secondes</span>
+                <span className="text-sm font-medium">Ordonnance numérique en 30 secondes</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">⭐</span>
@@ -105,7 +105,7 @@ export const About: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">⚖️</span>
-                <span className="text-sm font-medium">Comparateur cote-a-cote</span>
+                <span className="text-sm font-medium">Comparateur côte-à-côte</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200 md:col-span-2">
                 <span className="text-xl">🔔</span>
@@ -117,7 +117,7 @@ export const About: React.FC = () => {
                 onClick={() => setView("prescriber-auth")}
                 className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg"
               >
-                Creer mon compte prescripteur gratuitement
+                Créer mon compte prescripteur gratuitement
               </button>
             </div>
           </div>
@@ -205,7 +205,7 @@ export const About: React.FC = () => {
                   Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Notre systeme de scoring qualite est disponible : chaque solution est evaluee sur 5 piliers (securite, efficacite, accessibilite, UX, support) pour un label A a E. Cependant, nous ne sommes pas un organisme de certification officiel.
+                  Notre systeme de scoring qualité est disponible : chaque solution est évaluée sur 5 piliers (sécurité, efficacité, accessibilité, UX, support) pour un label A a E. Cependant, nous ne sommes pas un organisme de certification officiel.
                 </p>
               </div>
             </div>

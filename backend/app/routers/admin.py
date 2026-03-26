@@ -101,6 +101,22 @@ def toggle_product_defunct(
     return product_to_response(product)
 
 
+@router.patch("/products/{product_id}/demo", response_model=ProductResponse)
+def toggle_product_demo(
+    product_id: str,
+    _admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Toggle is_demo for a product."""
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+    product.is_demo = not product.is_demo
+    db.commit()
+    db.refresh(product)
+    return product_to_response(product)
+
+
 # ─── LOGO UPLOAD ────────────────────────────────────────────
 
 @router.post("/upload-logo")

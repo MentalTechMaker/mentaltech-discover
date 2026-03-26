@@ -4,9 +4,6 @@ from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, 
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
 from ..database import get_db
 from ..models.user import User
 from ..config import settings
@@ -35,8 +32,7 @@ from ..services.email import (
     decode_email_token,
 )
 from ..dependencies import get_current_user
-
-limiter = Limiter(key_func=get_remote_address)
+from ..rate_limit import limiter
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 REFRESH_COOKIE_NAME = "refresh_token"
@@ -330,7 +326,8 @@ def reset_password(request: Request, data: ResetPassword, db: Session = Depends(
 
 
 @router.get("/verify-email")
-def verify_email(token: str, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
     user_id = decode_email_token(token, "verify_email")
     if not user_id:
         raise HTTPException(

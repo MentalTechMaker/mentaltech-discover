@@ -27,12 +27,11 @@ function src(file: string)  { return readFileSync(resolve(SRC, file), "utf-8"); 
 describe("T-SEO-1 | sitemap.xml - routes correctes", () => {
   const sitemap = pub("sitemap.xml");
 
-  test("contient /catalog (pas /catalogue)", () => {
-    expect(sitemap).toContain("discover.mentaltech.fr/catalog");
-    expect(sitemap).not.toContain("discover.mentaltech.fr/catalogue");
+  test("contient /catalogue", () => {
+    expect(sitemap).toContain("discover.mentaltech.fr/catalogue");
   });
 
-  const routes = ["/methodology", "/about", "/faq", "/privacy", "/legal"];
+  const routes = ["/methodologie", "/notre-demarche", "/faq", "/privacy", "/legal"];
   for (const route of routes) {
     test(`contient ${route}`, () => {
       expect(sitemap).toContain(`discover.mentaltech.fr${route}`);
@@ -58,10 +57,6 @@ describe("T-SEO-2 | robots.txt - routes privees bloquees", () => {
     "/new-prescription",
     "/comparator",
     "/prescriber-auth",
-    "/register-publisher",
-    "/publisher-dashboard",
-    "/publisher-submission",
-    "/admin-submissions",
     "/reset-password",
     "/verify-email",
     "/veille",

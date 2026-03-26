@@ -150,10 +150,6 @@ export const Header: React.FC = () => {
                           className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
                           <span aria-hidden="true">⚙️</span> Admin
                         </button>
-                        <button onClick={() => navigateTo("admin-submissions")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          <span aria-hidden="true">📋</span> Soumissions
-                        </button>
                       </>
                     )}
                     <div className="border-t border-gray-100 mt-1 pt-1">
@@ -168,7 +164,7 @@ export const Header: React.FC = () => {
             ) : (
               <button
                 onClick={() => setView("prescriber-auth")}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white bg-purple-500 hover:opacity-90 transition-opacity shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-purple-700 bg-white hover:bg-purple-50 transition-colors shadow-sm"
               >
                 <span aria-hidden="true">🩺</span>
                 <span className="hidden lg:inline">Prescripteur</span>
@@ -270,14 +266,6 @@ export const Header: React.FC = () => {
                             : "text-white/80 hover:text-white hover:bg-white/10"
                         }`}>
                         <span aria-hidden="true">⚙️</span> Admin
-                      </button>
-                      <button onClick={() => navigateTo("admin-submissions")}
-                        className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
-                          currentView === "admin-submissions"
-                            ? "text-white font-bold bg-white/10"
-                            : "text-white/80 hover:text-white hover:bg-white/10"
-                        }`}>
-                        <span aria-hidden="true">📋</span> Soumissions
                       </button>
                     </>
                   )}

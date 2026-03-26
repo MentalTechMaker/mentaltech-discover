@@ -14,7 +14,7 @@ const LABEL_CONFIG: Record<string, LabelInfo> = {
 };
 
 const UNRATED: LabelInfo = {
-  grade: "—",
+  grade: "-",
   text: "Non évalué",
   color: "#6B7280",
   bgColor: "#E5E7EB",

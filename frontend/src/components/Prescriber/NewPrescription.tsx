@@ -19,7 +19,6 @@ export const NewPrescription: React.FC = () => {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favoriteProductIds, setFavoriteProductIds] = useState<string[]>([]);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const [patientName, setPatientName] = useState('');
   const [patientEmail, setPatientEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -75,7 +74,6 @@ export const NewPrescription: React.FC = () => {
     try {
       const res = await createPrescription({
         product_ids: selectedProductIds,
-        patient_name: patientName.trim() || undefined,
         patient_email: patientEmail.trim() || undefined,
         message: message.trim() || undefined,
       });
@@ -353,20 +351,6 @@ export const NewPrescription: React.FC = () => {
       </p>
 
       <div>
-        <label htmlFor="patientName" className="block text-sm font-semibold text-text-primary mb-1">
-          Nom du patient (optionnel)
-        </label>
-        <input
-          id="patientName"
-          type="text"
-          value={patientName}
-          onChange={(e) => setPatientName(e.target.value)}
-          placeholder="Prenom et nom"
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-        />
-      </div>
-
-      <div>
         <label htmlFor="patientEmail" className="block text-sm font-semibold text-text-primary mb-1">
           Email du patient (optionnel)
         </label>
@@ -378,6 +362,9 @@ export const NewPrescription: React.FC = () => {
           placeholder="patient@email.com"
           className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
         />
+        <p className="text-xs text-gray-400 mt-1">
+          L'email est utilise uniquement pour envoyer le lien de prescription, puis supprime de nos serveurs.
+        </p>
       </div>
 
       <div>
@@ -527,14 +514,8 @@ export const NewPrescription: React.FC = () => {
         </div>
 
         {/* Patient & message summary */}
-        {(patientName.trim() || patientEmail.trim() || message.trim()) && (
+        {(patientEmail.trim() || message.trim()) && (
           <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            {patientName.trim() && (
-              <div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Patient</span>
-                <p className="text-sm text-text-primary">{patientName}</p>
-              </div>
-            )}
             {patientEmail.trim() && (
               <div>
                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</span>

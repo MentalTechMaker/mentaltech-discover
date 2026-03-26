@@ -14,10 +14,10 @@ export const RecommendationList: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Vos recommandations personnalisées",
-      "Découvrez les solutions de santé mentale sélectionnées pour vous par MentalTech Discover, évaluées et classées selon vos besoins."
+      "Tes recommandations personnalisées",
+      "Découvre les solutions de santé mentale sélectionnées pour toi par MentalTech Discover, évaluées et classées selon tes besoins."
     );
-    setCanonical("/results");
+    setCanonical("/resultats");
   }, []);
   const [pricingFilter, setPricingFilter] = useState<PricingFilter>("all");
   const [contactFilter, setContactFilter] = useState<ContactFilter>("all");
@@ -171,11 +171,11 @@ export const RecommendationList: React.FC = () => {
             <div className="mb-6 text-center">
               <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
                 <span className="text-3xl">⭐</span>
-                Top 3 des meilleures solutions pour vous
+                Les 3 meilleures solutions pour toi
               </h2>
               <p className="text-sm text-gray-600 mt-1">
                 Ces solutions présentent le meilleur score de correspondance avec
-                vos besoins
+                tes besoins
               </p>
             </div>
 
@@ -199,7 +199,7 @@ export const RecommendationList: React.FC = () => {
                 <strong className="text-primary">
                   {additionalProducts.length} autres solutions
                 </strong>{" "}
-                qui peuvent vous correspondre
+                qui peuvent te correspondre
               </p>
               <p className="text-sm text-gray-500">
                 Classées par score de pertinence décroissant
@@ -236,11 +236,11 @@ export const RecommendationList: React.FC = () => {
             <div className="mb-6 text-center">
               <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
                 <span className="text-3xl">💡</span>
-                Autres solutions qui peuvent vous intéresser
+                Autres solutions qui peuvent t'intéresser
               </h2>
               <p className="text-sm text-gray-600 mt-1">
                 Ces {additionalProducts.length} solutions correspondent
-                également à vos critères, avec un score légèrement inférieur
+                également à tes critères, avec un score légèrement inférieur
               </p>
             </div>
 

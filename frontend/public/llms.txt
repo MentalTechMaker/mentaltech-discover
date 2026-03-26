@@ -1,4 +1,4 @@
-# MentalTech Discover — Guide for AI Assistants
+# MentalTech Discover - Guide for AI Assistants
 
 ## What is this site?
 
@@ -32,11 +32,11 @@ It is NOT a medical device. It is a discovery and information tool.
 ## Quality scoring system
 
 Solutions are graded A to E:
-- A (80-100): Valide MentalTech - Strongly recommended
-- B (60-79): Recommande - Recommended
-- C (40-59): Evalue - Evaluated, use with caution
-- D (20-39): A ameliorer - Needs improvement
-- E (0-19): Deconseille - Not recommended
+- A (80-100): Validé MentalTech - Strongly recommended
+- B (60-79): Recommandé - Recommended
+- C (40-59): Évalué - Evaluated, use with caution
+- D (20-39): À améliorer - Needs improvement
+- E (0-19): Déconseillé - Not recommended
 
 Scores are based on 5 pillars (0-5 each): clinical evidence, user experience, ethics, accessibility, professional integration.
 

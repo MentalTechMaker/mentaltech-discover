@@ -27,10 +27,10 @@
             <div style="text-align:center">
                 <span class="badge">🩺 Prescription numérique</span>
             </div>
-            <h2 style="color: #2c3e50;">{{ patient_name }}, votre professionnel de santé vous a envoyé une recommandation</h2>
+            <h2 style="color: #2c3e50;">Bonjour, votre professionnel de santé vous a envoyé une recommandation</h2>
 
             <div class="prescriber-box">
-                <strong>{{ prescriber_name }}</strong>{% if prescriber_profession %} — {{ prescriber_profession }}{% endif %}{% if prescriber_organization %}<br>{{ prescriber_organization }}{% endif %}
+                <strong>{{ prescriber_name }}</strong>{% if prescriber_profession %} - {{ prescriber_profession }}{% endif %}{% if prescriber_organization %}<br>{{ prescriber_organization }}{% endif %}
             </div>
 
             {% if message %}
@@ -56,7 +56,8 @@
             <p style="font-size: 13px; color: #7f8c8d;">Si vous n'attendiez pas ce message, vous pouvez l'ignorer.</p>
         </div>
         <div class="footer">
-            <p>MentalTech Discover — Trouvez votre solution en santé mentale</p>
+            <p>MentalTech Discover - Trouvez votre solution en santé mentale</p>
+            <p style="font-size: 12px; margin-top: 8px;"><a href="https://discover.mentaltech.fr/privacy" style="color: #7f8c8d;">Politique de confidentialité</a> | <a href="https://discover.mentaltech.fr/legal" style="color: #7f8c8d;">Mentions légales</a></p>
         </div>
     </div>
 </body>

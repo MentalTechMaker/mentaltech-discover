@@ -21,7 +21,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
           aria-expanded={open}
         >
           <span>⚠️</span>
-          <span>Information importante — pas un dispositif médical</span>
+          <span>Information importante - pas un dispositif médical</span>
           <svg
             className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`}
             fill="none"

@@ -95,7 +95,6 @@ CREATE INDEX idx_users_email ON users (email);
 CREATE TABLE prescriptions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     prescriber_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    patient_name VARCHAR(255),
     patient_email VARCHAR(255),
     product_ids TEXT[] NOT NULL DEFAULT '{}',
     message TEXT,

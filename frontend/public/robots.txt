@@ -8,7 +8,6 @@ Disallow: /prescriber-dashboard
 Disallow: /new-prescription
 Disallow: /comparator
 Disallow: /prescriber-auth
-Disallow: /admin-submissions
 Disallow: /reset-password
 Disallow: /verify-email
 Disallow: /veille
@@ -17,8 +16,6 @@ Disallow: /forgot-password
 
 # Session-only pages (no durable content)
 Disallow: /questionnaire
-Disallow: /quiz
-Disallow: /results
 Disallow: /resultats
 
 # Confirmation pages (single-use tokens)

@@ -85,7 +85,8 @@ def _to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
 
 
 @router.post("/upload-logo")
-async def public_upload_logo(file: UploadFile = File(...)):
+@limiter.limit("5/hour")
+async def public_upload_logo(request: Request, file: UploadFile = File(...)):
     """Upload a product logo from the public submission form. No auth required."""
     if file.content_type not in PUBLIC_LOGO_ALLOWED_TYPES:
         raise HTTPException(

@@ -174,7 +174,7 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
               <span className="text-text-secondary">Entreprise</span>
             </label>
 
-            {/* Etablissement de sante */}
+            {/* Établissement de santé */}
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
@@ -182,7 +182,7 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 onChange={() => handleSegmentChange("health")}
                 className="w-4 h-4 text-primary"
               />
-              <span className="text-text-secondary">Etablissement de sante</span>
+              <span className="text-text-secondary">Établissement de santé</span>
             </label>
           </div>
         </div>

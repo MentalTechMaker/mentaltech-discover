@@ -3,7 +3,6 @@ import { apiFetch } from './client';
 // ─── PRESCRIPTIONS ──────────────────────────────────────────
 
 export interface PrescriptionCreate {
-  patient_name?: string;
   patient_email?: string;
   product_ids: string[];
   message?: string;
@@ -13,12 +12,11 @@ export interface PrescriptionResponse {
   id: string;
   prescriberId: string;
   prescriberName?: string;
-  patientName?: string;
-  patientEmail?: string;
   productIds: string[];
   message?: string;
   token: string;
   link: string;
+  emailSent?: boolean;
   expiresAt: string;
   viewedAt?: string;
   createdAt: string;
@@ -28,7 +26,6 @@ export interface PrescriptionPublicResponse {
   prescriberName: string;
   prescriberProfession?: string;
   prescriberOrganization?: string;
-  patientName?: string;
   message?: string;
   products: Array<{
     id: string;
@@ -78,6 +75,10 @@ export async function renewPrescription(id: string): Promise<PrescriptionRespons
 
 export async function viewPrescription(token: string): Promise<PrescriptionPublicResponse> {
   return apiFetch<PrescriptionPublicResponse>(`/prescriptions/view/${token}`);
+}
+
+export async function revokePrescription(token: string): Promise<void> {
+  await apiFetch<void>(`/prescriptions/revoke/${token}`, { method: 'DELETE' });
 }
 
 // ─── FAVORITES ──────────────────────────────────────────────

@@ -114,14 +114,6 @@ export const PrescriptionViewPage: React.FC = () => {
           </div>
         )}
 
-        {/* ── Patient Greeting ────────────────────────────────── */}
-        {data.patientName && (
-          <p className="text-lg text-text-primary">
-            Bonjour{" "}
-            <span className="font-semibold">{data.patientName}</span>,
-          </p>
-        )}
-
         {/* ── Prescriber Message ──────────────────────────────── */}
         {data.message && (
           <blockquote className="border-l-4 border-blue-400 bg-blue-50 rounded-r-xl px-6 py-4 text-text-secondary italic">
@@ -257,11 +249,38 @@ export const PrescriptionViewPage: React.FC = () => {
           </div>
         )}
 
+        {/* ── RGPD Notice ────────────────────────────────────── */}
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-2">
+          <p className="text-xs text-text-secondary">
+            Aucune donnee personnelle n'est stockee sur nos serveurs.
+            Cette prescription est accessible uniquement via ce lien et expire automatiquement.
+          </p>
+          {!data.expired && (
+            <button
+              onClick={async () => {
+                if (confirm("Supprimer cette prescription ? Cette action est irreversible.")) {
+                  try {
+                    const { revokePrescription } = await import("../../api/prescriber");
+                    await revokePrescription(token || "");
+                    setError("Prescription supprimee.");
+                    setData(null);
+                  } catch {
+                    setError("Impossible de supprimer la prescription.");
+                  }
+                }
+              }}
+              className="text-xs text-red-500 hover:text-red-700 underline"
+            >
+              Demander la suppression de cette prescription (RGPD)
+            </button>
+          )}
+        </div>
+
         {/* ── Medical Disclaimer ──────────────────────────────── */}
         <p className="text-xs text-text-secondary text-center pb-8">
           MentalTech est une plateforme d'information et d'orientation. Elle ne
-          remplace en aucun cas une consultation avec un professionnel de santé
-          mentale qualifié.
+          remplace en aucun cas une consultation avec un professionnel de sante
+          mentale qualifie.
         </p>
       </main>
     </div>

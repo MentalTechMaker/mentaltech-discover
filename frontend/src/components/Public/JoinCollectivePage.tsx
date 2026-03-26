@@ -123,7 +123,7 @@ export const JoinCollectivePage: React.FC = () => {
               par les professionnels et les patients.
             </p>
             <ul className="space-y-1.5 text-sm text-text-secondary">
-              <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Evaluation selon le protocole MentalTech</li>
+              <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Évaluation selon le protocole MentalTech</li>
               <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Visibilité auprès des prescripteurs</li>
               <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Option adhésion au collectif</li>
             </ul>

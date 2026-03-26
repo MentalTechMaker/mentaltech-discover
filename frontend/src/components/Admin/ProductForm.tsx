@@ -555,7 +555,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
                     setter(v === "" ? "" : Math.max(0, Math.min(5, Number(v))));
                   }}
                   className="w-20 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white"
-                  placeholder="—"
+                  placeholder="-"
                 />
                 <span className="text-xs text-text-secondary">/ 5</span>
                 <button

@@ -41,7 +41,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # Port 8000 non exposé publiquement — seul le réseau interne Docker est utilisé
+    # Port 8000 non exposé publiquement - seul le réseau interne Docker est utilisé
     restart: unless-stopped
     deploy:
       resources:
@@ -108,7 +108,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:8080/health",
+          "http://127.0.0.1:8080/health",
         ]
       interval: 30s
       timeout: 10s

@@ -26,11 +26,11 @@ MentalTech Discover référence des solutions dont certaines sont membres du Col
 
 ### Règles d'indépendance
 
-1. **Aucun lien financier** — L'évaluateur ne doit avoir aucun lien financier (investissement, contrat, rémunération) avec la solution évaluée
-2. **Déclaration systématique** — Chaque évaluation mentionne si la solution est membre du Collectif MentalTech
-3. **Barème identique** — Le même barème détaillé (voir ci-dessous) est appliqué à toutes les solutions, membres ou non du Collectif
-4. **Justification obligatoire** — Chaque note doit être accompagnée d'éléments factuels vérifiables (URLs, captures d'écran, dates)
-5. **Évaluation publiée** — Les scores et justifications sont publics pour les prescripteurs, permettant la vérification par les pairs
+1. **Aucun lien financier** - L'évaluateur ne doit avoir aucun lien financier (investissement, contrat, rémunération) avec la solution évaluée
+2. **Déclaration systématique** - Chaque évaluation mentionne si la solution est membre du Collectif MentalTech
+3. **Barème identique** - Le même barème détaillé (voir ci-dessous) est appliqué à toutes les solutions, membres ou non du Collectif
+4. **Justification obligatoire** - Chaque note doit être accompagnée d'éléments factuels vérifiables (URLs, captures d'écran, dates)
+5. **Évaluation publiée** - Les scores et justifications sont publics pour les prescripteurs, permettant la vérification par les pairs
 
 ### Gestion des conflits d'intérêt
 
@@ -38,7 +38,7 @@ MentalTech Discover référence des solutions dont certaines sont membres du Col
 |-----------|--------|
 | L'évaluateur n'a aucun lien avec la solution | Évaluation standard |
 | L'évaluateur connaît personnellement un fondateur | Déclaration dans la justification, évaluation possible |
-| L'évaluateur a un lien financier avec la solution | **Évaluateur récusé** — un autre évaluateur doit être désigné |
+| L'évaluateur a un lien financier avec la solution | **Évaluateur récusé** - un autre évaluateur doit être désigné |
 | La solution est membre du Collectif MentalTech | Mention "Membre du Collectif" sur la fiche, barème identique |
 
 ### Vers l'évaluation externe (objectif 2026)
@@ -54,7 +54,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ## Pipeline de vérification
 
-### Phase 0 — Préparation
+### Phase 0 - Préparation
 
 1. Ouvrir la fiche du produit dans le panel admin
 2. Préparer un document de notes temporaire (ou remplir directement dans le formulaire)
@@ -66,31 +66,31 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 1 — Sécurité & Confidentialité (0-20)
+### Phase 1 - Sécurité & Confidentialité (0-20)
 
 **Objectif** : Évaluer la protection des données personnelles et de santé.
 
-#### 1.1 RGPD — Politique de confidentialité (0-4)
+#### 1.1 RGPD - Politique de confidentialité (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune politique de confidentialité trouvée | — |
+| 0 | Aucune politique de confidentialité trouvée | - |
 | 1 | Page existante mais incomplète (pas de base légale, droits non mentionnés) | URL de la page |
 | 2 | Politique conforme a minima (base légale + droits des utilisateurs) | Points couverts |
 | 3 | Politique complète (base légale, droits, durée de conservation, sous-traitants) | Points couverts |
 | 4 | Exemplaire : DPO nommé, registre des traitements accessible, AIPD documentée | Nom du DPO, liens |
 
-#### 1.2 Hébergement — Localisation des données (0-4)
+#### 1.2 Hébergement - Localisation des données (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune information sur l'hébergement | — |
+| 0 | Aucune information sur l'hébergement | - |
 | 1 | Hébergement hors UE ou non précisé | Mention trouvée (ou absence) |
 | 2 | Hébergement en UE, sans certification santé | Hébergeur + pays |
 | 3 | Hébergement en France, hébergeur connu | Hébergeur + localisation |
 | 4 | Hébergement HDS certifié (Hébergeur de Données de Santé) | Nom de l'hébergeur HDS, numéro de certification si disponible |
 
-#### 1.3 Chiffrement — HTTPS et stockage (0-4)
+#### 1.3 Chiffrement - HTTPS et stockage (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -100,7 +100,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | HTTPS + mention de chiffrement des données au repos | Citation de la page mentionnant le chiffrement |
 | 4 | HTTPS + chiffrement au repos documenté (AES-256 ou équivalent) + chiffrement en transit | Technologies citées |
 
-#### 1.4 Consentement — Gestion des cookies (0-4)
+#### 1.4 Consentement - Gestion des cookies (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -110,11 +110,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Bandeau conforme : refus possible, trackers bloqués sans consentement | Test navigateur |
 | 4 | Aucun tracker tiers, ou consentement granulaire exemplaire (choix par catégorie) | Liste des trackers (aucun ou opt-in strict) |
 
-#### 1.5 Suppression — Droit à l'effacement (0-4)
+#### 1.5 Suppression - Droit à l'effacement (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune mention de suppression de compte ou données | — |
+| 0 | Aucune mention de suppression de compte ou données | - |
 | 1 | Suppression possible uniquement sur demande email, non documentée | Mention trouvée |
 | 2 | Procédure de suppression documentée (FAQ ou CGU) | URL de la documentation |
 | 3 | Suppression en self-service dans les paramètres du compte | Capture d'écran ou test |
@@ -124,24 +124,24 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 2 — Efficacité & Preuves cliniques (0-20)
+### Phase 2 - Efficacité & Preuves cliniques (0-20)
 
 **Objectif** : Évaluer la base scientifique et les résultats démontrés.
 
 > **Note** : Cette phase utilise des sous-critères sur 5 points (4 × 5 = 20).
 
-#### 2.1 Base scientifique — Fondements théoriques (0-5)
+#### 2.1 Base scientifique - Fondements théoriques (0-5)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune approche thérapeutique identifiable | — |
+| 0 | Aucune approche thérapeutique identifiable | - |
 | 1 | Approche "bien-être" sans fondement scientifique explicite | Type d'approche revendiquée |
 | 2 | Approche reconnue mentionnée (ex: méditation, relaxation) sans détail méthodologique | Méthode citée sur le site |
 | 3 | Approche thérapeutique validée (TCC, ACT, EMDR, pleine conscience) clairement décrite | Méthode + description du programme |
 | 4 | Approche validée + méthodologie détaillée (protocole thérapeutique structuré) | Description du protocole |
 | 5 | Approche validée + protocole + supervision par un comité scientifique identifié | Noms des membres du comité |
 
-#### 2.2 Études cliniques — Publications (0-5)
+#### 2.2 Études cliniques - Publications (0-5)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -152,7 +152,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 4 | Essai contrôlé randomisé (RCT) publié | DOI du RCT |
 | 5 | Plusieurs RCT + méta-analyse ou revue systématique | DOI des publications |
 
-#### 2.3 Supervision — Professionnels impliqués (0-5)
+#### 2.3 Supervision - Professionnels impliqués (0-5)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -163,11 +163,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 4 | Comité scientifique ou médical formel avec membres identifiés | Composition du comité |
 | 5 | Comité scientifique + publications des membres + affiliation hospitalière/universitaire | Affiliations vérifiables |
 
-#### 2.4 Résultats — Données d'usage (0-5)
+#### 2.4 Résultats - Données d'usage (0-5)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucun résultat ni témoignage | — |
+| 0 | Aucun résultat ni témoignage | - |
 | 1 | Témoignages non vérifiables sur le site (marketing) | Nombre de témoignages |
 | 2 | Métriques d'usage publiées (nombre d'utilisateurs, téléchargements) | Chiffres cités |
 | 3 | Résultats mesurables publiés (taux de satisfaction, NPS) avec taille d'échantillon | Chiffres + n= |
@@ -178,11 +178,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 3 — Accessibilité & Inclusion (0-20)
+### Phase 3 - Accessibilité & Inclusion (0-20)
 
 **Objectif** : Évaluer l'accessibilité financière, technique et sociale.
 
-#### 3.1 Prix — Transparence et accessibilité (0-4)
+#### 3.1 Prix - Transparence et accessibilité (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -192,7 +192,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Modèle freemium fonctionnel (version gratuite réellement utilisable) | Fonctionnalités de la version gratuite |
 | 4 | Gratuit ou tarif solidaire disponible (CMU, étudiants, chômeurs) | Conditions du tarif solidaire |
 
-#### 3.2 Plateformes — Disponibilité multi-supports (0-4)
+#### 3.2 Plateformes - Disponibilité multi-supports (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -202,7 +202,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Disponible sur 3 plateformes (Web + iOS + Android) | Vérifier chaque store |
 | 4 | 3 plateformes + application native performante (pas juste un wrapper web) | Test rapide de l'app |
 
-#### 3.3 Langue — Disponibilité en français (0-4)
+#### 3.3 Langue - Disponibilité en français (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -212,7 +212,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Interface + contenus 100% en français | Navigation complète |
 | 4 | 100% français + support client en français + contenus localisés (références françaises, numéros d'urgence FR) | Test du support |
 
-#### 3.4 Handicap — Accessibilité numérique (0-4)
+#### 3.4 Handicap - Accessibilité numérique (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -222,7 +222,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Labels ARIA, navigation clavier, contrastes WCAG AA | Test rapide avec Lighthouse ou axe DevTools |
 | 4 | Conformité WCAG AA documentée + audit d'accessibilité publié ou déclaration de conformité | Lien vers la déclaration |
 
-#### 3.5 Autonomie — Facilité de prise en main (0-4)
+#### 3.5 Autonomie - Facilité de prise en main (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -236,11 +236,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 4 — Qualité UX (0-20)
+### Phase 4 - Qualité UX (0-20)
 
 **Objectif** : Évaluer l'expérience utilisateur globale.
 
-#### 4.1 Design — Qualité visuelle (0-4)
+#### 4.1 Design - Qualité visuelle (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -250,7 +250,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Design soigné, moderne, cohérent (palette, typographie, espacement) | Points de cohérence observés |
 | 4 | Design excellent : rassurant, adapté à la santé mentale, identité visuelle forte | Éléments de design remarquables |
 
-#### 4.2 Navigation — Clarté du parcours (0-4)
+#### 4.2 Navigation - Clarté du parcours (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -260,7 +260,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Parcours fluide avec guidage visuel (boutons clairs, progression visible) | Éléments de guidage |
 | 4 | Parcours intuitif : inscription → première valeur en < 3 clics | Nombre de clics mesuré |
 
-#### 4.3 Performance — Rapidité et fiabilité (0-4)
+#### 4.3 Performance - Rapidité et fiabilité (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -270,7 +270,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Chargement rapide (< 3s), fonctionnement fluide | Temps mesuré |
 | 4 | Chargement < 2s, score Lighthouse > 80, aucun bug rencontré | Score Lighthouse Performance |
 
-#### 4.4 Contenu — Qualité rédactionnelle (0-4)
+#### 4.4 Contenu - Qualité rédactionnelle (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -280,7 +280,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Textes clairs, bien écrits, ton adapté (empathique, professionnel) | Passages remarqués |
 | 4 | Rédaction excellente : ton empathique, vocabulaire adapté, contenu informatif | Passages remarquables |
 
-#### 4.5 Mobile — Expérience sur smartphone (0-4)
+#### 4.5 Mobile - Expérience sur smartphone (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -294,11 +294,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 5 — Support & Accompagnement (0-20)
+### Phase 5 - Support & Accompagnement (0-20)
 
 **Objectif** : Évaluer la qualité du support client et de l'accompagnement proposé.
 
-#### 5.1 Réactivité — Temps de réponse (0-4)
+#### 5.1 Réactivité - Temps de réponse (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -310,27 +310,27 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 **Test obligatoire** : Envoyer un vrai message de test via le formulaire ou l'email de contact. Mesurer le délai.
 
-#### 5.2 Canaux — Moyens de contact (0-4)
+#### 5.2 Canaux - Moyens de contact (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucun canal de contact identifié | — |
+| 0 | Aucun canal de contact identifié | - |
 | 1 | 1 canal uniquement (formulaire de contact) | Canal identifié |
 | 2 | 2 canaux (ex: email + formulaire) | Canaux listés |
 | 3 | 3 canaux (ex: email + chat + téléphone) | Canaux listés + testés |
 | 4 | 3+ canaux dont au moins 1 en temps réel (chat, téléphone) | Canaux listés + temps réel testé |
 
-#### 5.3 Ressources — Documentation et aide (0-4)
+#### 5.3 Ressources - Documentation et aide (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune documentation, FAQ ou aide | — |
+| 0 | Aucune documentation, FAQ ou aide | - |
 | 1 | FAQ minimale (< 5 questions) ou contenu obsolète | Nombre de questions, date de MAJ |
 | 2 | FAQ correcte (5-15 questions) couvrant les bases | Sujets couverts |
 | 3 | Centre d'aide complet (15+ articles) avec recherche | Nombre d'articles, qualité |
 | 4 | Centre d'aide + blog éducatif + guides/tutoriels vidéo | Ressources listées |
 
-#### 5.4 Gestion de crise — Protocole d'urgence (0-4)
+#### 5.4 Gestion de crise - Protocole d'urgence (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
@@ -340,11 +340,11 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 | 3 | Redirection proactive en cas de contenu à risque (détection de mots-clés) | Tester avec un message évoquant une situation de crise |
 | 4 | Protocole de crise documenté + redirection proactive + formation de l'équipe support | Documentation du protocole |
 
-#### 5.5 Communauté — Accompagnement pair (0-4)
+#### 5.5 Communauté - Accompagnement pair (0-4)
 
 | Note | Seuil | Éléments à vérifier |
 |------|-------|---------------------|
-| 0 | Aucune dimension communautaire | — |
+| 0 | Aucune dimension communautaire | - |
 | 1 | Présence sur les réseaux sociaux avec interactions (mais pas de communauté dédiée) | Liens vers les réseaux |
 | 2 | Forum ou groupe d'entraide accessible aux utilisateurs | Lien + activité du groupe |
 | 3 | Communauté active + modération visible | Fréquence des posts, modérateurs identifiés |
@@ -363,19 +363,19 @@ Date d'évaluation : _______________
 Conflit d'intérêt : [ ] Aucun  [ ] Déclaré (préciser) : _______________
 Membre du Collectif : [ ] Oui  [ ] Non
 
-[ ] Phase 1 — Sécurité & Confidentialité    : ___/20
+[ ] Phase 1 - Sécurité & Confidentialité    : ___/20
     Justification : ...
 
-[ ] Phase 2 — Efficacité & Preuves cliniques : ___/20
+[ ] Phase 2 - Efficacité & Preuves cliniques : ___/20
     Justification : ...
 
-[ ] Phase 3 — Accessibilité & Inclusion      : ___/20
+[ ] Phase 3 - Accessibilité & Inclusion      : ___/20
     Justification : ...
 
-[ ] Phase 4 — Qualité UX                     : ___/20
+[ ] Phase 4 - Qualité UX                     : ___/20
     Justification : ...
 
-[ ] Phase 5 — Support & Accompagnement       : ___/20
+[ ] Phase 5 - Support & Accompagnement       : ___/20
     Justification : ...
 
 TOTAL : ___/100 → Label : ___

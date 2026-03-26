@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 
 from sqlalchemy import String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from ..compat_types import CompatibleUUID as UUID
+from ..compat_types import CompatibleArray as ARRAY
 
 from ..database import Base
 
@@ -17,7 +18,6 @@ class Prescription(Base):
     prescriber_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    patient_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     patient_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     product_ids: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     message: Mapped[str | None] = mapped_column(Text, nullable=True)

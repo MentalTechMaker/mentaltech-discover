@@ -52,3 +52,9 @@ export async function toggleDefunct(id: string): Promise<Product> {
     method: 'PATCH',
   }, true);
 }
+
+export async function toggleDemo(id: string): Promise<Product> {
+  return apiFetch<Product>(`/admin/products/${id}/demo`, {
+    method: 'PATCH',
+  }, true);
+}

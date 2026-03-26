@@ -1,3 +1,4 @@
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from collections import Counter
@@ -23,6 +24,8 @@ from ..services.email import (
     send_prescription_viewed_email,
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/prescriptions", tags=["prescriptions"])
 
 PRESCRIPTION_EXPIRE_DAYS = 30
@@ -33,16 +36,49 @@ def _prescription_to_response(p: Prescription, prescriber_name: str | None = Non
         id=str(p.id),
         prescriberId=str(p.prescriber_id),
         prescriberName=prescriber_name,
-        patientName=p.patient_name,
-        patientEmail=p.patient_email,
         productIds=p.product_ids or [],
         message=p.message,
         token=p.token,
         link=f"{settings.FRONTEND_URL}/prescription/{p.token}",
+        emailSent=p.patient_email is None and p.created_at < datetime.now(timezone.utc) - timedelta(seconds=10),
         expiresAt=p.expires_at.isoformat(),
         viewedAt=p.viewed_at.isoformat() if p.viewed_at else None,
         createdAt=p.created_at.isoformat(),
     )
+
+
+async def _send_and_purge_email(
+    db: Session,
+    prescription_id,
+    patient_email: str,
+    prescriber_name: str,
+    prescriber_profession: str | None,
+    prescriber_organization: str | None,
+    link: str,
+    product_names: list[str],
+    message: str | None,
+    expires_at_str: str,
+) -> None:
+    """Send the prescription email then purge patient_email from DB (RGPD)."""
+    await send_prescription_email(
+        patient_email=patient_email,
+        prescriber_name=prescriber_name,
+        prescriber_profession=prescriber_profession,
+        prescriber_organization=prescriber_organization,
+        link=link,
+        product_names=product_names,
+        message=message,
+        expires_at=expires_at_str,
+    )
+    # Purge email after successful send
+    try:
+        prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
+        if prescription:
+            prescription.patient_email = None
+            db.commit()
+            logger.info(f"RGPD: patient_email purged for prescription {prescription_id}")
+    except Exception:
+        logger.error(f"Failed to purge patient_email for prescription {prescription_id}", exc_info=True)
 
 
 @router.post("", response_model=PrescriptionResponse, status_code=status.HTTP_201_CREATED)
@@ -73,7 +109,6 @@ async def create_prescription(
     expires_at = datetime.now(timezone.utc) + timedelta(days=PRESCRIPTION_EXPIRE_DAYS)
     prescription = Prescription(
         prescriber_id=user.id,
-        patient_name=data.patient_name,
         patient_email=data.patient_email,
         product_ids=data.product_ids,
         message=data.message,
@@ -84,21 +119,22 @@ async def create_prescription(
     db.commit()
     db.refresh(prescription)
 
-    # Send email to patient if email provided
+    # Send email to patient then purge the email from DB
     if data.patient_email:
         link = f"{settings.FRONTEND_URL}/prescription/{token}"
         expires_at_str = expires_at.strftime("%d/%m/%Y")
         background_tasks.add_task(
-            send_prescription_email,
+            _send_and_purge_email,
+            db=db,
+            prescription_id=prescription.id,
             patient_email=data.patient_email,
-            patient_name=data.patient_name,
             prescriber_name=user.name,
             prescriber_profession=user.profession,
             prescriber_organization=user.organization,
             link=link,
             product_names=product_names,
             message=data.message,
-            expires_at=expires_at_str,
+            expires_at_str=expires_at_str,
         )
 
     return _prescription_to_response(prescription, user.name)
@@ -186,23 +222,8 @@ async def renew_prescription(
     db.commit()
     db.refresh(prescription)
 
-    if prescription.patient_email:
-        product_rows = db.query(Product).filter(Product.id.in_(prescription.product_ids or [])).all()
-        product_names = [p.name for p in product_rows]
-        link = f"{settings.FRONTEND_URL}/prescription/{prescription.token}"
-        expires_at_str = prescription.expires_at.strftime("%d/%m/%Y")
-        background_tasks.add_task(
-            send_prescription_email,
-            patient_email=prescription.patient_email,
-            patient_name=prescription.patient_name,
-            prescriber_name=user.name,
-            prescriber_profession=user.profession,
-            prescriber_organization=user.organization,
-            link=link,
-            product_names=product_names,
-            message=prescription.message,
-            expires_at=expires_at_str,
-        )
+    # Note: patient_email was purged after first send, so renew only regenerates the link.
+    # The prescriber can share the new link manually.
 
     return _prescription_to_response(prescription, user.name)
 
@@ -224,7 +245,8 @@ def delete_prescription(
     db.commit()
 
 
-# Public endpoint - no auth required
+# ─── Public endpoints (no auth) ────────────────────────────────
+
 @router.get("/view/{token}", response_model=PrescriptionPublicResponse)
 def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
@@ -250,7 +272,6 @@ def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session
             send_prescription_viewed_email,
             prescriber_email=prescriber.email,
             prescriber_name=prescriber.name,
-            patient_name=prescription.patient_name,
             prescription_link=link,
         )
 
@@ -277,9 +298,18 @@ def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session
         prescriberName=prescriber.name if prescriber else "Prescripteur",
         prescriberProfession=prescriber.profession if prescriber else None,
         prescriberOrganization=prescriber.organization if prescriber else None,
-        patientName=prescription.patient_name,
         message=prescription.message,
         products=products,
         createdAt=prescription.created_at.isoformat(),
         expired=expired,
     )
+
+
+@router.delete("/revoke/{token}", status_code=status.HTTP_204_NO_CONTENT)
+def revoke_prescription_by_patient(token: str, db: Session = Depends(get_db)):
+    """Allow a patient to request deletion of their prescription (RGPD right to erasure)."""
+    prescription = db.query(Prescription).filter(Prescription.token == token).first()
+    if not prescription:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+    db.delete(prescription)
+    db.commit()

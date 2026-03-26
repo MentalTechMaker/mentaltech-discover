@@ -246,7 +246,7 @@ def community_stats(
     user: User = Depends(require_prescriber_or_admin),
     db: Session = Depends(get_db),
 ):
-    # SQL aggregation via unnest — O(1) memory, O(N) DB
+    # SQL aggregation via unnest - O(1) memory, O(N) DB
     rows = db.execute(text("""
         SELECT
             pid,

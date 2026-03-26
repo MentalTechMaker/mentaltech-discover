@@ -25,7 +25,6 @@ import { NewPrescription } from "./components/Prescriber/NewPrescription";
 import { VeillePage } from "./components/Prescriber/VeillePage";
 import { ComparatorPage } from "./components/Prescriber/ComparatorPage";
 import { PrescriptionViewPage } from "./components/Prescriber/PrescriptionViewPage";
-import { SubmissionsList } from "./components/Admin/SubmissionsList";
 import { PublicSubmissionForm } from "./components/Public/PublicSubmissionForm";
 import { HealthProApplicationForm } from "./components/Public/HealthProApplicationForm";
 import { ConfirmSubmissionPage } from "./components/Public/ConfirmSubmissionPage";
@@ -93,7 +92,6 @@ function App() {
           {currentView === "veille" && <VeillePage />}
           {currentView === "comparator" && <ComparatorPage />}
           {currentView === "prescription" && <PrescriptionViewPage />}
-          {currentView === "admin-submissions" && <SubmissionsList />}
           {currentView === "join-collective" && <JoinCollectivePage />}
           {currentView === "public-submission" && <PublicSubmissionForm />}
           {currentView === "health-pro-application" && <HealthProApplicationForm />}

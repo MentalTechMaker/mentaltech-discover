@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import app
+from app.rate_limit import limiter
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
@@ -20,7 +21,9 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 @pytest.fixture(autouse=True)
 def setup_db():
     Base.metadata.create_all(bind=engine)
+    limiter.enabled = False
     yield
+    limiter.enabled = True
     Base.metadata.drop_all(bind=engine)
 
 

@@ -430,7 +430,7 @@ export const PrescriberDashboard: React.FC = () => {
                             </span>
                           </div>
                           <p className="text-text-primary font-semibold">
-                            {prescription.patientName || "Non renseigné"}
+                            Prescription #{prescription.id.slice(0, 8)}
                           </p>
                           <p className="text-sm text-text-secondary mt-1">
                             {prescription.productIds.length} produit

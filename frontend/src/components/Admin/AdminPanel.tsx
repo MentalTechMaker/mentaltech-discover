@@ -162,6 +162,17 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const handleToggleDemo = async (id: string) => {
+    setTogglingId(id);
+    try {
+      const updated = await productsApi.toggleDemo(id);
+      setAdminProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      await fetchProducts();
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   // ─── Prescribers tab handlers ────────────────────────────────
 
   const loadPrescribers = async () => {
@@ -295,7 +306,7 @@ export const AdminPanel: React.FC = () => {
 
             <div className="flex justify-between items-center mb-6">
               <p className="text-text-secondary">
-                {adminProducts.length} produit(s) au total —{" "}
+                {adminProducts.length} produit(s) au total -{" "}
                 <span className="text-green-600 font-semibold">
                   {adminProducts.filter((p) => p.isVisible !== false && !p.companyDefunct).length} visibles
                 </span>
@@ -338,6 +349,7 @@ export const AdminPanel: React.FC = () => {
                   {adminProducts.filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase())).map((product) => {
                     const isHidden = product.isVisible === false;
                     const isDefunct = product.companyDefunct === true;
+                    const isDemo = product.isDemo === true;
                     return (
                     <tr
                       key={product.id}
@@ -351,6 +363,9 @@ export const AdminPanel: React.FC = () => {
                           )}
                           {isDefunct && (
                             <span className="bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-semibold">Défunt</span>
+                          )}
+                          {isDemo && (
+                            <span className="bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-xs font-semibold">Demo</span>
                           )}
                         </p>
                         <p className="text-xs font-mono text-text-secondary">{product.id}</p>
@@ -381,6 +396,18 @@ export const AdminPanel: React.FC = () => {
                             }`}
                           >
                             {isDefunct ? "💀 Défunt" : "🏢 Actif"}
+                          </button>
+                          <button
+                            onClick={() => handleToggleDemo(product.id)}
+                            disabled={togglingId === product.id}
+                            title={isDemo ? "Retirer le statut demo" : "Marquer comme demo"}
+                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                              isDemo
+                                ? "bg-blue-100 text-blue-600 hover:bg-gray-200 hover:text-gray-600"
+                                : "bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600"
+                            }`}
+                          >
+                            {isDemo ? "🧪 Demo" : "🧪 Non-demo"}
                           </button>
                         </div>
                       </td>
@@ -477,9 +504,9 @@ export const AdminPanel: React.FC = () => {
                           <p className="text-sm font-semibold text-text-primary">{p.name}</p>
                           <p className="text-xs text-text-secondary">{p.email}</p>
                         </td>
-                        <td className="px-6 py-4 text-sm text-text-secondary">{p.profession || "—"}</td>
-                        <td className="px-6 py-4 text-sm text-text-secondary">{p.organization || "—"}</td>
-                        <td className="px-6 py-4 text-sm font-mono text-text-secondary">{p.rpps_adeli || "—"}</td>
+                        <td className="px-6 py-4 text-sm text-text-secondary">{p.profession || "-"}</td>
+                        <td className="px-6 py-4 text-sm text-text-secondary">{p.organization || "-"}</td>
+                        <td className="px-6 py-4 text-sm font-mono text-text-secondary">{p.rpps_adeli || "-"}</td>
                         <td className="px-6 py-4">
                           {p.is_verified_prescriber ? (
                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">

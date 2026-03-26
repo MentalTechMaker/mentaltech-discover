@@ -76,7 +76,7 @@ export const Landing: React.FC = () => {
           </p>
         </div>
 
-        {/* Third path — visible between the two quiz cards */}
+        {/* Third path - visible between the two quiz cards */}
         <div className="flex items-center justify-center gap-4 mb-2">
           <div className="h-px bg-gray-200 flex-1 max-w-[120px]" />
           <button
