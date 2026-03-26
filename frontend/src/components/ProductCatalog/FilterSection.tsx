@@ -22,15 +22,15 @@ const PARTICULIER_AUDIENCES = [
 ] as const;
 
 const problemLabels: Record<string, string> = {
-  "stress-anxiety": "Stress & Anxiété",
-  sadness: "Tristesse & Dépression",
+  "stress-anxiety": "Stress / Anxiété",
+  sadness: "Tristesse / Dépression",
   addiction: "Addictions",
   trauma: "Traumatismes",
-  work: "Travail & Burn-out",
+  work: "Travail / Burn-out",
   sleep: "Sommeil",
   cognitif: "Troubles cognitifs",
   douleur: "Douleur",
-  concentration: "Concentration & TDAH",
+  concentration: "Concentration / TDAH",
   other: "Autres",
 };
 

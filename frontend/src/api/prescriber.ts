@@ -73,8 +73,9 @@ export async function renewPrescription(id: string): Promise<PrescriptionRespons
   return apiFetch<PrescriptionResponse>(`/prescriptions/${id}/renew`, { method: 'POST' }, true);
 }
 
-export async function viewPrescription(token: string): Promise<PrescriptionPublicResponse> {
-  return apiFetch<PrescriptionPublicResponse>(`/prescriptions/view/${token}`);
+export async function viewPrescription(token: string, preview = false): Promise<PrescriptionPublicResponse> {
+  const qs = preview ? '?preview=true' : '';
+  return apiFetch<PrescriptionPublicResponse>(`/prescriptions/view/${token}${qs}`);
 }
 
 export async function revokePrescription(token: string): Promise<void> {

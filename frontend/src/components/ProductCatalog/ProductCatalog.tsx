@@ -25,7 +25,7 @@ export const ProductCatalog: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Catalogue des solutions",
-      "Explorez toutes les solutions digitales de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience, tarif et label qualité."
+      "Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience, tarif et label qualité."
     );
     setCanonical("/catalogue");
   }, []);
@@ -218,11 +218,11 @@ export const ProductCatalog: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
-            Catalogue des solutions
+            Catalogue des solutions de santé mentale
           </h1>
           <p className="text-lg text-text-secondary">
             Explorez l'écosystème complet des{" "}
-            <strong>solutions digitales en santé mentale</strong> <br />
+            <strong>solutions numériques en santé mentale</strong> <br />
             avec des filtres avancés pour trouver ce qui vous correspond.
           </p>
         </div>

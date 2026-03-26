@@ -41,11 +41,11 @@ export const ConfirmHealthProPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-foreground mb-3">Candidature confirmée !</h2>
             <p className="text-muted-foreground mb-6">{message}</p>
             <div className="flex flex-col gap-3">
+              <button onClick={() => setView("prescriber-auth")} className="px-6 py-3 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 transition-colors shadow-md">
+                Créer un compte prescripteur
+              </button>
               <button onClick={() => setView("catalog")} className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90">
                 Explorer le catalogue
-              </button>
-              <button onClick={() => setView("prescriber-auth")} className="px-6 py-2.5 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200">
-                Accéder à l'espace prescripteur
               </button>
               <button onClick={() => setView("landing")} className="px-6 py-2.5 border border-gray-300 text-text-secondary rounded-lg text-sm font-medium hover:bg-gray-50">
                 Retour à l'accueil

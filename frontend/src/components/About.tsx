@@ -7,8 +7,8 @@ export const About: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Notre démarche",
-      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France."
+      "Notre démarche - Évaluation des solutions de santé mentale numérique",
+      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers."
     );
     setCanonical("/notre-demarche");
   }, []);
@@ -54,12 +54,12 @@ export const About: React.FC = () => {
                   Collectif MentalTech
                 </a>
               </strong>
-              , premier écosystème français dédié à la santé mentale digitale.
+              , premier écosystème français dédié à la santé mentale numérique.
             </p>
             <p>
               Le Collectif MentalTech regroupe <strong>25+ entreprises innovantes</strong>{" "}
               engagées pour démocratiser l'accès aux soins en santé mentale :
-              téléconsultation, méditation, thérapies digitales, réalité virtuelle,
+              téléconsultation, méditation, thérapies numériques, réalité virtuelle,
               sevrage d'addictions, et bien plus.
             </p>
             <div className="bg-blue-50 border-l-4 border-primary p-4 rounded">
@@ -88,7 +88,7 @@ export const About: React.FC = () => {
               Comment recommandez-vous des applications à vos patients aujourd'hui ? De mémoire, sans critères objectifs, sans suivi ?
             </p>
             <p>
-              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numérique adaptée à chaque patient - parmi un catalogue vérifié, score sur 5 piliers, avec une ordonnance numérique que votre patient recoit directement.
+              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numérique adaptée à chaque patient - parmi un catalogue vérifié, score sur 5 piliers, avec une ordonnance numérique que votre patient reçoit directement.
             </p>
             <div className="grid md:grid-cols-2 gap-3 mt-4">
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
@@ -205,7 +205,7 @@ export const About: React.FC = () => {
                   Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Notre systeme de scoring qualité est disponible : chaque solution est évaluée sur 5 piliers (sécurité, efficacité, accessibilité, UX, support) pour un label A a E. Cependant, nous ne sommes pas un organisme de certification officiel.
+                  Notre système de scoring qualité est disponible : chaque solution est évaluée sur 5 piliers (sécurité, preuves, accessibilité, expérience user, support) pour un label A à E. Cependant, nous ne sommes pas un organisme de certification officiel.
                 </p>
               </div>
             </div>

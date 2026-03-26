@@ -5,14 +5,28 @@ import { PasswordStrengthBar } from "./PasswordStrengthBar";
 import { validatePassword } from "../../utils/password";
 
 const professionOptions = [
-  "Psychiatre",
-  "Psychologue",
   "Médecin généraliste",
+  "Médecin du travail",
+  "Psychiatre",
+  "Pédopsychiatre",
+  "Psychologue",
+  "Neuropsychologue",
   "Infirmier(e) en pratique avancée",
+  "Infirmier(e) en psychiatrie",
   "Ergothérapeute",
-  "Assistante sociale",
-  "Éducateur spécialisé",
-  "Conseiller en santé mentale",
+  "Orthophoniste",
+  "Psychomotricien(ne)",
+  "Assistant(e) social(e)",
+  "Éducateur(trice) spécialisé(e)",
+  "Conseiller(e) en économie sociale et familiale",
+  "Sage-femme",
+  "Pharmacien(ne)",
+  "Addictologue",
+  "Pair-aidant(e) professionnel(le)",
+  "Coach en santé mentale",
+  "Psychothérapeute",
+  "Médecin scolaire",
+  "Infirmier(e) scolaire",
   "Autre professionnel de santé",
 ];
 
@@ -130,6 +144,17 @@ export const PrescriberAuthPage: React.FC = () => {
           </h2>
         </div>
 
+        {/* Value proposition */}
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6">
+          <p className="text-sm font-semibold text-indigo-900 mb-2">Vos avantages prescripteur :</p>
+          <ul className="text-sm text-indigo-800 space-y-1">
+            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Prescriptions numériques à vos patients</li>
+            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Évaluations complètes des solutions (5 piliers)</li>
+            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Réseau de professionnels engagés</li>
+            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> 100% gratuit</li>
+          </ul>
+        </div>
+
         {/* Tab switcher */}
         <div className="flex rounded-xl bg-gray-100 p-1 mb-6">
           <button
@@ -172,7 +197,7 @@ export const PrescriberAuthPage: React.FC = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     placeholder="votre@email-professionnel.com"
                   />
                 </div>
@@ -189,7 +214,7 @@ export const PrescriberAuthPage: React.FC = () => {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     placeholder="Votre mot de passe"
                   />
                 </div>
@@ -238,7 +263,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="Dr. Jean Dupont"
                     />
                   </div>
@@ -255,7 +280,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="votre@email-professionnel.com"
                     />
                   </div>
@@ -277,7 +302,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       value={profession}
                       onChange={(e) => setProfession(e.target.value)}
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
                     >
                       <option value="">Sélectionnez votre profession</option>
                       {professionOptions.map((p) => (
@@ -299,7 +324,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       type="text"
                       value={organization}
                       onChange={(e) => setOrganization(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="CHU, cabinet, association..."
                     />
                   </div>
@@ -318,7 +343,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       type="text"
                       value={rppsAdeli}
                       onChange={(e) => setRppsAdeli(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="Votre numéro RPPS ou ADELI"
                     />
                   </div>
@@ -342,7 +367,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={8}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="Min. 8 car., majuscule, minuscule, chiffre"
                     />
                     <PasswordStrengthBar password={password} />
@@ -360,7 +385,7 @@ export const PrescriberAuthPage: React.FC = () => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       placeholder="Confirmez votre mot de passe"
                     />
                   </div>

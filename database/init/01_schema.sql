@@ -101,6 +101,7 @@ CREATE TABLE prescriptions (
     token VARCHAR(500) UNIQUE NOT NULL,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     viewed_at TIMESTAMP WITH TIME ZONE,
+    revoked_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -190,6 +191,7 @@ CREATE TABLE product_submissions (
     tagline TEXT,
     description TEXT,
     url VARCHAR(500),
+    linkedin VARCHAR(500),
     logo VARCHAR(500),
     tags TEXT[] DEFAULT '{}',
     audience TEXT[] DEFAULT '{}',
@@ -235,6 +237,7 @@ CREATE TABLE IF NOT EXISTS public_submissions (
     tagline TEXT,
     description TEXT,
     url VARCHAR(500),
+    linkedin VARCHAR(500),
     logo VARCHAR(500),
     tags TEXT[] DEFAULT '{}',
     audience TEXT[] DEFAULT '{}',
@@ -275,6 +278,7 @@ CREATE TABLE IF NOT EXISTS health_prof_applications (
     rpps_adeli VARCHAR(50),
     organization VARCHAR(255),
     motivation TEXT,
+    linkedin VARCHAR(500),
     status VARCHAR(30) NOT NULL DEFAULT 'pending_email',
     confirm_token VARCHAR(500) UNIQUE,
     email_confirmed BOOLEAN NOT NULL DEFAULT FALSE,

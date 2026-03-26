@@ -369,7 +369,7 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({ onCreateProduct }) => 
               )}
               {selectedApp.organization && (
                 <div>
-                  <p className="text-text-secondary text-xs">Etablissement</p>
+                  <p className="text-text-secondary text-xs">Établissement</p>
                   <p className="font-medium text-text-primary">{selectedApp.organization}</p>
                 </div>
               )}

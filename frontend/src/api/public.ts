@@ -11,6 +11,7 @@ export interface PublicSubmissionCreate {
   tagline?: string;
   description?: string;
   url?: string;
+  linkedin?: string;
   logo?: string;
   tags?: string[];
   audience?: string[];
@@ -31,6 +32,7 @@ export interface HealthProfApplicationCreate {
   rpps_adeli?: string;
   organization?: string;
   motivation?: string;
+  linkedin?: string;
   honeypot: string;
   submitted_at_ts: number;
 }

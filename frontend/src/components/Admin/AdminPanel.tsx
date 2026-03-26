@@ -274,7 +274,7 @@ export const AdminPanel: React.FC = () => {
               { key: "products", label: "Produits" },
               { key: "prescribers", label: "Prescripteurs" },
               { key: "veille", label: "Veille / Mises à jour" },
-              { key: "soumissions", label: "Soumissions & Collectif" },
+              { key: "soumissions", label: "Soumissions / Collectif" },
             ] as { key: Tab; label: string }[]
           ).map(({ key, label }) => (
             <button

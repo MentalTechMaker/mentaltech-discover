@@ -15,7 +15,7 @@ export const Landing: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Trouvez votre solution en santé mentale",
-      "Découvrez les meilleures solutions digitales en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, évaluations par des experts."
+      "Découvrez les meilleures solutions numériques en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, évaluations par des experts."
     );
     setCanonical("/");
   }, []);
@@ -46,7 +46,7 @@ export const Landing: React.FC = () => {
           </h1>
           <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
             <strong>MentalTech Discover</strong> vous aide à trouver les{" "}
-            <strong>solutions digitales</strong> adaptées à vos besoins en santé
+            <strong>solutions numériques</strong> adaptées à vos besoins en santé
             mentale
           </p>
         </div>
@@ -236,7 +236,7 @@ export const Landing: React.FC = () => {
                 Recevez des recommandations
               </h3>
               <p className="text-text-secondary text-sm">
-                Outils validés par des professionnels
+                Outils sélectionnés par le Collectif MentalTech
               </p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl border-2 border-purple-100 shadow-sm">

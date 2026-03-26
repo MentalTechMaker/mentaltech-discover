@@ -33,15 +33,15 @@ const PARTICULIER_AUDIENCE_OPTIONS = [
 const PARTICULIER_VALUES = PARTICULIER_AUDIENCE_OPTIONS.map(o => o.value);
 
 const PROBLEM_OPTIONS = [
-  { value: "stress-anxiety", label: "Stress & Anxiété" },
-  { value: "sadness", label: "Tristesse & Dépression" },
+  { value: "stress-anxiety", label: "Stress / Anxiété" },
+  { value: "sadness", label: "Tristesse / Dépression" },
   { value: "addiction", label: "Addictions" },
   { value: "trauma", label: "Traumatismes" },
-  { value: "work", label: "Travail & Burn-out" },
+  { value: "work", label: "Travail / Burn-out" },
   { value: "sleep", label: "Sommeil" },
   { value: "cognitif", label: "Troubles cognitifs" },
   { value: "douleur", label: "Douleur" },
-  { value: "concentration", label: "Concentration & TDAH" },
+  { value: "concentration", label: "Concentration / TDAH" },
   { value: "other", label: "Autres" },
 ];
 
@@ -159,6 +159,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [audience, setAudience] = useState<string[]>([]);
   const [problemsSolved, setProblemsSolved] = useState<string[]>([]);
   const [pricingModel, setPricingModel] = useState("");
@@ -203,7 +204,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
   // Collect all saveable form data into an object
   const collectFormData = () => ({
-    step, name, type, tagline, description, url, audience, problemsSolved,
+    step, name, type, tagline, description, url, linkedin, audience, problemsSolved,
     pricingModel, pricingAmount, pricingDetails, protocolAnswers,
     contactName, contactEmail, collectifRequested, collectifCaRange,
     collectifContactEmail, logoPath,
@@ -217,6 +218,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     if (data.tagline != null) setTagline(data.tagline as string);
     if (data.description != null) setDescription(data.description as string);
     if (data.url != null) setUrl(data.url as string);
+    if (data.linkedin != null) setLinkedin(data.linkedin as string);
     if (data.audience != null) setAudience(data.audience as string[]);
     if (data.problemsSolved != null) setProblemsSolved(data.problemsSolved as string[]);
     if (data.pricingModel != null) setPricingModel(data.pricingModel as string);
@@ -254,7 +256,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       } catch { /* localStorage unavailable */ }
     }, 30000);
     return () => clearInterval(interval);
-  }, [step, name, type, tagline, description, url, audience, problemsSolved,
+  }, [step, name, type, tagline, description, url, linkedin, audience, problemsSolved,
       pricingModel, pricingAmount, pricingDetails, protocolAnswers,
       contactName, contactEmail, collectifRequested, collectifCaRange,
       collectifContactEmail, logoPath]);
@@ -389,7 +391,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la creation du produit");
+      setError(err instanceof Error ? err.message : "Erreur lors de la création du produit");
     } finally {
       setSaving(false);
     }
@@ -412,6 +414,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         tagline: tagline || undefined,
         description: description || undefined,
         url: url || undefined,
+        linkedin: linkedin.trim() || undefined,
         logo: logoPath || undefined,
         tags: [],
         audience,
@@ -690,7 +693,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
-                Description * <span className="font-normal text-text-secondary">(200-250 car. recommande)</span>
+                Description * <span className="font-normal text-text-secondary">(200-250 car. recommandé)</span>
               </label>
               <textarea
                 value={description}
@@ -714,6 +717,20 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 disabled={readOnly}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
                 placeholder="https://votre-solution.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-text-primary mb-1">
+                LinkedIn de l'entreprise <span className="font-normal text-text-secondary">(optionnel)</span>
+              </label>
+              <input
+                type="url"
+                value={linkedin}
+                onChange={(e) => setLinkedin(e.target.value)}
+                disabled={readOnly}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
+                placeholder="https://linkedin.com/in/votre-profil"
               />
             </div>
 
@@ -902,7 +919,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     placeholder="ex: monapp-fr"
                   />
                   <p className="text-xs text-text-secondary mt-1">
-                    Laissez vide pour generer automatiquement
+                    Laissez vide pour générer automatiquement
                   </p>
                 </div>
 
@@ -987,7 +1004,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     {pillar.id}. {pillar.title}
                   </span>
                   <span className="text-xs bg-gray-100 text-text-secondary px-2 py-1 rounded">
-                    {pillar.subCriteria.length} sous-criteres
+                    {pillar.subCriteria.length} sous-critères
                   </span>
                 </summary>
                 <div className="px-6 pb-6 space-y-6">
@@ -1096,13 +1113,13 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                         })}
                         <div className="mt-3 pt-3 border-t border-gray-100">
                           <label className="block text-sm font-semibold text-text-primary mb-1">
-                            Arguments a mettre en avant
+                            Arguments à mettre en avant
                           </label>
                           <textarea
                             value={(getProtocolAnswer(sc.id, "_arguments") as string) || ""}
                             onChange={(e) => setProtocolAnswer(sc.id, "_arguments", e.target.value)}
                             disabled={readOnly}
-                            placeholder="Arguments a mettre en avant pour ce critere"
+                            placeholder="Arguments à mettre en avant pour ce critère"
                             rows={3}
                             className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm disabled:bg-gray-50 resize-y"
                           />
@@ -1121,11 +1138,11 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                       suggested: number | "";
                       suggestedJust: string;
                     }> = {
-                      "1": { label: "Securite & Confidentialite", score: scoresSecurity, setScore: setScoresSecurity, just: justSecurity, setJust: setJustSecurity, suggested: suggestedScores?.security ?? "", suggestedJust: suggestedScores?.justSecurity ?? "" },
-                      "2": { label: "Efficacite & Preuves cliniques", score: scoresEfficacy, setScore: setScoresEfficacy, just: justEfficacy, setJust: setJustEfficacy, suggested: suggestedScores?.efficacy ?? "", suggestedJust: suggestedScores?.justEfficacy ?? "" },
-                      "3": { label: "Accessibilite & Inclusion", score: scoresAccessibility, setScore: setScoresAccessibility, just: justAccessibility, setJust: setJustAccessibility, suggested: suggestedScores?.accessibility ?? "", suggestedJust: suggestedScores?.justAccessibility ?? "" },
-                      "4": { label: "Qualite UX", score: scoresUx, setScore: setScoresUx, just: justUx, setJust: setJustUx, suggested: suggestedScores?.ux ?? "", suggestedJust: suggestedScores?.justUx ?? "" },
-                      "5": { label: "Support & Accompagnement", score: scoresSupport, setScore: setScoresSupport, just: justSupport, setJust: setJustSupport, suggested: suggestedScores?.support ?? "", suggestedJust: suggestedScores?.justSupport ?? "" },
+                      "1": { label: "Sécurité", score: scoresSecurity, setScore: setScoresSecurity, just: justSecurity, setJust: setJustSecurity, suggested: suggestedScores?.security ?? "", suggestedJust: suggestedScores?.justSecurity ?? "" },
+                      "2": { label: "Preuves", score: scoresEfficacy, setScore: setScoresEfficacy, just: justEfficacy, setJust: setJustEfficacy, suggested: suggestedScores?.efficacy ?? "", suggestedJust: suggestedScores?.justEfficacy ?? "" },
+                      "3": { label: "Accessibilité", score: scoresAccessibility, setScore: setScoresAccessibility, just: justAccessibility, setJust: setJustAccessibility, suggested: suggestedScores?.accessibility ?? "", suggestedJust: suggestedScores?.justAccessibility ?? "" },
+                      "4": { label: "Expérience user", score: scoresUx, setScore: setScoresUx, just: justUx, setJust: setJustUx, suggested: suggestedScores?.ux ?? "", suggestedJust: suggestedScores?.justUx ?? "" },
+                      "5": { label: "Support", score: scoresSupport, setScore: setScoresSupport, just: justSupport, setJust: setJustSupport, suggested: suggestedScores?.support ?? "", suggestedJust: suggestedScores?.justSupport ?? "" },
                     };
                     const cfg = PILLAR_SCORE_MAP[pillar.id];
                     if (!cfg) return null;
@@ -1275,15 +1292,15 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     Admin
                   </span>
                   <span className="text-sm font-semibold text-text-primary">
-                    Resume des scores
+                    Résumé des scores
                   </span>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center text-xs">
                   {[
-                    { label: "Securite", score: scoresSecurity },
-                    { label: "Efficacite", score: scoresEfficacy },
-                    { label: "Accessibilite", score: scoresAccessibility },
-                    { label: "UX", score: scoresUx },
+                    { label: "Sécurité", score: scoresSecurity },
+                    { label: "Preuves", score: scoresEfficacy },
+                    { label: "Accessibilité", score: scoresAccessibility },
+                    { label: "Exp. user", score: scoresUx },
                     { label: "Support", score: scoresSupport },
                   ].map((s) => (
                     <div key={s.label} className="bg-gray-50 rounded p-2">
@@ -1400,6 +1417,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     if (!name.trim()) { setStepError("Le nom de la solution est requis."); return; }
                     if (!type) { setStepError("Le type de solution est requis."); return; }
                     if (!url.trim()) { setStepError("L'URL de la solution est requise."); return; }
+                    if (linkedin.trim() && !linkedin.trim().startsWith("http")) { setStepError("Le lien LinkedIn doit commencer par http:// ou https://"); return; }
                     if (!contactName.trim()) { setStepError("Votre nom est requis."); return; }
                     if (!contactEmail.trim()) { setStepError("Votre email est requis."); return; }
                   }

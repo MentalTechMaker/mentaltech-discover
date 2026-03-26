@@ -181,7 +181,9 @@ def login(request: Request, data: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.post("/refresh")
+@limiter.limit("30/minute")
 def refresh(
+    request: Request,
     data: TokenRefresh | None = None,
     refresh_token_cookie: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
     db: Session = Depends(get_db),
@@ -238,7 +240,9 @@ def me(user: User = Depends(get_current_user)):
 
 
 @router.put("/change-password")
+@limiter.limit("5/minute")
 def change_password(
+    request: Request,
     data: ChangePassword,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),

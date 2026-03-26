@@ -81,7 +81,7 @@ export const NewPrescription: React.FC = () => {
       setStep(3);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erreur lors de la creation de la prescription',
+        err instanceof Error ? err.message : 'Erreur lors de la création de la prescription',
       );
     } finally {
       setLoading(false);
@@ -239,10 +239,10 @@ export const NewPrescription: React.FC = () => {
   const renderStep1 = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-bold text-text-primary">
-        Selectionner les produits (1 a 5)
+        Sélectionner les produits (1 à 5)
       </h3>
       <p className="text-sm text-gray-500">
-        Choisissez entre 1 et 5 solutions numeriques a recommander a votre patient.
+        Choisissez entre 1 et 5 solutions numériques à recommander à votre patient.
       </p>
 
       {/* Selected products */}
@@ -316,14 +316,14 @@ export const NewPrescription: React.FC = () => {
         {productsLoading ? (
           <div className="text-center py-8 text-gray-400">Chargement des produits...</div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">Aucun produit trouve.</div>
+          <div className="text-center py-8 text-gray-400">Aucun produit trouvé.</div>
         ) : (
           filteredProducts.map((p) => <ProductRow key={p.id} product={p} />)
         )}
       </div>
 
       <p className="text-sm text-gray-400 text-right">
-        {selectedProductIds.length}/5 produit{selectedProductIds.length > 1 ? 's' : ''} selectionne{selectedProductIds.length > 1 ? 's' : ''}
+        {selectedProductIds.length}/5 produit{selectedProductIds.length > 1 ? 's' : ''} sélectionné{selectedProductIds.length > 1 ? 's' : ''}
       </p>
 
       {/* Navigation */}
@@ -363,13 +363,13 @@ export const NewPrescription: React.FC = () => {
           className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
         />
         <p className="text-xs text-gray-400 mt-1">
-          L'email est utilise uniquement pour envoyer le lien de prescription, puis supprime de nos serveurs.
+          L'email est utilisé uniquement pour envoyer le lien de prescription, puis supprimé de nos serveurs.
         </p>
       </div>
 
       <div>
         <label htmlFor="prescriberMessage" className="block text-sm font-semibold text-text-primary mb-1">
-          Message personnalise (optionnel)
+          Message personnalisé (optionnel)
         </label>
         <textarea
           id="prescriberMessage"
@@ -416,7 +416,7 @@ export const NewPrescription: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-text-primary">Prescription creee avec succes !</h3>
+            <h3 className="text-lg font-bold text-text-primary">Prescription créée avec succès !</h3>
             <p className="text-sm text-gray-500 mt-1">
               Partagez ce lien avec votre patient pour qu'il puisse consulter vos recommandations.
             </p>
@@ -472,13 +472,13 @@ export const NewPrescription: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-text-primary">Confirmation</h3>
         <p className="text-sm text-gray-500">
-          Verifiez les informations avant de creer la prescription.
+          Vérifiez les informations avant de créer la prescription.
         </p>
 
         {/* Products summary */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="text-sm font-semibold text-text-primary mb-3">
-            Produits recommandes ({selectedProducts.length})
+            Produits recommandés ({selectedProducts.length})
           </h4>
           <div className="space-y-2">
             {selectedProducts.map((p) => (
@@ -560,7 +560,7 @@ export const NewPrescription: React.FC = () => {
               onClick={handleSubmit}
               className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? 'Creation...' : 'Creer la prescription'}
+              {loading ? 'Création...' : 'Créer la prescription'}
             </button>
           )}
         </div>

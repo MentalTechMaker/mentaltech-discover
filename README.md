@@ -68,11 +68,11 @@ Chaque solution est évaluée sur 5 piliers, chacun noté de 0 à 5, pour un sco
 
 Les 5 piliers d'évaluation :
 
-1. **Sécurité & Confidentialité** - RGPD, hébergement HDS, chiffrement
-2. **Efficacité & Preuves cliniques** - Base scientifique, études publiées
-3. **Accessibilité & Inclusion** - Prix, plateformes, langue, handicap
-4. **Qualité UX** - Design, navigation, performance, mobile
-5. **Support & Accompagnement** - Réactivité, gestion de crise, ressources
+1. **Sécurité** - RGPD, hébergement HDS, chiffrement
+2. **Preuves** - Base scientifique, études publiées
+3. **Accessibilité** - Prix, plateformes, langue, handicap
+4. **Expérience user** - Design, navigation, performance, mobile
+5. **Support** - Réactivité, gestion de crise, ressources
 
 Chaque note est accompagnée d'une **justification textuelle** (documents de recherche, témoignages, observations). Les justifications détaillées sont visibles par les administrateurs.
 

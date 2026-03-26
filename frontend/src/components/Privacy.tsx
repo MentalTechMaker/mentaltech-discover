@@ -6,8 +6,11 @@ export const Privacy: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
   useEffect(() => {
-    setPageMeta("Politique de confidentialité");
-    setCanonical("/privacy");
+    setPageMeta(
+      "Politique de confidentialité",
+      "Découvrez comment MentalTech Discover protège vos données. Aucune collecte pour les visiteurs, hébergement en France, conformité RGPD."
+    );
+    setCanonical("/confidentialite");
   }, []);
 
   return (
@@ -127,7 +130,7 @@ export const Privacy: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
               <p>
-                Vos données sont hébergées en France par <strong>OVH SAS</strong> (Roubaix, France), fournisseur certifié pour l'hébergement sécurisé. Les données de santé des prescripteurs (profession, numéro RPPS/ADELI) sont traitées conformément aux exigences de sécurité renforcées applicables aux données de santé.
+                Vos données sont hébergées en France par <strong>OVH SAS</strong> (Roubaix, France). Les données collectées pour les prescripteurs (nom, email, profession, numéro RPPS/ADELI) sont des données d'identification professionnelle. Elles ne constituent pas des données de santé au sens de l'article 9 du RGPD et ne nécessitent pas un hébergement certifié HDS.
               </p>
               <p>
                 L'hébergement respecte les normes européennes de protection des
@@ -221,6 +224,40 @@ export const Privacy: React.FC = () => {
               Toutes les connexions à ce site sont chiffrées en HTTPS. Vos
               interactions avec l'outil sont sécurisées.
             </p>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                👤
+              </span>
+              Délégué à la protection des données
+            </h2>
+            <p className="text-text-secondary leading-relaxed">
+              Le responsable de la protection des données est <strong>Arnaud Bressot</strong>, joignable à{" "}
+              <a href="mailto:arnaud@mentaltechmaker.fr" className="text-primary font-semibold hover:underline">arnaud@mentaltechmaker.fr</a>.
+              Pour exercer vos droits (accès, rectification, effacement, portabilité, opposition), envoyez un email à cette adresse. Nous répondons sous 30 jours.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                ⏱️
+              </span>
+              Durées de conservation
+            </h2>
+            <div className="text-text-secondary leading-relaxed space-y-2">
+              <p>Conformément au principe de minimisation (Art. 5 du RGPD), les données sont conservées pour les durées suivantes :</p>
+              <ul className="list-disc ml-6 space-y-1">
+                <li><strong>Comptes prescripteurs / éditeurs</strong> : 3 ans après la dernière connexion. Au-delà, le compte et les données associées sont supprimés.</li>
+                <li><strong>Prescriptions numériques</strong> : 30 jours après création (expiration automatique). L'email du patient est supprimé immédiatement après envoi.</li>
+                <li><strong>Tokens de vérification</strong> : 24 à 48 heures selon le type (vérification email, réinitialisation mot de passe).</li>
+                <li><strong>Journaux techniques</strong> : 1 an maximum.</li>
+                <li><strong>Visiteurs</strong> : aucune donnée conservée (pas de compte, pas de cookies).</li>
+              </ul>
+              <p>Pour supprimer votre compte, envoyez un email à <a href="mailto:arnaud@mentaltechmaker.fr" className="text-primary font-semibold hover:underline">arnaud@mentaltechmaker.fr</a>.</p>
+            </div>
           </section>
 
           <section className="space-y-3">

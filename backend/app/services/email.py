@@ -11,10 +11,18 @@ from ..services.auth import ALGORITHM
 
 logger = logging.getLogger(__name__)
 
+
+def _mask_email(email: str) -> str:
+    """Mask email for RGPD-compliant logging: a***@example.com"""
+    if "@" not in email:
+        return "***"
+    local, domain = email.split("@", 1)
+    return f"{local[0]}***@{domain}"
+
 TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
 EMAIL_DEV_DIR = Path("/tmp/mentaltech_emails")
 
-jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
+jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
 
 mail_conf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,
@@ -88,9 +96,9 @@ async def send_verification_email(email: str, name: str, user_id: str) -> None:
 
     try:
         await fm.send_message(message)
-        logger.info(f"Verification email sent to {email}")
+        logger.info(f"Verification email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send verification email to {email}", exc_info=True)
+        logger.error(f"Failed to send verification email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -124,9 +132,9 @@ async def send_prescription_email(
 
     try:
         await fm.send_message(message_schema)
-        logger.info(f"Prescription email sent to {patient_email}")
+        logger.info(f"Prescription email sent to {_mask_email(patient_email)}")
     except Exception:
-        logger.error(f"Failed to send prescription email to {patient_email}", exc_info=True)
+        logger.error(f"Failed to send prescription email to {_mask_email(patient_email)}", exc_info=True)
         _write_email_to_file(message_schema.subject, [patient_email], html)
 
 
@@ -148,9 +156,9 @@ async def send_prescription_viewed_email(
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Prescription viewed email sent to {prescriber_email}")
+        logger.info(f"Prescription viewed email sent to {_mask_email(prescriber_email)}")
     except Exception:
-        logger.error(f"Failed to send prescription viewed email to {prescriber_email}", exc_info=True)
+        logger.error(f"Failed to send prescription viewed email to {_mask_email(prescriber_email)}", exc_info=True)
         _write_email_to_file(message.subject, [prescriber_email], html)
 
 
@@ -165,9 +173,9 @@ async def send_prescriber_approved_email(email: str, name: str, dashboard_url: s
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Prescriber approved email sent to {email}")
+        logger.info(f"Prescriber approved email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send prescriber approved email to {email}", exc_info=True)
+        logger.error(f"Failed to send prescriber approved email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -183,9 +191,9 @@ async def send_submission_confirmation_email(email: str, name: str, confirm_toke
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Submission confirmation email sent to {email}")
+        logger.info(f"Submission confirmation email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission confirmation email to {email}", exc_info=True)
+        logger.error(f"Failed to send submission confirmation email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -215,7 +223,7 @@ async def send_submission_received_admin_email(
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Admin submission notification sent to {admin_email}")
+        logger.info(f"Admin submission notification sent to {_mask_email(admin_email)}")
     except Exception:
         logger.error(f"Failed to send admin submission notification", exc_info=True)
         _write_email_to_file(message.subject, [admin_email], html)
@@ -233,9 +241,9 @@ async def send_submission_approved_email(email: str, name: str, product_name: st
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Submission approved email sent to {email}")
+        logger.info(f"Submission approved email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission approved email to {email}", exc_info=True)
+        logger.error(f"Failed to send submission approved email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -250,9 +258,9 @@ async def send_submission_rejected_email(email: str, name: str, product_name: st
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Submission rejected email sent to {email}")
+        logger.info(f"Submission rejected email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission rejected email to {email}", exc_info=True)
+        logger.error(f"Failed to send submission rejected email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -267,9 +275,9 @@ async def send_collectif_invite_email(email: str, name: str, helloasso_url: str)
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Collectif invite email sent to {email}")
+        logger.info(f"Collectif invite email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send collectif invite email to {email}", exc_info=True)
+        logger.error(f"Failed to send collectif invite email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -284,9 +292,9 @@ async def send_collectif_refused_email(email: str, name: str, admin_notes: str |
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Collectif refused email sent to {email}")
+        logger.info(f"Collectif refused email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send collectif refused email to {email}", exc_info=True)
+        logger.error(f"Failed to send collectif refused email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -302,9 +310,9 @@ async def send_health_pro_confirmation_email(email: str, name: str, confirm_toke
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Health pro confirmation email sent to {email}")
+        logger.info(f"Health pro confirmation email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send health pro confirmation email to {email}", exc_info=True)
+        logger.error(f"Failed to send health pro confirmation email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -336,7 +344,7 @@ async def send_health_pro_admin_notification(
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Health pro admin notification sent to {admin_email}")
+        logger.info(f"Health pro admin notification sent to {_mask_email(admin_email)}")
     except Exception:
         logger.error(f"Failed to send health pro admin notification", exc_info=True)
         _write_email_to_file(message.subject, [admin_email], html)
@@ -358,7 +366,7 @@ async def send_reset_password_email(email: str, name: str, user_id: str) -> None
 
     try:
         await fm.send_message(message)
-        logger.info(f"Password reset email sent to {email}")
+        logger.info(f"Password reset email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send password reset email to {email}", exc_info=True)
+        logger.error(f"Failed to send password reset email to {_mask_email(email)}", exc_info=True)
         _write_email_to_file(message.subject, [email], html)

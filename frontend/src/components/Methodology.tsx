@@ -5,7 +5,7 @@ export const Methodology: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Méthodologie d'évaluation",
-      "Comment MentalTech Discover évalue les solutions digitales de santé mentale : 5 piliers, protocole transparent, labels A à E."
+      "Comment MentalTech Discover évalue les solutions numériques de santé mentale : 5 piliers, protocole transparent, labels A à E."
     );
     setCanonical("/methodologie");
   }, []);
@@ -377,7 +377,7 @@ export const Methodology: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">🔒</span>
                     <span className="font-semibold text-gray-900 text-sm">
-                      Sécurité & Confidentialité
+                      Sécurité
                     </span>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -389,7 +389,7 @@ export const Methodology: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">🎯</span>
                     <span className="font-semibold text-gray-900 text-sm">
-                      Efficacité & Preuves cliniques
+                      Preuves
                     </span>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -401,7 +401,7 @@ export const Methodology: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">♿</span>
                     <span className="font-semibold text-gray-900 text-sm">
-                      Accessibilité & Inclusion
+                      Accessibilité
                     </span>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -413,7 +413,7 @@ export const Methodology: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">✨</span>
                     <span className="font-semibold text-gray-900 text-sm">
-                      Qualité UX
+                      Expérience user
                     </span>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -425,7 +425,7 @@ export const Methodology: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">💬</span>
                     <span className="font-semibold text-gray-900 text-sm">
-                      Support & Accompagnement
+                      Support
                     </span>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -440,9 +440,8 @@ export const Methodology: React.FC = () => {
                   Score sur 100 points
                 </h4>
                 <p className="text-sm text-gray-700 mb-3">
-                  Chaque solution recevra un{" "}
-                  <strong>score global sur 100 points</strong> permettant une
-                  comparaison objective :
+                  Chaque pilier est noté de 0 à 5 points. Le{" "}
+                  <strong>score global sur 100 points</strong> est calculé en additionnant les 5 piliers (chacun multiplié par 4). Tous les piliers ont un <strong>poids égal</strong> dans l'évaluation finale, permettant une comparaison objective :
                 </p>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2">

@@ -36,11 +36,11 @@ export function getPillarLabelInfo(score: number | null | undefined): LabelInfo 
 }
 
 export const SCORE_CRITERIA = [
-  { key: "security" as const, label: "Sécurité & Confidentialité", justKey: "justificationSecurity" as const },
-  { key: "efficacy" as const, label: "Efficacité & Preuves cliniques", justKey: "justificationEfficacy" as const },
-  { key: "accessibility" as const, label: "Accessibilité & Inclusion", justKey: "justificationAccessibility" as const },
-  { key: "ux" as const, label: "Qualité UX", justKey: "justificationUx" as const },
-  { key: "support" as const, label: "Support & Accompagnement", justKey: "justificationSupport" as const },
+  { key: "security" as const, label: "Sécurité", justKey: "justificationSecurity" as const },
+  { key: "efficacy" as const, label: "Preuves", justKey: "justificationEfficacy" as const },
+  { key: "accessibility" as const, label: "Accessibilité", justKey: "justificationAccessibility" as const },
+  { key: "ux" as const, label: "Expérience user", justKey: "justificationUx" as const },
+  { key: "support" as const, label: "Support", justKey: "justificationSupport" as const },
 ];
 
 export function computeLabelFromScores(

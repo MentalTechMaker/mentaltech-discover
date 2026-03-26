@@ -64,6 +64,7 @@ def _to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
         tagline=sub.tagline,
         description=sub.description,
         url=sub.url,
+        linkedin=sub.linkedin,
         logo=sub.logo,
         tags=sub.tags or [],
         audience=sub.audience or [],
@@ -137,6 +138,7 @@ async def create_public_submission(
         tagline=data.tagline,
         description=data.description,
         url=data.url,
+        linkedin=data.linkedin,
         logo=data.logo,
         tags=data.tags,
         audience=data.audience,
@@ -241,6 +243,7 @@ async def apply_health_pro(
         rpps_adeli=data.rpps_adeli,
         organization=data.organization,
         motivation=data.motivation,
+        linkedin=data.linkedin,
         status="pending_email",
         email_confirmed=False,
     )

@@ -36,12 +36,15 @@ const audienceLabels: Record<string, string> = {
 };
 
 const problemLabels: Record<string, string> = {
-  "stress-anxiety": "Stress & Anxiété",
-  sadness: "Tristesse & Dépression",
+  "stress-anxiety": "Stress / Anxiété",
+  sadness: "Tristesse / Dépression",
   addiction: "Addictions",
   trauma: "Traumatismes",
-  work: "Travail & Burn-out",
+  work: "Travail / Burn-out",
   sleep: "Sommeil",
+  cognitif: "Troubles cognitifs",
+  douleur: "Douleur",
+  concentration: "Concentration / TDAH",
   other: "Autres",
 };
 
@@ -51,6 +54,8 @@ export const ProductPage: React.FC = () => {
   const products = useProductsStore((s) => s.products);
   const isAdmin = useAuthStore((s) => s.isAdmin);
   const isPrescriber = useAuthStore((s) => s.isPrescriber);
+  const isPrescriberPending = useAuthStore((s) => s.isPrescriberPending);
+  const canFavorite = isPrescriber || isPrescriberPending;
   const setAdminEditProductId = useAppStore((s) => s.setAdminEditProductId);
 
   const [isFavorite, setIsFavorite] = useState(false);
@@ -98,11 +103,11 @@ export const ProductPage: React.FC = () => {
   }, [product]);
 
   useEffect(() => {
-    if (!isPrescriber || !selectedProductId) return;
+    if (!canFavorite || !selectedProductId) return;
     listFavorites().then((favs) => {
       setIsFavorite(favs.some((f) => f.productId === selectedProductId));
     }).catch(() => {});
-  }, [isPrescriber, selectedProductId]);
+  }, [canFavorite, selectedProductId]);
 
   const handleToggleFavorite = async () => {
     if (!selectedProductId) return;
@@ -188,6 +193,8 @@ export const ProductPage: React.FC = () => {
                     target.style.display = "none";
                     const fallback = document.createElement("span");
                     fallback.className = "text-5xl";
+                    fallback.setAttribute("role", "img");
+                    fallback.setAttribute("aria-label", `Logo de ${product.name}`);
                     fallback.textContent = "💙";
                     target.parentElement?.appendChild(fallback);
                   }}
@@ -220,6 +227,11 @@ export const ProductPage: React.FC = () => {
               </div>
               <p className="text-sm text-text-secondary">{product.type}</p>
               <p className="text-lg text-primary font-semibold">{product.tagline}</p>
+              {product.lastUpdated && (
+                <p className="text-xs text-text-secondary mt-1">
+                  Dernière mise à jour : {new Date(product.lastUpdated).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -236,7 +248,7 @@ export const ProductPage: React.FC = () => {
             </div>
 
             {/* Scoring detail - visible for admin and prescribers */}
-            {(isAdmin || isPrescriber) && hasScoring && (
+            {hasScoring && (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <span
@@ -285,67 +297,21 @@ export const ProductPage: React.FC = () => {
                         )}
                         {justification && (
                           <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                            <p className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
-                              {justification}
-                            </p>
+                            {product.isDemo ? (
+                              <ul className="text-sm text-text-secondary leading-relaxed space-y-1">
+                                {justification.split(/\.\s+/).filter(Boolean).map((sentence: string, i: number) => (
+                                  <li key={i} className="flex gap-2">
+                                    <span className="text-text-secondary flex-shrink-0">-</span>
+                                    <span>{sentence.replace(/\.$/, '').trim()}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
+                                {justification}
+                              </p>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Scoring summary for non-admin (no justifications) */}
-            {!isAdmin && !isPrescriber && hasScoring && (
-              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <span
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full text-base font-bold shadow"
-                    style={{ backgroundColor: label.bgColor, color: label.color }}
-                  >
-                    {label.grade}
-                  </span>
-                  <div>
-                    <h2 className="text-lg font-bold text-text-primary">{label.text}</h2>
-                    <p className="text-text-secondary text-sm">
-                      Score global : {product.scoreTotal}/100
-                    </p>
-                    {product.updatedAt && (
-                      <p className="text-xs text-text-secondary mt-0.5">
-                        Évalué en {new Date(product.updatedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
-                    const score = product.scoring?.[key];
-                    const justification = product.scoring?.[justKey];
-                    const pillarLabel = getPillarLabelInfo(score);
-                    return (
-                      <div key={key} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-text-primary">{criteriaLabel}</span>
-                          {score != null
-                            ? <span className="text-sm font-bold text-text-primary">{score}/5</span>
-                            : <span className="text-xs text-text-secondary italic">Non renseigné</span>
-                          }
-                        </div>
-                        {score != null && <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="h-2 rounded-full transition-all"
-                            style={{
-                              width: `${(score / 5) * 100}%`,
-                              backgroundColor: pillarLabel.bgColor,
-                            }}
-                          />
-                        </div>}
-                        {justification && (
-                          <p className="mt-2 text-xs text-text-secondary whitespace-pre-line leading-relaxed bg-gray-50 rounded px-2 py-1.5">
-                            {justification}
-                          </p>
                         )}
                       </div>
                     );
@@ -401,7 +367,7 @@ export const ProductPage: React.FC = () => {
               ) : (
                 <p className="text-center text-text-secondary italic">Lien non disponible</p>
               )}
-              {isPrescriber && (
+              {canFavorite && (
                 <button
                   onClick={handleToggleFavorite}
                   disabled={favoriteLoading}
@@ -491,14 +457,6 @@ export const ProductPage: React.FC = () => {
               )}
             </div>
 
-            {/* Last updated */}
-            {product.lastUpdated && (
-              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-                <p className="text-xs text-text-secondary">
-                  Dernière mise à jour : {new Date(product.lastUpdated).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>

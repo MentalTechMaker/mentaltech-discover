@@ -6,8 +6,11 @@ export const LegalNotice: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
   useEffect(() => {
-    setPageMeta("Mentions légales");
-    setCanonical("/legal");
+    setPageMeta(
+      "Mentions légales",
+      "Mentions légales de MentalTech Discover : éditeur, hébergeur, conditions d'utilisation et informations juridiques."
+    );
+    setCanonical("/mentions-legales");
   }, []);
 
   return (
@@ -36,6 +39,12 @@ export const LegalNotice: React.FC = () => {
               </p>
               <p>
                 Créé par <strong>MentalTechMaker</strong> (Arnaud Bressot)
+              </p>
+              <p>
+                Micro-entreprise - SIRET : 820 215 473
+              </p>
+              <p>
+                3 petite rue de la poste, 63110 Beaumont, France
               </p>
               <p>
                 Pour le <strong>Collectif MentalTech</strong>
@@ -137,7 +146,7 @@ export const LegalNotice: React.FC = () => {
               </div>
               <p>
                 Développé pour le <strong>Collectif MentalTech</strong> - Premier
-                écosystème français de santé mentale digitale.
+                écosystème français de santé mentale numérique.
               </p>
             </div>
           </section>
@@ -215,11 +224,11 @@ export const LegalNotice: React.FC = () => {
             <div className="text-text-secondary leading-relaxed space-y-3">
               <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
                 <p className="font-semibold text-amber-900 mb-2">
-                  ⚠️ Important : Outil de découverte, pas un dispositif médical
+                  ⚠️ Important : Plateforme d'orientation, pas un dispositif médical
                 </p>
                 <p className="text-sm">
-                  <strong>MentalTech Discover</strong> est un outil de découverte qui
-                  référence des solutions digitales en santé mentale. Ce n'est{" "}
+                  <strong>MentalTech Discover</strong> est une plateforme d'orientation qui
+                  référence des solutions numériques en santé mentale. Ce n'est{" "}
                   <strong>pas un dispositif médical certifié</strong>.
                 </p>
               </div>

@@ -33,7 +33,7 @@ export const JoinCollectivePage: React.FC = () => {
           </div>
           <h1 className="text-3xl md:text-5xl font-bold text-text-primary mb-4 leading-tight">
             Rejoignez le collectif de la{" "}
-            <span className="text-purple-600">santé mentale digitale</span>
+            <span className="text-purple-600">santé mentale numérique</span>
           </h1>
           <p className="text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
             Le MentalTech Collectif regroupe des professionnels de santé et des éditeurs
@@ -64,10 +64,57 @@ export const JoinCollectivePage: React.FC = () => {
           </div>
         )}
 
-        {/* Two cards */}
+        {/* Two cards - Solutions first, then Health pro */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
 
-          {/* Card 1 - Health pro */}
+          {/* Card 1 - Product / Solution */}
+          <button
+            onClick={() => setView("public-submission")}
+            className="group text-left bg-white rounded-2xl border-2 border-amber-200 hover:border-amber-500 hover:shadow-xl p-8 transition-all transform hover:-translate-y-1 space-y-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-amber-100 p-4 rounded-2xl flex-shrink-0">
+                <span className="text-4xl">🚀</span>
+              </div>
+              <div>
+                <div className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full inline-block mb-1">
+                  EDITEUR DE SOLUTION
+                </div>
+                <h2 className="text-xl font-bold text-text-primary">J'ai une solution</h2>
+              </div>
+            </div>
+            <p className="text-text-secondary leading-relaxed">
+              Startup, éditeur ou porteur de projet en santé mentale - soumettez votre
+              solution pour qu'elle soit <strong>évaluée, référencée</strong> et visible
+              par les professionnels et les patients.
+            </p>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Évaluation selon le protocole MentalTech (5 piliers)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Visibilité auprès de {publicStats?.prescribers || "25"}+ prescripteurs</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Adhésion au collectif et réseau d'entreprises</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Label MentalTech et communication conjointe</span>
+              </li>
+            </ul>
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-amber-600 font-bold group-hover:gap-3 transition-all">
+                Référencer ma solution
+              </span>
+              <span className="text-amber-600 text-xl group-hover:translate-x-2 transition-transform">&#8594;</span>
+            </div>
+          </button>
+
+          {/* Card 2 - Health pro */}
           <button
             onClick={() => setView("health-pro-application")}
             className="group text-left bg-white rounded-2xl border-2 border-purple-200 hover:border-purple-500 hover:shadow-xl p-8 transition-all transform hover:-translate-y-1 space-y-4"
@@ -88,52 +135,63 @@ export const JoinCollectivePage: React.FC = () => {
               accéder aux <strong>évaluations détaillées</strong> et participer à la
               promotion d'outils numériques validés.
             </p>
-            <ul className="space-y-1.5 text-sm text-text-secondary">
-              <li className="flex items-center gap-2"><span className="text-purple-500">✓</span> Accès aux évaluations protocole MentalTech</li>
-              <li className="flex items-center gap-2"><span className="text-purple-500">✓</span> Réseau de professionnels engagés</li>
-              <li className="flex items-center gap-2"><span className="text-purple-500">✓</span> Participation aux groupes de travail</li>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Accès aux évaluations protocole MentalTech</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Réseau de professionnels engagés</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Participation aux groupes de travail</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+                <span className="text-text-primary font-medium">Outil de prescription numérique</span>
+              </li>
             </ul>
             <div className="flex items-center gap-2 pt-2">
               <span className="text-purple-600 font-bold group-hover:gap-3 transition-all">
                 Candidater au collectif
               </span>
-              <span className="text-purple-600 text-xl group-hover:translate-x-2 transition-transform">→</span>
+              <span className="text-purple-600 text-xl group-hover:translate-x-2 transition-transform">&#8594;</span>
             </div>
           </button>
+        </div>
 
-          {/* Card 2 - Product */}
-          <button
-            onClick={() => setView("public-submission")}
-            className="group text-left bg-white rounded-2xl border-2 border-amber-200 hover:border-amber-500 hover:shadow-xl p-8 transition-all transform hover:-translate-y-1 space-y-4"
-          >
-            <div className="flex items-center gap-4">
-              <div className="bg-amber-100 p-4 rounded-2xl flex-shrink-0">
-                <span className="text-4xl">🚀</span>
-              </div>
-              <div>
-                <div className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full inline-block mb-1">
-                  ÉDITEUR DE SOLUTION
-                </div>
-                <h2 className="text-xl font-bold text-text-primary">J'ai une solution</h2>
-              </div>
+        {/* Tarifs */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-8">
+          <h2 className="text-2xl font-bold text-text-primary text-center mb-2">
+            Tarifs d'adhésion au Collectif
+          </h2>
+          <p className="text-text-secondary text-center mb-8 text-sm">
+            Cotisation annuelle selon votre profil. La candidature est gratuite.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="border-2 border-purple-200 rounded-xl p-5 text-center bg-purple-50/50 hover:border-purple-400 transition-colors">
+              <div className="text-sm font-semibold text-purple-700 mb-1">Pro de santé / assimilé</div>
+              <div className="text-3xl font-bold text-text-primary">50 <span className="text-lg font-normal">EUR</span></div>
+              <div className="text-xs text-text-secondary mt-1">/ an</div>
             </div>
-            <p className="text-text-secondary leading-relaxed">
-              Startup, éditeur ou porteur de projet en santé mentale - soumettez votre
-              solution pour qu'elle soit <strong>évaluée, référencée</strong> et visible
-              par les professionnels et les patients.
-            </p>
-            <ul className="space-y-1.5 text-sm text-text-secondary">
-              <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Évaluation selon le protocole MentalTech</li>
-              <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Visibilité auprès des prescripteurs</li>
-              <li className="flex items-center gap-2"><span className="text-amber-500">✓</span> Option adhésion au collectif</li>
-            </ul>
-            <div className="flex items-center gap-2 pt-2">
-              <span className="text-amber-600 font-bold group-hover:gap-3 transition-all">
-                Référencer ma solution
-              </span>
-              <span className="text-amber-600 text-xl group-hover:translate-x-2 transition-transform">→</span>
+            <div className="border-2 border-amber-200 rounded-xl p-5 text-center bg-amber-50/50 hover:border-amber-400 transition-colors">
+              <div className="text-sm font-semibold text-amber-700 mb-1">CA &lt; 100 K EUR</div>
+              <div className="text-3xl font-bold text-text-primary">500 <span className="text-lg font-normal">EUR</span></div>
+              <div className="text-xs text-text-secondary mt-1">/ an</div>
             </div>
-          </button>
+            <div className="border-2 border-amber-200 rounded-xl p-5 text-center bg-amber-50/50 hover:border-amber-400 transition-colors">
+              <div className="text-sm font-semibold text-amber-700 mb-1">CA &lt; 1M EUR</div>
+              <div className="text-3xl font-bold text-text-primary">1 000 <span className="text-lg font-normal">EUR</span></div>
+              <div className="text-xs text-text-secondary mt-1">/ an</div>
+            </div>
+            <div className="border-2 border-amber-200 rounded-xl p-5 text-center bg-amber-50/50 hover:border-amber-400 transition-colors">
+              <div className="text-sm font-semibold text-amber-700 mb-1">CA &gt; 1M EUR</div>
+              <div className="text-3xl font-bold text-text-primary">2 000 <span className="text-lg font-normal">EUR</span></div>
+              <div className="text-xs text-text-secondary mt-1">/ an</div>
+            </div>
+          </div>
         </div>
 
         {/* Comment ça marche */}
@@ -172,11 +230,11 @@ export const JoinCollectivePage: React.FC = () => {
               },
               {
                 q: "C'est gratuit ?",
-                a: "Le processus de candidature est 100% gratuit. L'adhésion au Collectif MentalTech pour les éditeurs implique une cotisation annuelle, dont le montant est communiqué lors de l'examen de votre dossier.",
+                a: "Le processus de candidature est 100% gratuit. L'adhésion au Collectif MentalTech implique une cotisation annuelle : 50 EUR/an pour les professionnels de santé, et de 500 à 2 000 EUR/an pour les éditeurs selon le chiffre d'affaires.",
               },
               {
                 q: "Ma solution sera-t-elle visible immédiatement ?",
-                a: "Après approbation de votre candidature, votre solution est évaluée selon notre protocole MentalTech (5 piliers : sécurité, efficacité, accessibilité, UX, support) avant publication sur le catalogue.",
+                a: "Après approbation de votre candidature, votre solution est évaluée selon notre protocole MentalTech (5 piliers : sécurité, preuves, accessibilité, expérience user, support) avant publication sur le catalogue.",
               },
               {
                 q: "Quels sont les avantages pour un professionnel de santé ?",

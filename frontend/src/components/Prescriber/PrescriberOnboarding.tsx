@@ -12,23 +12,23 @@ export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
     {
       icon: '🩺',
       title: 'Recommandez en 30 secondes',
-      description: `La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", selectionnez 1 a 3 solutions et envoyez-lui un lien personnalise. C'est plus rapide que de chercher de memoire.`,
+      description: `La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", sélectionnez 1 à 3 solutions et envoyez-lui un lien personnalisé. C'est plus rapide que de chercher de mémoire.`,
       cta: 'Suivant',
       action: null,
     },
     {
       icon: '📋',
-      title: 'Creez votre premiere ordonnance',
+      title: 'Créez votre première ordonnance',
       description:
-        'Choisissez des solutions dans le catalogue, ajoutez un message pour votre patient, et partagez le lien ou le QR code directement en consultation. Votre patient recoit les recommandations avec vos coordonnees.',
-      cta: 'Creer ma premiere ordonnance',
+        'Choisissez des solutions dans le catalogue, ajoutez un message pour votre patient, et partagez le lien ou le QR code directement en consultation. Votre patient reçoit les recommandations avec vos coordonnées.',
+      cta: 'Créer ma première ordonnance',
       action: 'new-prescription' as const,
     },
     {
       icon: '⭐',
-      title: 'Construisez votre bibliotheque',
+      title: 'Construisez votre bibliothèque',
       description:
-        'Au fil du temps, ajoutez vos solutions preferees en favoris et prenez des notes cliniques. Elles apparaitront en priorite lors de vos prochaines prescriptions.',
+        'Au fil du temps, ajoutez vos solutions préférées en favoris et prenez des notes cliniques. Elles apparaîtront en priorité lors de vos prochaines prescriptions.',
       cta: 'Explorer le catalogue',
       action: 'catalog' as const,
     },

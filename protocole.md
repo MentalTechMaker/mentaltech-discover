@@ -66,7 +66,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 1 - Sécurité & Confidentialité (0-20)
+### Phase 1 - Sécurité (0-20)
 
 **Objectif** : Évaluer la protection des données personnelles et de santé.
 
@@ -124,7 +124,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 2 - Efficacité & Preuves cliniques (0-20)
+### Phase 2 - Preuves (0-20)
 
 **Objectif** : Évaluer la base scientifique et les résultats démontrés.
 
@@ -178,7 +178,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 3 - Accessibilité & Inclusion (0-20)
+### Phase 3 - Accessibilité (0-20)
 
 **Objectif** : Évaluer l'accessibilité financière, technique et sociale.
 
@@ -236,7 +236,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 4 - Qualité UX (0-20)
+### Phase 4 - Expérience user (0-20)
 
 **Objectif** : Évaluer l'expérience utilisateur globale.
 
@@ -294,7 +294,7 @@ Cela renforce la crédibilité sans changer le protocole lui-même.
 
 ---
 
-### Phase 5 - Support & Accompagnement (0-20)
+### Phase 5 - Support (0-20)
 
 **Objectif** : Évaluer la qualité du support client et de l'accompagnement proposé.
 
@@ -363,19 +363,19 @@ Date d'évaluation : _______________
 Conflit d'intérêt : [ ] Aucun  [ ] Déclaré (préciser) : _______________
 Membre du Collectif : [ ] Oui  [ ] Non
 
-[ ] Phase 1 - Sécurité & Confidentialité    : ___/20
+[ ] Phase 1 - Sécurité    : ___/20
     Justification : ...
 
-[ ] Phase 2 - Efficacité & Preuves cliniques : ___/20
+[ ] Phase 2 - Preuves : ___/20
     Justification : ...
 
-[ ] Phase 3 - Accessibilité & Inclusion      : ___/20
+[ ] Phase 3 - Accessibilité      : ___/20
     Justification : ...
 
-[ ] Phase 4 - Qualité UX                     : ___/20
+[ ] Phase 4 - Expérience user                     : ___/20
     Justification : ...
 
-[ ] Phase 5 - Support & Accompagnement       : ___/20
+[ ] Phase 5 - Support       : ___/20
     Justification : ...
 
 TOTAL : ___/100 → Label : ___

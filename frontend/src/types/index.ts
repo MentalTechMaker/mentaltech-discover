@@ -99,6 +99,7 @@ export interface PublicSubmission {
   tagline: string | null;
   description: string | null;
   url: string | null;
+  linkedin: string | null;
   logo: string | null;
   tags: string[];
   audience: string[];
@@ -126,6 +127,7 @@ export interface HealthProfApplication {
   rppsAdeli: string | null;
   organization: string | null;
   motivation: string | null;
+  linkedin: string | null;
   status: string;
   emailConfirmed: boolean;
   isCollectiveMember: boolean;
@@ -134,4 +136,4 @@ export interface HealthProfApplication {
   updatedAt: string;
 }
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'register-prescriber' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';
+export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';

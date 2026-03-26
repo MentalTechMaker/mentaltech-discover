@@ -4,12 +4,29 @@ import { useAppStore } from "../../store/useAppStore";
 import { setPageMeta, setCanonical } from "../../utils/meta";
 
 const PROFESSIONS = [
-  { value: "medecin-generaliste", label: "Médecin généraliste" },
-  { value: "psychiatre", label: "Psychiatre" },
-  { value: "psychologue", label: "Psychologue" },
-  { value: "infirmier", label: "Infirmier(e)" },
-  { value: "travailleur-social", label: "Travailleur(se) social(e)" },
-  { value: "autre", label: "Autre professionnel de santé" },
+  "Médecin généraliste",
+  "Médecin du travail",
+  "Psychiatre",
+  "Pédopsychiatre",
+  "Psychologue",
+  "Neuropsychologue",
+  "Infirmier(e) en pratique avancée",
+  "Infirmier(e) en psychiatrie",
+  "Ergothérapeute",
+  "Orthophoniste",
+  "Psychomotricien(ne)",
+  "Assistant(e) social(e)",
+  "Éducateur(trice) spécialisé(e)",
+  "Conseiller(e) en économie sociale et familiale",
+  "Sage-femme",
+  "Pharmacien(ne)",
+  "Addictologue",
+  "Pair-aidant(e) professionnel(le)",
+  "Coach en santé mentale",
+  "Psychothérapeute",
+  "Médecin scolaire",
+  "Infirmier(e) scolaire",
+  "Autre professionnel de santé",
 ];
 
 export const HealthProApplicationForm: React.FC = () => {
@@ -22,6 +39,7 @@ export const HealthProApplicationForm: React.FC = () => {
   const [rppsAdeli, setRppsAdeli] = useState("");
   const [organization, setOrganization] = useState("");
   const [motivation, setMotivation] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -45,6 +63,10 @@ export const HealthProApplicationForm: React.FC = () => {
       setError("L'adresse email n'est pas valide.");
       return;
     }
+    if (linkedin.trim() && !linkedin.trim().startsWith("http")) {
+      setError("Le lien LinkedIn doit commencer par http:// ou https://");
+      return;
+    }
     setError("");
     setSubmitting(true);
     try {
@@ -55,6 +77,7 @@ export const HealthProApplicationForm: React.FC = () => {
         rpps_adeli: rppsAdeli.trim() || undefined,
         organization: organization.trim() || undefined,
         motivation: motivation.trim() || undefined,
+        linkedin: linkedin.trim() || undefined,
         honeypot,
         submitted_at_ts: loadedAt.current,
       });
@@ -165,9 +188,9 @@ export const HealthProApplicationForm: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {PROFESSIONS.map(p => (
                 <label
-                  key={p.value}
+                  key={p}
                   className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-colors ${
-                    profession === p.value
+                    profession === p
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border hover:border-primary/50"
                   }`}
@@ -175,12 +198,12 @@ export const HealthProApplicationForm: React.FC = () => {
                   <input
                     type="radio"
                     name="profession"
-                    value={p.value}
-                    checked={profession === p.value}
-                    onChange={() => setProfession(p.value)}
+                    value={p}
+                    checked={profession === p}
+                    onChange={() => setProfession(p)}
                     className="accent-primary"
                   />
-                  <span className="text-sm">{p.label}</span>
+                  <span className="text-sm">{p}</span>
                 </label>
               ))}
             </div>
@@ -211,6 +234,19 @@ export const HealthProApplicationForm: React.FC = () => {
                 className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Profil LinkedIn <span className="text-muted-foreground font-normal">(optionnel)</span>
+            </label>
+            <input
+              type="url"
+              value={linkedin}
+              onChange={e => setLinkedin(e.target.value)}
+              placeholder="https://linkedin.com/in/votre-profil"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
           </div>
 
           <div>

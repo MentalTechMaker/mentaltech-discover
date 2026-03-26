@@ -15,7 +15,7 @@ const FAQ_SCHEMA_DATA = [
   { q: "Mes données sont-elles collectées ?", a: "Pour les visiteurs, aucune donnée n'est collectée. Les réponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectés de manière sécurisée." },
   { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisées uniquement pour améliorer le service." },
   { q: "Mes données de quiz sont-elles conservées ?", a: "Non. Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire." },
-  { q: "Est-ce un dispositif médical ?", a: "Non. MentalTech Discover est un outil de découverte, pas un dispositif médical certifié. Il aide à explorer les solutions disponibles sans fournir de service médical." },
+  { q: "Est-ce un dispositif médical ?", a: "Non. MentalTech Discover est une plateforme d'orientation, pas un dispositif médical certifié. Il aide à explorer les solutions disponibles sans fournir de service médical." },
   { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prévention du suicide), le 15 (SAMU) ou le 112 (urgences européennes). Ces numéros sont gratuits et disponibles 24h/24." },
   { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est maintenant disponible : tableau de bord, prescriptions numériques, veille solutions, comparateur. Gratuit, inscription requise." },
   { q: "Comment être référencé sur MentalTech Discover ?", a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2." },
@@ -28,7 +28,7 @@ export const FAQ: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Questions fréquentes",
+      "FAQ - Questions sur les solutions de santé mentale numérique",
       "Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur."
     );
     setCanonical("/faq");
@@ -238,8 +238,8 @@ export const FAQ: React.FC = () => {
       question: "Est-ce un dispositif médical ?",
       answer: (
         <p>
-          <strong>Non.</strong> MentalTech Discover est un outil de{" "}
-          <strong>découverte</strong>, pas un dispositif médical certifié.
+          <strong>Non.</strong> MentalTech Discover est une{" "}
+          <strong>plateforme d'orientation</strong>, pas un dispositif médical certifié.
           <br />
           <br />
           Nous vous aidons à explorer les solutions disponibles, mais nous ne
@@ -252,7 +252,7 @@ export const FAQ: React.FC = () => {
       question: "Puis-je remplacer un suivi médical par ces solutions ?",
       answer: (
         <p>
-          <strong>Non.</strong> Les solutions digitales sont des{" "}
+          <strong>Non.</strong> Les solutions numériques sont des{" "}
           <strong>compléments</strong>, pas des remplacements.
           <br />
           <br />
@@ -600,7 +600,25 @@ export const FAQ: React.FC = () => {
           </section>
         ))}
 
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-blue-200 shadow-lg mt-12">
+        <div className="grid md:grid-cols-3 gap-4 mt-12">
+          <button onClick={() => setView("quiz")} className="p-6 bg-primary/10 hover:bg-primary/20 rounded-xl text-center transition-colors">
+            <span className="text-3xl block mb-2">🧭</span>
+            <span className="font-semibold text-primary">Commencer le questionnaire</span>
+            <p className="text-xs text-text-secondary mt-1">Trouvez votre solution en 2 minutes</p>
+          </button>
+          <button onClick={() => setView("prescriber-auth")} className="p-6 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition-colors">
+            <span className="text-3xl block mb-2">🩺</span>
+            <span className="font-semibold text-purple-700">Espace prescripteur</span>
+            <p className="text-xs text-text-secondary mt-1">Prescriptions numériques pour vos patients</p>
+          </button>
+          <button onClick={() => setView("public-submission")} className="p-6 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-colors">
+            <span className="text-3xl block mb-2">🚀</span>
+            <span className="font-semibold text-amber-700">Référencer ma solution</span>
+            <p className="text-xs text-text-secondary mt-1">Soumettez votre solution au collectif</p>
+          </button>
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-blue-200 shadow-lg mt-8">
           <div className="text-center space-y-4">
             <h3 className="text-2xl font-bold text-text-primary">
               Une autre question ?

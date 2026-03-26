@@ -178,8 +178,8 @@ def sitemap_xml():
         ("/methodologie", "monthly", "0.7"),
         ("/faq", "monthly", "0.6"),
         ("/soumettre-solution", "monthly", "0.6"),
-        ("/privacy", "yearly", "0.3"),
-        ("/legal", "yearly", "0.3"),
+        ("/confidentialite", "yearly", "0.3"),
+        ("/mentions-legales", "yearly", "0.3"),
     ]
     urls = []
     for path, freq, priority in static_pages:

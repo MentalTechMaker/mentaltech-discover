@@ -25,7 +25,7 @@ export const VerifyEmailPage: React.FC = () => {
         setStatus("success");
         setMessage(res.message);
         loadUser();
-        window.history.replaceState(null, "", "/verify-email");
+        window.history.replaceState(null, "", "/check-email");
       })
       .catch((err) => {
         setStatus("error");

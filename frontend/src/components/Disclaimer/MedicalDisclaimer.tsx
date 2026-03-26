@@ -33,7 +33,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
         </button>
         {open && (
           <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 leading-relaxed">
-            MentalTech Discover est un outil de découverte, pas un dispositif médical certifié.
+            MentalTech Discover est une plateforme d'orientation, pas un dispositif médical certifié.
             Pour un diagnostic, traitement ou urgence, consultez un professionnel de santé.{" "}
             <span className="font-bold">Numéro national de prévention du suicide : 3114 (gratuit 24h/24)</span>
           </div>
@@ -50,7 +50,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
       >
         <div className="flex items-start gap-2">
           <div className="text-sm text-amber-900">
-            <p className="font-semibold">Outil de découverte, pas un dispositif médical</p>
+            <p className="font-semibold">Plateforme d'orientation, pas un dispositif médical</p>
             <p className="mt-1">
               Pour un diagnostic ou traitement, consultez un professionnel de santé.
             </p>
@@ -78,7 +78,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
 
           <div className="space-y-3 text-text-primary text-center">
             <p className="leading-relaxed">
-              <strong>MentalTech Discover est un outil de découverte</strong>, pas
+              <strong>MentalTech Discover est une plateforme d'orientation</strong>, pas
               un dispositif médical certifié.
             </p>
 
@@ -127,7 +127,7 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
           <div className="flex-1">
             <p className="text-sm text-amber-900 leading-relaxed text-center">
               <strong>Information importante :</strong> MentalTech Discover est un
-              outil de découverte, pas un dispositif médical. Pour un diagnostic,
+              plateforme d'orientation, pas un dispositif médical. Pour un diagnostic,
               traitement ou urgence, consultez un professionnel de santé.{" "}
               <span className="font-bold whitespace-nowrap">
                 Urgence : 3114 (gratuit 24h/24)

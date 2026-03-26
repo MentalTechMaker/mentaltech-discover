@@ -3,6 +3,33 @@ import re
 from pydantic import BaseModel, EmailStr, field_validator
 
 
+VALID_PRESCRIBER_PROFESSIONS = [
+    "Médecin généraliste",
+    "Médecin du travail",
+    "Psychiatre",
+    "Pédopsychiatre",
+    "Psychologue",
+    "Neuropsychologue",
+    "Infirmier(e) en pratique avancée",
+    "Infirmier(e) en psychiatrie",
+    "Ergothérapeute",
+    "Orthophoniste",
+    "Psychomotricien(ne)",
+    "Assistant(e) social(e)",
+    "Éducateur(trice) spécialisé(e)",
+    "Conseiller(e) en économie sociale et familiale",
+    "Sage-femme",
+    "Pharmacien(ne)",
+    "Addictologue",
+    "Pair-aidant(e) professionnel(le)",
+    "Coach en santé mentale",
+    "Psychothérapeute",
+    "Médecin scolaire",
+    "Infirmier(e) scolaire",
+    "Autre professionnel de santé",
+]
+
+
 class UserRegister(BaseModel):
     email: EmailStr
     password: str
@@ -16,6 +43,13 @@ class PrescriberRegister(BaseModel):
     profession: str
     organization: str | None = None
     rpps_adeli: str | None = None
+
+    @field_validator("profession")
+    @classmethod
+    def validate_profession(cls, v: str) -> str:
+        if v not in VALID_PRESCRIBER_PROFESSIONS:
+            raise ValueError(f"Profession invalide. Valeurs acceptées: {', '.join(VALID_PRESCRIBER_PROFESSIONS)}")
+        return v
 
     @field_validator("rpps_adeli")
     @classmethod

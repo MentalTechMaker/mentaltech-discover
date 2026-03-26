@@ -133,11 +133,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
     justification: string;
     justSetter: (v: string) => void;
   }[] = [
-    { dimKey: "security", label: "Sécurité & Confidentialité", value: scoreSecurity, setter: setScoreSecurity, justification: justificationSecurity, justSetter: setJustificationSecurity },
-    { dimKey: "efficacy", label: "Efficacité & Preuves cliniques", value: scoreEfficacy, setter: setScoreEfficacy, justification: justificationEfficacy, justSetter: setJustificationEfficacy },
-    { dimKey: "accessibility", label: "Accessibilité & Inclusion", value: scoreAccessibility, setter: setScoreAccessibility, justification: justificationAccessibility, justSetter: setJustificationAccessibility },
-    { dimKey: "ux", label: "Qualité UX", value: scoreUx, setter: setScoreUx, justification: justificationUx, justSetter: setJustificationUx },
-    { dimKey: "support", label: "Support & Accompagnement", value: scoreSupport, setter: setScoreSupport, justification: justificationSupport, justSetter: setJustificationSupport },
+    { dimKey: "security", label: "Sécurité", value: scoreSecurity, setter: setScoreSecurity, justification: justificationSecurity, justSetter: setJustificationSecurity },
+    { dimKey: "efficacy", label: "Preuves", value: scoreEfficacy, setter: setScoreEfficacy, justification: justificationEfficacy, justSetter: setJustificationEfficacy },
+    { dimKey: "accessibility", label: "Accessibilité", value: scoreAccessibility, setter: setScoreAccessibility, justification: justificationAccessibility, justSetter: setJustificationAccessibility },
+    { dimKey: "ux", label: "Expérience user", value: scoreUx, setter: setScoreUx, justification: justificationUx, justSetter: setJustificationUx },
+    { dimKey: "support", label: "Support", value: scoreSupport, setter: setScoreSupport, justification: justificationSupport, justSetter: setJustificationSupport },
   ];
 
   const previewLabel = computeLabelFromScores(
@@ -416,7 +416,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
                 }
                 className="w-4 h-4"
               />
-              <span className="text-sm">Etablissements de sante</span>
+              <span className="text-sm">Établissements de santé</span>
             </label>
           </div>
         </div>
@@ -424,15 +424,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
           <label className="block text-sm font-semibold mb-2">Problèmes traités</label>
           <div className="space-y-1.5 max-h-40 overflow-y-auto">
             {([
-              { value: "stress-anxiety", label: "Stress & Anxiété" },
-              { value: "sadness", label: "Tristesse & Dépression" },
+              { value: "stress-anxiety", label: "Stress / Anxiété" },
+              { value: "sadness", label: "Tristesse / Dépression" },
               { value: "addiction", label: "Addictions" },
               { value: "trauma", label: "Traumatismes" },
-              { value: "work", label: "Travail & Burn-out" },
+              { value: "work", label: "Travail / Burn-out" },
               { value: "sleep", label: "Sommeil" },
               { value: "cognitif", label: "Troubles cognitifs" },
               { value: "douleur", label: "Douleur" },
-              { value: "concentration", label: "Concentration & TDAH" },
+              { value: "concentration", label: "Concentration / TDAH" },
               { value: "other", label: "Autres" },
             ] as const).map(({ value, label: optLabel }) => (
               <label key={value} className="flex items-center gap-2 cursor-pointer">

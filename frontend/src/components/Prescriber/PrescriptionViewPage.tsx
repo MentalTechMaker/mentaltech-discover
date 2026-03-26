@@ -27,8 +27,9 @@ export const PrescriptionViewPage: React.FC = () => {
     }
 
     let cancelled = false;
+    const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
 
-    viewPrescription(token)
+    viewPrescription(token, isPreview)
       .then((res) => {
         if (!cancelled) {
           setData(res);
@@ -124,7 +125,7 @@ export const PrescriptionViewPage: React.FC = () => {
         {/* ── Product Cards ───────────────────────────────────── */}
         <section className="space-y-6">
           <h2 className="text-xl font-bold text-text-primary">
-            Ressources recommandees
+            Ressources recommandées
           </h2>
 
           {data.products.map((product) => {
@@ -221,10 +222,10 @@ export const PrescriptionViewPage: React.FC = () => {
         {/* ── Footer Disclaimer ───────────────────────────────── */}
         <div className="bg-red-50 border border-red-200 rounded-2xl p-5 text-center">
           <p className="text-sm text-red-800 font-medium">
-            Cette recommandation est fournie a titre informatif. En cas
+            Cette recommandation est fournie à titre informatif. En cas
             d'urgence, contactez le{" "}
-            <span className="font-bold">3114</span> (numero national de
-            prevention du suicide) ou le{" "}
+            <span className="font-bold">3114</span> (numéro national de
+            prévention du suicide) ou le{" "}
             <span className="font-bold">15</span> (SAMU).
           </p>
         </div>
@@ -252,17 +253,17 @@ export const PrescriptionViewPage: React.FC = () => {
         {/* ── RGPD Notice ────────────────────────────────────── */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-2">
           <p className="text-xs text-text-secondary">
-            Aucune donnee personnelle n'est stockee sur nos serveurs.
+            Aucune donnée personnelle n'est stockée sur nos serveurs.
             Cette prescription est accessible uniquement via ce lien et expire automatiquement.
           </p>
           {!data.expired && (
             <button
               onClick={async () => {
-                if (confirm("Supprimer cette prescription ? Cette action est irreversible.")) {
+                if (confirm("Supprimer cette prescription ? Cette action est irréversible.")) {
                   try {
                     const { revokePrescription } = await import("../../api/prescriber");
                     await revokePrescription(token || "");
-                    setError("Prescription supprimee.");
+                    setError("Prescription supprimée.");
                     setData(null);
                   } catch {
                     setError("Impossible de supprimer la prescription.");
@@ -279,8 +280,8 @@ export const PrescriptionViewPage: React.FC = () => {
         {/* ── Medical Disclaimer ──────────────────────────────── */}
         <p className="text-xs text-text-secondary text-center pb-8">
           MentalTech est une plateforme d'information et d'orientation. Elle ne
-          remplace en aucun cas une consultation avec un professionnel de sante
-          mentale qualifie.
+          remplace en aucun cas une consultation avec un professionnel de santé
+          mentale qualifié.
         </p>
       </main>
     </div>

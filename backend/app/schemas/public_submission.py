@@ -2,12 +2,29 @@ from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 
 VALID_PROFESSIONS = [
-    "medecin-generaliste",
-    "psychiatre",
-    "psychologue",
-    "infirmier",
-    "travailleur-social",
-    "autre",
+    "Médecin généraliste",
+    "Médecin du travail",
+    "Psychiatre",
+    "Pédopsychiatre",
+    "Psychologue",
+    "Neuropsychologue",
+    "Infirmier(e) en pratique avancée",
+    "Infirmier(e) en psychiatrie",
+    "Ergothérapeute",
+    "Orthophoniste",
+    "Psychomotricien(ne)",
+    "Assistant(e) social(e)",
+    "Éducateur(trice) spécialisé(e)",
+    "Conseiller(e) en économie sociale et familiale",
+    "Sage-femme",
+    "Pharmacien(ne)",
+    "Addictologue",
+    "Pair-aidant(e) professionnel(le)",
+    "Coach en santé mentale",
+    "Psychothérapeute",
+    "Médecin scolaire",
+    "Infirmier(e) scolaire",
+    "Autre professionnel de santé",
 ]
 
 
@@ -26,6 +43,7 @@ class PublicSubmissionCreate(BaseModel):
     tagline: str | None = None
     description: str | None = None
     url: str | None = None
+    linkedin: str | None = None
     logo: str | None = None
     tags: list[str] = []
     audience: list[str] = []
@@ -51,6 +69,7 @@ class PublicSubmissionResponse(BaseModel):
     tagline: str | None
     description: str | None
     url: str | None
+    linkedin: str | None
     logo: str | None
     tags: list[str]
     audience: list[str]
@@ -79,6 +98,7 @@ class HealthProfApplicationCreate(BaseModel):
     rpps_adeli: str | None = None
     organization: str | None = None
     motivation: str | None = None
+    linkedin: str | None = None
 
     # Anti-bot
     honeypot: str = ""
@@ -100,6 +120,7 @@ class HealthProfApplicationResponse(BaseModel):
     rppsAdeli: str | None
     organization: str | None
     motivation: str | None
+    linkedin: str | None
     status: str
     emailConfirmed: bool
     isCollectiveMember: bool

@@ -31,7 +31,7 @@ describe("T-SEO-1 | sitemap.xml - routes correctes", () => {
     expect(sitemap).toContain("discover.mentaltech.fr/catalogue");
   });
 
-  const routes = ["/methodologie", "/notre-demarche", "/faq", "/privacy", "/legal"];
+  const routes = ["/methodologie", "/notre-demarche", "/faq", "/confidentialite", "/mentions-legales"];
   for (const route of routes) {
     test(`contient ${route}`, () => {
       expect(sitemap).toContain(`discover.mentaltech.fr${route}`);
@@ -40,7 +40,7 @@ describe("T-SEO-1 | sitemap.xml - routes correctes", () => {
 
   test("ne reference pas de routes SPA privees", () => {
     expect(sitemap).not.toContain("/admin");
-    expect(sitemap).not.toContain("/prescriber-dashboard");
+    expect(sitemap).not.toContain("/dashboard");
     expect(sitemap).not.toContain("/quiz");
     expect(sitemap).not.toContain("/results");
   });
@@ -53,14 +53,16 @@ describe("T-SEO-2 | robots.txt - routes privees bloquees", () => {
 
   const privateRoutes = [
     "/admin",
-    "/prescriber-dashboard",
-    "/new-prescription",
-    "/comparator",
-    "/prescriber-auth",
+    "/dashboard",
+    "/nouvelle-prescription",
+    "/comparateur",
+    "/prescripteur",
     "/reset-password",
-    "/verify-email",
+    "/check-email",
     "/veille",
-    "/profile",
+    "/profil",
+    "/connexion",
+    "/inscription",
   ];
 
   for (const route of privateRoutes) {

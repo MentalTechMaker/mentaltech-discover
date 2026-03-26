@@ -29,13 +29,13 @@ function getStatusInfo(prescription: PrescriptionResponse): {
 
   if (prescription.viewedAt) {
     return {
-      label: "\u2713 Consultee",
+      label: "\u2713 Consultée",
       className: "bg-green-100 text-green-800",
     };
   }
   if (expiresAt < now) {
     return {
-      label: "\u2717 Expiree",
+      label: "\u2717 Expirée",
       className: "bg-red-100 text-red-800",
     };
   }
@@ -289,7 +289,7 @@ export const PrescriberDashboard: React.FC = () => {
             <div className="flex-1">
               <p className="font-semibold text-blue-900">Astuce : commencez par une ordonnance test</p>
               <p className="text-sm text-blue-800 mt-1">
-                Envoyez-vous une ordonnance a votre propre email pour voir ce que votre patient recevra. Ca prend 30 secondes.
+                Envoyez-vous une ordonnance à votre propre email pour voir ce que votre patient recevra. Ça prend 30 secondes.
               </p>
             </div>
             <button
@@ -303,10 +303,10 @@ export const PrescriberDashboard: React.FC = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
+          <h1 className="text-3xl font-bold text-text-primary mb-2 text-center">
             Tableau de bord prescripteur
           </h1>
-          <p className="text-text-secondary">
+          <p className="text-text-secondary text-center">
             Gérez vos prescriptions, favoris et suivez les tendances de la communauté.
           </p>
         </div>
@@ -387,17 +387,17 @@ export const PrescriberDashboard: React.FC = () => {
             {prescriptions.length === 0 ? (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
                 <div className="text-5xl mb-4">🩺</div>
-                <h3 className="text-xl font-bold text-text-primary mb-2">
-                  Envoyez votre premiere recommandation
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">
+                  Envoyez votre première recommandation
                 </h3>
                 <p className="text-text-secondary mb-4">
-                  La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", vous aurez la reponse en 30 secondes.
+                  La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", vous aurez la réponse en 30 secondes.
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left max-w-md mx-auto">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">Comment ca marche :</p>
+                  <p className="text-sm font-semibold text-blue-900 mb-2">Comment ça marche :</p>
                   <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                    <li>Selectionnez 1 a 5 solutions dans le catalogue</li>
-                    <li>Ajoutez un message personnalise (optionnel)</li>
+                    <li>Sélectionnez 1 à 5 solutions dans le catalogue</li>
+                    <li>Ajoutez un message personnalisé (optionnel)</li>
                     <li>Partagez le lien ou le QR code au patient</li>
                   </ol>
                 </div>
@@ -405,7 +405,7 @@ export const PrescriberDashboard: React.FC = () => {
                   onClick={() => setView("new-prescription")}
                   className="bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition-opacity text-lg"
                 >
-                  Creer ma premiere ordonnance
+                  Créer ma première ordonnance
                 </button>
               </div>
             ) : (
@@ -439,6 +439,33 @@ export const PrescriberDashboard: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
+                          <a
+                            href={`/prescription/${prescription.token}?preview=true`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-blue-200 rounded-lg text-sm font-medium text-blue-700 hover:bg-blue-50 transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            Voir l'aperçu
+                          </a>
                           <button
                             onClick={() =>
                               handleCopyLink(prescription.link, prescription.id)
@@ -505,7 +532,7 @@ export const PrescriberDashboard: React.FC = () => {
             {favoriteProducts.length === 0 ? (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
                 <div className="text-5xl mb-4">&#11088;</div>
-                <h3 className="text-xl font-bold text-text-primary mb-2">
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">
                   Aucun favori
                 </h3>
                 <p className="text-text-secondary mb-6">
@@ -582,7 +609,7 @@ export const PrescriberDashboard: React.FC = () => {
             {communityStats.length === 0 ? (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
                 <div className="text-5xl mb-4">&#128101;</div>
-                <h3 className="text-xl font-bold text-text-primary mb-2">
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">
                   Pas encore de données communautaires
                 </h3>
                 <p className="text-text-secondary">
@@ -592,7 +619,7 @@ export const PrescriberDashboard: React.FC = () => {
             ) : (
               <div className="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                  <h3 className="font-bold text-text-primary">
+                  <h3 className="font-bold text-text-primary text-center">
                     Tendances de prescription (données anonymisées)
                   </h3>
                 </div>

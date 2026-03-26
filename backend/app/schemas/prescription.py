@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class PrescriptionCreate(BaseModel):
-    patient_email: str | None = None
+    patient_email: EmailStr | None = None
     product_ids: list[str]
     message: str | None = None
 

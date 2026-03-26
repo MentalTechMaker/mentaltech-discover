@@ -27,6 +27,7 @@ class ProductSubmission(Base):
     tagline: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    linkedin: Mapped[str | None] = mapped_column(String(500), nullable=True)
     logo: Mapped[str | None] = mapped_column(String(500), nullable=True)
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audience: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)

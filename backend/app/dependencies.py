@@ -7,6 +7,23 @@ from .models.user import User
 from .services.auth import decode_token
 
 security = HTTPBearer()
+optional_security = HTTPBearer(auto_error=False)
+
+
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_security),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Return the authenticated user if a valid token is present, None otherwise."""
+    if not credentials:
+        return None
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("type") != "access":
+        return None
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    return db.query(User).filter(User.id == user_id).first()
 
 
 def get_current_user(

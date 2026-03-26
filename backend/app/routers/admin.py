@@ -38,6 +38,11 @@ from ..services.email import (
     send_health_pro_admin_notification,
 )
 from ..config import settings
+from pydantic import BaseModel
+
+
+class CollectiveMemberUpdate(BaseModel):
+    is_collective_member: bool = False
 
 
 def _validate_magic_bytes(content: bytes, content_type: str) -> bool:
@@ -143,7 +148,8 @@ async def upload_logo(
             detail="Contenu du fichier invalide",
         )
 
-    ext = Path(file.filename or "logo").suffix or ".png"
+    mime_to_ext = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
+    ext = mime_to_ext.get(file.content_type, ".png")
     filename = f"{uuid.uuid4().hex}{ext}"
 
     LOGO_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -837,7 +843,7 @@ async def update_collectif_status(
 @router.patch("/public-submissions/{submission_id}/collective-member", response_model=PublicSubmissionResponse)
 def set_public_submission_collective_member(
     submission_id: str,
-    body: dict,
+    body: CollectiveMemberUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -845,7 +851,7 @@ def set_public_submission_collective_member(
     if not sub:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
 
-    is_member = body.get("is_collective_member", False)
+    is_member = body.is_collective_member
 
     # If product exists, update is_mentaltech_member on it
     if sub.product_id:
@@ -966,7 +972,7 @@ async def refuse_health_pro(
 @router.patch("/health-pro-applications/{application_id}/collective-member", response_model=HealthProfApplicationResponse)
 def set_health_pro_collective_member(
     application_id: str,
-    body: dict,
+    body: CollectiveMemberUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -974,7 +980,7 @@ def set_health_pro_collective_member(
     if not app:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
 
-    app.is_collective_member = body.get("is_collective_member", False)
+    app.is_collective_member = body.is_collective_member
     app.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(app)

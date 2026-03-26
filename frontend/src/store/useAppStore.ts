@@ -13,6 +13,16 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
   'join-collective': '/rejoindre',
   'confirm-submission': '/confirmer-soumission',
   'confirm-health-pro': '/confirmer-candidature',
+  'login': '/connexion',
+  'register': '/inscription',
+  'prescriber-auth': '/prescripteur',
+  'profile': '/profil',
+  'verify-email': '/check-email',
+  'prescriber-dashboard': '/dashboard',
+  'new-prescription': '/nouvelle-prescription',
+  'comparator': '/comparateur',
+  'privacy': '/confidentialite',
+  'legal': '/mentions-legales',
 };
 
 const URL_TO_VIEW: Record<string, AppView> = {
@@ -26,6 +36,16 @@ const URL_TO_VIEW: Record<string, AppView> = {
   'confirmer-soumission': 'confirm-submission',
   'confirmer-candidature': 'confirm-health-pro',
   'resultats': 'results',
+  'connexion': 'login',
+  'inscription': 'register',
+  'prescripteur': 'prescriber-auth',
+  'profil': 'profile',
+  'check-email': 'verify-email',
+  'dashboard': 'prescriber-dashboard',
+  'nouvelle-prescription': 'new-prescription',
+  'comparateur': 'comparator',
+  'confidentialite': 'privacy',
+  'mentions-legales': 'legal',
 };
 
 // Encode/decode quiz answers into URL search params for result sharing
@@ -185,10 +205,11 @@ function parsePathView(): { view: AppView; productId?: string } {
   }
 
   const validViews: AppView[] = [
-    'landing', 'privacy', 'legal',
-    'faq', 'login', 'register', 'register-prescriber',
+    'landing',
+    'faq', 'login', 'register',
     'prescriber-auth', 'admin', 'profile', 'forgot-password', 'reset-password',
     'verify-email', 'prescriber-dashboard', 'new-prescription', 'veille', 'comparator',
+    'privacy', 'legal',
   ];
   if (validViews.includes(pathname as AppView)) {
     return { view: pathname as AppView };

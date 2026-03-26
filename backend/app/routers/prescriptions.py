@@ -7,7 +7,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, s
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..dependencies import require_prescriber_or_admin
+from ..dependencies import require_prescriber_or_admin, get_optional_user
 from ..models.user import User
 from ..models.prescription import Prescription
 from ..models.product import Product
@@ -19,6 +19,7 @@ from ..schemas.prescription import (
     PrescriptionStats,
 )
 from ..services.product import _to_response
+from ..rate_limit import limiter
 from ..services.email import (
     send_prescription_email,
     send_prescription_viewed_email,
@@ -248,16 +249,27 @@ def delete_prescription(
 # ─── Public endpoints (no auth) ────────────────────────────────
 
 @router.get("/view/{token}", response_model=PrescriptionPublicResponse)
-def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+def view_prescription(
+    token: str,
+    background_tasks: BackgroundTasks,
+    preview: bool = Query(False),
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
+):
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+    if prescription.revoked_at:
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="Cette prescription a été révoquée")
 
     now = datetime.now(timezone.utc)
     expired = now > prescription.expires_at
 
-    # Mark as viewed (first time only)
-    first_view = not prescription.viewed_at and not expired
+    # Preview only allowed for the prescriber who created the prescription
+    is_preview = preview and current_user and current_user.id == prescription.prescriber_id
+
+    # Mark as viewed (first time only) - skip when prescriber previews
+    first_view = not is_preview and not prescription.viewed_at and not expired
     if first_view:
         prescription.viewed_at = now
         db.commit()
@@ -306,10 +318,31 @@ def view_prescription(token: str, background_tasks: BackgroundTasks, db: Session
 
 
 @router.delete("/revoke/{token}", status_code=status.HTTP_204_NO_CONTENT)
-def revoke_prescription_by_patient(token: str, db: Session = Depends(get_db)):
+@limiter.limit("3/hour")
+def revoke_prescription_by_patient(
+    token: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     """Allow a patient to request deletion of their prescription (RGPD right to erasure)."""
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
-    db.delete(prescription)
+    if prescription.revoked_at:
+        return  # Already revoked
+
+    # Soft delete: mark as revoked instead of hard delete
+    prescription.revoked_at = datetime.now(timezone.utc)
+    prescription.patient_email = None  # RGPD: purge PII
     db.commit()
+    logger.info(f"RGPD: prescription {prescription.id} revoked by patient")
+
+    # Notify prescriber
+    prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
+    if prescriber and prescriber.email:
+        background_tasks.add_task(
+            send_prescription_viewed_email,
+            prescriber_email=prescriber.email,
+            prescriber_name=prescriber.name,
+            prescription_link=f"{settings.FRONTEND_URL}/prescription/{token}",
+        )

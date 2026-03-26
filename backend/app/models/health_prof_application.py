@@ -20,6 +20,7 @@ class HealthProfApplication(Base):
     rpps_adeli: Mapped[str | None] = mapped_column(String(50), nullable=True)
     organization: Mapped[str | None] = mapped_column(String(255), nullable=True)
     motivation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    linkedin: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="pending_email"

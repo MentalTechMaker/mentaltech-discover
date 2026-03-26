@@ -116,7 +116,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                 target.style.display = "none";
                 const fallback = document.createElement("span");
                 fallback.className = "text-3xl";
-                fallback.setAttribute("aria-hidden", "true");
+                fallback.setAttribute("role", "img");
+                fallback.setAttribute("aria-label", `Logo de ${product.name}`);
                 fallback.textContent = "💙";
                 target.parentElement?.appendChild(fallback);
               }}
@@ -125,7 +126,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           <div className="flex-1 pt-1">
             <h3
               className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors cursor-pointer"
+              role="button"
+              tabIndex={0}
               onClick={() => viewProduct(product.id)}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && viewProduct(product.id)}
             >
               {product.name}
             </h3>
