@@ -23,7 +23,7 @@ from app.services.auth import hash_password
 def create_admin():
     db = SessionLocal()
     try:
-        email = "admin@mentaltech.fr"
+        email = "arnaud@mentaltechmaker.fr"
         existing = db.query(User).filter(User.email == email).first()
 
         if existing:

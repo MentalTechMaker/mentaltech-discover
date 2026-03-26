@@ -37,6 +37,12 @@ fi
 
 echo "[$(date)] Restoring from $BACKUP_FILE..."
 
+# Validate DB_NAME and DB_USER contain only safe characters
+if [[ ! "$DB_NAME" =~ ^[a-zA-Z0-9_]+$ ]] || [[ ! "$DB_USER" =~ ^[a-zA-Z0-9_]+$ ]]; then
+    echo "Error: DB_NAME or DB_USER contains unsafe characters. Only alphanumeric and underscore allowed."
+    exit 1
+fi
+
 # Drop and recreate database
 docker exec "$CONTAINER" psql -U "$DB_USER" -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
 docker exec "$CONTAINER" psql -U "$DB_USER" -d postgres -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
