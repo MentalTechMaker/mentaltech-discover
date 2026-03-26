@@ -3,7 +3,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from collections import Counter
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -320,6 +320,7 @@ def view_prescription(
 @router.delete("/revoke/{token}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("3/hour")
 def revoke_prescription_by_patient(
+    request: Request,
     token: str,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),

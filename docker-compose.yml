@@ -117,10 +117,42 @@ services:
     networks:
       - mentaltech-network
 
+  backup:
+    image: postgres:16-alpine
+    container_name: mentaltech-backup
+    entrypoint: ["/bin/sh", "/scripts/docker-backup-entrypoint.sh"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mentaltech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mentaltech_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-mentaltech}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
+      BACKUP_CRON: ${BACKUP_CRON:-0 3 * * *}
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups_data:/backups
+      - uploads_data:/uploads:ro
+      - logs_data:/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - mentaltech-network
+
 volumes:
   postgres_data:
   uploads_data:
   logs_data:
+  backups_data:
 
 networks:
   mentaltech-network:

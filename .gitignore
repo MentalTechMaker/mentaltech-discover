@@ -56,5 +56,8 @@ Thumbs.db
 dev-emails/
 dev-uploads/
 
+# Backups
+backups/
+
 # Internal documents (tests, plans, working notes)
 _docs/
