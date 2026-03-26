@@ -121,7 +121,7 @@ verifier_sante() {
     # --- Conteneurs Docker ---
     if commande_disponible docker; then
         if docker info &>/dev/null; then
-            local conteneurs_attendus=("mentaltech-db" "mentaltech-backend" "mentaltech-frontend" "mentaltech-backup")
+            local conteneurs_attendus=("mentaltech-discover-db" "mentaltech-discover-backend" "mentaltech-discover-frontend" "mentaltech-discover-backup")
             local tous_ok=true
 
             for conteneur in "${conteneurs_attendus[@]}"; do
@@ -339,7 +339,7 @@ verifier_sauvegardes() {
     # Verifier que le conteneur backup tourne
     if commande_disponible docker && docker info &>/dev/null; then
         local backup_status
-        backup_status=$(docker inspect --format='{{.State.Status}}' mentaltech-backup 2>/dev/null || echo "absent")
+        backup_status=$(docker inspect --format='{{.State.Status}}' mentaltech-discover-backup 2>/dev/null || echo "absent")
         if [[ "$backup_status" == "running" ]]; then
             statut_ok "Conteneur de sauvegarde en cours d'execution"
         else
@@ -349,7 +349,7 @@ verifier_sauvegardes() {
         # Lister les dernieres sauvegardes via docker exec
         rapport ""
         local derniers_backups
-        derniers_backups=$(docker exec mentaltech-backup ls -lht /backups/ 2>/dev/null | head -10 || echo "")
+        derniers_backups=$(docker exec mentaltech-discover-backup ls -lht /backups/ 2>/dev/null | head -10 || echo "")
         if [[ -n "$derniers_backups" ]]; then
             statut_info "Dernieres sauvegardes :"
             while IFS= read -r ligne; do
@@ -359,7 +359,7 @@ verifier_sauvegardes() {
             # Verifier l'age du dernier backup DB
             rapport ""
             local dernier_backup_ts
-            dernier_backup_ts=$(docker exec mentaltech-backup sh -c 'stat -c %Y /backups/db_*.sql.gz 2>/dev/null | sort -n | tail -1' 2>/dev/null || echo "0")
+            dernier_backup_ts=$(docker exec mentaltech-discover-backup sh -c 'stat -c %Y /backups/db_*.sql.gz 2>/dev/null | sort -n | tail -1' 2>/dev/null || echo "0")
             if [[ "$dernier_backup_ts" -gt 0 ]]; then
                 local maintenant age_heures
                 maintenant=$(date +%s)
@@ -375,7 +375,7 @@ verifier_sauvegardes() {
 
             # Espace utilise par les sauvegardes
             local taille_backups
-            taille_backups=$(docker exec mentaltech-backup du -sh /backups/ 2>/dev/null | cut -f1 || echo "inconnu")
+            taille_backups=$(docker exec mentaltech-discover-backup du -sh /backups/ 2>/dev/null | cut -f1 || echo "inconnu")
             statut_info "Espace utilise par les sauvegardes : ${taille_backups}"
         else
             statut_warn "Impossible de lister les sauvegardes (conteneur inaccessible ?)"
@@ -454,7 +454,7 @@ analyser_logs() {
     rapport ""
     if commande_disponible docker && docker info &>/dev/null; then
         local erreurs_backend
-        erreurs_backend=$(docker logs mentaltech-backend --since 168h 2>&1 | grep -ic "error\|exception\|traceback" || echo "0")
+        erreurs_backend=$(docker logs mentaltech-discover-backend --since 168h 2>&1 | grep -ic "error\|exception\|traceback" || echo "0")
         if (( erreurs_backend > 10 )); then
             statut_warn "Erreurs backend Docker (7j) : ${erreurs_backend}"
         else

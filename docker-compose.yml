@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: mentaltech-db
+    container_name: mentaltech-discover-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-mentaltech}
       POSTGRES_USER: ${POSTGRES_USER:-mentaltech}
@@ -20,7 +20,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: mentaltech-backend
+    container_name: mentaltech-discover-backend
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://mentaltech:mentaltech_secret@db:5432/mentaltech}
       SECRET_KEY: ${SECRET_KEY:?SECRET_KEY env var is required}
@@ -69,7 +69,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mentaltech-frontend
+    container_name: mentaltech-discover-frontend
     depends_on:
       backend:
         condition: service_healthy
@@ -120,7 +120,7 @@ services:
 
   backup:
     image: postgres:16-alpine
-    container_name: mentaltech-backup
+    container_name: mentaltech-discover-backup
     entrypoint: ["/bin/sh", "/scripts/docker-backup-entrypoint.sh"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-mentaltech}

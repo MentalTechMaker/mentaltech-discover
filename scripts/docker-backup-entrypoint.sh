@@ -12,6 +12,8 @@ KEEP_DAYS="${BACKUP_KEEP_DAYS:-7}"
 ENCRYPT_PASSPHRASE="${BACKUP_ENCRYPT_KEY:-}"
 LOG_DIR="/logs"
 
+apk add --no-cache gnupg
+
 mkdir -p "$BACKUP_DIR"
 
 # ─── Backup function ──────────────────────────────────────────

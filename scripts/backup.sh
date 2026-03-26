@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-CONTAINER="mentaltech-db"
+CONTAINER="mentaltech-discover-db"
 DB_USER="${POSTGRES_USER:-mentaltech}"
 DB_NAME="${POSTGRES_DB:-mentaltech}"
 BACKUP_DIR="/home/yedora/Projets/mentaltech-discover/backups"
