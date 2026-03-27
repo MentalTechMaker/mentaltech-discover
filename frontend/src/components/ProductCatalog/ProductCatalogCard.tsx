@@ -98,16 +98,20 @@ const ScoreDetailPanel: React.FC<{ product: Product }> = ({ product }) => {
   );
 };
 
+const memberCardClasses = 'bg-gradient-to-br from-blue-50/60 via-white to-purple-50/60 border-primary shadow-lg shadow-primary/15 hover:shadow-primary/25 ring-1 ring-primary/10';
+const defaultCardClasses = 'bg-white border-gray-200 hover:border-primary';
+
 export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
   product,
   viewMode,
 }) => {
   const [showScoreDetail, setShowScoreDetail] = useState(false);
   const viewProduct = useAppStore((s) => s.viewProduct);
+  const cardStyleClass = product.isMentaltechMember ? memberCardClasses : defaultCardClasses;
   if (viewMode === "list") {
     return (
       <div
-        className="bg-white rounded-xl border-2 border-gray-200 hover:border-primary p-6 transition-all hover:shadow-lg relative"
+        className={`rounded-xl border-2 p-6 transition-all hover:shadow-lg relative ${cardStyleClass}`}
       >
         {product.isDemo && (
           <div className="absolute top-4 left-4 z-10">
@@ -183,7 +187,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                   })()}
                   {product.isMentaltechMember && (
                     <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-primary to-purple-600 text-white text-sm font-bold rounded-full shadow-sm"
                       title="Membre du collectif MentalTech"
                     >
                       💙 MentalTech
@@ -278,7 +282,7 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
 
   return (
     <div
-      className="bg-white rounded-xl border-2 border-gray-200 hover:border-primary p-6 transition-all hover:shadow-lg relative flex flex-col h-full"
+      className={`rounded-xl border-2 p-6 transition-all hover:shadow-lg relative flex flex-col h-full ${cardStyleClass}`}
     >
       {product.isDemo && (
         <div className="absolute top-4 right-4 z-10">
@@ -353,10 +357,10 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               })()}
               {product.isMentaltechMember && (
                 <span
-                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 text-primary text-[10px] font-semibold rounded-full"
+                  className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-primary to-purple-600 text-white text-xs font-bold rounded-full shadow-sm"
                   title="Membre du collectif MentalTech"
                 >
-                  💙
+                  💙 MentalTech
                 </span>
               )}
             </div>

@@ -20,6 +20,18 @@ function getLabelBonus(scoreLabel: string | null | undefined): number {
   }
 }
 
+/**
+ * Bonus membre du Collectif MentalTech.
+ * Les membres payants du collectif (500-2000 EUR/an) beneficient d'un boost
+ * de visibilite dans les recommandations. Ce bonus est comparable au label
+ * qualite (0-5 pts) mais reflete l'engagement dans l'ecosysteme MentalTech.
+ */
+const MEMBER_BONUS = 8;
+
+function getMemberBonus(isMember: boolean | undefined): number {
+  return isMember ? MEMBER_BONUS : 0;
+}
+
 export function getRecommendations(answers: UserAnswers, userType: UserType = 'individual', products: Product[]): RecommendationResult {
 
   // ISC-5/6/7: Audience-based filtering per userType
@@ -54,7 +66,13 @@ export function getRecommendations(answers: UserAnswers, userType: UserType = 'i
     if (b.score !== a.score) {
       return b.score - a.score;
     }
-    // Si même score, tri aléatoire
+    // A score egal, les membres du collectif passent devant
+    const aMember = a.isMentaltechMember ? 1 : 0;
+    const bMember = b.isMentaltechMember ? 1 : 0;
+    if (bMember !== aMember) {
+      return bMember - aMember;
+    }
+    // Sinon tri aléatoire
     return b.randomTieBreaker - a.randomTieBreaker;
   });
 
@@ -198,6 +216,9 @@ function calculateScore(product: Product, answers: UserAnswers): number {
   // Les produits mieux notés par la certification MentalTech sont légèrement favorisés
   score += getLabelBonus(product.scoreLabel);
 
+  // 11. BONUS MEMBRE COLLECTIF (8 points)
+  score += getMemberBonus(product.isMentaltechMember);
+
   // Plafond à 100 points
   return Math.min(score, 100);
 }
@@ -296,6 +317,9 @@ function calculateCompanyScore(product: Product, answers: UserAnswers): number {
   // BONUS LABEL QUALITÉ (0-5 points)
   score += getLabelBonus(product.scoreLabel);
 
+  // BONUS MEMBRE COLLECTIF (8 points)
+  score += getMemberBonus(product.isMentaltechMember);
+
   // Plafond à 100 points
   return Math.min(score, 100);
 }
@@ -345,6 +369,9 @@ function calculateHealthDecisionMakerScore(product: Product, answers: UserAnswer
   }
 
   score += getLabelBonus(product.scoreLabel);
+
+  // BONUS MEMBRE COLLECTIF (8 points)
+  score += getMemberBonus(product.isMentaltechMember);
 
   return Math.min(score, 100);
 }

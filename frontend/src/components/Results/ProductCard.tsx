@@ -20,7 +20,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
 
   return (
     <div
-      className="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden transition-all duration-300 hover:border-primary hover:shadow-2xl hover:-translate-y-2"
+      className={`group relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+        product.isMentaltechMember
+          ? 'bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 border-primary shadow-xl shadow-primary/15 hover:shadow-primary/30 ring-1 ring-primary/10'
+          : 'bg-white border-gray-100 hover:border-primary'
+      }`}
       style={{
         animation: "fadeInUp 0.6s ease-out forwards",
         animationDelay,
@@ -29,7 +33,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className={`absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 transition-opacity duration-300 ${
+        product.isMentaltechMember ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+      }`} />
 
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
         {product.isDemo && (
@@ -90,14 +96,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
               </button>
             );
           })()}
-          {product.isMentaltechMember && (
-            <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full shadow-sm"
-              title="Membre du collectif MentalTech"
-            >
-              💙 MentalTech
-            </span>
-          )}
         </div>
       </div>
 
@@ -136,6 +134,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             <p className="text-base text-primary font-medium mt-1.5 leading-snug">
               {product.tagline}
             </p>
+            {product.isMentaltechMember && (
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 mt-2 bg-gradient-to-r from-primary to-purple-600 text-white text-xs font-bold rounded-full shadow-md"
+                title="Membre du collectif MentalTech"
+              >
+                💙 Collectif MentalTech
+              </span>
+            )}
           </div>
         </div>
 

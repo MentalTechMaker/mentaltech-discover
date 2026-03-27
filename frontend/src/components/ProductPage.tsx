@@ -215,7 +215,7 @@ export const ProductPage: React.FC = () => {
                   {label.grade}
                 </span>
                 {product.isMentaltechMember && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-purple-600 text-white rounded-full text-xs font-bold shadow-md">
                     💙 Collectif MentalTech
                   </span>
                 )}
