@@ -236,7 +236,7 @@ export const Landing: React.FC = () => {
                 Recevez des recommandations
               </h3>
               <p className="text-text-secondary text-sm">
-                Outils sélectionnés par le Collectif MentalTech
+                Outils évalués selon notre protocole de qualité
               </p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl border-2 border-purple-100 shadow-sm">

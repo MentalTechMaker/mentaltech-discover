@@ -194,7 +194,7 @@ export const ProductCatalog: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-text-primary mb-3">Catalogue en cours de construction</h1>
             <p className="text-text-secondary leading-relaxed">
-              Nous référençons actuellement les premières solutions du catalogue. Les éditeurs du Collectif MentalTech sont en train de soumettre leurs solutions.
+              Nous référençons actuellement les premières solutions du catalogue. Les éditeurs sont en train de soumettre leurs solutions.
             </p>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-left">

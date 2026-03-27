@@ -139,11 +139,10 @@ export const About: React.FC = () => {
                 <span className="text-3xl flex-shrink-0">✅</span>
                 <div>
                   <h3 className="font-bold text-text-primary mb-2">
-                    Membership Collectif MentalTech
+                    Soumission et évaluation
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Être membre actif du Collectif MentalTech (fondateur, adhérent
-                    ou partenaire)
+                    Toute solution peut être soumise via notre formulaire public et sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient d'un badge dédié.
                   </p>
                 </div>
               </div>

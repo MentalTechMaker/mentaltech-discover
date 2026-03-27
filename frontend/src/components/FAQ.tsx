@@ -9,7 +9,7 @@ interface FAQItem {
 }
 
 const FAQ_SCHEMA_DATA = [
-  { q: "Comment sont sélectionnées les solutions ?", a: "Nous référençons les membres du Collectif MentalTech qui respectent nos critères : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active." },
+  { q: "Comment sont sélectionnées les solutions ?", a: "Toute solution peut être soumise et évaluée selon notre protocole de qualité : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active. Les membres du Collectif MentalTech bénéficient d'un badge dédié." },
   { q: "Comment fonctionne l'algorithme de recommandation ?", a: "Nous analysons 5 dimensions : public cible, problématiques, préférences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance." },
   { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de santé peuvent créer un compte prescripteur gratuit." },
   { q: "Mes données sont-elles collectées ?", a: "Pour les visiteurs, aucune donnée n'est collectée. Les réponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectés de manière sécurisée." },
@@ -51,8 +51,7 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            Nous référençons les <strong>membres du Collectif MentalTech</strong> qui
-            respectent nos critères :
+            Toute solution peut être soumise et évaluée selon nos critères :
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Conformité RGPD et hébergement HDS si données de santé</li>
