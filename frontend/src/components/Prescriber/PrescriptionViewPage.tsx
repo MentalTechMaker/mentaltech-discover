@@ -3,6 +3,7 @@ import { viewPrescription, confirmPrescriptionView, type PrescriptionPublicRespo
 import { useAppStore } from "../../store/useAppStore";
 import { sanitizeUrl } from "../../utils/security";
 import { getLabelInfo } from "../../utils/scoring";
+import { SITE_URL } from "../../utils/meta";
 
 const pricingLabels: Record<string, string> = {
   free: "Gratuit",
@@ -187,7 +188,7 @@ export const PrescriptionViewPage: React.FC = () => {
                         color: label.color,
                       }}
                     >
-                      {label.grade} &mdash; {label.text}
+                      {label.grade} - {label.text}
                     </span>
 
                     {/* Pricing */}
@@ -251,7 +252,7 @@ export const PrescriptionViewPage: React.FC = () => {
               MentalTech Discover vous aide à trouver les outils digitaux les mieux notés selon vos besoins.
             </p>
             <a
-              href="https://discover.mentaltech.fr"
+              href={SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"

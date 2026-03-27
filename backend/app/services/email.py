@@ -23,6 +23,7 @@ TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
 EMAIL_DEV_DIR = Path("/tmp/mentaltech_emails")
 
 jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
+jinja_env.globals["frontend_url"] = settings.FRONTEND_URL
 
 mail_conf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,

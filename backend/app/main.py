@@ -168,7 +168,7 @@ def sitemap_xml():
     finally:
         db.close()
 
-    base = "https://discover.mentaltech.fr"
+    base = settings.FRONTEND_URL
     today = date.today().isoformat()
     static_pages = [
         ("/", "weekly", "1.0"),

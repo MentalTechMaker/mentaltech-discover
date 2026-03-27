@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
 import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
-import { setPageMeta, setCanonical, setOgImage, injectJsonLd, removeJsonLd } from "../utils/meta";
+import { setPageMeta, setCanonical, setOgImage, injectJsonLd, removeJsonLd, SITE_URL } from "../utils/meta";
 
 const pricingLabels: Record<string, string> = {
   free: "Gratuit",
@@ -72,7 +72,7 @@ export const ProductPage: React.FC = () => {
     if (product.logo) {
       const logoUrl = product.logo.startsWith('http')
         ? product.logo
-        : `https://discover.mentaltech.fr${product.logo}`;
+        : `${SITE_URL}${product.logo}`;
       setOgImage(logoUrl);
     }
     injectJsonLd("product-schema", {
@@ -94,8 +94,8 @@ export const ProductPage: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://discover.mentaltech.fr/" },
-        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": "https://discover.mentaltech.fr/catalogue" },
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": `${SITE_URL}/` },
+        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": `${SITE_URL}/catalogue` },
         { "@type": "ListItem", "position": 3, "name": product.name },
       ],
     });

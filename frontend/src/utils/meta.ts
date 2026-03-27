@@ -1,4 +1,5 @@
 const SITE_NAME = "MentalTech Discover";
+export const SITE_URL = (import.meta.env.VITE_SITE_URL as string) || "https://discover.mentaltech.fr";
 
 /**
  * Update the page title and meta description.
@@ -45,7 +46,7 @@ export function removeJsonLd(id: string): void {
 
 /** Update or create the canonical URL link tag. */
 export function setCanonical(path: string): void {
-  const href = `https://discover.mentaltech.fr${path}`;
+  const href = `${SITE_URL}${path}`;
   let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!link) {
     link = document.createElement("link");
