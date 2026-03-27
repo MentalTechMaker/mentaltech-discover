@@ -60,7 +60,10 @@ export const useAuthStore = create<AuthState>((set) => {
       });
       if (user.role === 'admin') {
         const { useAppStore } = await import('./useAppStore');
-        useAppStore.getState().setView('admin');
+        const currentView = useAppStore.getState().currentView;
+        if (currentView === 'landing' || currentView === 'prescriber-auth') {
+          useAppStore.getState().setView('admin');
+        }
       }
     },
 
@@ -122,7 +125,10 @@ export const useAuthStore = create<AuthState>((set) => {
         });
         if (user.role === 'admin') {
           const { useAppStore } = await import('./useAppStore');
-          useAppStore.getState().setView('admin');
+          const currentView = useAppStore.getState().currentView;
+          if (currentView === 'landing' || currentView === 'prescriber-auth') {
+            useAppStore.getState().setView('admin');
+          }
         }
       } catch {
         clearTokens();
