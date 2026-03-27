@@ -55,10 +55,10 @@ const PRICING_MODELS = [
 ];
 
 const CA_RANGES = [
-  { value: "less-100k", label: "Moins de 100 000 €" },
-  { value: "100k-500k", label: "100 000 € - 500 000 €" },
-  { value: "500k-1m", label: "500 000 € - 1 000 000 €" },
-  { value: "more-1m", label: "Plus de 1 000 000 €" },
+  { value: "less-100k", label: "Moins de 100 000 €", cotisation: "500 €/an" },
+  { value: "100k-500k", label: "100 000 € - 500 000 €", cotisation: "500 €/an" },
+  { value: "500k-1m", label: "500 000 € - 1 000 000 €", cotisation: "1 000 €/an" },
+  { value: "more-1m", label: "Plus de 1 000 000 €", cotisation: "2 000 €/an" },
 ];
 
 const PREFERENCE_OPTIONS = [
@@ -1347,6 +1347,16 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     </label>
                     {collectifRequested && (
                       <div className="mt-4 space-y-3">
+                        <div className="bg-white border border-amber-200 rounded-lg p-3 mb-1 text-center">
+                          <p className="text-xs font-semibold text-amber-800 mb-2">Cotisation annuelle selon votre chiffre d'affaires :</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div className="text-xs"><span className="block font-bold text-text-primary">500 €</span><span className="text-text-secondary">CA &lt; 100K</span></div>
+                            <div className="text-xs"><span className="block font-bold text-text-primary">500 €</span><span className="text-text-secondary">100K - 500K</span></div>
+                            <div className="text-xs"><span className="block font-bold text-text-primary">1 000 €</span><span className="text-text-secondary">500K - 1M</span></div>
+                            <div className="text-xs"><span className="block font-bold text-text-primary">2 000 €</span><span className="text-text-secondary">CA &gt; 1M</span></div>
+                          </div>
+                          <p className="text-xs text-text-secondary mt-2">La candidature est gratuite. La cotisation est due uniquement en cas d'acceptation.</p>
+                        </div>
                         <div>
                           <label className="block text-sm font-semibold text-text-primary mb-2">Chiffre d'affaires annuel approximatif</label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1354,6 +1364,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                               <label key={r.value} className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${collectifCaRange === r.value ? "border-primary bg-primary/5" : "border-gray-200 hover:border-primary/50"}`}>
                                 <input type="radio" name="ca_range" value={r.value} checked={collectifCaRange === r.value} onChange={() => setCollectifCaRange(r.value)} className="accent-primary" />
                                 <span className="text-sm">{r.label}</span>
+                                <span className="text-xs text-amber-700 font-semibold ml-auto">{r.cotisation}</span>
                               </label>
                             ))}
                           </div>
