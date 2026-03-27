@@ -206,7 +206,7 @@ export const Landing: React.FC = () => {
             )}
             <div className="hidden md:block w-px h-10 bg-gray-200" />
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary">{productCount > 0 ? `${productCount}+` : "50+"}</p>
+              <p className="text-3xl font-bold text-primary">{productCount >= 10 ? `${productCount}+` : `${products.length}`}</p>
               <p className="text-sm text-text-secondary">solutions évaluées</p>
             </div>
           </div>

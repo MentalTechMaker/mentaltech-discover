@@ -6,7 +6,17 @@ import { useAppStore } from '../../store/useAppStore';
 import { useProductsStore } from '../../store/useProductsStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { ProductQuickView } from './ProductQuickView';
+import { getLabelInfo } from '../../utils/scoring';
 import type { Product } from '../../types';
+
+const pricingLabels: Record<string, string> = {
+  free: "Gratuit",
+  freemium: "Freemium",
+  subscription: "Abonnement",
+  "per-session": "Par seance",
+  enterprise: "Entreprise",
+  custom: "Sur mesure",
+};
 
 export const NewPrescription: React.FC = () => {
   const { setView } = useAppStore();
@@ -25,6 +35,7 @@ export const NewPrescription: React.FC = () => {
   const [error, setError] = useState('');
   const [result, setResult] = useState<PrescriptionResponse | null>(null);
   const [copied, setCopied] = useState(false);
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
     if (products.length === 0) {
@@ -554,18 +565,120 @@ export const NewPrescription: React.FC = () => {
               </p>
             </div>
           ) : (
-            <button
-              type="button"
-              disabled={loading}
-              onClick={handleSubmit}
-              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {loading ? 'Création...' : 'Créer la prescription'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handlePreview}
+                className="flex items-center gap-2 px-5 py-3 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Apercu
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleSubmit}
+                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? 'Création...' : 'Créer la prescription'}
+              </button>
+            </div>
           )}
         </div>
       </div>
     );
+  };
+
+  const handlePreview = () => {
+    const prescriberName = user?.name || 'Prescripteur';
+    const prescriberProfession = user?.profession || '';
+    const prescriberOrg = user?.organization || '';
+    const msgText = message.trim();
+
+    const productCards = selectedProducts.map((product) => {
+      const label = getLabelInfo(product.scoreLabel);
+      const pricingModel = product.pricing?.model;
+      const pricingText = pricingModel ? (pricingLabels[pricingModel] ?? pricingModel) : '';
+      const pricingAmount = product.pricing?.amount ? ` - ${product.pricing.amount}` : '';
+      const pricingDetails = product.pricing?.details || '';
+      const logoHtml = product.logo
+        ? `<img src="${product.logo}" alt="${product.name}" style="width:64px;height:64px;border-radius:12px;object-fit:contain;background:#f9fafb;border:1px solid #f3f4f6;" />`
+        : '';
+
+      return `
+        <div style="background:#fff;border-radius:16px;border:2px solid #e5e7eb;padding:24px;display:flex;gap:20px;flex-wrap:wrap;">
+          ${logoHtml ? `<div style="flex-shrink:0;">${logoHtml}</div>` : ''}
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px;">
+              <h3 style="font-size:18px;font-weight:700;color:#2c3e50;margin:0;">${product.name}</h3>
+              <span style="font-size:12px;font-weight:500;color:#6b7280;background:#f3f4f6;border-radius:9999px;padding:2px 10px;">${product.type}</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin:0 0 12px 0;">${product.tagline}</p>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:9999px;padding:4px 12px;background:${label.bgColor};color:${label.color};">
+                ${label.grade} - ${label.text}
+              </span>
+              ${pricingText ? `<span style="font-size:12px;font-weight:500;color:#6b7280;background:#f3f4f6;border-radius:9999px;padding:2px 10px;">${pricingText}${pricingAmount}</span>` : ''}
+            </div>
+            ${pricingDetails ? `<p style="font-size:12px;color:#6b7280;margin:0 0 12px 0;">${pricingDetails}</p>` : ''}
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <span style="display:inline-block;background:#4a90e2;color:#fff;font-size:14px;font-weight:600;padding:8px 20px;border-radius:8px;opacity:0.6;">Decouvrir</span>
+              <span style="display:inline-block;background:#f3f4f6;color:#2c3e50;font-size:14px;font-weight:600;padding:8px 20px;border-radius:8px;opacity:0.6;">Voir la fiche</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apercu - Prescription MentalTech Discover</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom, #eff6ff, #fff); min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div style="background:#fef3c7;border-bottom:2px solid #fcd34d;padding:12px 24px;text-align:center;">
+    <strong style="color:#92400e;font-size:14px;">Apercu - Ce que votre patient verra</strong>
+  </div>
+  <header style="background:#fff;border-bottom:1px solid #e5e7eb;">
+    <div style="max-width:768px;margin:0 auto;padding:32px 16px;text-align:center;">
+      <h1 style="font-size:28px;font-weight:700;color:#2c3e50;margin-bottom:8px;">Prescription MentalTech Discover</h1>
+      <p style="color:#6b7280;font-size:18px;">Recommandation de <strong style="color:#2c3e50;">${prescriberName}</strong></p>
+      ${prescriberProfession ? `<p style="color:#6b7280;font-size:14px;margin-top:4px;">${prescriberProfession}</p>` : ''}
+      ${prescriberOrg ? `<p style="color:#6b7280;font-size:14px;">${prescriberOrg}</p>` : ''}
+    </div>
+  </header>
+  <main style="max-width:768px;margin:0 auto;padding:32px 16px;">
+    <div style="display:flex;flex-direction:column;gap:32px;">
+      ${msgText ? `<blockquote style="border-left:4px solid #60a5fa;background:#eff6ff;border-radius:0 12px 12px 0;padding:16px 24px;color:#6b7280;font-style:italic;">${msgText}</blockquote>` : ''}
+      <section>
+        <h2 style="font-size:20px;font-weight:700;color:#2c3e50;margin-bottom:24px;">Ressources recommandees</h2>
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          ${productCards}
+        </div>
+      </section>
+      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:16px;padding:20px;text-align:center;">
+        <p style="font-size:14px;color:#991b1b;font-weight:500;">
+          Cette recommandation est fournie a titre informatif. En cas d'urgence, contactez le <strong>3114</strong> ou le <strong>15</strong> (SAMU).
+        </p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
   };
 
   return (

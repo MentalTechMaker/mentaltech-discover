@@ -162,6 +162,30 @@ async def send_prescription_viewed_email(
         _write_email_to_file(message.subject, [prescriber_email], html)
 
 
+async def send_prescription_revoked_email(
+    prescriber_email: str,
+    prescriber_name: str,
+    dashboard_url: str,
+) -> None:
+    template = jinja_env.get_template("prescription_revoked.html")
+    html = template.render(
+        prescriber_name=prescriber_name,
+        dashboard_url=dashboard_url,
+    )
+    message = MessageSchema(
+        subject="Une prescription a été supprimée (RGPD) - MentalTech Discover",
+        recipients=[prescriber_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Prescription revoked email sent to {_mask_email(prescriber_email)}")
+    except Exception:
+        logger.error(f"Failed to send prescription revoked email to {_mask_email(prescriber_email)}", exc_info=True)
+        _write_email_to_file(message.subject, [prescriber_email], html)
+
+
 async def send_prescriber_approved_email(email: str, name: str, dashboard_url: str) -> None:
     template = jinja_env.get_template("prescriber_approved.html")
     html = template.render(name=name, dashboard_url=dashboard_url)

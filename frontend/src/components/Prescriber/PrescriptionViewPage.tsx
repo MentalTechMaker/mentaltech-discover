@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { viewPrescription, type PrescriptionPublicResponse } from "../../api/prescriber";
+import { viewPrescription, confirmPrescriptionView, type PrescriptionPublicResponse } from "../../api/prescriber";
 import { useAppStore } from "../../store/useAppStore";
 import { sanitizeUrl } from "../../utils/security";
 import { getLabelInfo } from "../../utils/scoring";
@@ -29,7 +29,7 @@ export const PrescriptionViewPage: React.FC = () => {
     let cancelled = false;
     const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
 
-    viewPrescription(token, isPreview)
+    viewPrescription(token)
       .then((res) => {
         if (!cancelled) {
           setData(res);
@@ -43,8 +43,19 @@ export const PrescriptionViewPage: React.FC = () => {
         }
       });
 
+    // Confirm view after 5s delay to filter out bots
+    let confirmTimer: ReturnType<typeof setTimeout> | undefined;
+    if (!isPreview) {
+      confirmTimer = setTimeout(() => {
+        if (!cancelled) {
+          confirmPrescriptionView(token).catch(() => {});
+        }
+      }, 5000);
+    }
+
     return () => {
       cancelled = true;
+      if (confirmTimer) clearTimeout(confirmTimer);
     };
   }, [token]);
 

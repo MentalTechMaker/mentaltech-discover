@@ -20,6 +20,9 @@ Disallow: /inscription
 Disallow: /questionnaire
 Disallow: /resultats
 
+# Prescriptions (private patient links)
+Disallow: /prescription
+
 # Confirmation pages (single-use tokens)
 Disallow: /confirmer-soumission
 Disallow: /confirmer-candidature

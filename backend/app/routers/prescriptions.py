@@ -7,7 +7,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, R
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..dependencies import require_prescriber_or_admin, get_optional_user
+from ..dependencies import require_prescriber_or_admin
 from ..models.user import User
 from ..models.prescription import Prescription
 from ..models.product import Product
@@ -23,6 +23,7 @@ from ..rate_limit import limiter
 from ..services.email import (
     send_prescription_email,
     send_prescription_viewed_email,
+    send_prescription_revoked_email,
 )
 
 logger = logging.getLogger(__name__)
@@ -251,41 +252,17 @@ def delete_prescription(
 @router.get("/view/{token}", response_model=PrescriptionPublicResponse)
 def view_prescription(
     token: str,
-    background_tasks: BackgroundTasks,
-    preview: bool = Query(False),
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_optional_user),
 ):
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
-    if not prescription:
+    if not prescription or prescription.revoked_at:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
-    if prescription.revoked_at:
-        raise HTTPException(status_code=status.HTTP_410_GONE, detail="Cette prescription a été révoquée")
 
     now = datetime.now(timezone.utc)
     expired = now > prescription.expires_at
 
-    # Preview only allowed for the prescriber who created the prescription
-    is_preview = preview and current_user and current_user.id == prescription.prescriber_id
-
-    # Mark as viewed (first time only) - skip when prescriber previews
-    first_view = not is_preview and not prescription.viewed_at and not expired
-    if first_view:
-        prescription.viewed_at = now
-        db.commit()
-
     # Get prescriber info
     prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
-
-    # Notify prescriber on first view
-    if first_view and prescriber and prescriber.email:
-        link = f"{settings.FRONTEND_URL}/prescription/{token}"
-        background_tasks.add_task(
-            send_prescription_viewed_email,
-            prescriber_email=prescriber.email,
-            prescriber_name=prescriber.name,
-            prescription_link=link,
-        )
 
     # Get products
     products = []
@@ -317,6 +294,40 @@ def view_prescription(
     )
 
 
+@router.post("/view/{token}/confirm", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("5/minute")
+def confirm_prescription_view(
+    request: Request,
+    token: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    """Mark prescription as viewed. Called by frontend after a delay to filter out bots."""
+    prescription = db.query(Prescription).filter(Prescription.token == token).first()
+    if not prescription or prescription.revoked_at:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+    if prescription.viewed_at:
+        return
+
+    now = datetime.now(timezone.utc)
+    if now > prescription.expires_at:
+        return
+
+    prescription.viewed_at = now
+    db.commit()
+    logger.info(f"Prescription {prescription.id} confirmed as viewed (IP: {request.client.host if request.client else 'unknown'})")
+
+    prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
+    if prescriber and prescriber.email:
+        link = f"{settings.FRONTEND_URL}/prescription/{token}"
+        background_tasks.add_task(
+            send_prescription_viewed_email,
+            prescriber_email=prescriber.email,
+            prescriber_name=prescriber.name,
+            prescription_link=link,
+        )
+
+
 @router.delete("/revoke/{token}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("3/hour")
 def revoke_prescription_by_patient(
@@ -342,8 +353,8 @@ def revoke_prescription_by_patient(
     prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
     if prescriber and prescriber.email:
         background_tasks.add_task(
-            send_prescription_viewed_email,
+            send_prescription_revoked_email,
             prescriber_email=prescriber.email,
             prescriber_name=prescriber.name,
-            prescription_link=f"{settings.FRONTEND_URL}/prescription/{token}",
+            dashboard_url=f"{settings.FRONTEND_URL}/prescriber",
         )
