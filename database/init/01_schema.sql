@@ -77,7 +77,12 @@ CREATE TABLE products (
     is_demo BOOLEAN NOT NULL DEFAULT FALSE,
 
     -- Detailed scoring criteria (protocol answers stored as JSONB)
-    scoring_criteria JSONB DEFAULT NULL
+    scoring_criteria JSONB DEFAULT NULL,
+
+    -- Priority-based targeting (P1/P2/P3, max 3 items per level)
+    -- Format: {"P1": ["adult"], "P2": ["young", "parent"], "P3": ["senior"]}
+    audience_priorities JSONB DEFAULT '{}',
+    problems_priorities JSONB DEFAULT '{}'
 );
 
 -- GIN indexes for array columns (fast lookups)
@@ -85,6 +90,8 @@ CREATE INDEX idx_products_audience ON products USING GIN (audience);
 CREATE INDEX idx_products_problems_solved ON products USING GIN (problems_solved);
 CREATE INDEX idx_products_tags ON products USING GIN (tags);
 CREATE INDEX idx_products_preference_match ON products USING GIN (preference_match);
+CREATE INDEX idx_products_audience_priorities ON products USING GIN (audience_priorities);
+CREATE INDEX idx_products_problems_priorities ON products USING GIN (problems_priorities);
 -- Visibility index (migration 011)
 CREATE INDEX idx_products_visibility ON products (is_visible, company_defunct);
 
@@ -196,6 +203,8 @@ CREATE TABLE product_submissions (
     tags TEXT[] DEFAULT '{}',
     audience TEXT[] DEFAULT '{}',
     problems_solved TEXT[] DEFAULT '{}',
+    audience_priorities JSONB DEFAULT '{}',
+    problems_priorities JSONB DEFAULT '{}',
     pricing_model VARCHAR(50),
     pricing_amount VARCHAR(100),
     pricing_details TEXT,
@@ -242,6 +251,8 @@ CREATE TABLE IF NOT EXISTS public_submissions (
     tags TEXT[] DEFAULT '{}',
     audience TEXT[] DEFAULT '{}',
     problems_solved TEXT[] DEFAULT '{}',
+    audience_priorities JSONB DEFAULT '{}',
+    problems_priorities JSONB DEFAULT '{}',
     pricing_model VARCHAR(50),
     pricing_amount VARCHAR(100),
     pricing_details TEXT,

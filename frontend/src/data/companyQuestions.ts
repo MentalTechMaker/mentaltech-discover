@@ -1,4 +1,4 @@
-import type { Question } from '../types';
+import type { Question } from "../types";
 
 export const companyQuestions: Question[] = [
   {
@@ -9,8 +9,8 @@ export const companyQuestions: Question[] = [
       { value: "small", label: "1-50 salariés", emoji: "🏪" },
       { value: "medium", label: "51-250 salariés", emoji: "🏢" },
       { value: "large", label: "251-1000 salariés", emoji: "🏬" },
-      { value: "enterprise", label: "+ de 1000 salariés", emoji: "🏛️" }
-    ]
+      { value: "enterprise", label: "+ de 1000 salariés", emoji: "🏛️" },
+    ],
   },
   {
     id: 2,
@@ -21,18 +21,21 @@ export const companyQuestions: Question[] = [
       { value: "support", label: "Accompagnement psychologique des équipes" },
       { value: "burnout", label: "Prévention du burn-out" },
       { value: "wellbeing", label: "Bien-être au travail général" },
-      { value: "crisis", label: "Gestion de crise / situations difficiles" }
-    ]
+      { value: "crisis", label: "Gestion de crise / situations difficiles" },
+    ],
   },
   {
     id: 3,
     question: "Quel type de solution recherchez-vous ?",
     type: "single-choice",
     options: [
-      { value: "platform", label: "Plateforme complète pour tous les salariés" },
+      {
+        value: "platform",
+        label: "Plateforme complète pour tous les salariés",
+      },
       { value: "training", label: "Formation et sensibilisation" },
       { value: "therapy", label: "Accès à des professionnels (psy, coachs)" },
-      { value: "tools", label: "Outils de bien-être (méditation, etc.)" }
-    ]
-  }
+      { value: "tools", label: "Outils de bien-être (méditation, etc.)" },
+    ],
+  },
 ];

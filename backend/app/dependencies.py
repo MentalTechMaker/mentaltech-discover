@@ -71,5 +71,3 @@ def require_prescriber_or_admin(user: User = Depends(get_current_user)) -> User:
             detail="Accès réservé aux prescripteurs et administrateurs",
         )
     return user
-
-

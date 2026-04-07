@@ -1,18 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import type { PriorityMap } from "../../types";
+import { createAndPublishAdmin, uploadLogoAdmin } from "../../api/publisher";
 import {
-  createAndPublishAdmin,
-  uploadLogoAdmin,
-} from "../../api/publisher";
-import { submitPublicSolution, uploadLogoPublic, approvePublicSubmission } from "../../api/public";
-import {
-  computeLabelFromScores,
-  getLabelInfo,
-} from "../../utils/scoring";
-import {
-  protocolPillars,
-  allSubCriteria,
-} from "../../data/protocolQuestions";
-import type { ProtocolQuestion } from "../../data/protocolQuestions";
+  submitPublicSolution,
+  uploadLogoPublic,
+  approvePublicSubmission,
+} from "../../api/public";
 
 const PRODUCT_TYPES = [
   "Téléconsultation",
@@ -30,7 +23,24 @@ const PARTICULIER_AUDIENCE_OPTIONS = [
   { value: "senior", label: "Seniors" },
 ] as const;
 
-const PARTICULIER_VALUES = PARTICULIER_AUDIENCE_OPTIONS.map(o => o.value);
+const PARTICULIER_VALUES: Set<string> = new Set(
+  PARTICULIER_AUDIENCE_OPTIONS.map((o) => o.value),
+);
+const MAX_PARTICULIER_TOTAL = 4;
+
+function countParticulierSelected(
+  priorities: PriorityMap,
+  excludeLevel?: string,
+): number {
+  return (["P1", "P2", "P3"] as const)
+    .filter((lvl) => lvl !== excludeLevel)
+    .reduce(
+      (sum, lvl) =>
+        sum +
+        (priorities[lvl] ?? []).filter((v) => PARTICULIER_VALUES.has(v)).length,
+      0,
+    );
+}
 
 const PROBLEM_OPTIONS = [
   { value: "stress-anxiety", label: "Stress / Anxiété" },
@@ -56,81 +66,41 @@ const PRICING_MODELS = [
 
 const CA_RANGES = [
   { value: "less-100k", label: "Moins de 100 000 €", cotisation: "500 €/an" },
-  { value: "100k-500k", label: "100 000 € - 500 000 €", cotisation: "500 €/an" },
-  { value: "500k-1m", label: "500 000 € - 1 000 000 €", cotisation: "1 000 €/an" },
+  {
+    value: "100k-500k",
+    label: "100 000 € - 500 000 €",
+    cotisation: "500 €/an",
+  },
+  {
+    value: "500k-1m",
+    label: "500 000 € - 1 000 000 €",
+    cotisation: "1 000 €/an",
+  },
   { value: "more-1m", label: "Plus de 1 000 000 €", cotisation: "2 000 €/an" },
 ];
 
 const PREFERENCE_OPTIONS = [
-  { value: "talk-now", label: "Parler maintenant", description: "Accès rapide à un professionnel ou un support humain" },
-  { value: "autonomous", label: "Exercices autonomes", description: "Pratiques guidées à faire seul (méditation, CBT, etc.)" },
-  { value: "understand", label: "Comprendre", description: "Ressources éducatives sur la santé mentale" },
-  { value: "program", label: "Programme structuré", description: "Parcours progressif sur plusieurs semaines" },
+  {
+    value: "talk-now",
+    label: "Parler maintenant",
+    description: "Accès rapide à un professionnel ou un support humain",
+  },
+  {
+    value: "autonomous",
+    label: "Exercices autonomes",
+    description: "Pratiques guidées à faire seul (méditation, CBT, etc.)",
+  },
+  {
+    value: "understand",
+    label: "Comprendre",
+    description: "Ressources éducatives sur la santé mentale",
+  },
+  {
+    value: "program",
+    label: "Programme structuré",
+    description: "Parcours progressif sur plusieurs semaines",
+  },
 ];
-
-function computePillarScore(pillarId: string, answers: Record<string, Record<string, unknown>>): number | "" {
-  const pillar = protocolPillars.find(p => p.id === pillarId);
-  if (!pillar) return "";
-
-  // Skip if nothing has been answered in this pillar
-  const hasAnyAnswer = pillar.subCriteria.some(sc => {
-    const a = answers[sc.id];
-    return a && Object.entries(a).some(([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined);
-  });
-  if (!hasAnyAnswer) return "";
-
-  let totalScore = 0;
-  let totalMax = 0;
-
-  for (const sc of pillar.subCriteria) {
-    const scAnswers = answers[sc.id] || {};
-
-    // Only count questions that are visible (condition met or unconditional)
-    const visibleQuestions = sc.questions.filter(q => {
-      if (!q.condition) return true;
-      return scAnswers[q.condition.id] === q.condition.value;
-    });
-
-    if (visibleQuestions.length === 0) continue;
-
-    // Only select and checkbox carry semantic quality - text/url/email/number are documentation/proof
-    const scoringQuestions = visibleQuestions.filter(q => q.type === 'select' || q.type === 'checkbox');
-    if (scoringQuestions.length === 0) continue;
-
-    let scQualitySum = 0;
-    for (const q of scoringQuestions) {
-      const val = scAnswers[q.id];
-      if (q.type === 'select' && q.options && q.options.length > 1) {
-        // Options are ordered best → worst: position 0 = 1.0, last = 0.0
-        if (val !== undefined && val !== "" && val !== null) {
-          const idx = q.options.findIndex(o => o.value === val);
-          scQualitySum += idx >= 0 ? 1 - idx / (q.options.length - 1) : 0;
-        }
-        // Unanswered required select = 0 quality
-      } else if (q.type === 'checkbox') {
-        scQualitySum += val === true ? 1 : 0;
-      }
-    }
-
-    const scRatio = scQualitySum / scoringQuestions.length;
-    totalScore += scRatio * sc.scoreMax;
-    totalMax += sc.scoreMax;
-  }
-
-  if (totalMax === 0) return "";
-  return Math.round(totalScore / totalMax * 5);
-}
-
-function computePillarJustification(pillarId: string, answers: Record<string, Record<string, unknown>>): string {
-  const pillar = protocolPillars.find(p => p.id === pillarId);
-  if (!pillar) return "";
-  const answered = pillar.subCriteria.filter(sc => {
-    const a = answers[sc.id];
-    return a && Object.entries(a).some(([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined);
-  });
-  if (answered.length === 0) return "";
-  return answered.map(sc => `- ${sc.title}`).join("\n");
-}
 
 interface Props {
   onClose: () => void;
@@ -140,12 +110,27 @@ interface Props {
   submissionId?: string; // links this adminMode form to a PublicSubmission
 }
 
-const DRAFT_KEY = 'mentaltech-submission-draft';
-const STEP_NAMES = ["Informations de base", "Protocole d'évaluation", "Récapitulatif"];
-const TOTAL_STEPS = STEP_NAMES.length;
+const DRAFT_KEY = "mentaltech-submission-draft";
+const STEP_NAMES_ADMIN = ["Informations de base", "Récapitulatif"];
+const STEP_NAMES_PUBLIC = [
+  "Comment ça marche",
+  "Informations de base",
+  "Récapitulatif",
+];
 
-export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, editProduct, publicMode = false, submissionId }) => {
+export const SubmissionForm: React.FC<Props> = ({
+  onClose,
+  adminMode = false,
+  editProduct,
+  publicMode = false,
+  submissionId,
+}) => {
   const loadedAt = useRef(Date.now() / 1000);
+
+  const STEP_NAMES = publicMode ? STEP_NAMES_PUBLIC : STEP_NAMES_ADMIN;
+  const TOTAL_STEPS = STEP_NAMES.length;
+  // In public mode, form steps are offset by 1 (step 1 = intro, step 2 = basic info, etc.)
+  const FORM_OFFSET = publicMode ? 1 : 0;
 
   const [step, setStep] = useState(1);
   const [loading] = useState(false);
@@ -162,6 +147,16 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [linkedin, setLinkedin] = useState("");
   const [audience, setAudience] = useState<string[]>([]);
   const [problemsSolved, setProblemsSolved] = useState<string[]>([]);
+  const [audiencePriorities, setAudiencePriorities] = useState<PriorityMap>({
+    P1: [],
+    P2: [],
+    P3: [],
+  });
+  const [problemsPriorities, setProblemsPriorities] = useState<PriorityMap>({
+    P1: [],
+    P2: [],
+    P3: [],
+  });
   const [pricingModel, setPricingModel] = useState("");
   const [pricingAmount, setPricingAmount] = useState("");
   const [pricingDetails, setPricingDetails] = useState("");
@@ -179,7 +174,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [logoUploading, setLogoUploading] = useState(false);
   const [scoresSecurity, setScoresSecurity] = useState<number | "">("");
   const [scoresEfficacy, setScoresEfficacy] = useState<number | "">("");
-  const [scoresAccessibility, setScoresAccessibility] = useState<number | "">("");
+  const [scoresAccessibility, setScoresAccessibility] = useState<number | "">(
+    "",
+  );
   const [scoresUx, setScoresUx] = useState<number | "">("");
   const [scoresSupport, setScoresSupport] = useState<number | "">("");
   const [justSecurity, setJustSecurity] = useState("");
@@ -196,7 +193,13 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   const [collectifRequested, setCollectifRequested] = useState(false);
   const [collectifCaRange, setCollectifCaRange] = useState("");
   const [collectifContactEmail, setCollectifContactEmail] = useState("");
+  const [rgpdConsent, setRgpdConsent] = useState(false);
   const [stepError, setStepError] = useState("");
+
+  // Scroll to top on step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   // Draft auto-save state
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
@@ -204,10 +207,27 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
   // Collect all saveable form data into an object
   const collectFormData = () => ({
-    step, name, type, tagline, description, url, linkedin, audience, problemsSolved,
-    pricingModel, pricingAmount, pricingDetails, protocolAnswers,
-    contactName, contactEmail, collectifRequested, collectifCaRange,
-    collectifContactEmail, logoPath,
+    step,
+    name,
+    type,
+    tagline,
+    description,
+    url,
+    linkedin,
+    audience,
+    problemsSolved,
+    pricingModel,
+    pricingAmount,
+    pricingDetails,
+    protocolAnswers,
+    contactName,
+    contactEmail,
+    collectifRequested,
+    collectifCaRange,
+    collectifContactEmail,
+    logoPath,
+    audiencePriorities,
+    problemsPriorities,
   });
 
   // Restore form data from a saved draft
@@ -220,17 +240,30 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     if (data.url != null) setUrl(data.url as string);
     if (data.linkedin != null) setLinkedin(data.linkedin as string);
     if (data.audience != null) setAudience(data.audience as string[]);
-    if (data.problemsSolved != null) setProblemsSolved(data.problemsSolved as string[]);
+    if (data.problemsSolved != null)
+      setProblemsSolved(data.problemsSolved as string[]);
     if (data.pricingModel != null) setPricingModel(data.pricingModel as string);
-    if (data.pricingAmount != null) setPricingAmount(data.pricingAmount as string);
-    if (data.pricingDetails != null) setPricingDetails(data.pricingDetails as string);
-    if (data.protocolAnswers != null) setProtocolAnswers(data.protocolAnswers as Record<string, Record<string, unknown>>);
+    if (data.pricingAmount != null)
+      setPricingAmount(data.pricingAmount as string);
+    if (data.pricingDetails != null)
+      setPricingDetails(data.pricingDetails as string);
+    if (data.protocolAnswers != null)
+      setProtocolAnswers(
+        data.protocolAnswers as Record<string, Record<string, unknown>>,
+      );
     if (data.contactName != null) setContactName(data.contactName as string);
     if (data.contactEmail != null) setContactEmail(data.contactEmail as string);
-    if (data.collectifRequested != null) setCollectifRequested(data.collectifRequested as boolean);
-    if (data.collectifCaRange != null) setCollectifCaRange(data.collectifCaRange as string);
-    if (data.collectifContactEmail != null) setCollectifContactEmail(data.collectifContactEmail as string);
+    if (data.collectifRequested != null)
+      setCollectifRequested(data.collectifRequested as boolean);
+    if (data.collectifCaRange != null)
+      setCollectifCaRange(data.collectifCaRange as string);
+    if (data.collectifContactEmail != null)
+      setCollectifContactEmail(data.collectifContactEmail as string);
     if (data.logoPath != null) setLogoPath(data.logoPath as string);
+    if (data.audiencePriorities != null)
+      setAudiencePriorities(data.audiencePriorities as PriorityMap);
+    if (data.problemsPriorities != null)
+      setProblemsPriorities(data.problemsPriorities as PriorityMap);
   };
 
   // Check for existing draft on mount (only in non-edit mode)
@@ -241,7 +274,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       if (draft) {
         setShowDraftPrompt(true);
       }
-    } catch { /* localStorage unavailable */ }
+    } catch {
+      /* localStorage unavailable */
+    }
   }, []);
 
   // Auto-save draft every 30 seconds (only for public/non-edit mode)
@@ -253,14 +288,34 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
         setDraftSavedNotice(true);
         setTimeout(() => setDraftSavedNotice(false), 2000);
-      } catch { /* localStorage unavailable */ }
+      } catch {
+        /* localStorage unavailable */
+      }
     }, 30000);
     return () => clearInterval(interval);
-  }, [step, name, type, tagline, description, url, linkedin, audience, problemsSolved,
-      pricingModel, pricingAmount, pricingDetails, protocolAnswers,
-      contactName, contactEmail, collectifRequested, collectifCaRange,
-      collectifContactEmail, logoPath]);
-
+  }, [
+    step,
+    name,
+    type,
+    tagline,
+    description,
+    url,
+    linkedin,
+    audience,
+    problemsSolved,
+    pricingModel,
+    pricingAmount,
+    pricingDetails,
+    protocolAnswers,
+    contactName,
+    contactEmail,
+    collectifRequested,
+    collectifCaRange,
+    collectifContactEmail,
+    logoPath,
+    audiencePriorities,
+    problemsPriorities,
+  ]);
 
   // Pre-populate form when editing an existing product
   useEffect(() => {
@@ -279,36 +334,30 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
     setPricingModel(editProduct.pricing?.model || "");
     setPricingAmount(editProduct.pricing?.amount || "");
     setPricingDetails(editProduct.pricing?.details || "");
-    if (editProduct.scoring?.security != null) setScoresSecurity(editProduct.scoring.security);
-    if (editProduct.scoring?.efficacy != null) setScoresEfficacy(editProduct.scoring.efficacy);
-    if (editProduct.scoring?.accessibility != null) setScoresAccessibility(editProduct.scoring.accessibility);
+    if (editProduct.scoring?.security != null)
+      setScoresSecurity(editProduct.scoring.security);
+    if (editProduct.scoring?.efficacy != null)
+      setScoresEfficacy(editProduct.scoring.efficacy);
+    if (editProduct.scoring?.accessibility != null)
+      setScoresAccessibility(editProduct.scoring.accessibility);
     if (editProduct.scoring?.ux != null) setScoresUx(editProduct.scoring.ux);
-    if (editProduct.scoring?.support != null) setScoresSupport(editProduct.scoring.support);
+    if (editProduct.scoring?.support != null)
+      setScoresSupport(editProduct.scoring.support);
     setJustSecurity(editProduct.scoring?.justificationSecurity || "");
     setJustEfficacy(editProduct.scoring?.justificationEfficacy || "");
     setJustAccessibility(editProduct.scoring?.justificationAccessibility || "");
     setJustUx(editProduct.scoring?.justificationUx || "");
     setJustSupport(editProduct.scoring?.justificationSupport || "");
+    if (editProduct.audiencePriorities)
+      setAudiencePriorities(editProduct.audiencePriorities);
+    if (editProduct.problemsPriorities)
+      setProblemsPriorities(editProduct.problemsPriorities);
     if (editProduct.scoringCriteria) {
-      setProtocolAnswers(editProduct.scoringCriteria as Record<string, Record<string, unknown>>);
+      setProtocolAnswers(
+        editProduct.scoringCriteria as Record<string, Record<string, unknown>>,
+      );
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Suggested scores and justifications computed live from protocol answers (never written to state)
-  // Displayed alongside manually editable values so admin can accept or override
-  const suggestedScores = adminMode ? {
-    security: computePillarScore("1", protocolAnswers),
-    efficacy: computePillarScore("2", protocolAnswers),
-    accessibility: computePillarScore("3", protocolAnswers),
-    ux: computePillarScore("4", protocolAnswers),
-    support: computePillarScore("5", protocolAnswers),
-    justSecurity: computePillarJustification("1", protocolAnswers),
-    justEfficacy: computePillarJustification("2", protocolAnswers),
-    justAccessibility: computePillarJustification("3", protocolAnswers),
-    justUx: computePillarJustification("4", protocolAnswers),
-    justSupport: computePillarJustification("5", protocolAnswers),
-  } : null;
-
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -319,13 +368,17 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       const path = await uploadLogoAdmin(file);
       setLogoPath(path);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'upload du logo");
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de l'upload du logo",
+      );
     } finally {
       setLogoUploading(false);
     }
   };
 
-  const handlePublicLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePublicLogoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setLogoUploading(true);
@@ -334,13 +387,24 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       const path = await uploadLogoPublic(file);
       setLogoPath(path);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'upload du logo");
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de l'upload du logo",
+      );
     } finally {
       setLogoUploading(false);
     }
   };
 
   const handleAdminCreateAndPublish = async () => {
+    const hasP1 =
+      (audiencePriorities.P1?.length || 0) > 0 ||
+      (problemsPriorities.P1?.length || 0) > 0;
+    if (!hasP1) {
+      setError(
+        "Au moins un public cible ou un problème doit être en priorité P1 (Coeur de cible).",
+      );
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -353,18 +417,34 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         url,
         logo: logoPath || undefined,
         tags: [],
-        audience,
-        problems_solved: problemsSolved,
+        audience: [
+          ...new Set([
+            ...(audiencePriorities.P1 || []),
+            ...(audiencePriorities.P2 || []),
+            ...(audiencePriorities.P3 || []),
+          ]),
+        ],
+        problems_solved: [
+          ...new Set([
+            ...(problemsPriorities.P1 || []),
+            ...(problemsPriorities.P2 || []),
+            ...(problemsPriorities.P3 || []),
+          ]),
+        ],
+        audience_priorities: { ...audiencePriorities },
+        problems_priorities: { ...problemsPriorities },
         preference_match: preferenceMatch,
         is_mentaltech_member: isMentaltechMember,
         pricing_model: pricingModel || undefined,
         pricing_amount: pricingAmount || undefined,
         pricing_details: pricingDetails || undefined,
         protocol_answers: protocolAnswers,
-        scoring_criteria: Object.keys(protocolAnswers).length > 0 ? protocolAnswers : undefined,
+        scoring_criteria:
+          Object.keys(protocolAnswers).length > 0 ? protocolAnswers : undefined,
         score_security: scoresSecurity === "" ? undefined : scoresSecurity,
         score_efficacy: scoresEfficacy === "" ? undefined : scoresEfficacy,
-        score_accessibility: scoresAccessibility === "" ? undefined : scoresAccessibility,
+        score_accessibility:
+          scoresAccessibility === "" ? undefined : scoresAccessibility,
         score_ux: scoresUx === "" ? undefined : scoresUx,
         score_support: scoresSupport === "" ? undefined : scoresSupport,
         justification_security: justSecurity || undefined,
@@ -378,7 +458,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           product_id: product.id,
           score_security: scoresSecurity === "" ? undefined : scoresSecurity,
           score_efficacy: scoresEfficacy === "" ? undefined : scoresEfficacy,
-          score_accessibility: scoresAccessibility === "" ? undefined : scoresAccessibility,
+          score_accessibility:
+            scoresAccessibility === "" ? undefined : scoresAccessibility,
           score_ux: scoresUx === "" ? undefined : scoresUx,
           score_support: scoresSupport === "" ? undefined : scoresSupport,
           justification_security: justSecurity || undefined,
@@ -388,19 +469,42 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           justification_support: justSupport || undefined,
         });
       }
-      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la création du produit");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erreur lors de la création du produit",
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const handlePublicSubmit = async () => {
-    if (!contactName.trim()) { setError("Votre nom est requis."); return; }
-    if (!contactEmail.trim()) { setError("Votre email est requis."); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) { setError("L'adresse email n'est pas valide."); return; }
+    if (!contactName.trim()) {
+      setError("Votre nom est requis.");
+      return;
+    }
+    if (!contactEmail.trim()) {
+      setError("Votre email est requis.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) {
+      setError("L'adresse email n'est pas valide.");
+      return;
+    }
+    if (!rgpdConsent) {
+      setError(
+        "Veuillez accepter la politique de confidentialité pour continuer.",
+      );
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -417,76 +521,101 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         linkedin: linkedin.trim() || undefined,
         logo: logoPath || undefined,
         tags: [],
-        audience,
-        problems_solved: problemsSolved,
+        audience: [
+          ...new Set([
+            ...(audiencePriorities.P1 || []),
+            ...(audiencePriorities.P2 || []),
+            ...(audiencePriorities.P3 || []),
+          ]),
+        ],
+        problems_solved: [
+          ...new Set([
+            ...(problemsPriorities.P1 || []),
+            ...(problemsPriorities.P2 || []),
+            ...(problemsPriorities.P3 || []),
+          ]),
+        ],
+        audience_priorities: { ...audiencePriorities },
+        problems_priorities: { ...problemsPriorities },
         pricing_model: pricingModel || undefined,
         pricing_amount: pricingAmount || undefined,
         protocol_answers: protocolAnswers,
         collectif_requested: collectifRequested,
-        collectif_ca_range: collectifRequested && collectifCaRange ? collectifCaRange : undefined,
-        collectif_contact_email: collectifRequested && collectifContactEmail ? collectifContactEmail : undefined,
+        collectif_ca_range:
+          collectifRequested && collectifCaRange ? collectifCaRange : undefined,
+        collectif_contact_email:
+          collectifRequested && collectifContactEmail
+            ? collectifContactEmail
+            : undefined,
       });
-      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
       setPublicSubmitted(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Une erreur est survenue. Réessayez.");
+      setError(
+        e instanceof Error ? e.message : "Une erreur est survenue. Réessayez.",
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  const adminScorePreview = adminMode
-    ? computeLabelFromScores(
-        scoresSecurity === "" ? null : scoresSecurity,
-        scoresEfficacy === "" ? null : scoresEfficacy,
-        scoresAccessibility === "" ? null : scoresAccessibility,
-        scoresUx === "" ? null : scoresUx,
-        scoresSupport === "" ? null : scoresSupport,
-      )
-    : { total: null, label: null };
-
   const toggleArrayItem = (
     arr: string[],
     setArr: React.Dispatch<React.SetStateAction<string[]>>,
-    item: string
+    item: string,
   ) => {
     setArr(arr.includes(item) ? arr.filter((a) => a !== item) : [...arr, item]);
   };
 
-  const getProtocolAnswer = (criterionId: string, questionId: string): unknown => {
-    return protocolAnswers[criterionId]?.[questionId] ?? "";
-  };
+  /**
+   * Sequential priority: 1st click = P1, 2nd = P2, 3rd = P3.
+   * Re-click deselects and bumps remaining items up.
+   */
+  function togglePriorityItem(type: "audience" | "problems", value: string) {
+    const setter =
+      type === "audience" ? setAudiencePriorities : setProblemsPriorities;
+    setter((prev) => {
+      // Build ordered list from current priorities
+      const ordered: string[] = [
+        ...(prev.P1 ?? []),
+        ...(prev.P2 ?? []),
+        ...(prev.P3 ?? []),
+      ];
 
-  const setProtocolAnswer = (
-    criterionId: string,
-    questionId: string,
-    value: unknown
-  ) => {
-    setProtocolAnswers((prev) => ({
-      ...prev,
-      [criterionId]: {
-        ...(prev[criterionId] || {}),
-        [questionId]: value,
-      },
-    }));
-  };
+      if (ordered.includes(value)) {
+        // Deselect: remove and redistribute remaining
+        const remaining = ordered.filter((v) => v !== value);
+        return {
+          P1: remaining.slice(0, 1),
+          P2: remaining.slice(1, 2),
+          P3: remaining.slice(2, 3),
+        };
+      }
 
-  const shouldShowQuestion = (
-    criterionId: string,
-    question: ProtocolQuestion
-  ): boolean => {
-    if (!question.condition) return true;
-    const condValue = getProtocolAnswer(criterionId, question.condition.id);
-    return condValue === question.condition.value;
-  };
+      // Already 3 selected
+      if (ordered.length >= 3) return prev;
 
-  const answeredSubCriteriaCount = allSubCriteria.filter((sc) => {
-    const answers = protocolAnswers[sc.id];
-    if (!answers) return false;
-    return Object.entries(answers).some(
-      ([k, v]) => !k.startsWith("_") && v !== "" && v !== false && v !== null && v !== undefined
-    );
-  }).length;
+      // Particulier audience limit
+      if (type === "audience" && PARTICULIER_VALUES.has(value)) {
+        const currentParticulier = ordered.filter((v) =>
+          PARTICULIER_VALUES.has(v),
+        ).length;
+        if (currentParticulier + 1 > MAX_PARTICULIER_TOTAL) return prev;
+      }
+
+      // Add at next available slot
+      const next = [...ordered, value];
+      return {
+        P1: next.slice(0, 1),
+        P2: next.slice(1, 2),
+        P3: next.slice(2, 3),
+      };
+    });
+  }
 
   if (loading && !publicMode) {
     return (
@@ -501,13 +630,21 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center p-4">
         <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-200">
           <div className="text-5xl mb-4">📬</div>
-          <h2 className="text-2xl font-bold text-text-primary mb-3">Vérifiez votre boîte mail</h2>
+          <h2 className="text-2xl font-bold text-text-primary mb-3">
+            Vérifiez votre boîte mail
+          </h2>
           <p className="text-text-secondary mb-6">
-            Un email de confirmation a été envoyé à <strong>{contactEmail}</strong>.
-            Cliquez sur le lien pour finaliser votre soumission.
+            Un email de confirmation a été envoyé à{" "}
+            <strong>{contactEmail}</strong>. Cliquez sur le lien pour finaliser
+            votre soumission.
           </p>
-          <p className="text-sm text-text-secondary">Le lien est valable 48 heures. Vérifiez aussi vos spams.</p>
-          <button onClick={onClose} className="mt-6 text-primary hover:underline text-sm">
+          <p className="text-sm text-text-secondary">
+            Le lien est valable 48 heures. Vérifiez aussi vos spams.
+          </p>
+          <button
+            onClick={onClose}
+            className="mt-6 text-primary hover:underline text-sm"
+          >
             Retour au catalogue
           </button>
         </div>
@@ -518,8 +655,15 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       {publicMode && (
-        <input type="text" name="website_url" value={honeypot} onChange={e => setHoneypot(e.target.value)}
-          style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
+        <input
+          type="text"
+          name="website_url"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{ display: "none" }}
+          tabIndex={-1}
+          autoComplete="off"
+        />
       )}
       <div className="max-w-4xl mx-auto">
         {/* Header */}
@@ -543,8 +687,12 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {showDraftPrompt && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-blue-900">Brouillon trouvé</p>
-              <p className="text-xs text-blue-700">Vous avez un brouillon sauvegardé. Souhaitez-vous le reprendre ?</p>
+              <p className="text-sm font-semibold text-blue-900">
+                Brouillon trouvé
+              </p>
+              <p className="text-xs text-blue-700">
+                Vous avez un brouillon sauvegardé. Souhaitez-vous le reprendre ?
+              </p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <button
@@ -552,7 +700,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                   try {
                     const raw = localStorage.getItem(DRAFT_KEY);
                     if (raw) restoreDraft(JSON.parse(raw));
-                  } catch { /* ignore */ }
+                  } catch {
+                    /* ignore */
+                  }
                   setShowDraftPrompt(false);
                 }}
                 className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
@@ -561,7 +711,11 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               </button>
               <button
                 onClick={() => {
-                  try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+                  try {
+                    localStorage.removeItem(DRAFT_KEY);
+                  } catch {
+                    /* ignore */
+                  }
                   setShowDraftPrompt(false);
                 }}
                 className="px-4 py-2 bg-white text-blue-700 text-sm font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
@@ -573,7 +727,10 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         )}
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div
+            role="alert"
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+          >
             {error}
           </div>
         )}
@@ -581,7 +738,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>Étape {step} sur {TOTAL_STEPS}</span>
+            <span>
+              Étape {step} sur {TOTAL_STEPS}
+            </span>
             <span>{STEP_NAMES[step - 1]}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -595,8 +754,18 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
         {/* Auto-save notification */}
         {draftSavedNotice && (
           <div className="mb-4 flex items-center gap-2 text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2 animate-pulse">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-4 h-4 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             Brouillon sauvegardé
           </div>
@@ -604,42 +773,187 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
         {/* Step navigation */}
         <div className="flex gap-1 mb-8">
-          {[
-            { n: 1, label: "Informations de base" },
-            { n: 2, label: "Protocole d'évaluation" },
-            { n: 3, label: "Récapitulatif" },
-          ].map(({ n, label }) => (
-            <button
-              key={n}
-              onClick={() => setStep(n)}
-              className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-colors ${
-                step === n
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-              }`}
-            >
-              {n}. {label}
-            </button>
-          ))}
+          {STEP_NAMES.map((label, i) => {
+            const n = i + 1;
+            const isCompleted = n < step;
+            return (
+              <button
+                key={n}
+                onClick={() => {
+                  if (isCompleted) setStep(n);
+                }}
+                disabled={!isCompleted && n !== step}
+                className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-colors ${
+                  step === n
+                    ? "bg-primary text-white"
+                    : isCompleted
+                      ? "bg-gray-100 text-text-secondary hover:bg-gray-200 cursor-pointer"
+                      : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                }`}
+              >
+                {n}. {label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Step 1: Basic Info */}
-        {step === 1 && (
+        {/* Step: How it works (public mode only) */}
+        {publicMode && step === 1 && (
           <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+            <h3 className="text-xl font-bold text-text-primary">
+              Comment votre solution sera recommandée
+            </h3>
+            <p className="text-text-secondary">
+              MentalTech Discover recommande les solutions de santé mentale aux
+              utilisateurs via un algorithme transparent. Voici comment il
+              fonctionne :
+            </p>
+
+            <p className="text-sm text-text-secondary">
+              Le système utilise des{" "}
+              <strong>
+                priorités (P1 = coeur de cible, P2 = secondaire, P3 =
+                compatible)
+              </strong>{" "}
+              pour pondérer la pertinence. Une solution marquée P1 sur un
+              critère obtient le score maximum, P2 environ 60%, P3 environ 27%.
+            </p>
+
+            {/* 5 dimensions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="border-2 border-primary/20 rounded-xl p-4 bg-primary/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold text-primary">30</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    pts - Public cible
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary">
+                  Votre solution cible-t-elle le bon public ? Le score dépend de
+                  la priorité que vous avez attribuée (P1 = 30, P2 = 18, P3 =
+                  8).
+                </p>
+              </div>
+
+              <div className="border-2 border-blue-200 rounded-xl p-4 bg-blue-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold text-blue-600">30</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    pts - Problème adressé
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary">
+                  Votre solution résout-elle le bon problème ? Même logique de
+                  priorité (P1 = 30, P2 = 18, P3 = 8).
+                </p>
+              </div>
+
+              <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold text-amber-600">15</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    pts - Format
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary">
+                  Votre solution propose-t-elle le format recherché par
+                  l'utilisateur (parler maintenant, exercices autonomes,
+                  comprendre, programme) ?
+                </p>
+              </div>
+
+              <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold text-amber-600">10</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    pts - Contexte
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary">
+                  Bonus si votre solution répond à une urgence émotionnelle ou à
+                  un besoin de prévention.
+                </p>
+              </div>
+
+              <div className="border-2 border-violet-200 rounded-xl p-4 bg-violet-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold text-violet-600">8</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    pts - Écosystème
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary">
+                  Bonus pour les membres du Collectif MentalTech. Un levier
+                  commercial transparent, pas un facteur caché.
+                </p>
+              </div>
+            </div>
+
+            {/* Key takeaway */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <h4 className="font-semibold text-text-primary mb-2">
+                Ce que ça veut dire pour vous
+              </h4>
+              <ul className="text-sm text-text-secondary space-y-2">
+                <li>
+                  <strong>Pas d'enchères ni de placement payé.</strong> Le
+                  classement est 100% basé sur la pertinence et la qualité.
+                </li>
+                <li>
+                  <strong>Bien renseigner votre fiche est essentiel.</strong>{" "}
+                  L'algorithme ne peut matcher que ce qu'il connaît de vous.
+                </li>
+                <li>
+                  <strong>À score égal, rotation aléatoire.</strong> Pas de
+                  favoritisme.
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-sm text-text-secondary italic">
+              Les étapes suivantes vous permettent de renseigner les
+              informations utilisées par l'algorithme pour recommander votre
+              solution.
+            </p>
+          </div>
+        )}
+
+        {/* Step: Basic Info */}
+        {step === 1 + FORM_OFFSET && (
+          <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+              Les informations ci-dessous sont fournies par l'éditeur de la
+              solution. MentalTech Discover ne garantit pas l'exactitude de ces
+              informations.
+            </div>
             {publicMode && (
               <div className="pb-4 border-b border-gray-200 space-y-4">
-                <h3 className="font-semibold text-text-primary">Vos coordonnées</h3>
+                <h3 className="font-semibold text-text-primary">
+                  Vos coordonnées
+                </h3>
                 <div>
-                  <label className="block text-sm font-semibold text-text-primary mb-1">Votre nom <span className="text-red-500">*</span></label>
-                  <input type="text" value={contactName} onChange={e => setContactName(e.target.value)}
+                  <label className="block text-sm font-semibold text-text-primary mb-1">
+                    Votre nom <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                     placeholder="Prénom Nom"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-text-primary mb-1">Email de contact <span className="text-red-500">*</span></label>
-                  <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)}
+                  <label className="block text-sm font-semibold text-text-primary mb-1">
+                    Email de contact <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
                     placeholder="vous@entreprise.fr"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                  />
                 </div>
               </div>
             )}
@@ -678,7 +992,10 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
-                Accroche * <span className="font-normal text-text-secondary">(max 150 car.)</span>
+                Accroche *{" "}
+                <span className="font-normal text-text-secondary">
+                  (max 150 car.)
+                </span>
               </label>
               <input
                 type="text"
@@ -688,12 +1005,17 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
                 placeholder="En une phrase, que fait votre solution ?"
               />
-              <p className="text-xs text-text-secondary mt-1">{tagline.length}/150</p>
+              <p className="text-xs text-text-secondary mt-1">
+                {tagline.length}/150
+              </p>
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
-                Description * <span className="font-normal text-text-secondary">(200-250 car. recommandé)</span>
+                Description *{" "}
+                <span className="font-normal text-text-secondary">
+                  (200-250 car. recommandé)
+                </span>
               </label>
               <textarea
                 value={description}
@@ -703,7 +1025,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none disabled:bg-gray-50"
                 placeholder="Décrivez votre solution en détail..."
               />
-              <p className="text-xs text-text-secondary mt-1">{description.length} car.</p>
+              <p className="text-xs text-text-secondary mt-1">
+                {description.length} car.
+              </p>
             </div>
 
             <div>
@@ -722,7 +1046,10 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1">
-                LinkedIn de l'entreprise <span className="font-normal text-text-secondary">(optionnel)</span>
+                LinkedIn de l'entreprise{" "}
+                <span className="font-normal text-text-secondary">
+                  (optionnel)
+                </span>
               </label>
               <input
                 type="url"
@@ -737,11 +1064,18 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             {publicMode && (
               <div>
                 <p className="block text-sm font-semibold text-text-primary mb-1">
-                  Logo <span className="font-normal text-text-secondary">(PNG, JPEG ou WebP, max 2 Mo)</span>
+                  Logo{" "}
+                  <span className="font-normal text-text-secondary">
+                    (PNG, JPEG ou WebP, max 2 Mo)
+                  </span>
                 </p>
                 <div className="flex items-center gap-4">
-                  <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
-                    {logoUploading ? "Chargement du logo..." : "Choisir un fichier"}
+                  <label
+                    className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}
+                  >
+                    {logoUploading
+                      ? "Chargement du logo..."
+                      : "Choisir un fichier"}
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
@@ -765,90 +1099,151 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
               <label className="block text-sm font-semibold text-text-primary mb-2">
                 Public cible
               </label>
-              {/* Groupe Particulier */}
-              <div className="mb-2">
-                <button
-                  type="button"
-                  disabled={readOnly}
-                  onClick={() => {
-                    if (readOnly) return;
-                    const allChecked = PARTICULIER_VALUES.every(v => audience.includes(v));
-                    if (allChecked) {
-                      setAudience((prev) => prev.filter(v => !PARTICULIER_VALUES.includes(v as typeof PARTICULIER_VALUES[number])));
-                    } else {
-                      setAudience((prev) => Array.from(new Set([...prev, ...PARTICULIER_VALUES])));
-                    }
-                  }}
-                  className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors mb-1 ${
-                    PARTICULIER_VALUES.some(v => audience.includes(v))
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                  } disabled:opacity-50`}
-                >
-                  Particulier
-                </button>
-                <div className="flex flex-wrap gap-2 ml-4">
-                  {PARTICULIER_AUDIENCE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => !readOnly && toggleArrayItem(audience, setAudience, opt.value)}
-                      disabled={readOnly}
-                      className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                        audience.includes(opt.value)
-                          ? "bg-primary text-white"
-                          : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                      } disabled:opacity-50`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* Entreprise standalone */}
-              <div className="flex flex-wrap gap-2">
-                {([
-                  { value: "entreprise", label: "Entreprises" },
-                  { value: "etablissement-sante", label: "Établissements de santé" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => !readOnly && toggleArrayItem(audience, setAudience, opt.value)}
-                    disabled={readOnly}
-                    className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                      audience.includes(opt.value)
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                    } disabled:opacity-50`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-text-secondary mb-3">
+                Cliquez dans l'ordre de priorité : le 1er sera P1 (coeur de
+                cible), le 2e P2 (secondaire), le 3e P3 (compatible). Recliquez
+                pour retirer.
+              </p>
+              {(() => {
+                const AUDIENCE_OPTIONS = [
+                  ...PARTICULIER_AUDIENCE_OPTIONS,
+                  { value: "entreprise", label: "Entreprises" } as const,
+                  {
+                    value: "etablissement-sante",
+                    label: "Établissements de santé",
+                  } as const,
+                ];
+                const ordered = [
+                  ...(audiencePriorities.P1 ?? []),
+                  ...(audiencePriorities.P2 ?? []),
+                  ...(audiencePriorities.P3 ?? []),
+                ];
+                const totalParticulier =
+                  countParticulierSelected(audiencePriorities);
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    {AUDIENCE_OPTIONS.map((opt) => {
+                      const idx = ordered.indexOf(opt.value);
+                      const isSelected = idx !== -1;
+                      const level =
+                        idx === 0
+                          ? "P1"
+                          : idx === 1
+                            ? "P2"
+                            : idx === 2
+                              ? "P3"
+                              : null;
+                      const isFull = ordered.length >= 3 && !isSelected;
+                      const particulierBlocked =
+                        !isSelected &&
+                        PARTICULIER_VALUES.has(opt.value) &&
+                        totalParticulier >= MAX_PARTICULIER_TOTAL;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          disabled={readOnly || isFull || particulierBlocked}
+                          onClick={() =>
+                            togglePriorityItem("audience", opt.value)
+                          }
+                          className={`relative px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold transition-all ${
+                            level === "P1"
+                              ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                              : level === "P2"
+                                ? "bg-indigo-50 text-indigo-600 ring-2 ring-indigo-300"
+                                : level === "P3"
+                                  ? "bg-gray-100 text-gray-600 ring-2 ring-gray-300"
+                                  : "bg-gray-100 text-text-secondary hover:bg-gray-200"
+                          } disabled:opacity-40 disabled:cursor-not-allowed`}
+                        >
+                          {isSelected && (
+                            <span
+                              className={`absolute -top-2 -right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                level === "P1"
+                                  ? "bg-blue-500 text-white"
+                                  : level === "P2"
+                                    ? "bg-indigo-400 text-white"
+                                    : "bg-gray-400 text-white"
+                              }`}
+                            >
+                              {level}
+                            </span>
+                          )}
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-2">
-                Problemes adresses
+                Problèmes adressés
               </label>
-              <div className="flex flex-wrap gap-2">
-                {PROBLEM_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => !readOnly && toggleArrayItem(problemsSolved, setProblemsSolved, opt.value)}
-                    disabled={readOnly}
-                    className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                      problemsSolved.includes(opt.value)
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                    } disabled:opacity-50`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-text-secondary mb-3">
+                Cliquez dans l'ordre de priorité : le 1er sera P1, le 2e P2, le
+                3e P3. Recliquez pour retirer.
+              </p>
+              {(() => {
+                const ordered = [
+                  ...(problemsPriorities.P1 ?? []),
+                  ...(problemsPriorities.P2 ?? []),
+                  ...(problemsPriorities.P3 ?? []),
+                ];
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    {PROBLEM_OPTIONS.map((opt) => {
+                      const idx = ordered.indexOf(opt.value);
+                      const isSelected = idx !== -1;
+                      const level =
+                        idx === 0
+                          ? "P1"
+                          : idx === 1
+                            ? "P2"
+                            : idx === 2
+                              ? "P3"
+                              : null;
+                      const isFull = ordered.length >= 3 && !isSelected;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          disabled={readOnly || isFull}
+                          onClick={() =>
+                            togglePriorityItem("problems", opt.value)
+                          }
+                          className={`relative px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold transition-all ${
+                            level === "P1"
+                              ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                              : level === "P2"
+                                ? "bg-indigo-50 text-indigo-600 ring-2 ring-indigo-300"
+                                : level === "P3"
+                                  ? "bg-gray-100 text-gray-600 ring-2 ring-gray-300"
+                                  : "bg-gray-100 text-text-secondary hover:bg-gray-200"
+                          } disabled:opacity-40 disabled:cursor-not-allowed`}
+                        >
+                          {isSelected && (
+                            <span
+                              className={`absolute -top-2 -right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                level === "P1"
+                                  ? "bg-blue-500 text-white"
+                                  : level === "P2"
+                                    ? "bg-indigo-400 text-white"
+                                    : "bg-gray-400 text-white"
+                              }`}
+                            >
+                              {level}
+                            </span>
+                          )}
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -939,7 +1334,7 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-2">
-                    Correspondance preferences
+                    Correspondance préférences
                   </label>
                   <div className="grid grid-cols-1 gap-2">
                     {PREFERENCE_OPTIONS.map((opt) => (
@@ -947,7 +1342,11 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                         key={opt.value}
                         type="button"
                         onClick={() =>
-                          toggleArrayItem(preferenceMatch, setPreferenceMatch, opt.value)
+                          toggleArrayItem(
+                            preferenceMatch,
+                            setPreferenceMatch,
+                            opt.value,
+                          )
                         }
                         className={`px-3 py-2 rounded-lg text-sm text-left transition-colors border-2 ${
                           preferenceMatch.includes(opt.value)
@@ -956,7 +1355,9 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                         }`}
                       >
                         <span className="font-semibold">{opt.label}</span>
-                        <span className="block text-xs opacity-70 mt-0.5">{opt.description}</span>
+                        <span className="block text-xs opacity-70 mt-0.5">
+                          {opt.description}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -967,8 +1368,12 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                     Logo
                   </p>
                   <div className="flex items-center gap-4">
-                    <label className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}>
-                      {logoUploading ? "Chargement du logo..." : "Choisir un fichier"}
+                    <label
+                      className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300 ${logoUploading ? "opacity-50 pointer-events-none" : ""}`}
+                    >
+                      {logoUploading
+                        ? "Chargement du logo..."
+                        : "Choisir un fichier"}
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/svg+xml,image/webp"
@@ -991,249 +1396,8 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           </div>
         )}
 
-        {/* Step 2: Protocol Questions */}
-        {step === 2 && (
-          <div className="space-y-4">
-            {protocolPillars.map((pillar) => (
-              <details
-                key={pillar.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <summary className="px-6 py-4 cursor-pointer hover:bg-gray-50 flex items-center gap-3">
-                  <span className="text-lg font-bold text-text-primary">
-                    {pillar.id}. {pillar.title}
-                  </span>
-                  <span className="text-xs bg-gray-100 text-text-secondary px-2 py-1 rounded">
-                    {pillar.subCriteria.length} sous-critères
-                  </span>
-                </summary>
-                <div className="px-6 pb-6 space-y-6">
-                  {pillar.subCriteria.map((sc) => (
-                    <div
-                      key={sc.id}
-                      className="border-t border-gray-100 pt-4"
-                    >
-                      <h4 className="text-sm font-bold text-text-primary mb-1">
-                        {sc.id} - {sc.title}
-                      </h4>
-                      <p className="text-xs text-text-secondary mb-3">
-                        {sc.description}
-                      </p>
-                      <div className="space-y-3">
-                        {sc.questions.map((q) => {
-                          if (!shouldShowQuestion(sc.id, q)) return null;
-                          return (
-                            <div key={q.id}>
-                              {q.type === "checkbox" ? (
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={
-                                      getProtocolAnswer(sc.id, q.id) === true
-                                    }
-                                    onChange={(e) =>
-                                      setProtocolAnswer(
-                                        sc.id,
-                                        q.id,
-                                        e.target.checked
-                                      )
-                                    }
-                                    disabled={readOnly}
-                                    className="w-4 h-4 text-primary"
-                                  />
-                                  <span className="text-sm text-text-primary">
-                                    {q.label}
-                                  </span>
-                                </label>
-                              ) : q.type === "select" ? (
-                                <div>
-                                  <label className="block text-sm font-semibold text-text-primary mb-1">
-                                    {q.label}
-                                    {q.required && " *"}
-                                  </label>
-                                  {q.helpText && (
-                                    <p className="text-xs text-text-secondary mb-1">
-                                      {q.helpText}
-                                    </p>
-                                  )}
-                                  <select
-                                    value={
-                                      (getProtocolAnswer(sc.id, q.id) as string) ||
-                                      ""
-                                    }
-                                    onChange={(e) =>
-                                      setProtocolAnswer(
-                                        sc.id,
-                                        q.id,
-                                        e.target.value
-                                      )
-                                    }
-                                    disabled={readOnly}
-                                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none bg-white text-sm disabled:bg-gray-50"
-                                  >
-                                    <option value="">Sélectionnez...</option>
-                                    {q.options?.map((opt) => (
-                                      <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              ) : (
-                                <div>
-                                  <label className="block text-sm font-semibold text-text-primary mb-1">
-                                    {q.label}
-                                    {q.required && " *"}
-                                  </label>
-                                  <input
-                                    type={q.type}
-                                    value={
-                                      (getProtocolAnswer(sc.id, q.id) as string) ||
-                                      ""
-                                    }
-                                    onChange={(e) =>
-                                      setProtocolAnswer(
-                                        sc.id,
-                                        q.id,
-                                        q.type === "number"
-                                          ? e.target.value
-                                            ? Number(e.target.value)
-                                            : ""
-                                          : e.target.value
-                                      )
-                                    }
-                                    disabled={readOnly}
-                                    placeholder={q.placeholder}
-                                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm disabled:bg-gray-50"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <label className="block text-sm font-semibold text-text-primary mb-1">
-                            Arguments à mettre en avant
-                          </label>
-                          <textarea
-                            value={(getProtocolAnswer(sc.id, "_arguments") as string) || ""}
-                            onChange={(e) => setProtocolAnswer(sc.id, "_arguments", e.target.value)}
-                            disabled={readOnly}
-                            placeholder="Arguments à mettre en avant pour ce critère"
-                            rows={3}
-                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm disabled:bg-gray-50 resize-y"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {adminMode && (() => {
-                    const PILLAR_SCORE_MAP: Record<string, {
-                      label: string;
-                      score: number | "";
-                      setScore: (v: number | "") => void;
-                      just: string;
-                      setJust: (v: string) => void;
-                      suggested: number | "";
-                      suggestedJust: string;
-                    }> = {
-                      "1": { label: "Sécurité", score: scoresSecurity, setScore: setScoresSecurity, just: justSecurity, setJust: setJustSecurity, suggested: suggestedScores?.security ?? "", suggestedJust: suggestedScores?.justSecurity ?? "" },
-                      "2": { label: "Preuves", score: scoresEfficacy, setScore: setScoresEfficacy, just: justEfficacy, setJust: setJustEfficacy, suggested: suggestedScores?.efficacy ?? "", suggestedJust: suggestedScores?.justEfficacy ?? "" },
-                      "3": { label: "Accessibilité", score: scoresAccessibility, setScore: setScoresAccessibility, just: justAccessibility, setJust: setJustAccessibility, suggested: suggestedScores?.accessibility ?? "", suggestedJust: suggestedScores?.justAccessibility ?? "" },
-                      "4": { label: "Expérience user", score: scoresUx, setScore: setScoresUx, just: justUx, setJust: setJustUx, suggested: suggestedScores?.ux ?? "", suggestedJust: suggestedScores?.justUx ?? "" },
-                      "5": { label: "Support", score: scoresSupport, setScore: setScoresSupport, just: justSupport, setJust: setJustSupport, suggested: suggestedScores?.support ?? "", suggestedJust: suggestedScores?.justSupport ?? "" },
-                    };
-                    const cfg = PILLAR_SCORE_MAP[pillar.id];
-                    if (!cfg) return null;
-                    const scoreNum = cfg.score === "" ? null : cfg.score;
-                    // Map pillar score (0-5) directly to a grade letter
-                    const pillarGrade = scoreNum === null ? null
-                      : scoreNum >= 5 ? "A"
-                      : scoreNum >= 4 ? "B"
-                      : scoreNum >= 3 ? "C"
-                      : scoreNum >= 2 ? "D"
-                      : "E";
-                    const labelInfo = pillarGrade ? getLabelInfo(pillarGrade) : null;
-                    return (
-                      <div className="border-t-2 border-blue-200 mt-6 pt-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold uppercase">
-                            Score admin
-                          </span>
-                          <span className="text-sm font-semibold text-text-primary">
-                            {cfg.label}
-                          </span>
-                          {labelInfo && (
-                            <span
-                              className="px-2 py-0.5 rounded text-xs font-bold"
-                              style={{ backgroundColor: labelInfo.bgColor, color: labelInfo.color }}
-                            >
-                              {labelInfo.grade}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Suggested score from protocol */}
-                        {cfg.suggested !== "" && (
-                          <div className="flex items-center gap-3 mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                            <span className="text-xs text-amber-700 font-semibold">
-                              Suggéré par protocole :
-                            </span>
-                            <span className="text-sm font-bold text-amber-800">
-                              {cfg.suggested}/5
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => cfg.setScore(cfg.suggested as number)}
-                              className="ml-auto text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold px-3 py-1 rounded-lg transition-colors"
-                            >
-                              Appliquer ↓
-                            </button>
-                          </div>
-                        )}
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-text-secondary mb-1">
-                              Score affiché (0-5, modifiable)
-                            </label>
-                            <input
-                              type="number"
-                              min={0}
-                              max={5}
-                              value={cfg.score}
-                              onChange={(e) =>
-                                cfg.setScore(e.target.value === "" ? "" : Math.min(5, Math.max(0, Number(e.target.value))))
-                              }
-                              className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-primary focus:outline-none text-sm"
-                              placeholder="0-5"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-text-secondary mb-1">
-                              Justification
-                            </label>
-                            <textarea
-                              value={cfg.just}
-                              onChange={(e) => cfg.setJust(e.target.value)}
-                              rows={2}
-                              className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-primary focus:outline-none text-sm"
-                              placeholder="Justification du score..."
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </details>
-            ))}
-          </div>
-        )}
-
-        {/* Step 3: Summary */}
-        {step === 3 && (
+        {/* Step 2: Summary */}
+        {step === 2 + FORM_OFFSET && (
           <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
             <h3 className="text-lg font-bold text-text-primary">
               Récapitulatif de la soumission
@@ -1242,18 +1406,28 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-text-secondary font-semibold">Nom</p>
-                <p className="text-sm text-text-primary">{name || "Non renseigne"}</p>
+                <p className="text-sm text-text-primary">
+                  {name || "Non renseigne"}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-text-secondary font-semibold">Type</p>
-                <p className="text-sm text-text-primary">{type || "Non renseigne"}</p>
+                <p className="text-xs text-text-secondary font-semibold">
+                  Type
+                </p>
+                <p className="text-sm text-text-primary">
+                  {type || "Non renseigne"}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-text-secondary font-semibold">URL</p>
-                <p className="text-sm text-text-primary">{url || "Non renseigne"}</p>
+                <p className="text-sm text-text-primary">
+                  {url || "Non renseigne"}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-text-secondary font-semibold">Tarification</p>
+                <p className="text-xs text-text-secondary font-semibold">
+                  Tarification
+                </p>
                 <p className="text-sm text-text-primary">
                   {pricingModel || "Non renseigne"}
                   {pricingAmount && ` - ${pricingAmount}`}
@@ -1263,126 +1437,247 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
 
             {tagline && (
               <div>
-                <p className="text-xs text-text-secondary font-semibold">Accroche</p>
+                <p className="text-xs text-text-secondary font-semibold">
+                  Accroche
+                </p>
                 <p className="text-sm text-text-primary">{tagline}</p>
               </div>
             )}
 
             {description && (
               <div>
-                <p className="text-xs text-text-secondary font-semibold">Description</p>
+                <p className="text-xs text-text-secondary font-semibold">
+                  Description
+                </p>
                 <p className="text-sm text-text-primary">{description}</p>
               </div>
             )}
 
             <div>
               <p className="text-xs text-text-secondary font-semibold mb-1">
-                Protocole d'évaluation
+                Public cible
               </p>
-              <p className="text-sm text-text-primary">
-                {answeredSubCriteriaCount}/{allSubCriteria.length} sous-critères
-                avec au moins une réponse
-              </p>
+              {(["P1", "P2", "P3"] as const).map((level) => {
+                const items = audiencePriorities[level] || [];
+                if (items.length === 0) return null;
+                const ALL_AUD = [
+                  ...PARTICULIER_AUDIENCE_OPTIONS,
+                  { value: "entreprise", label: "Entreprises" } as const,
+                  {
+                    value: "etablissement-sante",
+                    label: "Établissements de santé",
+                  } as const,
+                ];
+                return (
+                  <div key={level} className="mb-1">
+                    <span
+                      className={`text-xs font-bold ${level === "P1" ? "text-blue-700" : level === "P2" ? "text-gray-600" : "text-gray-400"}`}
+                    >
+                      {level === "P1"
+                        ? "Coeur de cible"
+                        : level === "P2"
+                          ? "Secondaire"
+                          : "Compatible"}{" "}
+                      :
+                    </span>
+                    <span className="text-sm text-text-primary ml-1">
+                      {items
+                        .map(
+                          (v) => ALL_AUD.find((a) => a.value === v)?.label || v,
+                        )
+                        .join(", ")}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
-            {adminMode && (
-              <div className="border-t-2 border-blue-200 pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold uppercase">
-                    Admin
-                  </span>
-                  <span className="text-sm font-semibold text-text-primary">
-                    Résumé des scores
-                  </span>
-                </div>
-                <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                  {[
-                    { label: "Sécurité", score: scoresSecurity },
-                    { label: "Preuves", score: scoresEfficacy },
-                    { label: "Accessibilité", score: scoresAccessibility },
-                    { label: "Exp. user", score: scoresUx },
-                    { label: "Support", score: scoresSupport },
-                  ].map((s) => (
-                    <div key={s.label} className="bg-gray-50 rounded p-2">
-                      <p className="font-semibold text-text-secondary">{s.label}</p>
-                      <p className="text-lg font-bold text-text-primary">
-                        {s.score === "" ? "--" : s.score}/5
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                {adminScorePreview.label && (() => {
-                  const info = getLabelInfo(adminScorePreview.label);
-                  return (
-                    <div className="mt-3 flex items-center gap-2">
-                      <span
-                        className="px-3 py-1 rounded font-bold text-sm"
-                        style={{ backgroundColor: info.bgColor, color: info.color }}
-                      >
-                        {info.grade} - {info.text}
-                      </span>
-                      <span className="text-sm text-text-secondary">
-                        Total : {adminScorePreview.total}/100
-                      </span>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
+            <div>
+              <p className="text-xs text-text-secondary font-semibold mb-1">
+                Problemes adresses
+              </p>
+              {(["P1", "P2", "P3"] as const).map((level) => {
+                const items = problemsPriorities[level] || [];
+                if (items.length === 0) return null;
+                return (
+                  <div key={level} className="mb-1">
+                    <span
+                      className={`text-xs font-bold ${level === "P1" ? "text-blue-700" : level === "P2" ? "text-gray-600" : "text-gray-400"}`}
+                    >
+                      {level === "P1"
+                        ? "Coeur de cible"
+                        : level === "P2"
+                          ? "Secondaire"
+                          : "Compatible"}{" "}
+                      :
+                    </span>
+                    <span className="text-sm text-text-primary ml-1">
+                      {items
+                        .map(
+                          (v) =>
+                            PROBLEM_OPTIONS.find((p) => p.value === v)?.label ||
+                            v,
+                        )
+                        .join(", ")}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
 
             {publicMode && (
               <>
                 <div className="border-t border-gray-200 pt-4 space-y-4">
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <h4 className="font-semibold text-amber-900 mb-1">Rejoindre le Collectif MentalTech</h4>
-                    <p className="text-sm text-amber-700 mb-3">Le Collectif MentalTech réunit des solutions engagées pour une santé mentale accessible et de qualité.</p>
+                    <h4 className="font-semibold text-amber-900 mb-1">
+                      Rejoindre le Collectif MentalTech
+                    </h4>
+                    <p className="text-sm text-amber-700 mb-3">
+                      Le Collectif MentalTech réunit des solutions engagées pour
+                      une santé mentale accessible et de qualité.
+                    </p>
                     <label className="flex items-start gap-3 cursor-pointer">
-                      <input type="checkbox" checked={collectifRequested} onChange={e => setCollectifRequested(e.target.checked)}
-                        className="mt-0.5 accent-primary w-4 h-4" />
+                      <input
+                        type="checkbox"
+                        checked={collectifRequested}
+                        onChange={(e) =>
+                          setCollectifRequested(e.target.checked)
+                        }
+                        className="mt-0.5 accent-primary w-4 h-4"
+                      />
                       <div>
-                        <span className="font-medium text-amber-900">Je souhaite rejoindre le Collectif MentalTech</span>
-                        <p className="text-xs text-amber-700 mt-0.5">Notre bureau vous contactera pour discuter de votre candidature.</p>
+                        <span className="font-medium text-amber-900">
+                          Je souhaite rejoindre le Collectif MentalTech
+                        </span>
+                        <p className="text-xs text-amber-700 mt-0.5">
+                          Notre bureau vous contactera pour discuter de votre
+                          candidature.
+                        </p>
                       </div>
                     </label>
                     {collectifRequested && (
                       <div className="mt-4 space-y-3">
                         <div className="bg-white border border-amber-200 rounded-lg p-3 mb-1 text-center">
-                          <p className="text-xs font-semibold text-amber-800 mb-2">Cotisation annuelle selon votre chiffre d'affaires :</p>
+                          <p className="text-xs font-semibold text-amber-800 mb-2">
+                            Cotisation annuelle selon votre chiffre d'affaires :
+                          </p>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div className="text-xs"><span className="block font-bold text-text-primary">500 €</span><span className="text-text-secondary">CA &lt; 100K</span></div>
-                            <div className="text-xs"><span className="block font-bold text-text-primary">500 €</span><span className="text-text-secondary">100K - 500K</span></div>
-                            <div className="text-xs"><span className="block font-bold text-text-primary">1 000 €</span><span className="text-text-secondary">500K - 1M</span></div>
-                            <div className="text-xs"><span className="block font-bold text-text-primary">2 000 €</span><span className="text-text-secondary">CA &gt; 1M</span></div>
+                            <div className="text-xs">
+                              <span className="block font-bold text-text-primary">
+                                500 €
+                              </span>
+                              <span className="text-text-secondary">
+                                CA &lt; 100K
+                              </span>
+                            </div>
+                            <div className="text-xs">
+                              <span className="block font-bold text-text-primary">
+                                500 €
+                              </span>
+                              <span className="text-text-secondary">
+                                100K - 500K
+                              </span>
+                            </div>
+                            <div className="text-xs">
+                              <span className="block font-bold text-text-primary">
+                                1 000 €
+                              </span>
+                              <span className="text-text-secondary">
+                                500K - 1M
+                              </span>
+                            </div>
+                            <div className="text-xs">
+                              <span className="block font-bold text-text-primary">
+                                2 000 €
+                              </span>
+                              <span className="text-text-secondary">
+                                CA &gt; 1M
+                              </span>
+                            </div>
                           </div>
-                          <p className="text-xs text-text-secondary mt-2">La candidature est gratuite. La cotisation est due uniquement en cas d'acceptation.</p>
+                          <p className="text-xs text-text-secondary mt-2">
+                            La candidature est gratuite. La cotisation est due
+                            uniquement en cas d'acceptation.
+                          </p>
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-text-primary mb-2">Chiffre d'affaires annuel approximatif</label>
+                          <label className="block text-sm font-semibold text-text-primary mb-2">
+                            Chiffre d'affaires annuel approximatif
+                          </label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {CA_RANGES.map(r => (
-                              <label key={r.value} className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${collectifCaRange === r.value ? "border-primary bg-primary/5" : "border-gray-200 hover:border-primary/50"}`}>
-                                <input type="radio" name="ca_range" value={r.value} checked={collectifCaRange === r.value} onChange={() => setCollectifCaRange(r.value)} className="accent-primary" />
+                            {CA_RANGES.map((r) => (
+                              <label
+                                key={r.value}
+                                className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${collectifCaRange === r.value ? "border-primary bg-primary/5" : "border-gray-200 hover:border-primary/50"}`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="ca_range"
+                                  value={r.value}
+                                  checked={collectifCaRange === r.value}
+                                  onChange={() => setCollectifCaRange(r.value)}
+                                  className="accent-primary"
+                                />
                                 <span className="text-sm">{r.label}</span>
-                                <span className="text-xs text-amber-700 font-semibold ml-auto">{r.cotisation}</span>
+                                <span className="text-xs text-amber-700 font-semibold ml-auto">
+                                  {r.cotisation}
+                                </span>
                               </label>
                             ))}
                           </div>
-                          <p className="text-xs text-text-secondary mt-1">🔒 Information confidentielle - transmise uniquement à notre équipe.</p>
+                          <p className="text-xs text-text-secondary mt-1">
+                            🔒 Information confidentielle - transmise uniquement
+                            à notre équipe.
+                          </p>
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-text-primary mb-1">Email dédié pour le collectif <span className="text-text-secondary font-normal">(optionnel)</span></label>
-                          <input type="email" value={collectifContactEmail} onChange={e => setCollectifContactEmail(e.target.value)}
+                          <label className="block text-sm font-semibold text-text-primary mb-1">
+                            Email dédié pour le collectif{" "}
+                            <span className="text-text-secondary font-normal">
+                              (optionnel)
+                            </span>
+                          </label>
+                          <input
+                            type="email"
+                            value={collectifContactEmail}
+                            onChange={(e) =>
+                              setCollectifContactEmail(e.target.value)
+                            }
                             placeholder="contact@votre-solution.fr"
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none" />
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                          />
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
+                <label className="flex items-start gap-3 cursor-pointer mt-4">
+                  <input
+                    type="checkbox"
+                    checked={rgpdConsent}
+                    onChange={(e) => setRgpdConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 accent-primary"
+                  />
+                  <span className="text-sm text-text-secondary">
+                    J'accepte que mes données soient traitées conformément à la{" "}
+                    <a
+                      href="/confidentialite"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline"
+                    >
+                      politique de confidentialité
+                    </a>{" "}
+                    de MentalTech Discover.
+                  </span>
+                </label>
+
                 <div className="border-t border-gray-200 pt-4">
-                  <button onClick={handlePublicSubmit} disabled={saving}
-                    className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50">
+                  <button
+                    onClick={handlePublicSubmit}
+                    disabled={saving || !rgpdConsent}
+                    className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50"
+                  >
                     {saving ? "Envoi en cours..." : "Envoyer ma demande"}
                   </button>
                 </div>
@@ -1397,8 +1692,16 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
                   className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50"
                 >
                   {saving
-                    ? (submissionId ? "Approbation..." : editProduct?.id ? "Modification..." : "Création...")
-                    : (submissionId ? "Approuver la soumission" : editProduct?.id ? "Modifier le produit" : "Créer le produit")}
+                    ? submissionId
+                      ? "Approbation..."
+                      : editProduct?.id
+                        ? "Modification..."
+                        : "Création..."
+                    : submissionId
+                      ? "Approuver la soumission"
+                      : editProduct?.id
+                        ? "Modifier le produit"
+                        : "Créer le produit"}
                 </button>
               </div>
             )}
@@ -1417,20 +1720,52 @@ export const SubmissionForm: React.FC<Props> = ({ onClose, adminMode = false, ed
           ) : (
             <div />
           )}
-          {step < 3 && (
+          {step < TOTAL_STEPS && (
             <div className="flex flex-col items-end gap-1">
               {stepError && (
                 <p className="text-xs text-red-600 font-medium">{stepError}</p>
               )}
               <button
                 onClick={() => {
-                  if (publicMode && step === 1) {
-                    if (!name.trim()) { setStepError("Le nom de la solution est requis."); return; }
-                    if (!type) { setStepError("Le type de solution est requis."); return; }
-                    if (!url.trim()) { setStepError("L'URL de la solution est requise."); return; }
-                    if (linkedin.trim() && !linkedin.trim().startsWith("http")) { setStepError("Le lien LinkedIn doit commencer par http:// ou https://"); return; }
-                    if (!contactName.trim()) { setStepError("Votre nom est requis."); return; }
-                    if (!contactEmail.trim()) { setStepError("Votre email est requis."); return; }
+                  if (publicMode && step === 1 + FORM_OFFSET) {
+                    if (!name.trim()) {
+                      setStepError("Le nom de la solution est requis.");
+                      return;
+                    }
+                    if (!type) {
+                      setStepError("Le type de solution est requis.");
+                      return;
+                    }
+                    if (!url.trim()) {
+                      setStepError("L'URL de la solution est requise.");
+                      return;
+                    }
+                    if (
+                      linkedin.trim() &&
+                      !linkedin.trim().startsWith("http")
+                    ) {
+                      setStepError(
+                        "Le lien LinkedIn doit commencer par http:// ou https://",
+                      );
+                      return;
+                    }
+                    if (
+                      (audiencePriorities.P1?.length || 0) === 0 &&
+                      (problemsPriorities.P1?.length || 0) === 0
+                    ) {
+                      setStepError(
+                        "Au moins un public cible ou un problème doit être en priorité P1 (Coeur de cible).",
+                      );
+                      return;
+                    }
+                    if (!contactName.trim()) {
+                      setStepError("Votre nom est requis.");
+                      return;
+                    }
+                    if (!contactEmail.trim()) {
+                      setStepError("Votre email est requis.");
+                      return;
+                    }
                   }
                   setStepError("");
                   setStep(step + 1);

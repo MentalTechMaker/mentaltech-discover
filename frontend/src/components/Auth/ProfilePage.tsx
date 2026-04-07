@@ -26,7 +26,9 @@ export const ProfilePage: React.FC = () => {
   if (!isAuthenticated || !user) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
-        <p className="text-text-secondary">Vous devez être connecté pour accéder à cette page.</p>
+        <p className="text-text-secondary">
+          Vous devez être connecté pour accéder à cette page.
+        </p>
       </div>
     );
   }
@@ -55,7 +57,11 @@ export const ProfilePage: React.FC = () => {
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors du changement de mot de passe");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erreur lors du changement de mot de passe",
+      );
     } finally {
       setLoading(false);
     }
@@ -81,11 +87,15 @@ export const ProfilePage: React.FC = () => {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-1">Nom</label>
+              <label className="block text-sm font-semibold text-text-secondary mb-1">
+                Nom
+              </label>
               <p className="text-text-primary font-medium">{user.name}</p>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-1">Email</label>
+              <label className="block text-sm font-semibold text-text-secondary mb-1">
+                Email
+              </label>
               <div className="flex items-center gap-2">
                 <p className="text-text-primary font-medium">{user.email}</p>
                 {user.email_verified ? (
@@ -100,21 +110,29 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-1">Rôle</label>
+              <label className="block text-sm font-semibold text-text-secondary mb-1">
+                Rôle
+              </label>
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-text-primary font-medium">{roleLabels[user.role] ?? user.role}</p>
+                <p className="text-text-primary font-medium">
+                  {roleLabels[user.role] ?? user.role}
+                </p>
                 {user.role === "prescriber" && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                     Prescripteur
                   </span>
                 )}
                 {user.role === "prescriber" && (
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                    user.is_verified_prescriber
-                      ? "bg-green-100 text-green-800"
-                      : "bg-orange-100 text-orange-800"
-                  }`}>
-                    {user.is_verified_prescriber ? "Identité vérifiée" : "En attente de validation"}
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      user.is_verified_prescriber
+                        ? "bg-green-100 text-green-800"
+                        : "bg-orange-100 text-orange-800"
+                    }`}
+                  >
+                    {user.is_verified_prescriber
+                      ? "Identité vérifiée"
+                      : "En attente de validation"}
                   </span>
                 )}
               </div>
@@ -124,20 +142,32 @@ export const ProfilePage: React.FC = () => {
               <>
                 {user.profession && (
                   <div>
-                    <label className="block text-sm font-semibold text-text-secondary mb-1">Profession</label>
-                    <p className="text-text-primary font-medium">{user.profession}</p>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">
+                      Profession
+                    </label>
+                    <p className="text-text-primary font-medium">
+                      {user.profession}
+                    </p>
                   </div>
                 )}
                 {user.organization && (
                   <div>
-                    <label className="block text-sm font-semibold text-text-secondary mb-1">Établissement / Organisation</label>
-                    <p className="text-text-primary font-medium">{user.organization}</p>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">
+                      Établissement / Organisation
+                    </label>
+                    <p className="text-text-primary font-medium">
+                      {user.organization}
+                    </p>
                   </div>
                 )}
                 {user.rpps_adeli && (
                   <div>
-                    <label className="block text-sm font-semibold text-text-secondary mb-1">N° RPPS / ADELI</label>
-                    <p className="text-text-primary font-medium">{user.rpps_adeli}</p>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">
+                      N° RPPS / ADELI
+                    </label>
+                    <p className="text-text-primary font-medium">
+                      {user.rpps_adeli}
+                    </p>
                   </div>
                 )}
               </>
@@ -171,12 +201,17 @@ export const ProfilePage: React.FC = () => {
             <div className="flex items-start gap-3">
               <span className="text-xl flex-shrink-0">⏳</span>
               <div>
-                <h3 className="text-base font-bold text-amber-900 mb-1">Dossier en cours d'examen</h3>
+                <h3 className="text-base font-bold text-amber-900 mb-1">
+                  Dossier en cours d'examen
+                </h3>
                 <p className="text-sm text-amber-800">
-                  Votre dossier est en cours d'examen par notre équipe. Vous recevrez un email de confirmation dès validation de votre compte prescripteur (généralement sous 48h).
+                  Votre dossier est en cours d'examen par notre équipe. Vous
+                  recevrez un email de confirmation dès validation de votre
+                  compte prescripteur (généralement sous 48h).
                 </p>
                 <p className="text-xs text-amber-700 mt-2">
-                  En attendant, vous pouvez explorer le catalogue et accéder aux fiches produits.
+                  En attendant, vous pouvez explorer le catalogue et accéder aux
+                  fiches produits.
                 </p>
               </div>
             </div>
@@ -186,7 +221,9 @@ export const ProfilePage: React.FC = () => {
         {/* User benefits hint (for non-prescribers) */}
         {user.role === "user" && (
           <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
-            <h3 className="text-base font-bold text-blue-900 mb-2">Votre espace personnel</h3>
+            <h3 className="text-base font-bold text-blue-900 mb-2">
+              Votre espace personnel
+            </h3>
             <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
               <li>Sauvegardez vos résultats de questionnaire</li>
               <li>Retrouvez vos recommandations personnalisées</li>
@@ -224,7 +261,10 @@ export const ProfilePage: React.FC = () => {
 
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
-              <label htmlFor="currentPassword" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="currentPassword"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Mot de passe actuel
               </label>
               <input
@@ -238,7 +278,10 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="newPassword" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Nouveau mot de passe
               </label>
               <input
@@ -255,7 +298,10 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Confirmer le nouveau mot de passe
               </label>
               <input

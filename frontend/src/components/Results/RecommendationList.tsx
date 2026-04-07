@@ -15,7 +15,7 @@ export const RecommendationList: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Tes recommandations personnalisées",
-      "Découvre les solutions de santé mentale sélectionnées pour toi par MentalTech Discover, évaluées et classées selon tes besoins."
+      "Découvre les solutions de santé mentale sélectionnées pour toi par MentalTech Discover, évaluées et classées selon tes besoins.",
     );
     setCanonical("/resultats");
   }, []);
@@ -35,10 +35,27 @@ export const RecommendationList: React.FC = () => {
   };
 
   const filteredAllProducts = recommendations.products.filter((p) => {
-    if (pricingFilter === "free" && p.pricing?.model !== "free" && p.pricing?.model !== "freemium") return false;
-    if (pricingFilter === "paid" && (!p.pricing?.model || p.pricing.model === "free" || p.pricing.model === "freemium")) return false;
-    if (contactFilter === "human" && !p.preferenceMatch?.includes("talk-now")) return false;
-    if (contactFilter === "autonomous" && p.preferenceMatch?.includes("talk-now") && !p.preferenceMatch?.includes("autonomous")) return false;
+    if (
+      pricingFilter === "free" &&
+      p.pricing?.model !== "free" &&
+      p.pricing?.model !== "freemium"
+    )
+      return false;
+    if (
+      pricingFilter === "paid" &&
+      (!p.pricing?.model ||
+        p.pricing.model === "free" ||
+        p.pricing.model === "freemium")
+    )
+      return false;
+    if (contactFilter === "human" && !p.preferenceMatch?.includes("talk-now"))
+      return false;
+    if (
+      contactFilter === "autonomous" &&
+      p.preferenceMatch?.includes("talk-now") &&
+      !p.preferenceMatch?.includes("autonomous")
+    )
+      return false;
     return true;
   });
 
@@ -89,14 +106,21 @@ export const RecommendationList: React.FC = () => {
             {(["all", "free", "paid"] as PricingFilter[]).map((v) => (
               <button
                 key={v}
-                onClick={() => { setPricingFilter(v); setShowAdditional(false); }}
-                className={`px-3 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${
+                onClick={() => {
+                  setPricingFilter(v);
+                  setShowAdditional(false);
+                }}
+                className={`px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold border-2 transition-all ${
                   pricingFilter === v
                     ? "bg-primary text-white border-primary"
                     : "bg-white text-gray-600 border-gray-200 hover:border-primary/50"
                 }`}
               >
-                {v === "all" ? "Tous" : v === "free" ? "💚 Gratuit" : "💳 Payant"}
+                {v === "all"
+                  ? "Tous"
+                  : v === "free"
+                    ? "💚 Gratuit"
+                    : "💳 Payant"}
               </button>
             ))}
           </div>
@@ -104,20 +128,31 @@ export const RecommendationList: React.FC = () => {
             {(["all", "human", "autonomous"] as ContactFilter[]).map((v) => (
               <button
                 key={v}
-                onClick={() => { setContactFilter(v); setShowAdditional(false); }}
-                className={`px-3 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${
+                onClick={() => {
+                  setContactFilter(v);
+                  setShowAdditional(false);
+                }}
+                className={`px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold border-2 transition-all ${
                   contactFilter === v
                     ? "bg-purple-600 text-white border-purple-600"
                     : "bg-white text-gray-600 border-gray-200 hover:border-purple-400"
                 }`}
               >
-                {v === "all" ? "Tous" : v === "human" ? "🧑‍⚕️ Avec un humain" : "📱 En autonomie"}
+                {v === "all"
+                  ? "Tous"
+                  : v === "human"
+                    ? "🧑‍⚕️ Avec un humain"
+                    : "📱 En autonomie"}
               </button>
             ))}
           </div>
           {(pricingFilter !== "all" || contactFilter !== "all") && (
             <button
-              onClick={() => { setPricingFilter("all"); setContactFilter("all"); setShowAdditional(false); }}
+              onClick={() => {
+                setPricingFilter("all");
+                setContactFilter("all");
+                setShowAdditional(false);
+              }}
               className="text-xs text-gray-400 hover:text-red-500 transition-colors underline"
             >
               Réinitialiser
@@ -127,9 +162,14 @@ export const RecommendationList: React.FC = () => {
 
         {filteredAllProducts.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            <p className="text-lg mb-2">Aucune solution ne correspond à ces filtres.</p>
+            <p className="text-lg mb-2">
+              Aucune solution ne correspond à ces filtres.
+            </p>
             <button
-              onClick={() => { setPricingFilter("all"); setContactFilter("all"); }}
+              onClick={() => {
+                setPricingFilter("all");
+                setContactFilter("all");
+              }}
               className="text-primary font-semibold hover:underline"
             >
               Retirer les filtres
@@ -143,9 +183,13 @@ export const RecommendationList: React.FC = () => {
           <div className="max-w-lg mx-auto text-center py-6 space-y-5">
             <div className="text-5xl">🔨</div>
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">Catalogue en cours de construction</h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">
+                Catalogue en cours de construction
+              </h2>
               <p className="text-text-secondary leading-relaxed">
-                Nos équipes référencent actuellement les premières solutions. Revenez dans quelques semaines pour découvrir le catalogue complet.
+                Nos équipes référencent actuellement les premières solutions.
+                Revenez dans quelques semaines pour découvrir le catalogue
+                complet.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -167,120 +211,124 @@ export const RecommendationList: React.FC = () => {
 
         {recommendations.products.length > 0 && (
           <>
-          <div>
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
-                <span className="text-3xl">⭐</span>
-                Les 3 meilleures solutions pour toi
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Ces solutions présentent le meilleur score de correspondance avec
-                tes besoins
-              </p>
-            </div>
+            <div>
+              <div className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
+                  <span className="text-3xl">⭐</span>
+                  Les 3 meilleures solutions pour toi
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Ces solutions présentent le meilleur score de correspondance
+                  avec tes besoins
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {topProducts.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
-              ))}
-            </div>
-          </div>
-
-          <ExplanationBox
-            explanation={recommendations.explanation}
-            setView={setView}
-          />
-
-          {hasAdditionalProducts && !showAdditional && (
-          <div className="flex flex-col items-center gap-4 pt-8">
-            <div className="text-center">
-              <p className="text-gray-600 mb-2">
-                Nous avons également trouvé{" "}
-                <strong className="text-primary">
-                  {additionalProducts.length} autres solutions
-                </strong>{" "}
-                qui peuvent te correspondre
-              </p>
-              <p className="text-sm text-gray-500">
-                Classées par score de pertinence décroissant
-              </p>
-            </div>
-            <button
-              onClick={() => setShowAdditional(true)}
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple/30"
-              aria-label={`Voir ${additionalProducts.length} autres solutions recommandées`}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                />
-              </svg>
-              <span>Voir {additionalProducts.length} autres solutions</span>
-              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                +{additionalProducts.length}
-              </span>
-            </button>
-          </div>
-        )}
-
-        {hasAdditionalProducts && showAdditional && (
-          <div>
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
-                <span className="text-3xl">💡</span>
-                Autres solutions qui peuvent t'intéresser
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Ces {additionalProducts.length} solutions correspondent
-                également à tes critères, avec un score légèrement inférieur
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {additionalProducts.map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  index={index + 3}
-                />
-              ))}
-            </div>
-
-            <div className="flex justify-center pt-8">
-              <button
-                onClick={() => {
-                  setShowAdditional(false);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo/20"
-                aria-label="Réduire la liste de solutions"
-              >
-                <svg
-                  className="w-5 h-5 transition-transform group-hover:-translate-y-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {topProducts.map((product, index) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    index={index}
                   />
-                </svg>
-                <span>Voir uniquement le top 3</span>
-              </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+
+            <ExplanationBox
+              explanation={recommendations.explanation}
+              setView={setView}
+            />
+
+            {hasAdditionalProducts && !showAdditional && (
+              <div className="flex flex-col items-center gap-4 pt-8">
+                <div className="text-center">
+                  <p className="text-gray-600 mb-2">
+                    Nous avons également trouvé{" "}
+                    <strong className="text-primary">
+                      {additionalProducts.length} autres solutions
+                    </strong>{" "}
+                    qui peuvent te correspondre
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Classées par score de pertinence décroissant
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAdditional(true)}
+                  className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple/30"
+                  aria-label={`Voir ${additionalProducts.length} autres solutions recommandées`}
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                  <span>Voir {additionalProducts.length} autres solutions</span>
+                  <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
+                    +{additionalProducts.length}
+                  </span>
+                </button>
+              </div>
+            )}
+
+            {hasAdditionalProducts && showAdditional && (
+              <div>
+                <div className="mb-6 text-center">
+                  <h2 className="text-2xl font-bold text-gray-900 items-center gap-2">
+                    <span className="text-3xl">💡</span>
+                    Autres solutions qui peuvent t'intéresser
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Ces {additionalProducts.length} solutions correspondent
+                    également à tes critères, avec un score légèrement inférieur
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {additionalProducts.map((product, index) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      index={index + 3}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex justify-center pt-8">
+                  <button
+                    onClick={() => {
+                      setShowAdditional(false);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="group inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo/20"
+                    aria-label="Réduire la liste de solutions"
+                  >
+                    <svg
+                      className="w-5 h-5 transition-transform group-hover:-translate-y-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 15l7-7 7 7"
+                      />
+                    </svg>
+                    <span>Voir uniquement le top 3</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
 

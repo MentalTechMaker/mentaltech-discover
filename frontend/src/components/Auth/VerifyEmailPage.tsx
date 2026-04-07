@@ -7,12 +7,14 @@ export const VerifyEmailPage: React.FC = () => {
   const { setView } = useAppStore();
   const { loadUser } = useAuthStore();
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
+    const token = params.get("token");
 
     if (!token) {
       setStatus("error");
@@ -29,7 +31,9 @@ export const VerifyEmailPage: React.FC = () => {
       })
       .catch((err) => {
         setStatus("error");
-        setMessage(err instanceof Error ? err.message : "Erreur lors de la vérification");
+        setMessage(
+          err instanceof Error ? err.message : "Erreur lors de la vérification",
+        );
       });
   }, [loadUser]);
 
@@ -39,15 +43,21 @@ export const VerifyEmailPage: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg p-8 text-center">
           {status === "loading" && (
             <>
-              <h2 className="text-2xl font-bold text-text-primary mb-4">Vérification en cours...</h2>
-              <p className="text-text-secondary">Veuillez patienter pendant la vérification de votre email.</p>
+              <h2 className="text-2xl font-bold text-text-primary mb-4">
+                Vérification en cours...
+              </h2>
+              <p className="text-text-secondary">
+                Veuillez patienter pendant la vérification de votre email.
+              </p>
             </>
           )}
 
           {status === "success" && (
             <>
               <div className="mb-4 text-5xl">&#10003;</div>
-              <h2 className="text-2xl font-bold text-text-primary mb-4">Email vérifié</h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-4">
+                Email vérifié
+              </h2>
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 mb-4">
                 <p>{message}</p>
               </div>
@@ -62,7 +72,9 @@ export const VerifyEmailPage: React.FC = () => {
 
           {status === "error" && (
             <>
-              <h2 className="text-2xl font-bold text-text-primary mb-4">Erreur de vérification</h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-4">
+                Erreur de vérification
+              </h2>
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 mb-4">
                 <p>{message}</p>
               </div>

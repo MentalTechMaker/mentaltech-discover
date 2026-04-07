@@ -16,7 +16,6 @@ from .config import settings
 from .rate_limit import limiter
 from .routers import auth, products, prescriptions, prescriber, admin, public
 
-
 # --- Logging configuration ---
 LOG_DIR = Path("/var/log/mentaltech")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -74,7 +73,10 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         if path not in ("/api/health", "/health") and not path.startswith("/uploads/"):
             logger.info(
                 "%s %s %s %dms",
-                request.method, path, response.status_code, duration_ms,
+                request.method,
+                path,
+                response.status_code,
+                duration_ms,
             )
         return response
 
@@ -96,6 +98,7 @@ app.add_middleware(
 
 
 # --- Global exception handlers (Task #4 backend) ---
+
 
 @app.exception_handler(SQLAlchemyError)
 async def sqlalchemy_exception_handler(_request: Request, exc: SQLAlchemyError):
@@ -138,7 +141,9 @@ def cleanup_expired_prescriptions():
     db = SessionLocal()
     try:
         cutoff = datetime.now(timezone.utc) - timedelta(days=7)
-        deleted = db.query(Prescription).filter(Prescription.expires_at < cutoff).delete()
+        deleted = (
+            db.query(Prescription).filter(Prescription.expires_at < cutoff).delete()
+        )
         db.commit()
         if deleted:
             logger.info(f"RGPD cleanup: deleted {deleted} expired prescriptions")
@@ -159,12 +164,17 @@ def sitemap_xml():
     from .database import get_db
     from .models.product import Product as ProductModel
     from datetime import date
+
     db = next(get_db())
     try:
-        products_list = db.query(ProductModel.id, ProductModel.updated_at).filter(
-            ProductModel.company_defunct.is_(False),
-            ProductModel.is_visible.is_(True),
-        ).all()
+        products_list = (
+            db.query(ProductModel.id, ProductModel.updated_at)
+            .filter(
+                ProductModel.company_defunct.is_(False),
+                ProductModel.is_visible.is_(True),
+            )
+            .all()
+        )
     finally:
         db.close()
 
@@ -217,12 +227,14 @@ def public_stats():
     from .database import get_db
     from .models.user import User
     from .models.prescription import Prescription
+
     db = next(get_db())
     try:
         prescriber_count = (
             db.query(func.count(User.id))
             .filter(User.role == "prescriber", User.is_verified_prescriber.is_(True))
-            .scalar() or 0
+            .scalar()
+            or 0
         )
         prescription_count = db.query(func.count(Prescription.id)).scalar() or 0
     finally:

@@ -11,13 +11,12 @@
 MentalTech Discover référence les solutions des membres du Collectif MentalTech et aide les utilisateurs à trouver celles qui correspondent le mieux à leurs besoins via :
 
 - 🧭 **Questionnaire personnalisé** - Recommandations sur-mesure en 3-5 minutes
-- 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique, label qualité
-- 🎯 **Algorithme de scoring** - Matching intelligent plafonné à 100%
-- ⭐ **Labels qualité** - Notation Nutriscore (A-E) sur 5 piliers, avec justifications
-- 📄 **Fiches produit** - Page dédiée par solution avec scoring détaillé
+- 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique, tarification
+- 🎯 **Algorithme de matching P1/P2/P3** - Scoring intelligent basé sur les priorités éditeur
+- 📄 **Fiches produit** - Page dédiée par solution avec positionnement P1/P2/P3
 - 💙 **Collectif MentalTech** - Badge d'appartenance au collectif
 - 🔒 **Authentification** - Inscription, connexion, panel d'administration
-- 🩺 **Espace Prescripteur** - Prescriptions digitales, favoris, notes, veille, comparateur
+- 🩺 **Espace Prescripteur** - Prescriptions digitales, favoris, notes cliniques, veille
 - 🏢 **Espace Éditeur** - Soumission de produits par les éditeurs de solutions
 - 📖 **Open Source** - Code transparent sous licence MIT
 
@@ -32,7 +31,7 @@ Un questionnaire rapide analyse vos besoins selon :
 - **Public** : Adultes, adolescents, enfants, parents, seniors
 - **Problématiques** : Stress, anxiété, dépression, addictions, burn-out, sommeil, traumatismes
 - **Préférences** : Accompagnement autonome, thérapie immédiate, programmes structurés
-- **Contexte** : Solutions individuelles ou entreprise
+- **Contexte** : Solutions individuelles, entreprise ou etablissement de sante
 
 Pendant le quiz, un **compteur en temps réel** affiche le nombre de solutions déjà détectées à mesure que l'utilisateur répond.
 
@@ -46,46 +45,41 @@ Explorez toutes les solutions avec filtres puissants :
 - **Audience** - Adultes, adolescents, enfants, parents, seniors
 - **Problèmes traités** - 6 catégories principales
 - **Tarification** - Gratuit, Freemium, Abonnement, Par séance, B2B
-- **Label qualité** - Filtrer par grade (A, B, C, D, E, Non évalué)
-- **Tri par label** - Trier par meilleur score qualité
 
 ### 📊 Résultats et partage
 
 - **Filtres rapides** sur les résultats : Gratuit / Payant et Avec un humain / En autonomie
 - **Lien partageable** : l'URL `/results?f=...` encode les réponses du quiz pour partager ou sauvegarder ses résultats
 
-### ⭐ Labels qualité (Nutriscore)
+### 🎯 Systeme de priorites P1/P2/P3
 
-Chaque solution est évaluée sur 5 piliers, chacun noté de 0 à 5, pour un score total sur 100 :
+Chaque solution definit ses priorites sur deux axes :
 
-| Score | Grade | Label |
-|-------|-------|-------|
-| 80-100 | **A** | Validé MentalTech |
-| 60-79 | **B** | Recommandé |
-| 40-59 | **C** | Évalué |
-| 20-39 | **D** | À améliorer |
-| 0-19 | **E** | Déconseillé |
+**Public cible** (audience) et **Problematiques adressees** (problemes), classes en 3 niveaux :
 
-Les 5 piliers d'évaluation :
+| Niveau | Signification | Points dans l'algorithme |
+|--------|---------------|-------------------------|
+| **P1** | Coeur de cible | 30 pts |
+| **P2** | Secondaire | 18 pts |
+| **P3** | Compatible | 8 pts |
 
-1. **Sécurité** - RGPD, hébergement HDS, chiffrement
-2. **Preuves** - Base scientifique, études publiées
-3. **Accessibilité** - Prix, plateformes, langue, handicap
-4. **Expérience user** - Design, navigation, performance, mobile
-5. **Support** - Réactivité, gestion de crise, ressources
+- Maximum **3 items par niveau** pour forcer la specialisation
+- Les priorites sont definies par l'editeur de la solution
+- Un disclaimer indique que les informations sont fournies par l'editeur
+- Les membres du Collectif MentalTech beneficient d'un bonus de 8 pts dans le classement
 
-Chaque note est accompagnée d'une **justification textuelle** (documents de recherche, témoignages, observations). Les justifications détaillées sont visibles par les administrateurs.
+**Score de matching** : Audience (30) + Probleme (30) + Format (15) + Collectif (8) + Contexte (10) = **93 pts max**
 
-Le protocole d'évaluation complet est documenté dans [`protocole.md`](protocole.md).
+Le protocole d'evaluation complet est documente dans [`protocole.md`](protocole.md).
 
 ### 📄 Fiches produit
 
 Chaque solution dispose d'une page dédiée accessible depuis le catalogue ou les résultats du quiz :
 
-- Informations complètes (description, public, tarification, tags)
-- Score qualité avec barres de progression par critère
-- Justifications détaillées (admin uniquement)
-- Badge "Membre du Collectif MentalTech" (💙)
+- Informations completes (description, public, tarification, tags)
+- Positionnement P1/P2/P3 (audiences et problematiques par priorite)
+- Badge "Membre du Collectif MentalTech"
+- Notes cliniques (prescripteurs uniquement)
 - Lien direct vers le site de la solution
 
 ### 🔐 Authentification et Administration
@@ -95,7 +89,7 @@ Chaque solution dispose d'une page dédiée accessible depuis le catalogue ou le
 - **Vérification email** - Email de confirmation envoyé à l'inscription avec lien sécurisé (24h)
 - **Mot de passe oublié** - Réinitialisation par email avec lien temporaire (1h)
 - **Panel Admin** - CRUD complet sur les produits (ajout, modification, suppression)
-- **Scoring admin** - Saisie des 5 scores qualité + justifications par produit avec preview en temps réel
+- **Priorites P1/P2/P3** - Gestion des priorites audience et problemes par produit
 - **Visibilité produits** - Masquer/afficher un produit ou le marquer "Entreprise défunte" sans le supprimer
 - **Rôles** - Utilisateur standard, prescripteur (professionnel de santé), éditeur et administrateur
 
@@ -138,16 +132,9 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 
 #### Veille solutions
 
-- **Flux de mises à jour** - Changements de tarifs, nouvelles études, évolutions de scoring
-- **Filtre favoris** - Ne voir que les mises à jour de ses solutions favorites
-- **Types d'updates** - Prix, score, fonctionnalité, étude, général
-
-#### Comparateur
-
-- **Côte-à-côte** - Comparer 2 à 4 solutions sur tous les critères
-- **Scores détaillés** - Barres de progression par critère de scoring
-- **Tarification** - Modèle, montant, détails côte-à-côte
-- **Public et problématiques** - Audience, problèmes traités
+- **Flux de mises a jour** - Changements de tarifs, nouvelles etudes, nouvelles fonctionnalites
+- **Filtre favoris** - Ne voir que les mises a jour de ses solutions favorites
+- **Types d'updates** - Prix, fonctionnalite, etude, general
 
 #### Statistiques communauté
 
@@ -159,18 +146,21 @@ Un espace dédié aux professionnels de santé (psychologues, psychiatres, méde
 Un parcours ouvert permettant a tout editeur de soumettre sa solution :
 
 - **Formulaire public** - Soumission sans compte via le bouton "Referencer" dans le header
-- **Multi-etapes** - Informations produit, tarification, protocole d'evaluation
+- **Multi-etapes** - Informations produit, tarification, priorites P1/P2/P3
+- **Selecteur P1/P2/P3** - L'editeur definit ses audiences et problematiques par priorite (max 3 par niveau)
+- **Disclaimer** - Les informations sont sous la responsabilite de l'editeur
+- **Consentement RGPD** - Checkbox obligatoire avant soumission
 - **Sauvegarde automatique** - Brouillon sauvegarde toutes les 30 secondes dans le navigateur
-- **Barre de progression** - Etape X sur Y visible en permanence
 - **Anti-bot** - Honeypot + delai minimum de soumission
 - **Confirmation email** - Lien de validation 48h avant transmission a l'admin
+- **Email recapitulatif** - Recapitulatif des informations soumises envoye a la confirmation
 - **Option Collectif** - Demande d'adhesion au Collectif MentalTech integree
 
 ### 🌐 Soumission Publique (sans compte)
 
-Un parcours ouvert permettant à tout éditeur de soumettre sa solution sans créer de compte :
+Un parcours ouvert permettant a tout editeur de soumettre sa solution sans creer de compte :
 
-- **Formulaire multi-étapes** - Informations produit complètes basées sur le protocole d'évaluation
+- **Formulaire multi-etapes** - Informations produit et positionnement P1/P2/P3
 - **Anti-bot** - Honeypot champ caché + délai minimum de soumission (3s)
 - **Confirmation par email** - Lien de confirmation (48h) avant transmission à l'admin
 - **Demande d'adhésion au Collectif** - Option pour demander à rejoindre le MentalTech Collectif lors de la soumission
@@ -231,9 +221,19 @@ Point d'entrée unique pour intégrer l'écosystème MentalTech :
 
 ### Infrastructure
 
-- **Docker Compose** - Orchestration 3 services
+- **Docker Compose** - Orchestration 4 services (db, backend, frontend, backup)
 - **Nginx** - Reverse proxy + serveur statique
 - **PostgreSQL 16 Alpine** - Base de données
+- **Backup automatique** - Container dedie avec cron configurable et chiffrement optionnel
+
+### Securite Docker
+
+- **Reseaux isoles** - `db-network` (backend + backup uniquement) et `frontend-network` (backend + frontend)
+- **Backend non expose** - Port 8000 accessible uniquement via le reseau Docker interne
+- **Capabilities Linux** - `cap_drop: ALL` sur tous les containers, ajout minimal (CHOWN, SETGID, SETUID pour nginx)
+- **Filesystem read-only** - Frontend en lecture seule (tmpfs pour /tmp et cache nginx)
+- **Anti-escalade** - `no-new-privileges: true` sur tous les containers
+- **Limites de ressources** - CPU et memoire plafonnes par container
 
 ---
 
@@ -249,7 +249,7 @@ cd mentaltech-discover
 # Copier la configuration
 cp .env.example .env
 
-# Démarrer les 3 services (db + backend + frontend)
+# Démarrer les 4 services (db + backend + frontend + backup)
 docker compose up --build
 
 # Créer le premier administrateur
@@ -287,8 +287,8 @@ uvicorn app.main:app --reload --port 8000
 
 1. **Questionnaire** - Cliquez sur "Trouver ma solution" depuis la page d'accueil, répondez aux questions en 3-5 minutes
 2. **Résultats** - Consultez les solutions recommandées, triées par pertinence - utilisez les filtres Gratuit/Payant et Autonomie/Humain pour affiner
-3. **Catalogue** - Cliquez sur "Explorer toutes les solutions" pour parcourir le catalogue avec les filtres (type, audience, tarification, label qualité)
-4. **Fiche produit** - Cliquez sur une solution pour voir le détail : scoring, description, tarification, lien direct
+3. **Catalogue** - Cliquez sur "Explorer toutes les solutions" pour parcourir le catalogue avec les filtres (type, audience, tarification)
+4. **Fiche produit** - Cliquez sur une solution pour voir le detail : positionnement, description, tarification, lien direct
 
 ### Pour les prescripteurs (professionnels de santé)
 
@@ -298,13 +298,13 @@ uvicorn app.main:app --reload --port 8000
 4. **Onboarding** - Dès votre premier login, un guide en 3 étapes vous présente les fonctionnalités clés
 5. **Tableau de bord** - Accédez à vos stats, prescriptions, favoris et données communautaires
 6. **Nouvelle prescription** - Sélectionnez 1-5 solutions (vos favoris sont en tête de liste), utilisez le panneau rapide pour consulter un produit, ajoutez un message, copiez le lien ou scannez le QR code pour l'envoyer au patient
-7. **Veille** - Consultez les mises à jour des solutions (tarifs, études, scores)
-8. **Comparateur** - Comparez 2-4 solutions côte-à-côte sur tous les critères
+7. **Veille** - Consultez les mises a jour des solutions (tarifs, etudes, fonctionnalites)
+8. **Notes cliniques** - Prenez des notes personnelles sur chaque solution depuis la fiche produit
 
-### Pour les éditeurs (soumission publique)
+### Pour les editeurs (soumission publique)
 
-1. **Accéder au formulaire** - Cliquez sur "Référencer" dans le header ou via la page "Rejoindre le Collectif"
-2. **Remplir le formulaire** - Suivez les étapes : informations produit, tarification, protocole d'évaluation
+1. **Acceder au formulaire** - Cliquez sur "Referencer" dans le header ou via la page "Rejoindre le Collectif"
+2. **Remplir le formulaire** - Suivez les etapes : informations produit, tarification, priorites P1/P2/P3
 3. **Confirmer par email** - Un lien de confirmation (48h) vous est envoyé pour valider la soumission
 4. **Validation admin** - Un administrateur examine et valide (ou refuse) votre soumission
 
@@ -330,13 +330,13 @@ mentaltech-discover/
 │   │   │   ├── Auth/       # Pages login / register / profil / reset password
 │   │   │   ├── Disclaimer/ # Avertissement médical compact (non-collapsible)
 │   │   │   ├── Layout/     # Header, Footer
-│   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, comparateur, quick view, onboarding
+│   │   │   ├── Prescriber/ # Dashboard, prescriptions, veille, notes cliniques, quick view, onboarding
 │   │   │   ├── Publisher/  # Formulaire de soumission
 │   │   │   ├── Public/     # Soumission publique, candidature pro santé, page collectif
 │   │   │   ├── ProductCatalog/
 │   │   │   ├── Quiz/
 │   │   │   └── Results/
-│   │   ├── data/           # Questions, moteur de recommandation, questions protocole
+│   │   ├── data/           # Questions, moteur de recommandation P1/P2/P3
 │   │   ├── lib/            # Analytics
 │   │   ├── store/          # Zustand (app, auth, products)
 │   │   ├── types/          # Types TypeScript
@@ -352,23 +352,33 @@ mentaltech-discover/
 │   │   ├── schemas/        # Schémas Pydantic (validation)
 │   │   ├── routers/        # Endpoints API (auth, products, prescriptions, prescriber, admin, publisher, public)
 │   │   ├── services/       # Logique métier (JWT, CRUD, email)
-│   │   ├── templates/      # Templates HTML emails (Jinja2)
+│   │   ├── templates/      # Templates HTML emails (15 templates Jinja2)
 │   │   ├── config.py       # Configuration (pydantic-settings)
 │   │   ├── database.py     # Connexion SQLAlchemy
 │   │   ├── dependencies.py # Guards (auth, admin, prescriber, publisher)
 │   │   └── main.py         # Point d'entrée FastAPI
 │   ├── scripts/            # Scripts utilitaires
 │   │   └── create_admin.py # Création admin initial
+│   ├── tests/              # Tests pytest (27 tests)
 │   ├── Dockerfile
 │   └── requirements.txt
 │
 ├── database/                # PostgreSQL
-│   └── init/
-│       ├── 01_schema.sql   # Schéma complet (users, products, prescriptions, favoris, notes, veille, soumissions, triggers)
-│       └── 02_seed_products.sql  # Produits pré-chargés
+│   ├── init/
+│   │   ├── 01_schema.sql   # Schema complet (users, products, prescriptions, favoris, notes, veille, soumissions, triggers)
+│   │   └── 02_seed_products.sql  # Produits pre-charges avec P1/P2/P3
+│   └── migrations/
+│       └── 001_add_priorities.sql  # Migration P1/P2/P3 pour bases existantes
 │
+├── scripts/                  # Scripts d'exploitation
+│   ├── backup.sh            # Backup PostgreSQL + uploads
+│   ├── restore.sh           # Restauration depuis backup
+│   ├── maintenance.sh       # Maintenance automatisée
+│   └── docker-backup-entrypoint.sh  # Entrypoint du container backup
+│
+├── _docs/                    # Documentation interne (audits, runbooks, protocoles de test)
 ├── protocole.md              # Protocole d'évaluation des solutions
-├── docker-compose.yml        # Orchestration 3 services
+├── docker-compose.yml        # Orchestration 4 services
 └── .env.example              # Variables d'environnement
 ```
 
@@ -412,7 +422,6 @@ mentaltech-discover/
 | `PUT` | `/api/prescriber/notes` | Prescriber | Créer ou modifier une note |
 | `DELETE` | `/api/prescriber/notes/{product_id}` | Prescriber | Supprimer une note |
 | `GET` | `/api/prescriber/updates` | Prescriber | Veille : mises à jour produits |
-| `GET` | `/api/prescriber/compare?ids=...` | Prescriber | Comparateur (2-4 produits) |
 | `GET` | `/api/prescriber/community-stats` | Prescriber | Statistiques communauté anonymisées |
 | | | | |
 | **Espace Éditeur** | | | |
@@ -480,8 +489,9 @@ docker compose down -v
 | Service | Port | Description |
 |---------|------|-------------|
 | `db` | 5432 (interne) | PostgreSQL 16 Alpine |
-| `backend` | 8000 | API FastAPI |
+| `backend` | 8000 (interne) | API FastAPI (non expose publiquement) |
 | `frontend` | 3033 | Nginx + React SPA |
+| `backup` | - | Backup automatique PostgreSQL (cron) |
 
 ### Variables d'environnement
 
@@ -502,6 +512,9 @@ docker compose down -v
 | `MAIL_PORT` | `587` | Port SMTP |
 | `MAIL_STARTTLS` | `true` | Activer STARTTLS |
 | `MAIL_SSL_TLS` | `false` | Activer SSL/TLS direct |
+| `BACKUP_KEEP_DAYS` | `7` | Nombre de jours de retention des backups |
+| `BACKUP_CRON` | `0 3 * * *` | Expression cron pour les backups automatiques |
+| `BACKUP_ENCRYPT_KEY` | *(vide)* | Cle de chiffrement des backups (optionnel) |
 
 ---
 
@@ -517,9 +530,8 @@ Chaque solution comprend :
 - **Contexte** : Individuel ou entreprise
 - **Appartenance** : Membre du Collectif MentalTech (badge 💙)
 - **Visibilité** : Produit actif, masqué ou entreprise défunte
-- **Score de match** : Pourcentage de pertinence (0-100%)
-- **Label qualité** : Grade A-E basé sur 5 critères (0-20 chacun)
-- **Justifications** : Texte libre par critère (recherche, preuves, témoignages)
+- **Score de match** : Pourcentage de pertinence (0-93)
+- **Priorites P1/P2/P3** : Audience et problematiques classees par priorite (P1 = coeur de cible, P2 = secondaire, P3 = compatible, max 3 par niveau)
 
 ---
 
@@ -655,7 +667,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(24))"   # -> POSTGRES_PA
 docker compose up -d --build
 
 # 5. Vérifier
-docker compose ps                    # 3 services healthy
+docker compose ps                    # 4 services healthy
 curl http://localhost:3033/api/health # 200
 
 # 6. Créer le premier admin
@@ -678,8 +690,8 @@ docker compose exec backend python -m scripts.create_admin
 # Backend (27 tests)
 docker compose exec backend python -m pytest
 
-# Frontend (81 tests)
-cd frontend && bun test tests/v2-auto.test.ts
+# Frontend (422 tests)
+cd frontend && bun test tests/
 
 # TypeScript
 cd frontend && npx tsc --noEmit
@@ -705,7 +717,7 @@ cd frontend && npx tsc --noEmit
 - [x] Architecture monorepo (frontend / backend / database)
 - [x] API REST FastAPI avec documentation Swagger
 - [x] Base de donnees PostgreSQL avec produits pre-charges
-- [x] Docker Compose 3 services
+- [x] Docker Compose 4 services (db, backend, frontend, backup)
 - [x] Proxy Nginx vers le backend
 
 #### Authentification & Comptes
@@ -715,10 +727,8 @@ cd frontend && npx tsc --noEmit
 - [x] Mot de passe oublie (reinitialisation par email, 1h)
 - [x] Roles : utilisateur, prescripteur, editeur, administrateur
 
-#### Scoring & Labels qualite
-- [x] Systeme de scoring qualite sur 5 piliers (0-20 chacun, total /100)
-- [x] Labels Nutriscore (A-E) avec couleurs et badges
-- [x] Justifications textuelles par critere
+#### Scoring & Qualite
+- [x] Systeme de scoring qualite interne sur 5 piliers (0-5 chacun)
 - [x] Protocole d'evaluation documente
 
 #### Espace Prescripteur
@@ -728,7 +738,6 @@ cd frontend && npx tsc --noEmit
 - [x] Tableau de bord prescripteur (stats, historique, favoris, communaute)
 - [x] Notes cliniques par solution
 - [x] Veille solutions (mises a jour produits)
-- [x] Comparateur cote-a-cote (2-4 solutions)
 - [x] Onboarding oriente action (guide vers premiere ordonnance)
 - [x] Renouvellement de prescription
 
@@ -758,6 +767,8 @@ cd frontend && npx tsc --noEmit
 - [x] Rejection wildcards CORS en production
 - [x] Credentials exclusivement via .env (pas de defauts en dur)
 - [x] Validation scores admin (0-5 via Pydantic)
+- [x] Docker hardening (reseaux isoles, cap_drop, read-only, no-new-privileges)
+- [x] Backup automatise avec chiffrement optionnel
 
 #### Contenu & Legal
 - [x] Section "Pour les professionnels de sante" (page About)
@@ -767,12 +778,25 @@ cd frontend && npx tsc --noEmit
 
 #### Administration
 - [x] Panel d'administration (CRUD complet produits)
-- [x] Scoring admin avec preview temps reel
 - [x] Visibilite produits (masquer/afficher, entreprise defunte)
 - [x] Gestion prescripteurs (valider, revoquer)
-- [x] Emails transactionnels (12 templates)
+- [x] Emails transactionnels (15 templates)
 
-### 🔮 V3 - Expansion (prévu)
+### V2.1 - Refonte scoring P1/P2/P3 (Avril 2026)
+
+- [x] Systeme de priorites P1/P2/P3 sur audiences et problemes (scoring 30:18:8)
+- [x] Selecteur P1/P2/P3 dans les formulaires (max 3 par niveau, validation serveur)
+- [x] Retrait labels qualite de l'affichage public (scoring interne conserve en base)
+- [x] Affichage de toutes les solutions classees par match
+- [x] UI notes cliniques prescripteur (dashboard + page produit)
+- [x] Focus trap banniere d'urgence + role="alert" + prefers-reduced-motion
+- [x] Consentement RGPD sur tous les formulaires
+- [x] Touch targets 44px WCAG
+- [x] Email recapitulatif editeur apres confirmation
+- [x] Migration SQL pour bases existantes
+- [x] ~80 corrections accents francais
+
+### 🔮 V3 - Expansion (prevu)
 
 - [ ] Systeme d'abonnement (gratuit / pro / equipe)
 - [ ] Integration paiement (Stripe)
@@ -787,5 +811,5 @@ cd frontend && npx tsc --noEmit
 ---
 
 **Version actuelle** : V2.1.0
-**Dernière mise à jour** : Mars 2026
+**Dernière mise à jour** : Avril 2026
 **Status** : Production Ready

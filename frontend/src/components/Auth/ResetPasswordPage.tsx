@@ -16,7 +16,7 @@ export const ResetPasswordPage: React.FC = () => {
 
   const [token] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('token');
+    return params.get("token");
   });
 
   // Auto-redirect to login page 3 seconds after successful reset
@@ -52,8 +52,14 @@ export const ResetPasswordPage: React.FC = () => {
       setSuccess(true);
       window.history.replaceState(null, "", "/reset-password");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Erreur lors de la réinitialisation";
-      if (message.includes("déjà été utilisé") || message.includes("invalide ou expiré")) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Erreur lors de la réinitialisation";
+      if (
+        message.includes("déjà été utilisé") ||
+        message.includes("invalide ou expiré")
+      ) {
         setTokenInvalid(true);
       } else {
         setError(message);
@@ -68,7 +74,9 @@ export const ResetPasswordPage: React.FC = () => {
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <h2 className="text-2xl font-bold text-text-primary mb-4">Lien invalide</h2>
+            <h2 className="text-2xl font-bold text-text-primary mb-4">
+              Lien invalide
+            </h2>
             <p className="text-text-secondary mb-4">
               Ce lien de réinitialisation est invalide ou a expiré.
             </p>
@@ -97,7 +105,8 @@ export const ResetPasswordPage: React.FC = () => {
               <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700">
                 <p className="font-semibold">Lien expiré ou déjà utilisé</p>
                 <p className="text-sm mt-1">
-                  Ce lien de réinitialisation a déjà été utilisé ou a expiré. Veuillez en demander un nouveau.
+                  Ce lien de réinitialisation a déjà été utilisé ou a expiré.
+                  Veuillez en demander un nouveau.
                 </p>
               </div>
               <button
@@ -112,7 +121,8 @@ export const ResetPasswordPage: React.FC = () => {
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
                 <p className="font-semibold">Mot de passe réinitialisé</p>
                 <p className="text-sm mt-1">
-                  Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter.
+                  Votre mot de passe a été modifié avec succès. Vous pouvez
+                  maintenant vous connecter.
                 </p>
                 <p className="text-sm mt-2 text-green-600">
                   Redirection automatique dans 3 secondes...
@@ -135,7 +145,10 @@ export const ResetPasswordPage: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-semibold text-text-primary mb-1">
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-sm font-semibold text-text-primary mb-1"
+                  >
                     Nouveau mot de passe
                   </label>
                   <input
@@ -152,7 +165,10 @@ export const ResetPasswordPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-semibold text-text-primary mb-1">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-semibold text-text-primary mb-1"
+                  >
                     Confirmer le mot de passe
                   </label>
                   <input
@@ -171,7 +187,9 @@ export const ResetPasswordPage: React.FC = () => {
                   disabled={loading}
                   className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  {loading ? "Réinitialisation..." : "Réinitialiser le mot de passe"}
+                  {loading
+                    ? "Réinitialisation..."
+                    : "Réinitialiser le mot de passe"}
                 </button>
               </form>
             </>

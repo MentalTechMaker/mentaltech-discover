@@ -1,4 +1,4 @@
-import type { Question } from '../types';
+import type { Question } from "../types";
 
 export const questions: Question[] = [
   {
@@ -9,8 +9,8 @@ export const questions: Question[] = [
       { value: "very-bad", label: "Pas bien du tout", emoji: "😔" },
       { value: "not-great", label: "Pas terrible", emoji: "😐" },
       { value: "okay", label: "Plutôt bien", emoji: "🙂" },
-      { value: "prevention", label: "Je cherche à prévenir", emoji: "😊" }
-    ]
+      { value: "prevention", label: "Je cherche à prévenir", emoji: "😊" },
+    ],
   },
   {
     id: 2,
@@ -19,8 +19,8 @@ export const questions: Question[] = [
     type: "single-choice",
     options: [
       { value: "dark-thoughts", label: "Oui, j'ai des pensées sombres" },
-      { value: "suffering", label: "Non, mais je souffre beaucoup" }
-    ]
+      { value: "suffering", label: "Non, mais je souffre beaucoup" },
+    ],
   },
   {
     id: 3,
@@ -33,8 +33,9 @@ export const questions: Question[] = [
       { value: "trauma", label: "Traumatisme passé" },
       { value: "work", label: "Relation au travail" },
       { value: "sleep", label: "Sommeil" },
-      { value: "other", label: "Autre chose" }
-    ]
+      { value: "douleur", label: "Douleur chronique" },
+      { value: "other", label: "Autre chose" },
+    ],
   },
   {
     id: 4,
@@ -45,8 +46,8 @@ export const questions: Question[] = [
       { value: "teen", label: "Ado (13-17 ans)" },
       { value: "adult", label: "Adulte (18-60 ans)" },
       { value: "senior", label: "Senior (60+)" },
-      { value: "parent", label: "Parent d'un enfant" }
-    ]
+      { value: "parent", label: "Parent d'un enfant" },
+    ],
   },
   {
     id: 5,
@@ -56,7 +57,7 @@ export const questions: Question[] = [
       { value: "talk-now", label: "Parler à quelqu'un maintenant" },
       { value: "autonomous", label: "Faire des exercices en autonomie" },
       { value: "understand", label: "Comprendre ce qui m'arrive" },
-      { value: "program", label: "M'engager dans un programme" }
-    ]
-  }
+      { value: "program", label: "M'engager dans un programme" },
+    ],
+  },
 ];

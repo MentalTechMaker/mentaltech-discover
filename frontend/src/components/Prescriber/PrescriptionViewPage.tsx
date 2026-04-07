@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { viewPrescription, confirmPrescriptionView, type PrescriptionPublicResponse } from "../../api/prescriber";
+import {
+  viewPrescription,
+  confirmPrescriptionView,
+  type PrescriptionPublicResponse,
+} from "../../api/prescriber";
 import { useAppStore } from "../../store/useAppStore";
 import { sanitizeUrl } from "../../utils/security";
 import { getLabelInfo } from "../../utils/scoring";
 import { SITE_URL } from "../../utils/meta";
 
-const pricingLabels: Record<string, string> = {
-  free: "Gratuit",
-  freemium: "Freemium",
-  subscription: "Abonnement",
-  "per-session": "Par seance",
-  enterprise: "Entreprise",
-  custom: "Sur mesure",
-};
+import { pricingLabels } from "../../data/labels";
 
 export const PrescriptionViewPage: React.FC = () => {
   const token = useAppStore((s) => s.selectedProductId);
@@ -28,7 +25,8 @@ export const PrescriptionViewPage: React.FC = () => {
     }
 
     let cancelled = false;
-    const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+    const isPreview =
+      new URLSearchParams(window.location.search).get("preview") === "true";
 
     viewPrescription(token)
       .then((res) => {
@@ -66,7 +64,9 @@ export const PrescriptionViewPage: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-text-secondary text-lg">Chargement de la prescription...</p>
+          <p className="text-text-secondary text-lg">
+            Chargement de la prescription...
+          </p>
         </div>
       </div>
     );
@@ -145,7 +145,7 @@ export const PrescriptionViewPage: React.FC = () => {
             const safeUrl = sanitizeUrl(product.url);
             const pricingModel = product.pricing?.model;
             const pricingLabel = pricingModel
-              ? pricingLabels[pricingModel] ?? pricingModel
+              ? (pricingLabels[pricingModel] ?? pricingModel)
               : null;
 
             return (
@@ -195,7 +195,9 @@ export const PrescriptionViewPage: React.FC = () => {
                     {pricingLabel && (
                       <span className="text-xs font-medium text-text-secondary bg-gray-100 rounded-full px-2.5 py-0.5">
                         {pricingLabel}
-                        {product.pricing?.amount ? ` - ${product.pricing.amount}` : ""}
+                        {product.pricing?.amount
+                          ? ` - ${product.pricing.amount}`
+                          : ""}
                       </span>
                     )}
                   </div>
@@ -235,9 +237,8 @@ export const PrescriptionViewPage: React.FC = () => {
         <div className="bg-red-50 border border-red-200 rounded-2xl p-5 text-center">
           <p className="text-sm text-red-800 font-medium">
             Cette recommandation est fournie à titre informatif. En cas
-            d'urgence, contactez le{" "}
-            <span className="font-bold">3114</span> (numéro national de
-            prévention du suicide) ou le{" "}
+            d'urgence, contactez le <span className="font-bold">3114</span>{" "}
+            (numéro national de prévention du suicide) ou le{" "}
             <span className="font-bold">15</span> (SAMU).
           </p>
         </div>
@@ -249,7 +250,8 @@ export const PrescriptionViewPage: React.FC = () => {
               Vous cherchez d'autres solutions adaptées à votre situation ?
             </p>
             <p className="text-xs text-blue-600 mb-4">
-              MentalTech Discover vous aide à trouver les outils digitaux les mieux notés selon vos besoins.
+              MentalTech Discover vous aide à trouver les outils digitaux les
+              mieux notés selon vos besoins.
             </p>
             <a
               href={SITE_URL}
@@ -265,15 +267,21 @@ export const PrescriptionViewPage: React.FC = () => {
         {/* ── RGPD Notice ────────────────────────────────────── */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-2">
           <p className="text-xs text-text-secondary">
-            Aucune donnée personnelle n'est stockée sur nos serveurs.
-            Cette prescription est accessible uniquement via ce lien et expire automatiquement.
+            Aucune donnée personnelle n'est stockée sur nos serveurs. Cette
+            prescription est accessible uniquement via ce lien et expire
+            automatiquement.
           </p>
           {!data.expired && (
             <button
               onClick={async () => {
-                if (confirm("Supprimer cette prescription ? Cette action est irréversible.")) {
+                if (
+                  confirm(
+                    "Supprimer cette prescription ? Cette action est irréversible.",
+                  )
+                ) {
                   try {
-                    const { revokePrescription } = await import("../../api/prescriber");
+                    const { revokePrescription } =
+                      await import("../../api/prescriber");
                     await revokePrescription(token || "");
                     setError("Prescription supprimée.");
                     setData(null);

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { listUpdates, listFavorites } from "../../api/prescriber";
-import type { ProductUpdateResponse, FavoriteResponse } from "../../api/prescriber";
+import type {
+  ProductUpdateResponse,
+  FavoriteResponse,
+} from "../../api/prescriber";
 import { useAppStore } from "../../store/useAppStore";
 
 const UPDATE_TYPE_ICONS: Record<string, string> = {
   price_change: "\uD83D\uDCB0",
-  score_change: "\uD83D\uDCCA",
   new_feature: "\u2728",
   study: "\uD83D\uDCDA",
   general: "\uD83D\uDCE2",
@@ -13,7 +15,6 @@ const UPDATE_TYPE_ICONS: Record<string, string> = {
 
 const UPDATE_TYPE_LABELS: Record<string, string> = {
   price_change: "Changement de prix",
-  score_change: "Mise \u00e0 jour du score",
   new_feature: "Nouvelle fonctionnalit\u00e9",
   study: "\u00c9tude clinique",
   general: "Actualit\u00e9",
@@ -72,7 +73,7 @@ export const VeillePage: React.FC = () => {
           setError(
             err instanceof Error
               ? err.message
-              : "Erreur lors du chargement des mises \u00e0 jour"
+              : "Erreur lors du chargement des mises \u00e0 jour",
           );
         }
       } finally {

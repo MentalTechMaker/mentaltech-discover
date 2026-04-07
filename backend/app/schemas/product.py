@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class PricingSchema(BaseModel):
@@ -20,8 +20,51 @@ class ScoringSchema(BaseModel):
     justificationSupport: str | None = None
 
 
+VALID_AUDIENCES = {
+    "adult",
+    "young",
+    "child",
+    "parent",
+    "senior",
+    "entreprise",
+    "etablissement-sante",
+}
+VALID_PROBLEMS = {
+    "stress-anxiety",
+    "sadness",
+    "addiction",
+    "trauma",
+    "work",
+    "sleep",
+    "cognitif",
+    "douleur",
+    "concentration",
+    "other",
+}
+VALID_PRIORITY_VALUES = VALID_AUDIENCES | VALID_PROBLEMS
+
+
+class PriorityMapSchema(BaseModel):
+    P1: list[str] = []
+    P2: list[str] = []
+    P3: list[str] = []
+
+    @field_validator("P1", "P2", "P3")
+    @classmethod
+    def validate_priority_list(cls, v: list[str]) -> list[str]:
+        if len(v) > 1:
+            raise ValueError("Maximum 1 item par niveau de priorite")
+        for item in v:
+            if item not in VALID_PRIORITY_VALUES:
+                raise ValueError(f"Valeur invalide: {item}")
+        if len(set(v)) != len(v):
+            raise ValueError("Doublons non autorises")
+        return v
+
+
 class ProductResponse(BaseModel):
     """Response schema matching the frontend TypeScript Product interface (camelCase)."""
+
     id: str
     name: str
     type: str
@@ -44,6 +87,8 @@ class ProductResponse(BaseModel):
     scoreTotal: int | None = None
     scoreLabel: str | None = None
     scoringCriteria: dict | None = None
+    audiencePriorities: PriorityMapSchema | None = None
+    problemsPriorities: PriorityMapSchema | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -74,6 +119,8 @@ class ProductCreate(BaseModel):
     justificationUx: str | None = None
     justificationSupport: str | None = None
     scoringCriteria: dict | None = None
+    audiencePriorities: PriorityMapSchema | None = None
+    problemsPriorities: PriorityMapSchema | None = None
 
 
 class ProductUpdate(BaseModel):
@@ -104,6 +151,8 @@ class ProductUpdate(BaseModel):
     justificationUx: str | None = None
     justificationSupport: str | None = None
     scoringCriteria: dict | None = None
+    audiencePriorities: PriorityMapSchema | None = None
+    problemsPriorities: PriorityMapSchema | None = None
 
 
 class PaginatedProducts(BaseModel):

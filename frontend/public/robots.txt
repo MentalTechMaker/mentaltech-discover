@@ -6,7 +6,6 @@ Allow: /
 Disallow: /admin
 Disallow: /dashboard
 Disallow: /nouvelle-prescription
-Disallow: /comparateur
 Disallow: /prescripteur
 Disallow: /reset-password
 Disallow: /check-email
@@ -27,6 +26,5 @@ Disallow: /prescription
 Disallow: /confirmer-soumission
 Disallow: /confirmer-candidature
 
-# Sitemaps
-Sitemap: https://discover.mentaltech.fr/sitemap.xml
+# Sitemap
 Sitemap: https://discover.mentaltech.fr/api/sitemap.xml

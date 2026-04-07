@@ -13,11 +13,10 @@ export interface Filters {
   audience: string[];
   problemsSolved: string[];
   pricingModel: string[];
-  segment: 'all' | 'particulier' | 'company' | 'health';
-  label: string[];
+  segment: "all" | "particulier" | "company" | "health";
 }
 
-const INSTITUTIONAL_AUDIENCES = new Set(['entreprise', 'etablissement-sante']);
+const INSTITUTIONAL_AUDIENCES = new Set(["entreprise", "etablissement-sante"]);
 
 export const ProductCatalog: React.FC = () => {
   const setView = useAppStore((s) => s.setView);
@@ -25,7 +24,7 @@ export const ProductCatalog: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Catalogue des solutions",
-      "Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience, tarif et label qualité."
+      "Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience et tarif.",
     );
     setCanonical("/catalogue");
   }, []);
@@ -37,13 +36,16 @@ export const ProductCatalog: React.FC = () => {
     problemsSolved: [],
     pricingModel: [],
     segment: "all",
-    label: [],
   });
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<"name" | "pricing" | "label">("name");
+  const [sortBy, setSortBy] = useState<"name" | "pricing">("name");
 
-  const { products: allProducts, isLoading, error: loadError } = useProductsStore();
+  const {
+    products: allProducts,
+    isLoading,
+    error: loadError,
+  } = useProductsStore();
 
   const filterOptions = useMemo(() => {
     const types = new Set<string>();
@@ -81,24 +83,28 @@ export const ProductCatalog: React.FC = () => {
         return false;
       }
 
-      if (filters.segment === 'company') {
-        if (!product.audience.includes('entreprise')) return false;
-      } else if (filters.segment === 'health') {
-        if (!product.audience.includes('etablissement-sante')) return false;
-      } else if (filters.segment === 'particulier') {
-        if (product.audience.length > 0 && product.audience.every(a => INSTITUTIONAL_AUDIENCES.has(a))) return false;
+      if (filters.segment === "company") {
+        if (!product.audience.includes("entreprise")) return false;
+      } else if (filters.segment === "health") {
+        if (!product.audience.includes("etablissement-sante")) return false;
+      } else if (filters.segment === "particulier") {
+        if (
+          product.audience.length > 0 &&
+          product.audience.every((a) => INSTITUTIONAL_AUDIENCES.has(a))
+        )
+          return false;
       }
 
-      if (filters.audience.length > 0 && filters.segment === 'particulier') {
+      if (filters.audience.length > 0 && filters.segment === "particulier") {
         const hasMatchingAudience = filters.audience.some((aud) =>
-          product.audience.includes(aud)
+          product.audience.includes(aud),
         );
         if (!hasMatchingAudience) return false;
       }
 
       if (filters.problemsSolved.length > 0) {
         const hasMatchingProblem = filters.problemsSolved.some((prob) =>
-          product.problemsSolved.includes(prob)
+          product.problemsSolved.includes(prob),
         );
         if (!hasMatchingProblem) return false;
       }
@@ -110,11 +116,6 @@ export const ProductCatalog: React.FC = () => {
         ) {
           return false;
         }
-      }
-
-      if (filters.label.length > 0) {
-        const productLabel = product.scoreLabel ?? "unrated";
-        if (!filters.label.includes(productLabel)) return false;
       }
 
       return true;
@@ -139,12 +140,6 @@ export const ProductCatalog: React.FC = () => {
           return orderA - orderB;
         });
       }
-      case "label":
-        return sorted.sort((a, b) => {
-          const scoreA = a.scoreTotal ?? -1;
-          const scoreB = b.scoreTotal ?? -1;
-          return scoreB - scoreA;
-        });
       default:
         return sorted;
     }
@@ -162,14 +157,15 @@ export const ProductCatalog: React.FC = () => {
       problemsSolved: [],
       pricingModel: [],
       segment: "all",
-      label: [],
     });
   };
 
   if (isLoading) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
-        <p className="text-text-secondary text-lg">Chargement des produits...</p>
+        <p className="text-text-secondary text-lg">
+          Chargement des produits...
+        </p>
       </div>
     );
   }
@@ -179,7 +175,9 @@ export const ProductCatalog: React.FC = () => {
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-2xl mb-3">⚠️</p>
-          <p className="text-text-primary font-semibold mb-1">Impossible de charger les produits</p>
+          <p className="text-text-primary font-semibold mb-1">
+            Impossible de charger les produits
+          </p>
           <p className="text-text-secondary text-sm">{loadError}</p>
         </div>
       </div>
@@ -192,14 +190,23 @@ export const ProductCatalog: React.FC = () => {
         <div className="max-w-lg w-full text-center space-y-6">
           <div className="text-6xl">🔨</div>
           <div>
-            <h1 className="text-3xl font-bold text-text-primary mb-3">Catalogue en cours de construction</h1>
+            <h1 className="text-3xl font-bold text-text-primary mb-3">
+              Catalogue en cours de construction
+            </h1>
             <p className="text-text-secondary leading-relaxed">
-              Nous référençons actuellement les premières solutions du catalogue. Les éditeurs sont en train de soumettre leurs solutions.
+              Nous référençons actuellement les premières solutions du
+              catalogue. Les éditeurs sont en train de soumettre leurs
+              solutions.
             </p>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-left">
-            <p className="text-sm font-semibold text-blue-900 mb-1">Vous êtes éditeur de solution santé mentale ?</p>
-            <p className="text-sm text-blue-800">Soumettez votre solution en 15 minutes pour être parmi les premiers référencés.</p>
+            <p className="text-sm font-semibold text-blue-900 mb-1">
+              Vous êtes éditeur de solution santé mentale ?
+            </p>
+            <p className="text-sm text-blue-800">
+              Soumettez votre solution en 15 minutes pour être parmi les
+              premiers référencés.
+            </p>
           </div>
           <button
             onClick={() => setView("public-submission")}
@@ -249,10 +256,13 @@ export const ProductCatalog: React.FC = () => {
           <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
               <p className="font-semibold text-amber-900 text-sm">
-                Catalogue en cours de construction - {allProducts.length} solution{allProducts.length > 1 ? "s" : ""} référencée{allProducts.length > 1 ? "s" : ""}
+                Catalogue en cours de construction - {allProducts.length}{" "}
+                solution{allProducts.length > 1 ? "s" : ""} référencée
+                {allProducts.length > 1 ? "s" : ""}
               </p>
               <p className="text-amber-800 text-xs mt-0.5">
-                Nous enrichissons le catalogue chaque semaine. Revenez bientôt pour plus de solutions.
+                Nous enrichissons le catalogue chaque semaine. Revenez bientôt
+                pour plus de solutions.
               </p>
             </div>
             <button
@@ -290,7 +300,6 @@ export const ProductCatalog: React.FC = () => {
                 >
                   <option value="name">Nom (A-Z)</option>
                   <option value="pricing">Prix (gratuit d'abord)</option>
-                  <option value="label">Label qualité (meilleur d'abord)</option>
                 </select>
               </div>
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import React, { useState } from "react";
+import { useAppStore } from "../../store/useAppStore";
 
 interface Props {
   onClose: () => void;
@@ -10,27 +10,27 @@ export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
 
   const STEPS = [
     {
-      icon: '🩺',
-      title: 'Recommandez en 30 secondes',
+      icon: "🩺",
+      title: "Recommandez en 30 secondes",
       description: `La prochaine fois qu'un patient vous demande "quelle appli me conseillez-vous ?", sélectionnez 1 à 3 solutions et envoyez-lui un lien personnalisé. C'est plus rapide que de chercher de mémoire.`,
-      cta: 'Suivant',
+      cta: "Suivant",
       action: null,
     },
     {
-      icon: '📋',
-      title: 'Créez votre première ordonnance',
+      icon: "📋",
+      title: "Créez votre première ordonnance",
       description:
-        'Choisissez des solutions dans le catalogue, ajoutez un message pour votre patient, et partagez le lien ou le QR code directement en consultation. Votre patient reçoit les recommandations avec vos coordonnées.',
-      cta: 'Créer ma première ordonnance',
-      action: 'new-prescription' as const,
+        "Choisissez des solutions dans le catalogue, ajoutez un message pour votre patient, et partagez le lien ou le QR code directement en consultation. Votre patient reçoit les recommandations avec vos coordonnées.",
+      cta: "Créer ma première ordonnance",
+      action: "new-prescription" as const,
     },
     {
-      icon: '⭐',
-      title: 'Construisez votre bibliothèque',
+      icon: "⭐",
+      title: "Construisez votre bibliothèque",
       description:
-        'Au fil du temps, ajoutez vos solutions préférées en favoris et prenez des notes cliniques. Elles apparaîtront en priorité lors de vos prochaines prescriptions.',
-      cta: 'Explorer le catalogue',
-      action: 'catalog' as const,
+        "Au fil du temps, ajoutez vos solutions préférées en favoris et prenez des notes cliniques. Elles apparaîtront en priorité lors de vos prochaines prescriptions.",
+      cta: "Explorer le catalogue",
+      action: "catalog" as const,
     },
   ];
 
@@ -75,7 +75,7 @@ export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
                 type="button"
                 onClick={() => setStep(i)}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  i === step ? 'bg-primary' : 'bg-gray-200'
+                  i === step ? "bg-primary" : "bg-gray-200"
                 }`}
                 aria-label={`Étape ${i + 1}`}
               />
@@ -85,8 +85,12 @@ export const PrescriberOnboarding: React.FC<Props> = ({ onClose }) => {
           {/* Content */}
           <div className="px-8 py-6 text-center space-y-4">
             <div className="text-5xl">{current.icon}</div>
-            <h2 className="text-xl font-bold text-text-primary">{current.title}</h2>
-            <p className="text-sm text-gray-500 leading-relaxed">{current.description}</p>
+            <h2 className="text-xl font-bold text-text-primary">
+              {current.title}
+            </h2>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              {current.description}
+            </p>
           </div>
 
           {/* Actions */}

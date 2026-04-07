@@ -1,4 +1,4 @@
-import { apiFetch, setTokens } from './client';
+import { apiFetch, setTokens } from "./client";
 
 interface TokenResponse {
   access_token: string;
@@ -22,11 +22,15 @@ interface UserResponse {
   is_verified_publisher?: boolean;
 }
 
-export async function register(email: string, password: string, name: string): Promise<TokenResponse> {
-  const data = await apiFetch<TokenResponse>('/auth/register', {
-    method: 'POST',
+export async function register(
+  email: string,
+  password: string,
+  name: string,
+): Promise<TokenResponse> {
+  const data = await apiFetch<TokenResponse>("/auth/register", {
+    method: "POST",
     body: JSON.stringify({ email, password, name }),
-    credentials: 'include',
+    credentials: "include",
   });
   setTokens(data.access_token);
   return data;
@@ -40,8 +44,8 @@ export async function registerPrescriber(
   organization?: string,
   rppsAdeli?: string,
 ): Promise<TokenResponse> {
-  const data = await apiFetch<TokenResponse>('/auth/register-prescriber', {
-    method: 'POST',
+  const data = await apiFetch<TokenResponse>("/auth/register-prescriber", {
+    method: "POST",
     body: JSON.stringify({
       email,
       password,
@@ -50,53 +54,78 @@ export async function registerPrescriber(
       organization: organization || null,
       rpps_adeli: rppsAdeli || null,
     }),
-    credentials: 'include',
+    credentials: "include",
   });
   setTokens(data.access_token);
   return data;
 }
 
-export async function login(email: string, password: string): Promise<TokenResponse> {
-  const data = await apiFetch<TokenResponse>('/auth/login', {
-    method: 'POST',
+export async function login(
+  email: string,
+  password: string,
+): Promise<TokenResponse> {
+  const data = await apiFetch<TokenResponse>("/auth/login", {
+    method: "POST",
     body: JSON.stringify({ email, password }),
-    credentials: 'include',
+    credentials: "include",
   });
   setTokens(data.access_token);
   return data;
 }
 
 export async function getMe(): Promise<UserResponse> {
-  return apiFetch<UserResponse>('/auth/me', {}, true);
+  return apiFetch<UserResponse>("/auth/me", {}, true);
 }
 
-export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>('/auth/change-password', {
-    method: 'PUT',
-    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
-  }, true);
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(
+    "/auth/change-password",
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    },
+    true,
+  );
 }
 
-export async function forgotPassword(email: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>('/auth/forgot-password', {
-    method: 'POST',
+export async function forgotPassword(
+  email: string,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/auth/forgot-password", {
+    method: "POST",
     body: JSON.stringify({ email }),
   });
 }
 
-export async function resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>('/auth/reset-password', {
-    method: 'POST',
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/auth/reset-password", {
+    method: "POST",
     body: JSON.stringify({ token, new_password: newPassword }),
   });
 }
 
 export async function verifyEmail(token: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>(`/auth/verify-email?token=${encodeURIComponent(token)}`, {});
+  return apiFetch<{ message: string }>(
+    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+    {},
+  );
 }
 
 export async function resendVerification(): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>('/auth/resend-verification', {
-    method: 'POST',
-  }, true);
+  return apiFetch<{ message: string }>(
+    "/auth/resend-verification",
+    {
+      method: "POST",
+    },
+    true,
+  );
 }

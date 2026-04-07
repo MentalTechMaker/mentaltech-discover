@@ -11,7 +11,9 @@ from ..database import Base
 class PrescriberNote(Base):
     __tablename__ = "prescriber_notes"
     __table_args__ = (
-        UniqueConstraint("prescriber_id", "product_id", name="uq_note_prescriber_product"),
+        UniqueConstraint(
+            "prescriber_id", "product_id", name="uq_note_prescriber_product"
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(

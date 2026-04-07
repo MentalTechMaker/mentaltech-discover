@@ -8,7 +8,7 @@ export const Privacy: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Politique de confidentialité",
-      "Découvrez comment MentalTech Discover protège vos données. Aucune collecte pour les visiteurs, hébergement en France, conformité RGPD."
+      "Découvrez comment MentalTech Discover protège vos données. Aucune collecte pour les visiteurs, hébergement en France, conformité RGPD.",
     );
     setCanonical("/confidentialite");
   }, []);
@@ -39,9 +39,10 @@ export const Privacy: React.FC = () => {
                   👤 Visiteurs et utilisateurs du questionnaire
                 </p>
                 <p className="text-text-secondary">
-                  <strong>Aucune donnée personnelle collectée.</strong> Vos réponses
-                  restent sur votre appareil et ne sont jamais envoyées à un serveur.
-                  Aucun compte requis pour utiliser le questionnaire ou le catalogue.
+                  <strong>Aucune donnée personnelle collectée.</strong> Vos
+                  réponses restent sur votre appareil et ne sont jamais envoyées
+                  à un serveur. Aucun compte requis pour utiliser le
+                  questionnaire ou le catalogue.
                 </p>
               </div>
               <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
@@ -58,8 +59,8 @@ export const Privacy: React.FC = () => {
                 </ul>
                 <p className="text-text-secondary text-sm mt-2">
                   Ces données sont <strong>strictement nécessaires</strong> au
-                  fonctionnement du compte. Elles sont hébergées en France (OVH) et
-                  ne sont jamais revendues ni partagées avec des tiers.
+                  fonctionnement du compte. Elles sont hébergées en France (OVH)
+                  et ne sont jamais revendues ni partagées avec des tiers.
                 </p>
               </div>
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
@@ -67,7 +68,8 @@ export const Privacy: React.FC = () => {
                   🏢 Éditeurs inscrits
                 </p>
                 <p className="text-text-secondary mb-2">
-                  Pour créer un compte éditeur (soumission de solutions), nous collectons :
+                  Pour créer un compte éditeur (soumission de solutions), nous
+                  collectons :
                 </p>
                 <ul className="list-disc list-inside text-text-secondary space-y-1 text-sm ml-2">
                   <li>Nom complet et adresse email</li>
@@ -75,9 +77,10 @@ export const Privacy: React.FC = () => {
                   <li>Site web de l'entreprise (optionnel)</li>
                 </ul>
                 <p className="text-text-secondary text-sm mt-2">
-                  Ces données sont utilisées uniquement pour identifier l'entreprise
-                  soumettant une solution. Elles sont hébergées en France (OVH) et
-                  ne sont jamais revendues ni partagées avec des tiers.
+                  Ces données sont utilisées uniquement pour identifier
+                  l'entreprise soumettant une solution. Elles sont hébergées en
+                  France (OVH) et ne sont jamais revendues ni partagées avec des
+                  tiers.
                 </p>
               </div>
             </div>
@@ -92,15 +95,15 @@ export const Privacy: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
               <p>
-                Nous n'utilisons <strong>aucun cookie de tracking</strong>. Aucun
-                cookie publicitaire, aucun cookie analytique, aucun cookie de
-                suivi. Votre navigation est 100% privée.
+                Nous n'utilisons <strong>aucun cookie de tracking</strong>.
+                Aucun cookie publicitaire, aucun cookie analytique, aucun cookie
+                de suivi. Votre navigation est 100% privée.
               </p>
               <p className="text-sm">
                 Les prescripteurs connectés disposent d'un{" "}
-                <strong>cookie de session sécurisé</strong> (HttpOnly, inaccessible
-                en JavaScript) pour maintenir leur connexion. Ce cookie ne contient
-                aucune donnée personnelle.
+                <strong>cookie de session sécurisé</strong> (HttpOnly,
+                inaccessible en JavaScript) pour maintenir leur connexion. Ce
+                cookie ne contient aucune donnée personnelle.
               </p>
             </div>
           </section>
@@ -130,7 +133,13 @@ export const Privacy: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
               <p>
-                Vos données sont hébergées en France par <strong>OVH SAS</strong> (Roubaix, France). Les données collectées pour les prescripteurs (nom, email, profession, numéro RPPS/ADELI) sont des données d'identification professionnelle. Elles ne constituent pas des données de santé au sens de l'article 9 du RGPD et ne nécessitent pas un hébergement certifié HDS.
+                Vos données sont hébergées en France par{" "}
+                <strong>OVH SAS</strong> (Roubaix, France). Les données
+                collectées pour les prescripteurs (nom, email, profession,
+                numéro RPPS/ADELI) sont des données d'identification
+                professionnelle. Elles ne constituent pas des données de santé
+                au sens de l'article 9 du RGPD et ne nécessitent pas un
+                hébergement certifié HDS.
               </p>
               <p>
                 L'hébergement respecte les normes européennes de protection des
@@ -176,9 +185,9 @@ export const Privacy: React.FC = () => {
                 n'étant collectée, ces droits ne sont pas applicables.
               </p>
               <p>
-                Pour les <strong>prescripteurs et éditeurs inscrits</strong> : vous pouvez
-                exercer vos droits d'accès, de rectification et de suppression en
-                contactant{" "}
+                Pour les <strong>prescripteurs et éditeurs inscrits</strong> :
+                vous pouvez exercer vos droits d'accès, de rectification et de
+                suppression en contactant{" "}
                 <a
                   href="mailto:arnaud@mentaltechmaker.fr"
                   className="text-primary hover:underline font-semibold"
@@ -197,7 +206,12 @@ export const Privacy: React.FC = () => {
               Évaluation d'impact (DPIA)
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Conformément à l'article 35 du RGPD, une Évaluation d'Impact sur la Protection des Données (DPIA) a été réalisée pour les traitements de données des prescripteurs et des soumissions publiques. Cette évaluation confirme que les mesures techniques et organisationnelles mises en place sont adéquates pour protéger vos données.
+              Conformément à l'article 35 du RGPD, une Évaluation d'Impact sur
+              la Protection des Données (DPIA) a été réalisée pour les
+              traitements de données des prescripteurs et des soumissions
+              publiques. Cette évaluation confirme que les mesures techniques et
+              organisationnelles mises en place sont adéquates pour protéger vos
+              données.
             </p>
           </section>
 
@@ -209,7 +223,9 @@ export const Privacy: React.FC = () => {
               Statistiques de fréquentation
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Statistiques anonymes uniquement, collectées via Plausible Analytics sans cookies et sans données personnelles. Aucun cookie de tracking tiers n'est utilisé.
+              Statistiques anonymes uniquement, collectées via Plausible
+              Analytics sans cookies et sans données personnelles. Aucun cookie
+              de tracking tiers n'est utilisé.
             </p>
           </section>
 
@@ -234,9 +250,17 @@ export const Privacy: React.FC = () => {
               Délégué à la protection des données
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Le responsable de la protection des données est <strong>Arnaud Bressot</strong>, joignable à{" "}
-              <a href="mailto:arnaud@mentaltechmaker.fr" className="text-primary font-semibold hover:underline">arnaud@mentaltechmaker.fr</a>.
-              Pour exercer vos droits (accès, rectification, effacement, portabilité, opposition), envoyez un email à cette adresse. Nous répondons sous 30 jours.
+              Le responsable de la protection des données est{" "}
+              <strong>Arnaud Bressot</strong>, joignable à{" "}
+              <a
+                href="mailto:arnaud@mentaltechmaker.fr"
+                className="text-primary font-semibold hover:underline"
+              >
+                arnaud@mentaltechmaker.fr
+              </a>
+              . Pour exercer vos droits (accès, rectification, effacement,
+              portabilité, opposition), envoyez un email à cette adresse. Nous
+              répondons sous 30 jours.
             </p>
           </section>
 
@@ -248,15 +272,56 @@ export const Privacy: React.FC = () => {
               Durées de conservation
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-2">
-              <p>Conformément au principe de minimisation (Art. 5 du RGPD), les données sont conservées pour les durées suivantes :</p>
+              <p>
+                Conformément au principe de minimisation (Art. 5 du RGPD), les
+                données sont conservées pour les durées suivantes :
+              </p>
               <ul className="list-disc ml-6 space-y-1">
-                <li><strong>Comptes prescripteurs / éditeurs</strong> : 3 ans après la dernière connexion. Au-delà, le compte et les données associées sont supprimés.</li>
-                <li><strong>Prescriptions numériques</strong> : 30 jours après création (expiration automatique). L'email du patient est supprimé immédiatement après envoi.</li>
-                <li><strong>Tokens de vérification</strong> : 24 à 48 heures selon le type (vérification email, réinitialisation mot de passe).</li>
-                <li><strong>Journaux techniques</strong> : 1 an maximum.</li>
-                <li><strong>Visiteurs</strong> : aucune donnée conservée (pas de compte, pas de cookies).</li>
+                <li>
+                  <strong>Comptes prescripteurs / éditeurs</strong> : conservés
+                  tant que le compte est actif. Suppression sur demande.
+                </li>
+                <li>
+                  <strong>Prescriptions numériques</strong> : 30 jours après
+                  création (expiration automatique). L'email du patient est
+                  supprimé immédiatement après envoi.
+                </li>
+                <li>
+                  <strong>Notes cliniques</strong> : conservées tant que le
+                  compte prescripteur est actif. Supprimées avec le compte.
+                </li>
+                <li>
+                  <strong>Soumissions de produits</strong> : conservées pour la
+                  durée du traitement administratif. Les données de contact sont
+                  supprimées après approbation ou refus.
+                </li>
+                <li>
+                  <strong>Candidatures professionnels de santé</strong> :
+                  conservées pour la durée du traitement. Supprimées après
+                  décision.
+                </li>
+                <li>
+                  <strong>Tokens de vérification</strong> : 24 à 48 heures selon
+                  le type (vérification email, réinitialisation mot de passe).
+                </li>
+                <li>
+                  <strong>Journaux techniques</strong> : 1 an maximum.
+                </li>
+                <li>
+                  <strong>Visiteurs</strong> : aucune donnée conservée (pas de
+                  compte, pas de cookies).
+                </li>
               </ul>
-              <p>Pour supprimer votre compte, envoyez un email à <a href="mailto:arnaud@mentaltechmaker.fr" className="text-primary font-semibold hover:underline">arnaud@mentaltechmaker.fr</a>.</p>
+              <p>
+                Pour supprimer votre compte, envoyez un email à{" "}
+                <a
+                  href="mailto:arnaud@mentaltechmaker.fr"
+                  className="text-primary font-semibold hover:underline"
+                >
+                  arnaud@mentaltechmaker.fr
+                </a>
+                .
+              </p>
             </div>
           </section>
 

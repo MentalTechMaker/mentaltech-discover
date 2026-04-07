@@ -61,3 +61,4 @@ backups/
 
 # Internal documents (tests, plans, working notes)
 _docs/
+.claude/

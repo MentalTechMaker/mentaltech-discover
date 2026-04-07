@@ -54,6 +54,7 @@ export const PrescriberAuthPage: React.FC = () => {
   const [rppsAdeli, setRppsAdeli] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerConsent, setRegisterConsent] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +105,11 @@ export const PrescriberAuthPage: React.FC = () => {
       return;
     }
 
+    if (!registerConsent) {
+      setRegisterError("Veuillez accepter la politique de confidentialité");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setRegisterError("Les mots de passe ne correspondent pas");
       return;
@@ -117,12 +123,12 @@ export const PrescriberAuthPage: React.FC = () => {
         name,
         profession,
         organization || undefined,
-        rppsAdeli || undefined
+        rppsAdeli || undefined,
       );
       setView("profile");
     } catch (err) {
       setRegisterError(
-        err instanceof Error ? err.message : "Erreur lors de l'inscription"
+        err instanceof Error ? err.message : "Erreur lors de l'inscription",
       );
     } finally {
       setRegisterLoading(false);
@@ -146,12 +152,25 @@ export const PrescriberAuthPage: React.FC = () => {
 
         {/* Value proposition */}
         <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6">
-          <p className="text-sm font-semibold text-indigo-900 mb-2">Vos avantages prescripteur :</p>
+          <p className="text-sm font-semibold text-indigo-900 mb-2">
+            Vos avantages prescripteur :
+          </p>
           <ul className="text-sm text-indigo-800 space-y-1">
-            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Prescriptions numériques à vos patients</li>
-            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Évaluations complètes des solutions (5 piliers)</li>
-            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> Réseau de professionnels engagés</li>
-            <li className="flex items-center gap-2"><span className="text-indigo-500">✓</span> 100% gratuit</li>
+            <li className="flex items-center gap-2">
+              <span className="text-indigo-500">✓</span> Prescriptions
+              numériques à vos patients
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-indigo-500">✓</span> Évaluations complètes
+              des solutions (5 piliers)
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-indigo-500">✓</span> Réseau de
+              professionnels engagés
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-indigo-500">✓</span> 100% gratuit
+            </li>
           </ul>
         </div>
 
@@ -219,7 +238,10 @@ export const PrescriberAuthPage: React.FC = () => {
                   />
                 </div>
                 {loginError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <div
+                    role="alert"
+                    className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  >
                     {loginError}
                   </div>
                 )}
@@ -392,13 +414,35 @@ export const PrescriberAuthPage: React.FC = () => {
                 </div>
 
                 {registerError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <div
+                    role="alert"
+                    className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  >
                     {registerError}
                   </div>
                 )}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={registerConsent}
+                    onChange={(e) => setRegisterConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 accent-primary"
+                  />
+                  <span className="text-sm text-text-secondary">
+                    J'accepte la{" "}
+                    <button
+                      type="button"
+                      onClick={() => setView("privacy")}
+                      className="text-primary underline"
+                    >
+                      politique de confidentialité
+                    </button>
+                    .
+                  </span>
+                </label>
                 <button
                   type="submit"
-                  disabled={registerLoading}
+                  disabled={registerLoading || !registerConsent}
                   className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {registerLoading

@@ -4,7 +4,9 @@ import { useAppStore } from "../../store/useAppStore";
 
 export const ConfirmSubmissionPage: React.FC = () => {
   const { setView } = useAppStore();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -18,7 +20,9 @@ export const ConfirmSubmissionPage: React.FC = () => {
     confirmPublicSubmission(token)
       .then(() => {
         setStatus("success");
-        setMessage("Votre soumission est confirmée et sera examinée par notre équipe.");
+        setMessage(
+          "Votre soumission est confirmée et sera examinée par notre équipe.",
+        );
       })
       .catch((e: unknown) => {
         setStatus("error");
@@ -38,16 +42,27 @@ export const ConfirmSubmissionPage: React.FC = () => {
         {status === "success" && (
           <>
             <div className="text-5xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Soumission confirmée !</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Soumission confirmée !
+            </h2>
             <p className="text-muted-foreground mb-6">{message}</p>
             <div className="flex flex-col gap-3">
-              <button onClick={() => setView("catalog")} className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90">
+              <button
+                onClick={() => setView("catalog")}
+                className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90"
+              >
                 Voir le catalogue
               </button>
-              <button onClick={() => setView("about")} className="px-6 py-2.5 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200">
+              <button
+                onClick={() => setView("about")}
+                className="px-6 py-2.5 bg-gray-100 text-text-primary rounded-lg text-sm font-medium hover:bg-gray-200"
+              >
                 Découvrir notre démarche
               </button>
-              <button onClick={() => setView("health-pro-application")} className="px-6 py-2.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5">
+              <button
+                onClick={() => setView("health-pro-application")}
+                className="px-6 py-2.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5"
+              >
                 Rejoindre le Collectif MentalTech
               </button>
             </div>
@@ -56,9 +71,14 @@ export const ConfirmSubmissionPage: React.FC = () => {
         {status === "error" && (
           <>
             <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Lien invalide</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Lien invalide
+            </h2>
             <p className="text-muted-foreground mb-6">{message}</p>
-            <button onClick={() => setView("public-submission")} className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90">
+            <button
+              onClick={() => setView("public-submission")}
+              className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
+            >
               Soumettre à nouveau
             </button>
           </>

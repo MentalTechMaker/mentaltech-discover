@@ -10,7 +10,7 @@
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('petitbambou', 'Petit BamBou', 'Application',
  'Application de meditation guidee pour reduire le stress',
  'Application mobile de meditation guidee proposant des centaines de programmes audio pour reduire le stress, ameliorer le sommeil et developper la pleine conscience. Approche accessible pour tous les niveaux avec sessions de 3 a 20 minutes. Plus de 12 millions d''utilisateurs et 510+ seances disponibles. Referencee dans Mon espace sante.',
@@ -53,7 +53,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "help_center", "help_url": "https://support.petitbambou.com"},
     "5.4": {"crisis_numbers_display": "nowhere"},
     "5.5": {"community_level": "social_media"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["young"], "P3": ["senior"]}'::jsonb,
+  '{"P1": ["stress-anxiety"], "P2": ["sleep"], "P3": []}'::jsonb);
 
 -- ============================================================
 -- 2. KWIT (72/100 - Grade B)
@@ -61,7 +63,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('kwit', 'Kwit', 'Application',
  'Arretez de fumer et restez non fumeur pour de bon',
  'Application mobile de sevrage tabagique qui combine TCC et gamification. Accompagne 5 millions d''utilisateurs avec suivi de progression, gestion des envies et contenu educatif. Partenariats avec Imperial College London, Universite Paris-Nanterre et Institut National du Cancer (programme Tabado).',
@@ -104,7 +106,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "good_faq", "help_url": "https://kwit.app"},
     "5.4": {"crisis_numbers_display": "nowhere"},
     "5.5": {"community_level": "social_media"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["young"], "P3": []}'::jsonb,
+  '{"P1": ["addiction"], "P2": [], "P3": []}'::jsonb);
 
 -- ============================================================
 -- 3. SOBERO (64/100 - Grade B)
@@ -112,7 +116,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('sobero', 'Sobero', 'Application',
  'Reprenez le pouvoir sur votre consommation d''alcool, en toute conscience et bienveillance.',
  'Application mobile qui aide a developper une relation plus saine avec l''alcool, basee sur la science du comportement et la gamification. Propose un accompagnement anonyme et bienveillant avec suivi de consommation, exercices de journaling, communaute d''entraide et contenu educatif. Developpee par l''equipe Kwit.',
@@ -155,7 +159,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "good_faq", "help_url": "https://sobero.app"},
     "5.4": {"crisis_numbers_display": "nowhere"},
     "5.5": {"community_level": "active_community", "community_url": "Communaute peer-to-peer integree dans l''application"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["young"], "P3": []}'::jsonb,
+  '{"P1": ["addiction"], "P2": [], "P3": []}'::jsonb);
 
 -- ============================================================
 -- 4. LET''S TOLK (64/100 - Grade B)
@@ -163,7 +169,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('letstolk', 'Let''s Tolk', 'Teleconsultation',
  'Les psychologues en ligne',
  'Cabinet digital de psychologues en ligne diplomes d''un Master en psychologie (5 ans). Accompagnement humain, professionnel et attentif en visio et messagerie pour burn-out, anxiete, depression, troubles du sommeil et addictions. Entreprise a mission basee a Lille.',
@@ -206,7 +212,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "minimal_faq"},
     "5.4": {"crisis_numbers_display": "footer"},
     "5.5": {"community_level": "none"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["young"], "P3": ["parent"]}'::jsonb,
+  '{"P1": ["stress-anxiety"], "P2": ["trauma"], "P3": ["addiction"]}'::jsonb);
 
 -- ============================================================
 -- 5. FEEL (64/100 - Grade B)
@@ -214,7 +222,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('feel', 'Feel', 'Application',
  'Feel est une application qui aide a soigner la depression en 3 a 6 mois.',
  'Application qui aide a soigner la depression en 3 a 6 mois basee sur la therapie cognitivo-comportementale. Accompagne les utilisateurs pour modifier leurs comportements et maitriser leurs pensees negatives avec des exercices pratiques, outils TCC (PHQ-9, GAD-7, HAMD-21) et contenu de psychoeducation. Certification ISO 27001.',
@@ -257,7 +265,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "minimal_faq"},
     "5.4": {"crisis_numbers_display": "interface_visible", "crisis_detection": false},
     "5.5": {"community_level": "none"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["parent"], "P3": ["young"]}'::jsonb,
+  '{"P1": ["sadness"], "P2": ["stress-anxiety"], "P3": ["sleep"]}'::jsonb);
 
 -- ============================================================
 -- 6. HYPNOVR (72/100 - Grade B)
@@ -265,7 +275,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('hypnovr', 'HypnoVR', 'Dispositif medical',
  'Ameliorer son parcours de soin grace a son cerveau !',
  'Therapies digitales certifiees en realite virtuelle pour la sante mentale. Propose des seances d''hypnose immersives pour gerer le stress, l''anxiete, les troubles du sommeil et la douleur. Plus de 300 etablissements de sante equipes avec 23 etudes cliniques publiees. Partenaires : Mayo Clinic, AP-HP, Sorbonne. Certifie ISO 27001 depuis 2023.',
@@ -308,7 +318,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "minimal_faq"},
     "5.4": {"crisis_numbers_display": "nowhere"},
     "5.5": {"community_level": "none"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["adult"], "P2": ["young"], "P3": []}'::jsonb,
+  '{"P1": ["stress-anxiety"], "P2": ["sleep"], "P3": []}'::jsonb);
 
 -- ============================================================
 -- 7. MOKA.CARE (72/100 - Grade B)
@@ -316,7 +328,7 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
-  scoring_criteria) VALUES
+  scoring_criteria, audience_priorities, problems_priorities) VALUES
 ('mokacare', 'moka.care', 'Plateforme entreprise',
  'Plateforme de sante mentale pour accompagner les salaries',
  'Solution complete de sante mentale en entreprise proposant un accompagnement par psychologues, therapeutes et coachs. Presente dans 320+ entreprises et 20 pays. Hebergement via infrastructure certifiee HDS, ISO 27001, SOC 2/3 (Heroku). Certification Qualiopi pour les formations.',
@@ -359,7 +371,9 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
     "5.3": {"help_level": "help_center"},
     "5.4": {"crisis_numbers_display": "interface_visible", "crisis_detection": false},
     "5.5": {"community_level": "none"}
-  }'::jsonb);
+  }'::jsonb,
+  '{"P1": ["entreprise"], "P2": [], "P3": []}'::jsonb,
+  '{"P1": ["work"], "P2": ["sadness"], "P3": []}'::jsonb);
 
 -- Tous les produits du seed sont des exemples de demonstration
 UPDATE products SET is_demo = TRUE;

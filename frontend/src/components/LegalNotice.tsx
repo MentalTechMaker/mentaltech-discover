@@ -8,7 +8,7 @@ export const LegalNotice: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Mentions légales",
-      "Mentions légales de MentalTech Discover : éditeur, hébergeur, conditions d'utilisation et informations juridiques."
+      "Mentions légales de MentalTech Discover : éditeur, hébergeur, conditions d'utilisation et informations juridiques.",
     );
     setCanonical("/mentions-legales");
   }, []);
@@ -40,12 +40,8 @@ export const LegalNotice: React.FC = () => {
               <p>
                 Créé par <strong>MentalTechMaker</strong> (Arnaud Bressot)
               </p>
-              <p>
-                Micro-entreprise - SIRET : 820 215 473
-              </p>
-              <p>
-                3 petite rue de la poste, 63110 Beaumont, France
-              </p>
+              <p>Micro-entreprise - SIRET : 820 215 473</p>
+              <p>3 petite rue de la poste, 63110 Beaumont, France</p>
               <p>
                 Pour le <strong>Collectif MentalTech</strong>
               </p>
@@ -121,14 +117,18 @@ export const LegalNotice: React.FC = () => {
             </h2>
             <div className="text-text-secondary leading-relaxed space-y-3">
               <p>
-                © {new Date().getFullYear()} <strong>MentalTech Discover</strong>
+                © {new Date().getFullYear()}{" "}
+                <strong>MentalTech Discover</strong>
               </p>
               <p>
-                L'ensemble du contenu de ce site (textes, images, design, structure)
-                est la propriété de <strong>MentalTechMaker</strong>, sauf mention contraire.
+                L'ensemble du contenu de ce site (textes, images, design,
+                structure) est la propriété de <strong>MentalTechMaker</strong>,
+                sauf mention contraire.
               </p>
               <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                <p className="font-semibold text-green-900 mb-2">🔓 Code Open Source</p>
+                <p className="font-semibold text-green-900 mb-2">
+                  🔓 Code Open Source
+                </p>
                 <p className="text-sm">
                   Le code source de cette application est{" "}
                   <strong>open-source</strong> et disponible sur{" "}
@@ -140,13 +140,13 @@ export const LegalNotice: React.FC = () => {
                   >
                     GitHub
                   </a>
-                  . Vous êtes libre de l'auditer, le forker ou y contribuer selon
-                  les termes de la licence MIT.
+                  . Vous êtes libre de l'auditer, le forker ou y contribuer
+                  selon les termes de la licence MIT.
                 </p>
               </div>
               <p>
-                Développé pour le <strong>Collectif MentalTech</strong> - Premier
-                écosystème français de santé mentale numérique.
+                Développé pour le <strong>Collectif MentalTech</strong> -
+                Premier écosystème français de santé mentale numérique.
               </p>
             </div>
           </section>
@@ -164,12 +164,12 @@ export const LegalNotice: React.FC = () => {
               dans votre navigateur.
             </p>
             <p className="text-text-secondary leading-relaxed">
-              Les <strong>prescripteurs inscrits</strong> acceptent que leur nom,
-              email et profession soient stockés pour le fonctionnement du compte.
-              Les <strong>éditeurs inscrits</strong> acceptent que leur nom, email,
-              nom d'entreprise et numéro SIRET soient stockés pour la gestion de
-              leurs soumissions de solutions. Ces données sont hébergées en France
-              et peuvent être supprimées sur demande.
+              Les <strong>prescripteurs inscrits</strong> acceptent que leur
+              nom, email et profession soient stockés pour le fonctionnement du
+              compte. Les <strong>éditeurs inscrits</strong> acceptent que leur
+              nom, email, nom d'entreprise et numéro SIRET soient stockés pour
+              la gestion de leurs soumissions de solutions. Ces données sont
+              hébergées en France et peuvent être supprimées sur demande.
             </p>
             <p className="text-text-secondary leading-relaxed">
               Pour plus d'informations, consultez notre{" "}
@@ -191,7 +191,11 @@ export const LegalNotice: React.FC = () => {
               Cookies
             </h2>
             <p className="text-text-secondary leading-relaxed">
-              Ce site n'utilise aucun cookie de tracking, publicitaire ou de profilage. Les statistiques de fréquentation sont collectées de manière anonyme via Plausible Analytics, un outil respectueux de la vie privée qui fonctionne sans cookies et sans collecte de données personnelles.
+              Ce site n'utilise aucun cookie de tracking, publicitaire ou de
+              profilage. Les statistiques de fréquentation sont collectées de
+              manière anonyme via Plausible Analytics, un outil respectueux de
+              la vie privée qui fonctionne sans cookies et sans collecte de
+              données personnelles.
             </p>
             <p className="text-text-secondary leading-relaxed text-sm">
               Les prescripteurs connectés disposent d'un cookie de session
@@ -224,31 +228,39 @@ export const LegalNotice: React.FC = () => {
             <div className="text-text-secondary leading-relaxed space-y-3">
               <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
                 <p className="font-semibold text-amber-900 mb-2">
-                  ⚠️ Important : Plateforme d'orientation, pas un dispositif médical
+                  ⚠️ Important : Plateforme d'orientation, pas un dispositif
+                  médical
                 </p>
                 <p className="text-sm">
-                  <strong>MentalTech Discover</strong> est une plateforme d'orientation qui
-                  référence des solutions numériques en santé mentale. Ce n'est{" "}
+                  <strong>MentalTech Discover</strong> est une plateforme
+                  d'orientation qui référence des solutions numériques en santé
+                  mentale. Ce n'est{" "}
                   <strong>pas un dispositif médical certifié</strong>.
                 </p>
               </div>
-              <p>
-                MentalTech Discover ne garantit pas :
-              </p>
+              <p>MentalTech Discover ne garantit pas :</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>L'exhaustivité ou l'exactitude des informations référencées</li>
-                <li>L'actualité des informations (mises à jour régulières mais non en temps réel)</li>
+                <li>
+                  L'exhaustivité ou l'exactitude des informations référencées
+                </li>
+                <li>
+                  L'actualité des informations (mises à jour régulières mais non
+                  en temps réel)
+                </li>
                 <li>L'efficacité clinique des solutions référencées</li>
                 <li>La disponibilité ou la continuité des services tiers</li>
               </ul>
               <p>
-                Les <strong>solutions référencées</strong> sont responsables de leurs
-                propres services, tarifs, et politiques. MentalTech Discover n'est
-                <strong> pas responsable</strong> du contenu, de la qualité ou des
-                dysfonctionnements de ces services tiers.
+                Les <strong>solutions référencées</strong> sont responsables de
+                leurs propres services, tarifs, et politiques. MentalTech
+                Discover n'est
+                <strong> pas responsable</strong> du contenu, de la qualité ou
+                des dysfonctionnements de ces services tiers.
               </p>
               <div className="bg-red-50 border-2 border-red-400 p-4 rounded">
-                <p className="font-bold text-red-900 mb-2">🚨 En cas d'urgence :</p>
+                <p className="font-bold text-red-900 mb-2">
+                  🚨 En cas d'urgence :
+                </p>
                 <p className="text-sm">
                   Pour tout diagnostic, traitement ou urgence, consultez un
                   professionnel de santé qualifié.
@@ -258,19 +270,28 @@ export const LegalNotice: React.FC = () => {
                 </p>
                 <ul className="text-sm space-y-1 mt-1">
                   <li>
-                    <a href="tel:3114" className="text-primary hover:underline font-bold">
+                    <a
+                      href="tel:3114"
+                      className="text-primary hover:underline font-bold"
+                    >
                       3114
                     </a>{" "}
                     - Prévention suicide
                   </li>
                   <li>
-                    <a href="tel:15" className="text-primary hover:underline font-bold">
+                    <a
+                      href="tel:15"
+                      className="text-primary hover:underline font-bold"
+                    >
                       15
                     </a>{" "}
                     - SAMU
                   </li>
                   <li>
-                    <a href="tel:112" className="text-primary hover:underline font-bold">
+                    <a
+                      href="tel:112"
+                      className="text-primary hover:underline font-bold"
+                    >
                       112
                     </a>{" "}
                     - Urgences européennes
@@ -293,9 +314,9 @@ export const LegalNotice: React.FC = () => {
                 <strong>droit français</strong>.
               </p>
               <p>
-                En cas de litige relatif à l'utilisation de ce site, et après échec
-                de toute tentative de recherche d'une solution amiable, les tribunaux
-                français seront seuls compétents.
+                En cas de litige relatif à l'utilisation de ce site, et après
+                échec de toute tentative de recherche d'une solution amiable,
+                les tribunaux français seront seuls compétents.
               </p>
             </div>
           </section>

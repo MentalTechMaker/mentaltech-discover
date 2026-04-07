@@ -36,7 +36,9 @@ export const RegisterPage: React.FC = () => {
       await register(email, password, name);
       setView("landing");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'inscription");
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de l'inscription",
+      );
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,10 @@ export const RegisterPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Nom
               </label>
               <input
@@ -73,7 +78,10 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Email
               </label>
               <input
@@ -88,7 +96,10 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Mot de passe
               </label>
               <input
@@ -105,7 +116,10 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Confirmer le mot de passe
               </label>
               <input

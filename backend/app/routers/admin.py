@@ -3,24 +3,41 @@ import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from ..utils import to_dict, validate_magic_bytes, public_submission_to_response
 from ..database import get_db
 from ..dependencies import require_admin
 from ..models.user import User
 from ..models.product import Product
 from ..models.product_update import ProductUpdate
 from ..models.product_submission import ProductSubmission
-from ..schemas.prescriber import PrescriberListItem, ProductUpdateCreate, ProductUpdateResponse
+from ..schemas.prescriber import (
+    PrescriberListItem,
+    ProductUpdateCreate,
+    ProductUpdateResponse,
+)
 from ..schemas.publisher import (
     AdminCreateAndPublishSchema,
     AdminReviewAction,
     SubmissionResponse,
 )
 from ..schemas.product import ProductResponse
-from ..services.product import _to_response as product_to_response, get_all_products as svc_get_all_products
+from ..services.product import (
+    _to_response as product_to_response,
+    get_all_products as svc_get_all_products,
+)
 from ..models.public_submission import PublicSubmission
 from ..models.health_prof_application import HealthProfApplication
 from ..schemas.public_submission import (
@@ -45,15 +62,7 @@ class CollectiveMemberUpdate(BaseModel):
     is_collective_member: bool = False
 
 
-def _validate_magic_bytes(content: bytes, content_type: str) -> bool:
-    """Validate file content matches declared MIME type via magic bytes."""
-    if content_type == "image/png":
-        return content[:4] == b'\x89PNG'
-    elif content_type == "image/jpeg":
-        return content[:3] == b'\xff\xd8\xff'
-    elif content_type == "image/webp":
-        return content[:4] == b'RIFF' and content[8:12] == b'WEBP'
-    return False
+_validate_magic_bytes = validate_magic_bytes
 
 
 LOGO_UPLOAD_DIR = Path("/tmp/uploads/logos")
@@ -65,13 +74,14 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 # ─── ADMIN PRODUCTS (includes hidden/defunct) ───────────────
 
+
 @router.get("/products", response_model=list[ProductResponse])
 def list_all_products(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Return ALL products including hidden/defunct ones (admin only)."""
-    return svc_get_all_products(db, include_all=True)
+    return svc_get_all_products(db, include_all=True, include_scoring=True)
 
 
 @router.patch("/products/{product_id}/visibility", response_model=ProductResponse)
@@ -83,11 +93,13 @@ def toggle_product_visibility(
     """Toggle is_visible for a product."""
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
     product.is_visible = not product.is_visible
     db.commit()
     db.refresh(product)
-    return product_to_response(product)
+    return product_to_response(product, include_scoring=True)
 
 
 @router.patch("/products/{product_id}/defunct", response_model=ProductResponse)
@@ -99,11 +111,13 @@ def toggle_product_defunct(
     """Toggle company_defunct for a product."""
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
     product.company_defunct = not product.company_defunct
     db.commit()
     db.refresh(product)
-    return product_to_response(product)
+    return product_to_response(product, include_scoring=True)
 
 
 @router.patch("/products/{product_id}/demo", response_model=ProductResponse)
@@ -115,14 +129,17 @@ def toggle_product_demo(
     """Toggle is_demo for a product."""
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
     product.is_demo = not product.is_demo
     db.commit()
     db.refresh(product)
-    return product_to_response(product)
+    return product_to_response(product, include_scoring=True)
 
 
 # ─── LOGO UPLOAD ────────────────────────────────────────────
+
 
 @router.post("/upload-logo")
 async def upload_logo(
@@ -161,6 +178,7 @@ async def upload_logo(
 
 # ─── PRESCRIBER VALIDATION ───────────────────────────────────
 
+
 @router.get("/prescribers", response_model=list[PrescriberListItem])
 def list_prescribers(
     pending_only: bool = Query(default=False),
@@ -194,9 +212,15 @@ async def verify_prescriber(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    user = db.query(User).filter(User.id == prescriber_id, User.role == "prescriber").first()
+    user = (
+        db.query(User)
+        .filter(User.id == prescriber_id, User.role == "prescriber")
+        .first()
+    )
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescripteur introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescripteur introuvable"
+        )
 
     user.is_verified_prescriber = True
     db.commit()
@@ -218,9 +242,15 @@ def reject_prescriber(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    user = db.query(User).filter(User.id == prescriber_id, User.role == "prescriber").first()
+    user = (
+        db.query(User)
+        .filter(User.id == prescriber_id, User.role == "prescriber")
+        .first()
+    )
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescripteur introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescripteur introuvable"
+        )
 
     user.is_verified_prescriber = False
     db.commit()
@@ -230,7 +260,12 @@ def reject_prescriber(
 
 # ─── PRODUCT UPDATES (VEILLE) ────────────────────────────────
 
-@router.post("/product-updates", response_model=ProductUpdateResponse, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/product-updates",
+    response_model=ProductUpdateResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def create_product_update(
     data: ProductUpdateCreate,
     _admin: User = Depends(require_admin),
@@ -240,9 +275,11 @@ def create_product_update(
 
     product = db.query(Product).filter(Product.id == data.product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
 
-    valid_types = ("price_change", "score_change", "new_feature", "study", "general")
+    valid_types = ("price_change", "new_feature", "study", "general")
     if data.update_type not in valid_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -272,7 +309,12 @@ def create_product_update(
 
 # ─── ADMIN CREATE AND PUBLISH ──────────────────────────────
 
-@router.post("/submissions/create-and-publish", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/submissions/create-and-publish",
+    response_model=ProductResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def admin_create_and_publish(
     data: AdminCreateAndPublishSchema,
     admin: User = Depends(require_admin),
@@ -306,6 +348,8 @@ def admin_create_and_publish(
         tags=data.tags,
         audience=data.audience,
         problems_solved=data.problems_solved,
+        audience_priorities=to_dict(data.audience_priorities),
+        problems_priorities=to_dict(data.problems_priorities),
         pricing_model=data.pricing_model,
         pricing_amount=data.pricing_amount,
         pricing_details=data.pricing_details,
@@ -327,6 +371,8 @@ def admin_create_and_publish(
         existing.tags = data.tags
         existing.audience = data.audience
         existing.problems_solved = data.problems_solved
+        existing.audience_priorities = to_dict(data.audience_priorities)
+        existing.problems_priorities = to_dict(data.problems_priorities)
         existing.preference_match = data.preference_match
         existing.is_mentaltech_member = data.is_mentaltech_member
         existing.pricing_model = data.pricing_model
@@ -344,7 +390,9 @@ def admin_create_and_publish(
         existing.justification_support = data.justification_support
         if data.scoring_criteria is not None:
             existing.scoring_criteria = data.scoring_criteria
-        existing.last_updated = date.fromisoformat(data.last_updated) if data.last_updated else date.today()
+        existing.last_updated = (
+            date.fromisoformat(data.last_updated) if data.last_updated else date.today()
+        )
         product = existing
     else:
         product = Product(
@@ -358,12 +406,18 @@ def admin_create_and_publish(
             tags=data.tags,
             audience=data.audience,
             problems_solved=data.problems_solved,
+            audience_priorities=data.audience_priorities,
+            problems_priorities=data.problems_priorities,
             preference_match=data.preference_match,
             is_mentaltech_member=data.is_mentaltech_member,
             pricing_model=data.pricing_model,
             pricing_amount=data.pricing_amount,
             pricing_details=data.pricing_details,
-            last_updated=date.fromisoformat(data.last_updated) if data.last_updated else date.today(),
+            last_updated=(
+                date.fromisoformat(data.last_updated)
+                if data.last_updated
+                else date.today()
+            ),
             score_security=data.score_security,
             score_efficacy=data.score_efficacy,
             score_accessibility=data.score_accessibility,
@@ -382,10 +436,11 @@ def admin_create_and_publish(
     db.commit()
     db.refresh(product)
 
-    return product_to_response(product)
+    return product_to_response(product, include_scoring=True)
 
 
 # ─── SUBMISSION HELPERS ─────────────────────────────────────
+
 
 def _sub_to_response(sub: ProductSubmission) -> SubmissionResponse:
     return SubmissionResponse(
@@ -402,6 +457,8 @@ def _sub_to_response(sub: ProductSubmission) -> SubmissionResponse:
         tags=sub.tags or [],
         audience=sub.audience or [],
         problemsSolved=sub.problems_solved or [],
+        audiencePriorities=sub.audience_priorities or {},
+        problemsPriorities=sub.problems_priorities or {},
         pricingModel=sub.pricing_model,
         pricingAmount=sub.pricing_amount,
         pricingDetails=sub.pricing_details,
@@ -415,18 +472,19 @@ def _sub_to_response(sub: ProductSubmission) -> SubmissionResponse:
 
 def _slugify(text: str) -> str:
     text = text.lower().strip()
-    text = re.sub(r'[àâä]', 'a', text)
-    text = re.sub(r'[éèêë]', 'e', text)
-    text = re.sub(r'[ïî]', 'i', text)
-    text = re.sub(r'[ôö]', 'o', text)
-    text = re.sub(r'[ùûü]', 'u', text)
-    text = re.sub(r'[ç]', 'c', text)
-    text = re.sub(r'[^a-z0-9]+', '-', text)
-    text = text.strip('-')
+    text = re.sub(r"[àâä]", "a", text)
+    text = re.sub(r"[éèêë]", "e", text)
+    text = re.sub(r"[ïî]", "i", text)
+    text = re.sub(r"[ôö]", "o", text)
+    text = re.sub(r"[ùûü]", "u", text)
+    text = re.sub(r"[ç]", "c", text)
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    text = text.strip("-")
     return text[:100]
 
 
 # ─── SUBMISSIONS MANAGEMENT ─────────────────────────────────
+
 
 @router.get("/submissions", response_model=list[SubmissionResponse])
 def list_submissions(
@@ -447,9 +505,15 @@ def get_submission(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    submission = db.query(ProductSubmission).filter(ProductSubmission.id == submission_id).first()
+    submission = (
+        db.query(ProductSubmission)
+        .filter(ProductSubmission.id == submission_id)
+        .first()
+    )
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
     return _sub_to_response(submission)
 
 
@@ -460,9 +524,15 @@ def approve_submission(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    submission = db.query(ProductSubmission).filter(ProductSubmission.id == submission_id).first()
+    submission = (
+        db.query(ProductSubmission)
+        .filter(ProductSubmission.id == submission_id)
+        .first()
+    )
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if submission.status not in ("submitted", "under_review"):
         raise HTTPException(
@@ -474,7 +544,9 @@ def approve_submission(
     if submission.product_id:
         product = db.query(Product).filter(Product.id == submission.product_id).first()
         if not product:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit lié introuvable")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Produit lié introuvable"
+            )
     else:
         product_id = _slugify(submission.name or "solution")
         # Ensure unique id
@@ -494,6 +566,8 @@ def approve_submission(
     product.tags = submission.tags or []
     product.audience = submission.audience or []
     product.problems_solved = submission.problems_solved or []
+    product.audience_priorities = submission.audience_priorities or {}
+    product.problems_priorities = submission.problems_priorities or {}
     product.pricing_model = submission.pricing_model
     product.pricing_amount = submission.pricing_amount
     product.pricing_details = submission.pricing_details
@@ -540,9 +614,15 @@ def reject_submission(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    submission = db.query(ProductSubmission).filter(ProductSubmission.id == submission_id).first()
+    submission = (
+        db.query(ProductSubmission)
+        .filter(ProductSubmission.id == submission_id)
+        .first()
+    )
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if submission.status not in ("submitted", "under_review"):
         raise HTTPException(
@@ -560,16 +640,24 @@ def reject_submission(
     return _sub_to_response(submission)
 
 
-@router.post("/submissions/{submission_id}/request-changes", response_model=SubmissionResponse)
+@router.post(
+    "/submissions/{submission_id}/request-changes", response_model=SubmissionResponse
+)
 def request_changes(
     submission_id: str,
     data: AdminReviewAction,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    submission = db.query(ProductSubmission).filter(ProductSubmission.id == submission_id).first()
+    submission = (
+        db.query(ProductSubmission)
+        .filter(ProductSubmission.id == submission_id)
+        .first()
+    )
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if submission.status not in ("submitted", "under_review"):
         raise HTTPException(
@@ -589,35 +677,8 @@ def request_changes(
 
 # ─── PUBLIC SUBMISSIONS (formulaire anonyme sans compte) ─────────────────────
 
-def _pub_sub_to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
-    return PublicSubmissionResponse(
-        id=str(sub.id),
-        contactName=sub.contact_name,
-        contactEmail=sub.contact_email,
-        status=sub.status,
-        name=sub.name,
-        type=sub.type,
-        tagline=sub.tagline,
-        description=sub.description,
-        url=sub.url,
-        logo=sub.logo,
-        tags=sub.tags or [],
-        audience=sub.audience or [],
-        problemsSolved=sub.problems_solved or [],
-        pricingModel=sub.pricing_model,
-        pricingAmount=sub.pricing_amount,
-        pricingDetails=sub.pricing_details,
-        protocolAnswers=sub.protocol_answers or {},
-        collectifRequested=sub.collectif_requested,
-        collectifCaRange=sub.collectif_ca_range,
-        collectifStatus=sub.collectif_status,
-        collectifContactEmail=sub.collectif_contact_email,
-        adminNotes=sub.admin_notes,
-        productId=sub.product_id,
-        reviewedAt=sub.reviewed_at.isoformat() if sub.reviewed_at else None,
-        createdAt=sub.created_at.isoformat(),
-        updatedAt=sub.updated_at.isoformat(),
-    )
+
+_pub_sub_to_response = public_submission_to_response
 
 
 @router.get("/public-submissions", response_model=list[PublicSubmissionResponse])
@@ -633,19 +694,28 @@ def list_public_submissions(
     return [_pub_sub_to_response(s) for s in submissions]
 
 
-@router.get("/public-submissions/{submission_id}", response_model=PublicSubmissionResponse)
+@router.get(
+    "/public-submissions/{submission_id}", response_model=PublicSubmissionResponse
+)
 def get_public_submission(
     submission_id: str,
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
     return _pub_sub_to_response(sub)
 
 
-@router.post("/public-submissions/{submission_id}/approve", response_model=PublicSubmissionResponse)
+@router.post(
+    "/public-submissions/{submission_id}/approve",
+    response_model=PublicSubmissionResponse,
+)
 async def approve_public_submission(
     submission_id: str,
     data: AdminReviewAction,
@@ -653,12 +723,18 @@ async def approve_public_submission(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if sub.status not in ("submitted", "under_review"):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Statut incompatible")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Statut incompatible"
+        )
 
     # Create product (or link to existing one)
     if data.product_id:
@@ -666,7 +742,9 @@ async def approve_public_submission(
     if sub.product_id:
         product = db.query(Product).filter(Product.id == sub.product_id).first()
         if not product:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit lié introuvable")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Produit lié introuvable"
+            )
     else:
         product_id = _slugify(sub.name or "solution")
         if db.query(Product).filter(Product.id == product_id).first():
@@ -683,6 +761,8 @@ async def approve_public_submission(
     product.tags = sub.tags or []
     product.audience = sub.audience or []
     product.problems_solved = sub.problems_solved or []
+    product.audience_priorities = sub.audience_priorities or {}
+    product.problems_priorities = sub.problems_priorities or {}
     product.pricing_model = sub.pricing_model
     product.pricing_amount = sub.pricing_amount
     product.pricing_details = sub.pricing_details
@@ -713,6 +793,7 @@ async def approve_public_submission(
     sub.admin_id = admin.id
     sub.reviewed_at = datetime.now(timezone.utc)
     sub.product_id = product.id
+    sub.collectif_ca_range = None  # Purge CA range after review (RGPD minimisation)
     sub.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(sub)
@@ -727,7 +808,10 @@ async def approve_public_submission(
     return _pub_sub_to_response(sub)
 
 
-@router.post("/public-submissions/{submission_id}/reject", response_model=PublicSubmissionResponse)
+@router.post(
+    "/public-submissions/{submission_id}/reject",
+    response_model=PublicSubmissionResponse,
+)
 async def reject_public_submission(
     submission_id: str,
     data: AdminReviewAction,
@@ -735,14 +819,19 @@ async def reject_public_submission(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     sub.status = "rejected"
     sub.admin_notes = data.admin_notes
     sub.admin_id = admin.id
     sub.reviewed_at = datetime.now(timezone.utc)
+    sub.collectif_ca_range = None  # Purge CA range after review (RGPD minimisation)
     sub.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(sub)
@@ -758,17 +847,26 @@ async def reject_public_submission(
     return _pub_sub_to_response(sub)
 
 
-@router.post("/public-submissions/{submission_id}/under-review", response_model=PublicSubmissionResponse)
+@router.post(
+    "/public-submissions/{submission_id}/under-review",
+    response_model=PublicSubmissionResponse,
+)
 def mark_public_submission_under_review(
     submission_id: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
     if sub.status != "submitted":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Statut incompatible")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Statut incompatible"
+        )
     sub.status = "under_review"
     sub.admin_id = admin.id
     sub.updated_at = datetime.now(timezone.utc)
@@ -777,16 +875,23 @@ def mark_public_submission_under_review(
     return _pub_sub_to_response(sub)
 
 
-@router.post("/public-submissions/{submission_id}/request-changes", response_model=PublicSubmissionResponse)
+@router.post(
+    "/public-submissions/{submission_id}/request-changes",
+    response_model=PublicSubmissionResponse,
+)
 def request_public_submission_changes(
     submission_id: str,
     data: AdminReviewAction,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     sub.status = "changes_requested"
     sub.admin_notes = data.admin_notes
@@ -798,7 +903,10 @@ def request_public_submission_changes(
     return _pub_sub_to_response(sub)
 
 
-@router.post("/public-submissions/{submission_id}/collectif-status", response_model=PublicSubmissionResponse)
+@router.post(
+    "/public-submissions/{submission_id}/collectif-status",
+    response_model=PublicSubmissionResponse,
+)
 async def update_collectif_status(
     submission_id: str,
     data: AdminCollectifAction,
@@ -806,12 +914,18 @@ async def update_collectif_status(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if data.collectif_status not in ("discussing", "accepted", "refused"):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Statut collectif invalide")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Statut collectif invalide"
+        )
 
     sub.collectif_status = data.collectif_status
     if data.admin_notes:
@@ -840,16 +954,23 @@ async def update_collectif_status(
     return _pub_sub_to_response(sub)
 
 
-@router.patch("/public-submissions/{submission_id}/collective-member", response_model=PublicSubmissionResponse)
+@router.patch(
+    "/public-submissions/{submission_id}/collective-member",
+    response_model=PublicSubmissionResponse,
+)
 def set_public_submission_collective_member(
     submission_id: str,
     body: CollectiveMemberUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sub = db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    sub = (
+        db.query(PublicSubmission).filter(PublicSubmission.id == submission_id).first()
+    )
     if not sub:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     is_member = body.is_collective_member
 
@@ -867,7 +988,10 @@ def set_public_submission_collective_member(
 
 # ─── HEALTH PRO APPLICATIONS ─────────────────────────────────────────────────
 
-def _health_pro_to_response(app: HealthProfApplication) -> HealthProfApplicationResponse:
+
+def _health_pro_to_response(
+    app: HealthProfApplication,
+) -> HealthProfApplicationResponse:
     return HealthProfApplicationResponse(
         id=str(app.id),
         name=app.name,
@@ -885,7 +1009,9 @@ def _health_pro_to_response(app: HealthProfApplication) -> HealthProfApplication
     )
 
 
-@router.get("/health-pro-applications", response_model=list[HealthProfApplicationResponse])
+@router.get(
+    "/health-pro-applications", response_model=list[HealthProfApplicationResponse]
+)
 def list_health_pro_applications(
     status_filter: str | None = Query(default=None, alias="status"),
     _admin: User = Depends(require_admin),
@@ -898,19 +1024,31 @@ def list_health_pro_applications(
     return [_health_pro_to_response(a) for a in apps]
 
 
-@router.get("/health-pro-applications/{application_id}", response_model=HealthProfApplicationResponse)
+@router.get(
+    "/health-pro-applications/{application_id}",
+    response_model=HealthProfApplicationResponse,
+)
 def get_health_pro_application(
     application_id: str,
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    app = db.query(HealthProfApplication).filter(HealthProfApplication.id == application_id).first()
+    app = (
+        db.query(HealthProfApplication)
+        .filter(HealthProfApplication.id == application_id)
+        .first()
+    )
     if not app:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable"
+        )
     return _health_pro_to_response(app)
 
 
-@router.post("/health-pro-applications/{application_id}/accept", response_model=HealthProfApplicationResponse)
+@router.post(
+    "/health-pro-applications/{application_id}/accept",
+    response_model=HealthProfApplicationResponse,
+)
 async def accept_health_pro(
     application_id: str,
     data: AdminSimpleAction,
@@ -918,9 +1056,15 @@ async def accept_health_pro(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    app = db.query(HealthProfApplication).filter(HealthProfApplication.id == application_id).first()
+    app = (
+        db.query(HealthProfApplication)
+        .filter(HealthProfApplication.id == application_id)
+        .first()
+    )
     if not app:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable"
+        )
 
     app.status = "accepted"
     if data.admin_notes:
@@ -940,7 +1084,10 @@ async def accept_health_pro(
     return _health_pro_to_response(app)
 
 
-@router.post("/health-pro-applications/{application_id}/refuse", response_model=HealthProfApplicationResponse)
+@router.post(
+    "/health-pro-applications/{application_id}/refuse",
+    response_model=HealthProfApplicationResponse,
+)
 async def refuse_health_pro(
     application_id: str,
     data: AdminSimpleAction,
@@ -948,9 +1095,15 @@ async def refuse_health_pro(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    app = db.query(HealthProfApplication).filter(HealthProfApplication.id == application_id).first()
+    app = (
+        db.query(HealthProfApplication)
+        .filter(HealthProfApplication.id == application_id)
+        .first()
+    )
     if not app:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable"
+        )
 
     app.status = "refused"
     if data.admin_notes:
@@ -969,16 +1122,25 @@ async def refuse_health_pro(
     return _health_pro_to_response(app)
 
 
-@router.patch("/health-pro-applications/{application_id}/collective-member", response_model=HealthProfApplicationResponse)
+@router.patch(
+    "/health-pro-applications/{application_id}/collective-member",
+    response_model=HealthProfApplicationResponse,
+)
 def set_health_pro_collective_member(
     application_id: str,
     body: CollectiveMemberUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    app = db.query(HealthProfApplication).filter(HealthProfApplication.id == application_id).first()
+    app = (
+        db.query(HealthProfApplication)
+        .filter(HealthProfApplication.id == application_id)
+        .first()
+    )
     if not app:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable"
+        )
 
     app.is_collective_member = body.is_collective_member
     app.updated_at = datetime.now(timezone.utc)

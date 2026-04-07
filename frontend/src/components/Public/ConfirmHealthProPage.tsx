@@ -4,7 +4,9 @@ import { useAppStore } from "../../store/useAppStore";
 
 export const ConfirmHealthProPage: React.FC = () => {
   const { setView } = useAppStore();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -18,7 +20,9 @@ export const ConfirmHealthProPage: React.FC = () => {
     confirmHealthProApplication(token)
       .then(() => {
         setStatus("success");
-        setMessage("Votre candidature est confirmée. Le bureau du Collectif l'examinera et vous contactera par email.");
+        setMessage(
+          "Votre candidature est confirmée. Le bureau du Collectif l'examinera et vous contactera par email.",
+        );
       })
       .catch((e: unknown) => {
         setStatus("error");
@@ -38,16 +42,27 @@ export const ConfirmHealthProPage: React.FC = () => {
         {status === "success" && (
           <>
             <div className="text-5xl mb-4">🤝</div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Candidature confirmée !</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Candidature confirmée !
+            </h2>
             <p className="text-muted-foreground mb-6">{message}</p>
             <div className="flex flex-col gap-3">
-              <button onClick={() => setView("prescriber-auth")} className="px-6 py-3 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 transition-colors shadow-md">
+              <button
+                onClick={() => setView("prescriber-auth")}
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 transition-colors shadow-md"
+              >
                 Créer un compte prescripteur
               </button>
-              <button onClick={() => setView("catalog")} className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90">
+              <button
+                onClick={() => setView("catalog")}
+                className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90"
+              >
                 Explorer le catalogue
               </button>
-              <button onClick={() => setView("landing")} className="px-6 py-2.5 border border-gray-300 text-text-secondary rounded-lg text-sm font-medium hover:bg-gray-50">
+              <button
+                onClick={() => setView("landing")}
+                className="px-6 py-2.5 border border-gray-300 text-text-secondary rounded-lg text-sm font-medium hover:bg-gray-50"
+              >
                 Retour à l'accueil
               </button>
             </div>
@@ -56,9 +71,14 @@ export const ConfirmHealthProPage: React.FC = () => {
         {status === "error" && (
           <>
             <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Lien invalide</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Lien invalide
+            </h2>
             <p className="text-muted-foreground mb-6">{message}</p>
-            <button onClick={() => setView("health-pro-application")} className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90">
+            <button
+              onClick={() => setView("health-pro-application")}
+              className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
+            >
               Candidater à nouveau
             </button>
           </>

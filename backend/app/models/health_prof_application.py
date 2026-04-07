@@ -25,9 +25,15 @@ class HealthProfApplication(Base):
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="pending_email"
     )
-    confirm_token: Mapped[str | None] = mapped_column(String(500), nullable=True, unique=True)
-    email_confirmed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    is_collective_member: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    confirm_token: Mapped[str | None] = mapped_column(
+        String(500), nullable=True, unique=True
+    )
+    email_confirmed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+    is_collective_member: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
 
     admin_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 

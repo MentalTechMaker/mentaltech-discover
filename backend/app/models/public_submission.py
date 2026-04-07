@@ -20,8 +20,12 @@ class PublicSubmission(Base):
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="pending_email"
     )
-    confirm_token: Mapped[str | None] = mapped_column(String(500), nullable=True, unique=True)
-    email_confirmed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    confirm_token: Mapped[str | None] = mapped_column(
+        String(500), nullable=True, unique=True
+    )
+    email_confirmed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
 
     # Product info
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -34,24 +38,34 @@ class PublicSubmission(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audience: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    audience_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
+    problems_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
     pricing_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
     pricing_amount: Mapped[str | None] = mapped_column(String(100), nullable=True)
     pricing_details: Mapped[str | None] = mapped_column(Text, nullable=True)
     protocol_answers: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
 
     # Collectif
-    collectif_requested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    collectif_requested: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
     collectif_ca_range: Mapped[str | None] = mapped_column(String(100), nullable=True)
     collectif_status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="none"
     )
-    collectif_contact_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    collectif_contact_email: Mapped[str | None] = mapped_column(
+        String(255), nullable=True
+    )
 
     # Admin review
     admin_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    admin_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    admin_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
     product_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    reviewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

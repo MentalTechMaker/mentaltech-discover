@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import type { Filters } from "./ProductCatalog";
 import { analytics } from "../../lib/analytics";
-import { getLabelInfo } from "../../utils/scoring";
 
 interface FilterSectionProps {
   filters: Filters;
@@ -21,27 +20,7 @@ const PARTICULIER_AUDIENCES = [
   { value: "senior", label: "Seniors" },
 ] as const;
 
-const problemLabels: Record<string, string> = {
-  "stress-anxiety": "Stress / Anxiété",
-  sadness: "Tristesse / Dépression",
-  addiction: "Addictions",
-  trauma: "Traumatismes",
-  work: "Travail / Burn-out",
-  sleep: "Sommeil",
-  cognitif: "Troubles cognitifs",
-  douleur: "Douleur",
-  concentration: "Concentration / TDAH",
-  other: "Autres",
-};
-
-const pricingLabels: Record<string, string> = {
-  free: "Gratuit",
-  freemium: "Freemium",
-  subscription: "Abonnement",
-  "per-session": "Par séance",
-  enterprise: "Entreprise (B2B)",
-  custom: "Sur mesure",
-};
+import { problemLabels, pricingLabels } from "../../data/labels";
 
 export const FilterSection: React.FC<FilterSectionProps> = ({
   filters,
@@ -64,7 +43,7 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
     onFilterChange(key, newArray);
   };
 
-  const handleSegmentChange = (segment: Filters['segment']) => {
+  const handleSegmentChange = (segment: Filters["segment"]) => {
     analytics.filterUsed("segment", segment);
     onFilterChange("segment", segment);
     // Changing segment clears audience sub-filters
@@ -73,7 +52,7 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
 
   const handleAudienceSubFilter = (value: string) => {
     // Selecting a sub-checkbox auto-activates Particulier segment
-    if (filters.segment !== 'particulier') {
+    if (filters.segment !== "particulier") {
       onFilterChange("segment", "particulier");
     }
     toggleArrayFilter("audience", value);
@@ -149,14 +128,19 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
               {audienceExpanded && (
                 <div className="ml-6 mt-2 space-y-1.5">
                   {PARTICULIER_AUDIENCES.map(({ value, label }) => (
-                    <label key={value} className="flex items-center gap-2 cursor-pointer">
+                    <label
+                      key={value}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={filters.audience.includes(value)}
                         onChange={() => handleAudienceSubFilter(value)}
                         className="w-4 h-4 text-primary"
                       />
-                      <span className="text-text-secondary text-sm">{label}</span>
+                      <span className="text-text-secondary text-sm">
+                        {label}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -182,7 +166,9 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 onChange={() => handleSegmentChange("health")}
                 className="w-4 h-4 text-primary"
               />
-              <span className="text-text-secondary">Établissement de santé</span>
+              <span className="text-text-secondary">
+                Établissement de santé
+              </span>
             </label>
           </div>
         </div>
@@ -254,37 +240,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 </span>
               </label>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-text-primary mb-2">
-            Label qualité ({filters.label.length})
-          </label>
-          <div className="space-y-2">
-            {(["A", "B", "C", "D", "E", "unrated"] as const).map((grade) => {
-              const info = getLabelInfo(grade === "unrated" ? null : grade);
-              return (
-                <label
-                  key={grade}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.label.includes(grade)}
-                    onChange={() => toggleArrayFilter("label", grade)}
-                    className="w-4 h-4 text-primary"
-                  />
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-                    style={{ backgroundColor: info.bgColor, color: info.color }}
-                  >
-                    {info.grade}
-                  </span>
-                  <span className="text-text-secondary text-sm">{info.text}</span>
-                </label>
-              );
-            })}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import type { Product } from '../types';
-import { getAll } from '../api/products';
+import { create } from "zustand";
+import type { Product } from "../types";
+import { getAll } from "../api/products";
 
 interface ProductsState {
   products: Product[];
@@ -21,7 +21,10 @@ export const useProductsStore = create<ProductsState>((set) => ({
       set({ products, isLoading: false });
     } catch (err) {
       set({
-        error: err instanceof Error ? err.message : 'Erreur lors du chargement des produits',
+        error:
+          err instanceof Error
+            ? err.message
+            : "Erreur lors du chargement des produits",
         isLoading: false,
       });
     }

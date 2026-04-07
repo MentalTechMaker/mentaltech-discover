@@ -28,14 +28,22 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
         {open && (
           <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 leading-relaxed">
-            MentalTech Discover est une plateforme d'orientation, pas un dispositif médical certifié.
-            Pour un diagnostic, traitement ou urgence, consultez un professionnel de santé.{" "}
-            <span className="font-bold">Numéro national de prévention du suicide : 3114 (gratuit 24h/24)</span>
+            MentalTech Discover est une plateforme d'orientation, pas un
+            dispositif médical certifié. Pour un diagnostic, traitement ou
+            urgence, consultez un professionnel de santé.{" "}
+            <span className="font-bold">
+              Numéro national de prévention du suicide : 3114 (gratuit 24h/24)
+            </span>
           </div>
         )}
       </div>
@@ -50,9 +58,12 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
       >
         <div className="flex items-start gap-2">
           <div className="text-sm text-amber-900">
-            <p className="font-semibold">Plateforme d'orientation, pas un dispositif médical</p>
+            <p className="font-semibold">
+              Plateforme d'orientation, pas un dispositif médical
+            </p>
             <p className="mt-1">
-              Pour un diagnostic ou traitement, consultez un professionnel de santé.
+              Pour un diagnostic ou traitement, consultez un professionnel de
+              santé.
             </p>
             <p className="mt-1">
               <span className="font-bold">Urgence : 3114</span> (gratuit 24h/24)
@@ -78,19 +89,22 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
 
           <div className="space-y-3 text-text-primary text-center">
             <p className="leading-relaxed">
-              <strong>MentalTech Discover est une plateforme d'orientation</strong>, pas
-              un dispositif médical certifié.
+              <strong>
+                MentalTech Discover est une plateforme d'orientation
+              </strong>
+              , pas un dispositif médical certifié.
             </p>
 
             <p className="leading-relaxed">
               Les solutions référencées sont celles des membres du{" "}
-              <strong>Collectif MentalTech</strong>. Ce référencement ne constitue
-              pas une recommandation médicale.
+              <strong>Collectif MentalTech</strong>. Ce référencement ne
+              constitue pas une recommandation médicale.
             </p>
 
             <p className="leading-relaxed">
-              Pour un <strong>diagnostic</strong>, un <strong>traitement</strong>{" "}
-              ou une <strong>urgence</strong>, consultez un professionnel de santé.
+              Pour un <strong>diagnostic</strong>, un{" "}
+              <strong>traitement</strong> ou une <strong>urgence</strong>,
+              consultez un professionnel de santé.
             </p>
           </div>
 
@@ -99,7 +113,10 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
             <div className="space-y-2 text-text-primary">
               <div className="items-center gap-2">
                 <span className="font-bold text-lg">3114</span>
-                <span> - Numéro national de prévention du suicide (gratuit 24h/24)</span>
+                <span>
+                  {" "}
+                  - Numéro national de prévention du suicide (gratuit 24h/24)
+                </span>
               </div>
               <div className="items-center gap-2">
                 <span className="font-bold text-lg">15</span>
@@ -126,9 +143,10 @@ export const MedicalDisclaimer: React.FC<MedicalDisclaimerProps> = ({
           <span className="text-2xl flex-shrink-0">⚠️</span>
           <div className="flex-1">
             <p className="text-sm text-amber-900 leading-relaxed text-center">
-              <strong>Information importante :</strong> MentalTech Discover est un
-              plateforme d'orientation, pas un dispositif médical. Pour un diagnostic,
-              traitement ou urgence, consultez un professionnel de santé.{" "}
+              <strong>Information importante :</strong> MentalTech Discover est
+              une plateforme d'orientation, pas un dispositif médical. Pour un
+              diagnostic, traitement ou urgence, consultez un professionnel de
+              santé.{" "}
               <span className="font-bold whitespace-nowrap">
                 Urgence : 3114 (gratuit 24h/24)
               </span>

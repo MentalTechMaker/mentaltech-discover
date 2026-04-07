@@ -1,5 +1,5 @@
-import React from 'react';
-import type { Question, QuestionOption } from '../../types';
+import React from "react";
+import type { Question, QuestionOption } from "../../types";
 
 interface QuestionCardProps {
   question: Question;
@@ -16,7 +16,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onSelect,
   onNext,
   onPrevious,
-  showPrevious
+  showPrevious,
 }) => {
   const handleOptionClick = (value: string) => {
     onSelect(value);
@@ -43,11 +43,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             onClick={() => handleOptionClick(option.value)}
             className={`w-full text-left px-6 py-4 rounded-lg border-2 transition-all min-h-[60px] flex items-center gap-3 ${
               selectedValue === option.value
-                ? 'border-primary bg-blue-50 shadow-md'
-                : 'border-gray-200 bg-white hover:border-primary hover:shadow-sm'
+                ? "border-primary bg-blue-50 shadow-md"
+                : "border-gray-200 bg-white hover:border-primary hover:shadow-sm"
             }`}
             aria-pressed={selectedValue === option.value}
-            aria-label={`${option.emoji ? option.emoji + ' ' : ''}${option.label}`}
+            aria-label={`${option.emoji ? option.emoji + " " : ""}${option.label}`}
           >
             {option.emoji && (
               <span className="text-3xl" aria-hidden="true">
@@ -81,8 +81,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           disabled={!selectedValue}
           className={`ml-auto px-8 py-3 rounded-lg font-semibold transition-all ${
             selectedValue
-              ? 'bg-primary text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              ? "bg-primary text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
           aria-label="Question suivante"
         >

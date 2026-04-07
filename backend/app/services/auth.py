@@ -1,22 +1,25 @@
 import re
 from datetime import datetime, timedelta, timezone
 
-from jose import jwt, JWTError
-from passlib.context import CryptContext
+import bcrypt
+import jwt
+from jwt.exceptions import PyJWTError
 
 from ..config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 ALGORITHM = "HS256"
-DUMMY_HASH = pwd_context.hash("dummy-password-for-timing-protection")
+DUMMY_HASH = bcrypt.hashpw(
+    b"dummy-password-for-timing-protection", bcrypt.gensalt()
+).decode()
 MIN_PASSWORD_LENGTH = 8
 
 
 def validate_password_strength(password: str) -> str | None:
     """Return an error message if the password is too weak, or None if valid."""
     if len(password) < MIN_PASSWORD_LENGTH:
-        return f"Le mot de passe doit contenir au moins {MIN_PASSWORD_LENGTH} caractères"
+        return (
+            f"Le mot de passe doit contenir au moins {MIN_PASSWORD_LENGTH} caractères"
+        )
     if not re.search(r"[A-Z]", password):
         return "Le mot de passe doit contenir au moins une majuscule"
     if not re.search(r"[a-z]", password):
@@ -27,11 +30,11 @@ def validate_password_strength(password: str) -> str | None:
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
 
 
 def create_access_token(subject: str) -> str:
@@ -54,5 +57,5 @@ def decode_token(token: str) -> dict | None:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except PyJWTError:
         return None

@@ -4,7 +4,14 @@ import { useAuthStore } from "../../store/useAuthStore";
 
 export const Header: React.FC = () => {
   const { currentView, reset, setView } = useAppStore();
-  const { isAuthenticated, isAdmin, isPrescriber, isPrescriberPending, user, logout } = useAuthStore();
+  const {
+    isAuthenticated,
+    isAdmin,
+    isPrescriber,
+    isPrescriberPending,
+    user,
+    logout,
+  } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -42,9 +49,13 @@ export const Header: React.FC = () => {
       className={`relative px-4 py-1.5 text-sm font-bold transition-all group text-white`}
     >
       <span aria-hidden="true">{emoji}</span> {text}
-      <span className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full transition-all duration-200 ${
-        currentView === view ? "bg-white opacity-100" : "bg-white opacity-0 group-hover:opacity-60"
-      }`} />
+      <span
+        className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full transition-all duration-200 ${
+          currentView === view
+            ? "bg-white opacity-100"
+            : "bg-white opacity-0 group-hover:opacity-60"
+        }`}
+      />
     </button>
   );
 
@@ -52,7 +63,6 @@ export const Header: React.FC = () => {
     <header className="bg-primary sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16 gap-6">
-
           {/* Logo */}
           <button
             onClick={handleLogoClick}
@@ -60,7 +70,9 @@ export const Header: React.FC = () => {
             aria-label="Retour à l'accueil"
           >
             <div className="bg-white rounded-full p-2 shadow-sm">
-              <span className="text-base leading-none" aria-hidden="true">💙</span>
+              <span className="text-base leading-none" aria-hidden="true">
+                💙
+              </span>
             </div>
             <span className="text-white font-black text-lg tracking-tight">
               MentalTech Discover
@@ -76,7 +88,6 @@ export const Header: React.FC = () => {
 
           {/* Right side */}
           <div className="flex items-center gap-2 flex-shrink-0">
-
             {/* CTA - desktop */}
             <button
               onClick={() => setView("public-submission")}
@@ -99,62 +110,96 @@ export const Header: React.FC = () => {
                   aria-expanded={menuOpen}
                   aria-haspopup="true"
                 >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-4 h-4 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
-                  <span className="hidden lg:inline max-w-[100px] truncate">{user?.name}</span>
+                  <span className="hidden lg:inline max-w-[100px] truncate">
+                    {user?.name}
+                  </span>
                   <svg
                     className={`w-3 h-3 transition-transform flex-shrink-0 ${menuOpen ? "rotate-180" : ""}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
                 {menuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[200]">
                     <div className="px-4 py-2.5 border-b border-gray-100 mb-1">
-                      <p className="text-sm font-semibold text-text-primary truncate">{user?.name}</p>
-                      <p className="text-xs text-text-secondary truncate">{user?.email}</p>
+                      <p className="text-sm font-semibold text-text-primary truncate">
+                        {user?.name}
+                      </p>
+                      <p className="text-xs text-text-secondary truncate">
+                        {user?.email}
+                      </p>
                     </div>
-                    <button onClick={() => navigateTo("profile")}
-                      className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                    <button
+                      onClick={() => navigateTo("profile")}
+                      className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                    >
                       <span aria-hidden="true">👤</span> Profil
                     </button>
                     {(isPrescriber || isPrescriberPending) && (
                       <>
-                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Prescripteur</p>
-                        <button onClick={() => navigateTo("prescriber-dashboard")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">
+                          Prescripteur
+                        </p>
+                        <button
+                          onClick={() => navigateTo("prescriber-dashboard")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
                           <span aria-hidden="true">📊</span> Tableau de bord
                         </button>
-                        <button onClick={() => navigateTo("new-prescription")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                        <button
+                          onClick={() => navigateTo("new-prescription")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
                           <span aria-hidden="true">📝</span> Prescrire
                         </button>
-                        <button onClick={() => navigateTo("veille")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                        <button
+                          onClick={() => navigateTo("veille")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
                           <span aria-hidden="true">🔍</span> Veille
-                        </button>
-                        <button onClick={() => navigateTo("comparator")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
-                          <span aria-hidden="true">⚖️</span> Comparer
                         </button>
                       </>
                     )}
                     {isAdmin && (
                       <>
-                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">Admin</p>
-                        <button onClick={() => navigateTo("admin")}
-                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors">
+                        <p className="px-4 pt-2 pb-1 text-xs font-bold text-text-secondary uppercase tracking-wider">
+                          Admin
+                        </p>
+                        <button
+                          onClick={() => navigateTo("admin")}
+                          className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
                           <span aria-hidden="true">⚙️</span> Admin
                         </button>
                       </>
                     )}
                     <div className="border-t border-gray-100 mt-1 pt-1">
-                      <button onClick={handleLogout}
-                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
+                      >
                         <span aria-hidden="true">🚪</span> Déconnexion
                       </button>
                     </div>
@@ -179,12 +224,32 @@ export const Header: React.FC = () => {
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               )}
             </button>
@@ -201,7 +266,9 @@ export const Header: React.FC = () => {
             ].map(({ view, emoji, text }) => (
               <button
                 key={view}
-                onClick={() => navigateTo(view as Parameters<typeof setView>[0])}
+                onClick={() =>
+                  navigateTo(view as Parameters<typeof setView>[0])
+                }
                 className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                   currentView === view
                     ? "text-white font-bold bg-white/10"
@@ -226,61 +293,75 @@ export const Header: React.FC = () => {
               {isAuthenticated ? (
                 <>
                   <div className="px-4 py-2">
-                    <p className="text-sm font-semibold text-white">{user?.name}</p>
+                    <p className="text-sm font-semibold text-white">
+                      {user?.name}
+                    </p>
                     <p className="text-xs text-white/60">{user?.email}</p>
                   </div>
-                  <button onClick={() => navigateTo("profile")}
+                  <button
+                    onClick={() => navigateTo("profile")}
                     className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                       currentView === "profile"
                         ? "text-white font-bold bg-white/10"
                         : "text-white/80 hover:text-white hover:bg-white/10"
-                    }`}>
+                    }`}
+                  >
                     <span aria-hidden="true">👤</span> Profil
                   </button>
                   {(isPrescriber || isPrescriberPending) && (
                     <>
-                      <button onClick={() => navigateTo("prescriber-dashboard")}
+                      <button
+                        onClick={() => navigateTo("prescriber-dashboard")}
                         className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                           currentView === "prescriber-dashboard"
                             ? "text-white font-bold bg-white/10"
                             : "text-white/80 hover:text-white hover:bg-white/10"
-                        }`}>
+                        }`}
+                      >
                         <span aria-hidden="true">📊</span> Tableau de bord
                       </button>
-                      <button onClick={() => navigateTo("new-prescription")}
+                      <button
+                        onClick={() => navigateTo("new-prescription")}
                         className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                           currentView === "new-prescription"
                             ? "text-white font-bold bg-white/10"
                             : "text-white/80 hover:text-white hover:bg-white/10"
-                        }`}>
+                        }`}
+                      >
                         <span aria-hidden="true">📝</span> Prescrire
                       </button>
                     </>
                   )}
                   {isAdmin && (
                     <>
-                      <button onClick={() => navigateTo("admin")}
+                      <button
+                        onClick={() => navigateTo("admin")}
                         className={`w-full text-left px-4 py-3 min-h-[44px] text-sm rounded-lg transition-colors ${
                           currentView === "admin"
                             ? "text-white font-bold bg-white/10"
                             : "text-white/80 hover:text-white hover:bg-white/10"
-                        }`}>
+                        }`}
+                      >
                         <span aria-hidden="true">⚙️</span> Admin
                       </button>
                     </>
                   )}
-                  <button onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 min-h-[44px] text-sm font-semibold text-red-300 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 min-h-[44px] text-sm font-semibold text-red-300 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors"
+                  >
                     <span aria-hidden="true">🚪</span> Déconnexion
                   </button>
                 </>
               ) : (
-                <button onClick={() => navigateTo("prescriber-auth")}
+                <button
+                  onClick={() => navigateTo("prescriber-auth")}
                   className={`w-full text-left px-4 py-3 min-h-[44px] text-sm font-semibold rounded-lg transition-colors ${
                     currentView === "prescriber-auth"
                       ? "text-white font-bold bg-white/10"
                       : "text-white/80 hover:text-white hover:bg-white/10"
-                  }`}>
+                  }`}
+                >
                   <span aria-hidden="true">🩺</span> Prescripteur
                 </button>
               )}

@@ -1,7 +1,6 @@
 import re
 
-from pydantic import BaseModel, EmailStr, field_validator
-
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 VALID_PRESCRIBER_PROFESSIONS = [
     "Médecin généraliste",
@@ -32,23 +31,25 @@ VALID_PRESCRIBER_PROFESSIONS = [
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: str
-    name: str
+    password: str = Field(max_length=200)
+    name: str = Field(max_length=200)
 
 
 class PrescriberRegister(BaseModel):
     email: EmailStr
-    password: str
-    name: str
+    password: str = Field(max_length=200)
+    name: str = Field(max_length=200)
     profession: str
-    organization: str | None = None
+    organization: str | None = Field(default=None, max_length=300)
     rpps_adeli: str | None = None
 
     @field_validator("profession")
     @classmethod
     def validate_profession(cls, v: str) -> str:
         if v not in VALID_PRESCRIBER_PROFESSIONS:
-            raise ValueError(f"Profession invalide. Valeurs acceptées: {', '.join(VALID_PRESCRIBER_PROFESSIONS)}")
+            raise ValueError(
+                f"Profession invalide. Valeurs acceptées: {', '.join(VALID_PRESCRIBER_PROFESSIONS)}"
+            )
         return v
 
     @field_validator("rpps_adeli")

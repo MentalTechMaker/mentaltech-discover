@@ -8,7 +8,7 @@ export const About: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Notre démarche - Évaluation des solutions de santé mentale numérique",
-      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers."
+      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers.",
     );
     setCanonical("/notre-demarche");
   }, []);
@@ -57,10 +57,11 @@ export const About: React.FC = () => {
               , premier écosystème français dédié à la santé mentale numérique.
             </p>
             <p>
-              Le Collectif MentalTech regroupe <strong>25+ entreprises innovantes</strong>{" "}
-              engagées pour démocratiser l'accès aux soins en santé mentale :
-              téléconsultation, méditation, thérapies numériques, réalité virtuelle,
-              sevrage d'addictions, et bien plus.
+              Le Collectif MentalTech regroupe{" "}
+              <strong>25+ entreprises innovantes</strong> engagées pour
+              démocratiser l'accès aux soins en santé mentale :
+              téléconsultation, méditation, thérapies numériques, réalité
+              virtuelle, sevrage d'addictions, et bien plus.
             </p>
             <div className="bg-blue-50 border-l-4 border-primary p-4 rounded">
               <p className="font-semibold text-primary">
@@ -85,27 +86,33 @@ export const About: React.FC = () => {
           </h2>
           <div className="space-y-4 text-text-secondary leading-relaxed">
             <p className="text-lg italic">
-              Comment recommandez-vous des applications à vos patients aujourd'hui ? De mémoire, sans critères objectifs, sans suivi ?
+              Comment recommandez-vous des applications à vos patients
+              aujourd'hui ? De mémoire, sans critères objectifs, sans suivi ?
             </p>
             <p>
-              <strong>MentalTech Discover</strong> vous permet de recommander en 2 minutes la solution numérique adaptée à chaque patient - parmi un catalogue vérifié, score sur 5 piliers, avec une ordonnance numérique que votre patient reçoit directement.
+              <strong>MentalTech Discover</strong> vous permet de recommander en
+              2 minutes la solution numérique adaptée à chaque patient - parmi
+              un catalogue vérifié, score sur 5 piliers, avec une ordonnance
+              numérique que votre patient reçoit directement.
             </p>
             <div className="grid md:grid-cols-2 gap-3 mt-4">
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">🏷️</span>
-                <span className="text-sm font-medium">Catalogue vérifié A-E</span>
+                <span className="text-sm font-medium">
+                  Catalogue vérifié A-E
+                </span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">📋</span>
-                <span className="text-sm font-medium">Ordonnance numérique en 30 secondes</span>
+                <span className="text-sm font-medium">
+                  Ordonnance numérique en 30 secondes
+                </span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
                 <span className="text-xl">⭐</span>
-                <span className="text-sm font-medium">Favoris et notes cliniques</span>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
-                <span className="text-xl">⚖️</span>
-                <span className="text-sm font-medium">Comparateur côte-à-côte</span>
+                <span className="text-sm font-medium">
+                  Favoris et notes cliniques
+                </span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200 md:col-span-2">
                 <span className="text-xl">🔔</span>
@@ -142,7 +149,10 @@ export const About: React.FC = () => {
                     Soumission et évaluation
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Toute solution peut être soumise via notre formulaire public et sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient d'un badge dédié.
+                    Toute solution peut être soumise via notre formulaire public
+                    et sera évaluée selon notre protocole de qualité. Les
+                    membres du Collectif MentalTech bénéficient d'un badge
+                    dédié.
                   </p>
                 </div>
               </div>
@@ -155,9 +165,7 @@ export const About: React.FC = () => {
                   </h3>
                   <ul className="text-sm text-text-secondary space-y-1 list-disc list-inside">
                     <li>Respect du RGPD (données personnelles)</li>
-                    <li>
-                      Hébergement HDS si traitement de données de santé
-                    </li>
+                    <li>Hébergement HDS si traitement de données de santé</li>
                     <li>Entreprise active (pas en liquidation ou fermée)</li>
                   </ul>
                 </div>
@@ -170,8 +178,8 @@ export const About: React.FC = () => {
                     Transparence tarifaire
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Modèle de tarification clairement affiché (gratuit, freemium,
-                    abonnement, B2B...)
+                    Modèle de tarification clairement affiché (gratuit,
+                    freemium, abonnement, B2B...)
                   </p>
                 </div>
               </div>
@@ -183,7 +191,8 @@ export const About: React.FC = () => {
                     Public clair
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Audience cible et problématiques traitées clairement définies
+                    Audience cible et problématiques traitées clairement
+                    définies
                   </p>
                 </div>
               </div>
@@ -204,7 +213,11 @@ export const About: React.FC = () => {
                   Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Notre système de scoring qualité est disponible : chaque solution est évaluée sur 5 piliers (sécurité, preuves, accessibilité, expérience user, support) pour un label A à E. Cependant, nous ne sommes pas un organisme de certification officiel.
+                  Notre système de scoring qualité est disponible : chaque
+                  solution est évaluée sur 5 piliers (sécurité, preuves,
+                  accessibilité, expérience user, support) pour un label A à E.
+                  Cependant, nous ne sommes pas un organisme de certification
+                  officiel.
                 </p>
               </div>
             </div>
@@ -249,10 +262,13 @@ export const About: React.FC = () => {
               <div className="p-4 bg-green-50 rounded-xl border border-green-200">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">🎯</span>
-                  <h3 className="font-bold text-text-primary">Problématiques</h3>
+                  <h3 className="font-bold text-text-primary">
+                    Problématiques
+                  </h3>
                 </div>
                 <p className="text-sm text-text-secondary">
-                  Stress, anxiété, dépression, addiction, burn-out, sommeil, trauma
+                  Stress, anxiété, dépression, addiction, burn-out, sommeil,
+                  trauma
                 </p>
               </div>
 
@@ -279,10 +295,13 @@ export const About: React.FC = () => {
               <div className="p-4 bg-pink-50 rounded-xl border border-pink-200 md:col-span-2">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">🔧</span>
-                  <h3 className="font-bold text-text-primary">Type de service</h3>
+                  <h3 className="font-bold text-text-primary">
+                    Type de service
+                  </h3>
                 </div>
                 <p className="text-sm text-text-secondary">
-                  Téléconsultation, méditation, TCC, VR thérapeutique, coaching, etc.
+                  Téléconsultation, méditation, TCC, VR thérapeutique, coaching,
+                  etc.
                 </p>
               </div>
             </div>
@@ -294,8 +313,10 @@ export const About: React.FC = () => {
               <ul className="space-y-2 text-sm text-text-secondary">
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">→</span>
-                  Chaque solution reçoit un <strong>score de 0 à 100</strong> basé
-                  sur la correspondance avec vos réponses
+                  Chaque solution reçoit un <strong>
+                    score de 0 à 100
+                  </strong>{" "}
+                  basé sur la correspondance avec vos réponses
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">→</span>
@@ -304,8 +325,8 @@ export const About: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">→</span>
-                  Jusqu'à <strong>6 solutions additionnelles</strong> sont proposées
-                  si elles correspondent à vos critères
+                  Jusqu'à <strong>6 solutions additionnelles</strong> sont
+                  proposées si elles correspondent à vos critères
                 </li>
               </ul>
             </div>
@@ -340,10 +361,6 @@ export const About: React.FC = () => {
                     <span className="text-purple-600 font-bold">→</span>
                     Veille sur les nouvelles solutions
                   </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 font-bold">→</span>
-                    Comparateur de solutions
-                  </li>
                 </ul>
                 <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
                   <p className="text-sm font-semibold text-purple-800">
@@ -365,28 +382,36 @@ export const About: React.FC = () => {
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-400 font-bold">•</span>
                     <span>
-                      <strong>🛡️ Sécurité :</strong> Chiffrement, RGPD,
-                      hébergement HDS
+                      <strong>🔒 Sécurité :</strong> RGPD, hébergement HDS,
+                      chiffrement
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-400 font-bold">•</span>
                     <span>
-                      <strong>💰 Prix :</strong> Rapport qualité-prix,
-                      transparence tarifaire
+                      <strong>🎯 Preuves :</strong> Base scientifique, études
+                      cliniques
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-400 font-bold">•</span>
                     <span>
-                      <strong>📱 UX :</strong> Ergonomie, accessibilité, design
+                      <strong>♿ Accessibilité :</strong> Prix transparent,
+                      multiplateforme
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-400 font-bold">•</span>
                     <span>
-                      <strong>📊 Efficacité :</strong> Études cliniques,
-                      témoignages utilisateurs
+                      <strong>✨ Expérience user :</strong> Interface intuitive,
+                      ergonomie
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-400 font-bold">•</span>
+                    <span>
+                      <strong>💬 Support :</strong> Service client, ressources
+                      d'aide
                     </span>
                   </div>
                 </div>
@@ -408,7 +433,9 @@ export const About: React.FC = () => {
               <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
                 <span className="text-2xl">✉️</span>
                 <div>
-                  <p className="text-sm font-semibold text-text-primary">Email</p>
+                  <p className="text-sm font-semibold text-text-primary">
+                    Email
+                  </p>
                   <a
                     href="mailto:arnaud@mentaltechmaker.fr"
                     className="text-primary hover:underline font-medium"
@@ -436,7 +463,9 @@ export const About: React.FC = () => {
               <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
                 <span className="text-2xl">🌐</span>
                 <div>
-                  <p className="text-sm font-semibold text-text-primary">Site</p>
+                  <p className="text-sm font-semibold text-text-primary">
+                    Site
+                  </p>
                   <a
                     href="https://mentaltechmaker.fr"
                     target="_blank"

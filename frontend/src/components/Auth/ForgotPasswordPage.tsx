@@ -38,7 +38,8 @@ export const ForgotPasswordPage: React.FC = () => {
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
                 <p className="font-semibold">Email envoyé</p>
                 <p className="text-sm mt-1">
-                  Si un compte existe avec l'adresse <strong>{email}</strong>, vous recevrez un lien de réinitialisation.
+                  Si un compte existe avec l'adresse <strong>{email}</strong>,
+                  vous recevrez un lien de réinitialisation.
                 </p>
               </div>
               <button
@@ -51,7 +52,8 @@ export const ForgotPasswordPage: React.FC = () => {
           ) : (
             <>
               <p className="text-text-secondary text-sm mb-4">
-                Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                Entrez votre adresse email et nous vous enverrons un lien pour
+                réinitialiser votre mot de passe.
               </p>
 
               {error && (
@@ -62,7 +64,10 @@ export const ForgotPasswordPage: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-semibold text-text-primary mb-1"
+                  >
                     Email
                   </label>
                   <input

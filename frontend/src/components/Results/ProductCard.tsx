@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import type { Product } from "../../types";
 import { sanitizeUrl } from "../../utils/security";
 import { analytics } from "../../lib/analytics";
-import { getLabelInfo, SCORE_CRITERIA } from "../../utils/scoring";
 import { useAppStore } from "../../store/useAppStore";
+
+import { audienceLabels, problemLabels } from "../../data/labels";
+import { renderPriorityBadges } from "../shared/PriorityBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -12,7 +14,6 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [showScoreDetail, setShowScoreDetail] = useState(false);
   const viewProduct = useAppStore((s) => s.viewProduct);
   const safeUrl = sanitizeUrl(product.url);
 
@@ -22,8 +23,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     <div
       className={`group relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
         product.isMentaltechMember
-          ? 'bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 border-primary shadow-xl shadow-primary/15 hover:shadow-primary/30 ring-1 ring-primary/10'
-          : 'bg-white border-gray-100 hover:border-primary'
+          ? "bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 border-primary shadow-xl shadow-primary/15 hover:shadow-primary/30 ring-1 ring-primary/10"
+          : "bg-white border-gray-100 hover:border-primary"
       }`}
       style={{
         animation: "fadeInUp 0.6s ease-out forwards",
@@ -33,15 +34,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 transition-opacity duration-300 ${
-        product.isMentaltechMember ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-      }`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 transition-opacity duration-300 ${
+          product.isMentaltechMember
+            ? "opacity-100"
+            : "opacity-0 group-hover:opacity-100"
+        }`}
+      />
 
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
         {product.isDemo && (
           <div className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-semibold rounded-full shadow-sm">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
             Demo
           </div>
@@ -77,25 +86,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>
-                  {Math.round(product.recommendationScore)}% match
-                </span>
+                <span>{Math.round(product.recommendationScore)}% match</span>
               </div>
             )}
-          {(() => {
-            const label = getLabelInfo(product.scoreLabel);
-            return (
-              <button
-                type="button"
-                onClick={() => setShowScoreDetail((v) => !v)}
-                className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
-                style={{ backgroundColor: label.bgColor, color: label.color }}
-                title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ''} - Cliquez pour voir le détail`}
-              >
-                {label.grade}
-              </button>
-            );
-          })()}
         </div>
       </div>
 
@@ -127,7 +120,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
               role="button"
               tabIndex={0}
               onClick={() => viewProduct(product.id)}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && viewProduct(product.id)}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") && viewProduct(product.id)
+              }
             >
               {product.name}
             </h3>
@@ -149,51 +144,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           {product.description}
         </p>
 
-        {showScoreDetail && product.scoring && (() => {
-          const label = getLabelInfo(product.scoreLabel);
-          return (
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
-                  style={{ backgroundColor: label.bgColor, color: label.color }}
-                >
-                  {label.grade}
-                </span>
-                <span className="font-semibold text-text-primary">{label.text}</span>
-                {product.scoreTotal != null && (
-                  <span className="text-text-secondary text-sm">({product.scoreTotal}/100)</span>
-                )}
-              </div>
-              {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
-                const score = product.scoring?.[key];
-                const justification = product.scoring?.[justKey];
-                if (score == null && !justification) return null;
-                return (
-                  <div key={key}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-text-primary">{criteriaLabel}</span>
-                      {score != null && (
-                        <span className="text-sm font-bold text-text-primary">{score}/5</span>
-                      )}
-                    </div>
-                    {score != null && (
-                      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                        <div
-                          className="h-1.5 rounded-full transition-all"
-                          style={{ width: `${(score / 5) * 100}%`, backgroundColor: label.bgColor }}
-                        />
-                      </div>
-                    )}
-                    {justification && (
-                      <p className="text-xs text-text-secondary mt-1 whitespace-pre-line">{justification}</p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })()}
+        {(product.audiencePriorities || product.problemsPriorities) && (
+          <div className="flex flex-wrap gap-1.5 items-center">
+            {renderPriorityBadges(product.audiencePriorities, audienceLabels)}
+            {product.audiencePriorities && product.problemsPriorities && (
+              <span className="text-gray-300 mx-0.5">|</span>
+            )}
+            {renderPriorityBadges(product.problemsPriorities, problemLabels)}
+          </div>
+        )}
 
         {product.tags && product.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -240,7 +199,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
               onClick={() => {
                 analytics.solutionClicked(
                   product.name,
-                  product.type || "unknown"
+                  product.type || "unknown",
                 );
               }}
               className="text-xs text-primary hover:text-primary-dark font-medium transition-colors"
@@ -249,7 +208,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
               Accéder au site ↗
             </a>
           ) : (
-            <span className="text-xs text-text-secondary italic">Lien non disponible</span>
+            <span className="text-xs text-text-secondary italic">
+              Lien non disponible
+            </span>
           )}
           <a
             href={`mailto:arnaud@mentaltechmaker.fr?subject=Signalement solution: ${encodeURIComponent(product.name)}&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant la solution "${encodeURIComponent(product.name)}" :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement`}

@@ -3,10 +3,20 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Request, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from ..utils import to_dict, validate_magic_bytes, public_submission_to_response
 from ..database import get_db
 from ..models.public_submission import PublicSubmission
 from ..models.health_prof_application import HealthProfApplication
@@ -22,6 +32,7 @@ from ..services.email import (
     send_submission_received_admin_email,
     send_health_pro_confirmation_email,
     send_health_pro_admin_notification,
+    send_submission_recap_email,
 )
 from ..config import settings
 
@@ -36,53 +47,21 @@ PUBLIC_LOGO_MAX_SIZE = 2 * 1024 * 1024  # 2 MB
 PUBLIC_LOGO_UPLOAD_DIR = Path("/tmp/uploads/logos")
 
 
-def _validate_magic_bytes(content: bytes, content_type: str) -> bool:
-    if content_type == "image/png":
-        return content[:4] == b'\x89PNG'
-    elif content_type == "image/jpeg":
-        return content[:3] == b'\xff\xd8\xff'
-    elif content_type == "image/webp":
-        return content[:4] == b'RIFF' and content[8:12] == b'WEBP'
-    return False
+_validate_magic_bytes = validate_magic_bytes
 
 
 def _check_bot(honeypot: str, submitted_at_ts: float) -> None:
     if honeypot:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bot détecté")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Bot détecté"
+        )
     if submitted_at_ts > 0 and (time.time() - submitted_at_ts) < BOT_MIN_SECONDS:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Soumission trop rapide")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Soumission trop rapide"
+        )
 
 
-def _to_response(sub: PublicSubmission) -> PublicSubmissionResponse:
-    return PublicSubmissionResponse(
-        id=str(sub.id),
-        contactName=sub.contact_name,
-        contactEmail=sub.contact_email,
-        status=sub.status,
-        name=sub.name,
-        type=sub.type,
-        tagline=sub.tagline,
-        description=sub.description,
-        url=sub.url,
-        linkedin=sub.linkedin,
-        logo=sub.logo,
-        tags=sub.tags or [],
-        audience=sub.audience or [],
-        problemsSolved=sub.problems_solved or [],
-        pricingModel=sub.pricing_model,
-        pricingAmount=sub.pricing_amount,
-        pricingDetails=sub.pricing_details,
-        protocolAnswers=sub.protocol_answers or {},
-        collectifRequested=sub.collectif_requested,
-        collectifCaRange=sub.collectif_ca_range,
-        collectifStatus=sub.collectif_status,
-        collectifContactEmail=sub.collectif_contact_email,
-        adminNotes=sub.admin_notes,
-        productId=sub.product_id,
-        reviewedAt=sub.reviewed_at.isoformat() if sub.reviewed_at else None,
-        createdAt=sub.created_at.isoformat(),
-        updatedAt=sub.updated_at.isoformat(),
-    )
+_to_response = public_submission_to_response
 
 
 @router.post("/upload-logo")
@@ -143,19 +122,25 @@ async def create_public_submission(
         tags=data.tags,
         audience=data.audience,
         problems_solved=data.problems_solved,
+        audience_priorities=to_dict(data.audience_priorities),
+        problems_priorities=to_dict(data.problems_priorities),
         pricing_model=data.pricing_model,
         pricing_amount=data.pricing_amount,
         pricing_details=data.pricing_details,
         protocol_answers=data.protocol_answers,
         collectif_requested=data.collectif_requested,
-        collectif_ca_range=data.collectif_ca_range,
-        collectif_contact_email=str(data.collectif_contact_email) if data.collectif_contact_email else None,
+        collectif_ca_range=data.collectif_ca_range,  # Stored temporarily for admin review, purged on approval/rejection
+        collectif_contact_email=(
+            str(data.collectif_contact_email) if data.collectif_contact_email else None
+        ),
     )
     db.add(submission)
     db.commit()
     db.refresh(submission)
 
-    token = create_email_token(str(submission.id), "confirm_submission", expire_hours=48)
+    token = create_email_token(
+        str(submission.id), "confirm_submission", expire_hours=48
+    )
     submission.confirm_token = token
     db.commit()
 
@@ -183,7 +168,10 @@ async def create_public_submission(
     # Note: background_tasks doesn't support async closures directly, so use a wrapper
     # We skip admin notification here and send it on confirm instead (after email verification)
 
-    return {"message": "Email de confirmation envoyé. Vérifiez votre boîte mail.", "id": str(submission.id)}
+    return {
+        "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
+        "id": str(submission.id),
+    }
 
 
 @router.get("/submissions/confirm")
@@ -194,18 +182,29 @@ async def confirm_submission(
 ):
     submission_id = decode_email_token(token, "confirm_submission")
     if not submission_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lien invalide ou expiré")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Lien invalide ou expiré"
+        )
 
-    submission = db.query(PublicSubmission).filter(
-        PublicSubmission.id == submission_id,
-        PublicSubmission.confirm_token == token,
-    ).first()
+    submission = (
+        db.query(PublicSubmission)
+        .filter(
+            PublicSubmission.id == submission_id,
+            PublicSubmission.confirm_token == token,
+        )
+        .first()
+    )
 
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soumission introuvable"
+        )
 
     if submission.email_confirmed:
-        return {"message": "Soumission déjà confirmée", "submission_id": str(submission.id)}
+        return {
+            "message": "Soumission déjà confirmée",
+            "submission_id": str(submission.id),
+        }
 
     submission.email_confirmed = True
     submission.status = "submitted"
@@ -223,7 +222,25 @@ async def confirm_submission(
         collectif_ca_range=submission.collectif_ca_range,
     )
 
-    return {"message": "Soumission confirmée avec succès", "submission_id": str(submission.id)}
+    background_tasks.add_task(
+        send_submission_recap_email,
+        email=submission.contact_email,
+        contact_name=submission.contact_name,
+        product_name=submission.name,
+        product_type=submission.type,
+        tagline=submission.tagline,
+        url=submission.url,
+        audience_priorities=submission.audience_priorities,
+        problems_priorities=submission.problems_priorities,
+        pricing_model=submission.pricing_model,
+        pricing_amount=submission.pricing_amount,
+        collectif_requested=submission.collectif_requested,
+    )
+
+    return {
+        "message": "Soumission confirmee avec succes",
+        "submission_id": str(submission.id),
+    }
 
 
 @router.post("/health-pro/apply", status_code=status.HTTP_201_CREATED)
@@ -251,7 +268,9 @@ async def apply_health_pro(
     db.commit()
     db.refresh(application)
 
-    token = create_email_token(str(application.id), "confirm_health_pro", expire_hours=48)
+    token = create_email_token(
+        str(application.id), "confirm_health_pro", expire_hours=48
+    )
     application.confirm_token = token
     db.commit()
 
@@ -262,7 +281,10 @@ async def apply_health_pro(
         confirm_token=token,
     )
 
-    return {"message": "Email de confirmation envoyé. Vérifiez votre boîte mail.", "id": str(application.id)}
+    return {
+        "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
+        "id": str(application.id),
+    }
 
 
 @router.get("/health-pro/confirm")
@@ -273,18 +295,29 @@ async def confirm_health_pro(
 ):
     application_id = decode_email_token(token, "confirm_health_pro")
     if not application_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lien invalide ou expiré")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Lien invalide ou expiré"
+        )
 
-    application = db.query(HealthProfApplication).filter(
-        HealthProfApplication.id == application_id,
-        HealthProfApplication.confirm_token == token,
-    ).first()
+    application = (
+        db.query(HealthProfApplication)
+        .filter(
+            HealthProfApplication.id == application_id,
+            HealthProfApplication.confirm_token == token,
+        )
+        .first()
+    )
 
     if not application:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Candidature introuvable"
+        )
 
     if application.email_confirmed:
-        return {"message": "Candidature déjà confirmée", "application_id": str(application.id)}
+        return {
+            "message": "Candidature déjà confirmée",
+            "application_id": str(application.id),
+        }
 
     application.email_confirmed = True
     application.status = "submitted"
@@ -303,4 +336,7 @@ async def confirm_health_pro(
         motivation=application.motivation,
     )
 
-    return {"message": "Candidature confirmée avec succès", "application_id": str(application.id)}
+    return {
+        "message": "Candidature confirmée avec succès",
+        "application_id": str(application.id),
+    }

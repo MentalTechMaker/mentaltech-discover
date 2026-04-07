@@ -1,6 +1,14 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, Request, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Cookie,
+    Depends,
+    HTTPException,
+    Request,
+    status,
+)
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -33,13 +41,16 @@ from ..services.email import (
 )
 from ..dependencies import get_current_user
 from ..rate_limit import limiter
+
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 REFRESH_COOKIE_NAME = "refresh_token"
 REFRESH_COOKIE_MAX_AGE = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
 
 
-def _set_auth_response(access_token: str, refresh_token: str, status_code: int = 200) -> JSONResponse:
+def _set_auth_response(
+    access_token: str, refresh_token: str, status_code: int = 200
+) -> JSONResponse:
     response = JSONResponse(
         content={
             "access_token": access_token,
@@ -60,7 +71,9 @@ def _set_auth_response(access_token: str, refresh_token: str, status_code: int =
     return response
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+)
 @limiter.limit("5/minute")
 async def register(
     request: Request,
@@ -109,7 +122,11 @@ async def register(
     )
 
 
-@router.post("/register-prescriber", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register-prescriber",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 @limiter.limit("5/minute")
 async def register_prescriber(
     request: Request,
@@ -283,12 +300,16 @@ async def forgot_password(
             send_reset_password_email, user.email, user.name, str(user.id)
         )
 
-    return {"message": "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé"}
+    return {
+        "message": "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé"
+    }
 
 
 @router.post("/reset-password")
 @limiter.limit("5/minute")
-def reset_password(request: Request, data: ResetPassword, db: Session = Depends(get_db)):
+def reset_password(
+    request: Request, data: ResetPassword, db: Session = Depends(get_db)
+):
     token_data = decode_email_token(data.token, "reset_password", return_full=True)
     if not token_data:
         raise HTTPException(

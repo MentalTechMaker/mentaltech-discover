@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
+from .product import PriorityMapSchema
 
 
 class SubmissionCreate(BaseModel):
@@ -12,6 +13,8 @@ class SubmissionCreate(BaseModel):
     tags: list[str] = []
     audience: list[str] = []
     problems_solved: list[str] = []
+    audience_priorities: PriorityMapSchema = PriorityMapSchema()
+    problems_priorities: PriorityMapSchema = PriorityMapSchema()
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
@@ -29,6 +32,8 @@ class SubmissionUpdate(BaseModel):
     tags: list[str] | None = None
     audience: list[str] | None = None
     problems_solved: list[str] | None = None
+    audience_priorities: PriorityMapSchema | None = None
+    problems_priorities: PriorityMapSchema | None = None
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
@@ -49,6 +54,8 @@ class SubmissionResponse(BaseModel):
     tags: list[str]
     audience: list[str]
     problemsSolved: list[str]
+    audiencePriorities: dict | None = None
+    problemsPriorities: dict | None = None
     pricingModel: str | None
     pricingAmount: str | None
     pricingDetails: str | None
@@ -90,6 +97,8 @@ class AdminCreateAndPublishSchema(BaseModel):
     tags: list[str] = []
     audience: list[str] = []
     problems_solved: list[str] = []
+    audience_priorities: PriorityMapSchema = PriorityMapSchema()
+    problems_priorities: PriorityMapSchema = PriorityMapSchema()
     is_mentaltech_member: bool = False
     preference_match: list[str] = []
     pricing_model: str | None = None
@@ -109,5 +118,3 @@ class AdminCreateAndPublishSchema(BaseModel):
     justification_ux: str | None = None
     justification_support: str | None = None
     scoring_criteria: dict | None = None
-
-

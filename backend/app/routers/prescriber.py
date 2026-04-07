@@ -28,6 +28,7 @@ router = APIRouter(prefix="/api/prescriber", tags=["prescriber"])
 
 # ─── FAVORITES ───────────────────────────────────────────────
 
+
 @router.get("/favorites", response_model=list[FavoriteResponse])
 def list_favorites(
     user: User = Depends(require_prescriber_or_admin),
@@ -49,7 +50,9 @@ def list_favorites(
     ]
 
 
-@router.post("/favorites", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/favorites", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED
+)
 def add_favorite(
     data: FavoriteToggle,
     user: User = Depends(require_prescriber_or_admin),
@@ -57,7 +60,9 @@ def add_favorite(
 ):
     product = db.query(Product).filter(Product.id == data.product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
 
     favorite = PrescriberFavorite(prescriber_id=user.id, product_id=data.product_id)
     try:
@@ -66,7 +71,9 @@ def add_favorite(
         db.refresh(favorite)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Déjà en favoris")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Déjà en favoris"
+        )
 
     return FavoriteResponse(
         id=str(favorite.id),
@@ -83,16 +90,22 @@ def remove_favorite(
 ):
     favorite = (
         db.query(PrescriberFavorite)
-        .filter(PrescriberFavorite.prescriber_id == user.id, PrescriberFavorite.product_id == product_id)
+        .filter(
+            PrescriberFavorite.prescriber_id == user.id,
+            PrescriberFavorite.product_id == product_id,
+        )
         .first()
     )
     if not favorite:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Favori introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Favori introuvable"
+        )
     db.delete(favorite)
     db.commit()
 
 
 # ─── NOTES ────────────────────────────────────────────────────
+
 
 @router.get("/notes", response_model=list[NoteResponse])
 def list_notes(
@@ -125,11 +138,16 @@ def upsert_note(
 ):
     product = db.query(Product).filter(Product.id == data.product_id).first()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produit introuvable"
+        )
 
     note = (
         db.query(PrescriberNote)
-        .filter(PrescriberNote.prescriber_id == user.id, PrescriberNote.product_id == data.product_id)
+        .filter(
+            PrescriberNote.prescriber_id == user.id,
+            PrescriberNote.product_id == data.product_id,
+        )
         .first()
     )
 
@@ -164,16 +182,22 @@ def delete_note(
 ):
     note = (
         db.query(PrescriberNote)
-        .filter(PrescriberNote.prescriber_id == user.id, PrescriberNote.product_id == product_id)
+        .filter(
+            PrescriberNote.prescriber_id == user.id,
+            PrescriberNote.product_id == product_id,
+        )
         .first()
     )
     if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Note introuvable"
+        )
     db.delete(note)
     db.commit()
 
 
 # ─── VEILLE / PRODUCT UPDATES ────────────────────────────────
+
 
 @router.get("/updates", response_model=list[ProductUpdateResponse])
 def list_updates(
@@ -196,8 +220,7 @@ def list_updates(
         query = query.filter(ProductUpdate.product_id.in_(fav_ids))
 
     results = (
-        query
-        .order_by(ProductUpdate.created_at.desc())
+        query.order_by(ProductUpdate.created_at.desc())
         .offset(offset)
         .limit(limit)
         .all()
@@ -219,6 +242,7 @@ def list_updates(
 
 # ─── COMPARATOR ───────────────────────────────────────────────
 
+
 @router.get("/compare")
 def compare_products(
     ids: str = Query(..., description="Comma-separated product IDs (2-4)"),
@@ -234,12 +258,16 @@ def compare_products(
 
     products = db.query(Product).filter(Product.id.in_(product_ids)).all()
     if len(products) != len(product_ids):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Un ou plusieurs produits introuvables")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Un ou plusieurs produits introuvables",
+        )
 
     return [_to_response(p).model_dump() for p in products]
 
 
 # ─── COMMUNITY STATS ─────────────────────────────────────────
+
 
 @router.get("/community-stats", response_model=list[CommunityStats])
 def community_stats(

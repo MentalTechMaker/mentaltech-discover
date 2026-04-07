@@ -1,4 +1,3 @@
-
 export interface QuestionOption {
   value: string;
   label: string;
@@ -8,7 +7,7 @@ export interface QuestionOption {
 export interface Question {
   id: number;
   question: string;
-  type: 'single-choice' | 'multi-choice';
+  type: "single-choice" | "multi-choice";
   options: QuestionOption[];
   condition?: {
     questionId: number;
@@ -28,6 +27,12 @@ export interface UserAnswers {
   healthOrgNeeds?: string;
 }
 
+export interface PriorityMap {
+  P1: string[];
+  P2: string[];
+  P3: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -40,12 +45,20 @@ export interface Product {
   audience: string[];
   problemsSolved: string[];
   preferenceMatch: string[];
+  audiencePriorities?: PriorityMap;
+  problemsPriorities?: PriorityMap;
   isMentaltechMember?: boolean;
   isVisible?: boolean;
   companyDefunct?: boolean;
   isDemo?: boolean;
   pricing?: {
-    model?: 'free' | 'freemium' | 'subscription' | 'per-session' | 'enterprise' | 'custom';
+    model?:
+      | "free"
+      | "freemium"
+      | "subscription"
+      | "per-session"
+      | "enterprise"
+      | "custom";
     amount?: string;
     details?: string;
   };
@@ -85,9 +98,15 @@ export interface RecommendationResult {
   explanation: string;
 }
 
-export type UserType = 'individual' | 'company' | 'health-decision-maker';
+export type UserType = "individual" | "company" | "health-decision-maker";
 
-export type PublicSubmissionStatus = 'pending_email' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
+export type PublicSubmissionStatus =
+  | "pending_email"
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "changes_requested";
 
 export interface PublicSubmission {
   id: string;
@@ -104,6 +123,8 @@ export interface PublicSubmission {
   tags: string[];
   audience: string[];
   problemsSolved: string[];
+  audiencePriorities?: PriorityMap;
+  problemsPriorities?: PriorityMap;
   pricingModel: string | null;
   pricingAmount: string | null;
   pricingDetails: string | null;
@@ -136,4 +157,31 @@ export interface HealthProfApplication {
   updatedAt: string;
 }
 
-export type AppView = 'landing' | 'quiz' | 'results' | 'privacy' | 'legal' | 'catalog' | 'methodology' | 'about' | 'faq' | 'login' | 'register' | 'prescriber-auth' | 'admin' | 'profile' | 'forgot-password' | 'reset-password' | 'verify-email' | 'product' | 'prescriber-dashboard' | 'new-prescription' | 'veille' | 'comparator' | 'prescription' | 'public-submission' | 'health-pro-application' | 'confirm-submission' | 'confirm-health-pro' | 'join-collective';
+export type AppView =
+  | "landing"
+  | "quiz"
+  | "results"
+  | "privacy"
+  | "legal"
+  | "catalog"
+  | "methodology"
+  | "about"
+  | "faq"
+  | "login"
+  | "register"
+  | "prescriber-auth"
+  | "admin"
+  | "profile"
+  | "forgot-password"
+  | "reset-password"
+  | "verify-email"
+  | "product"
+  | "prescriber-dashboard"
+  | "new-prescription"
+  | "veille"
+  | "prescription"
+  | "public-submission"
+  | "health-pro-application"
+  | "confirm-submission"
+  | "confirm-health-pro"
+  | "join-collective";

@@ -1,5 +1,6 @@
 const SITE_NAME = "MentalTech Discover";
-export const SITE_URL = (import.meta.env.VITE_SITE_URL as string) || "https://discover.mentaltech.fr";
+export const SITE_URL =
+  (import.meta.env.VITE_SITE_URL as string) || "https://discover.mentaltech.fr";
 
 /**
  * Update the page title and meta description.

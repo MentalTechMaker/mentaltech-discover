@@ -22,11 +22,15 @@ class User(Base):
     profession: Mapped[str | None] = mapped_column(String(255), nullable=True)
     organization: Mapped[str | None] = mapped_column(String(255), nullable=True)
     rpps_adeli: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    is_verified_prescriber: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_verified_prescriber: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
     company_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     siret: Mapped[str | None] = mapped_column(String(20), nullable=True)
     company_website: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    is_verified_publisher: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_verified_publisher: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
     password_changed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
     )

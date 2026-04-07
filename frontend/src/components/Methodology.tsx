@@ -5,7 +5,7 @@ export const Methodology: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Méthodologie d'évaluation",
-      "Comment MentalTech Discover évalue les solutions numériques de santé mentale : 5 piliers, protocole transparent, labels A à E."
+      "Comment MentalTech Discover évalue les solutions numériques de santé mentale : 5 piliers, protocole transparent, labels A à E.",
     );
     setCanonical("/methodologie");
   }, []);
@@ -353,8 +353,8 @@ export const Methodology: React.FC = () => {
                 </span>
               </div>
               <p className="text-sm text-gray-600">
-                Un système complet d'évaluation sur 5 piliers pour vous aider à choisir la
-                meilleure solution
+                Un système complet d'évaluation sur 5 piliers pour vous aider à
+                choisir la meilleure solution
               </p>
             </div>
           </div>
@@ -441,7 +441,10 @@ export const Methodology: React.FC = () => {
                 </h4>
                 <p className="text-sm text-gray-700 mb-3">
                   Chaque pilier est noté de 0 à 5 points. Le{" "}
-                  <strong>score global sur 100 points</strong> est calculé en additionnant les 5 piliers (chacun multiplié par 4). Tous les piliers ont un <strong>poids égal</strong> dans l'évaluation finale, permettant une comparaison objective :
+                  <strong>score global sur 100 points</strong> est calculé en
+                  additionnant les 5 piliers (chacun multiplié par 4). Tous les
+                  piliers ont un <strong>poids égal</strong> dans l'évaluation
+                  finale, permettant une comparaison objective :
                 </p>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2">
@@ -461,13 +464,6 @@ export const Methodology: React.FC = () => {
                   <li className="flex items-start gap-2">
                     <span className="text-indigo-600 font-bold">✓</span>
                     <span>
-                      <strong>Comparaison facilitée</strong> : Scores détaillés
-                      pour chaque critère, côte-à-côte
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold">✓</span>
-                    <span>
                       <strong>Transparence totale</strong> : Méthodologie
                       publique et justifications accessibles
                     </span>
@@ -478,8 +474,15 @@ export const Methodology: React.FC = () => {
 
             <div className="bg-green-50 border-l-4 border-green-500 p-5">
               <p className="text-sm text-green-900">
-                <strong>✅ Système déployé :</strong> Chaque solution du catalogue dispose d'un label qualité A à E basé sur l'évaluation des 5 piliers. Les scores et justifications sont visibles sur chaque fiche produit. La méthodologie complète d'évaluation est disponible dans notre{" "}
-                <a href="/protocole" className="underline font-semibold">protocole public</a>.
+                <strong>✅ Système déployé :</strong> Chaque solution du
+                catalogue dispose d'un label qualité A à E basé sur l'évaluation
+                des 5 piliers. Les scores et justifications sont visibles sur
+                chaque fiche produit. La méthodologie complète d'évaluation est
+                disponible dans notre{" "}
+                <a href="/protocole" className="underline font-semibold">
+                  protocole public
+                </a>
+                .
               </p>
             </div>
           </div>

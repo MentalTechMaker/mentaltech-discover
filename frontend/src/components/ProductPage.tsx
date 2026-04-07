@@ -2,51 +2,31 @@ import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { getLabelInfo, getPillarLabelInfo, SCORE_CRITERIA } from "../utils/scoring";
 import { sanitizeUrl } from "../utils/security";
-import { listFavorites, addFavorite, removeFavorite } from "../api/prescriber";
-import { setPageMeta, setCanonical, setOgImage, injectJsonLd, removeJsonLd, SITE_URL } from "../utils/meta";
+import {
+  listFavorites,
+  addFavorite,
+  removeFavorite,
+  listNotes,
+  upsertNote,
+  deleteNote as apiDeleteNote,
+} from "../api/prescriber";
+import type { NoteResponse } from "../api/prescriber";
+import {
+  setPageMeta,
+  setCanonical,
+  setOgImage,
+  injectJsonLd,
+  removeJsonLd,
+  SITE_URL,
+} from "../utils/meta";
 
-const pricingLabels: Record<string, string> = {
-  free: "Gratuit",
-  freemium: "Freemium",
-  subscription: "Abonnement",
-  "per-session": "Par séance",
-  enterprise: "Entreprise",
-  custom: "Sur mesure",
-};
-
-const pricingColors: Record<string, string> = {
-  free: "bg-green-100 text-green-700 border-green-300",
-  freemium: "bg-blue-100 text-blue-700 border-blue-300",
-  subscription: "bg-purple-100 text-purple-700 border-purple-300",
-  "per-session": "bg-orange-100 text-orange-700 border-orange-300",
-  enterprise: "bg-gray-100 text-gray-700 border-gray-300",
-  custom: "bg-yellow-100 text-yellow-700 border-yellow-300",
-};
-
-const audienceLabels: Record<string, string> = {
-  adult: "Adultes",
-  young: "Adolescents",
-  child: "Enfants",
-  parent: "Parents",
-  senior: "Seniors",
-  "etablissement-sante": "Établissements de santé",
-  entreprise: "Entreprises",
-};
-
-const problemLabels: Record<string, string> = {
-  "stress-anxiety": "Stress / Anxiété",
-  sadness: "Tristesse / Dépression",
-  addiction: "Addictions",
-  trauma: "Traumatismes",
-  work: "Travail / Burn-out",
-  sleep: "Sommeil",
-  cognitif: "Troubles cognitifs",
-  douleur: "Douleur",
-  concentration: "Concentration / TDAH",
-  other: "Autres",
-};
+import {
+  pricingLabels,
+  pricingColors,
+  audienceLabels,
+  problemLabels,
+} from "../data/labels";
 
 export const ProductPage: React.FC = () => {
   const selectedProductId = useAppStore((s) => s.selectedProductId);
@@ -62,6 +42,15 @@ export const ProductPage: React.FC = () => {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [favoriteError, setFavoriteError] = useState(false);
 
+  const [noteContent, setNoteContent] = useState("");
+  const [existingNote, setExistingNote] = useState<NoteResponse | null>(null);
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteDeleting, setNoteDeleting] = useState(false);
+  const [noteMessage, setNoteMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
   const product = products.find((p) => p.id === selectedProductId);
 
   useEffect(() => {
@@ -70,7 +59,7 @@ export const ProductPage: React.FC = () => {
     setPageMeta(`${product.name} - ${product.type}`, desc);
     setCanonical(`/solution/${product.id}`);
     if (product.logo) {
-      const logoUrl = product.logo.startsWith('http')
+      const logoUrl = product.logo.startsWith("http")
         ? product.logo
         : `${SITE_URL}${product.logo}`;
       setOgImage(logoUrl);
@@ -78,35 +67,60 @@ export const ProductPage: React.FC = () => {
     injectJsonLd("product-schema", {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": product.name,
-      "description": product.description,
-      "applicationCategory": "HealthApplication",
-      "inLanguage": "fr",
-      "url": product.url,
-      "offers": product.pricing ? {
-        "@type": "Offer",
-        "price": product.pricing.model === "free" ? "0" : undefined,
-        "priceCurrency": "EUR",
-        "description": product.pricing.amount || product.pricing.model,
-      } : undefined,
+      name: product.name,
+      description: product.description,
+      applicationCategory: "HealthApplication",
+      inLanguage: "fr",
+      url: product.url,
+      offers: product.pricing
+        ? {
+            "@type": "Offer",
+            price: product.pricing.model === "free" ? "0" : undefined,
+            priceCurrency: "EUR",
+            description: product.pricing.amount || product.pricing.model,
+          }
+        : undefined,
     });
     injectJsonLd("breadcrumb-schema", {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": `${SITE_URL}/` },
-        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": `${SITE_URL}/catalogue` },
-        { "@type": "ListItem", "position": 3, "name": product.name },
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: `${SITE_URL}/`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Catalogue",
+          item: `${SITE_URL}/catalogue`,
+        },
+        { "@type": "ListItem", position: 3, name: product.name },
       ],
     });
-    return () => { removeJsonLd("product-schema"); removeJsonLd("breadcrumb-schema"); };
+    return () => {
+      removeJsonLd("product-schema");
+      removeJsonLd("breadcrumb-schema");
+    };
   }, [product]);
 
   useEffect(() => {
     if (!canFavorite || !selectedProductId) return;
-    listFavorites().then((favs) => {
-      setIsFavorite(favs.some((f) => f.productId === selectedProductId));
-    }).catch(() => {});
+    Promise.all([listFavorites(), listNotes()])
+      .then(([favs, allNotes]) => {
+        setIsFavorite(favs.some((f) => f.productId === selectedProductId));
+        const found = allNotes.find((n) => n.productId === selectedProductId);
+        if (found) {
+          setExistingNote(found);
+          setNoteContent(found.content);
+        } else {
+          setExistingNote(null);
+          setNoteContent("");
+        }
+      })
+      .catch(() => {});
   }, [canFavorite, selectedProductId]);
 
   const handleToggleFavorite = async () => {
@@ -130,6 +144,43 @@ export const ProductPage: React.FC = () => {
     }
   };
 
+  const handleSaveNote = async () => {
+    if (!selectedProductId || !noteContent.trim()) return;
+    setNoteSaving(true);
+    setNoteMessage(null);
+    try {
+      const saved = await upsertNote(selectedProductId, noteContent.trim());
+      setExistingNote(saved);
+      setNoteMessage({ type: "success", text: "Note enregistrée" });
+      setTimeout(() => setNoteMessage(null), 3000);
+    } catch {
+      setNoteMessage({
+        type: "error",
+        text: "Erreur lors de l'enregistrement",
+      });
+    } finally {
+      setNoteSaving(false);
+    }
+  };
+
+  const handleDeleteNote = async () => {
+    if (!selectedProductId || !existingNote) return;
+    if (!window.confirm("Supprimer cette note clinique ?")) return;
+    setNoteDeleting(true);
+    setNoteMessage(null);
+    try {
+      await apiDeleteNote(selectedProductId);
+      setExistingNote(null);
+      setNoteContent("");
+      setNoteMessage({ type: "success", text: "Note supprimée" });
+      setTimeout(() => setNoteMessage(null), 3000);
+    } catch {
+      setNoteMessage({ type: "error", text: "Erreur lors de la suppression" });
+    } finally {
+      setNoteDeleting(false);
+    }
+  };
+
   if (!product) {
     return (
       <div className="min-h-[calc(100vh-280px)] flex flex-col items-center justify-center px-4">
@@ -150,17 +201,23 @@ export const ProductPage: React.FC = () => {
     );
   }
 
-  const label = getLabelInfo(product.scoreLabel);
   const safeUrl = sanitizeUrl(product.url);
-  const hasScoring = product.scoring && product.scoreTotal != null;
 
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {product.isDemo && (
           <div className="flex items-start gap-3 px-4 py-3 mb-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-sm">
-            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
             <span>
               Cette fiche est une démo présentée pour illustrer le catalogue.
@@ -173,8 +230,18 @@ export const ProductPage: React.FC = () => {
           onClick={() => setView("catalog")}
           className="inline-flex items-center gap-2 text-text-secondary hover:text-primary mb-6 transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Retour au catalogue
         </button>
@@ -194,7 +261,10 @@ export const ProductPage: React.FC = () => {
                     const fallback = document.createElement("span");
                     fallback.className = "text-5xl";
                     fallback.setAttribute("role", "img");
-                    fallback.setAttribute("aria-label", `Logo de ${product.name}`);
+                    fallback.setAttribute(
+                      "aria-label",
+                      `Logo de ${product.name}`,
+                    );
                     fallback.textContent = "💙";
                     target.parentElement?.appendChild(fallback);
                   }}
@@ -207,29 +277,29 @@ export const ProductPage: React.FC = () => {
                 <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
                   {product.name}
                 </h1>
-                <span
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold shadow-sm"
-                  style={{ backgroundColor: label.bgColor, color: label.color }}
-                  title={`${label.text}${product.scoreTotal != null ? ` (${product.scoreTotal}/100)` : ""}`}
-                >
-                  {label.grade}
-                </span>
                 {product.isMentaltechMember && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-purple-600 text-white rounded-full text-xs font-bold shadow-md">
                     💙 Collectif MentalTech
                   </span>
                 )}
-                {product.audience.includes('entreprise') && (
+                {product.audience.includes("entreprise") && (
                   <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold">
                     🏢 ENTREPRISE
                   </span>
                 )}
               </div>
               <p className="text-sm text-text-secondary">{product.type}</p>
-              <p className="text-lg text-primary font-semibold">{product.tagline}</p>
+              <p className="text-lg text-primary font-semibold">
+                {product.tagline}
+              </p>
               {product.lastUpdated && (
                 <p className="text-xs text-text-secondary mt-1">
-                  Dernière mise à jour : {new Date(product.lastUpdated).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  Dernière mise à jour :{" "}
+                  {new Date(product.lastUpdated).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
                 </p>
               )}
             </div>
@@ -241,101 +311,100 @@ export const ProductPage: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Description */}
             <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-              <h2 className="text-xl font-bold text-text-primary mb-3">Description</h2>
+              <h2 className="text-xl font-bold text-text-primary mb-3">
+                Description
+              </h2>
               <p className="text-text-secondary leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </div>
 
-            {/* Scoring detail - visible for admin and prescribers */}
-            {hasScoring && (
-              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <span
-                    className="inline-flex items-center justify-center w-12 h-12 rounded-full text-lg font-bold shadow"
-                    style={{ backgroundColor: label.bgColor, color: label.color }}
-                  >
-                    {label.grade}
-                  </span>
+            {/* Positionnement */}
+            {(product.audiencePriorities || product.problemsPriorities) && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-lg font-bold text-text-primary mb-4">
+                  Positionnement
+                </h2>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700 mb-4">
+                  Informations fournies par l'éditeur. MentalTech Discover ne
+                  garantit pas leur exactitude.
+                </div>
+                {product.audiencePriorities && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                      Public cible
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(["P1", "P2", "P3"] as const).map((level) =>
+                        (product.audiencePriorities?.[level] ?? []).map(
+                          (key: string) => (
+                            <span
+                              key={key}
+                              className={`relative px-3 py-1 rounded-full text-xs font-semibold ${
+                                level === "P1"
+                                  ? "bg-blue-50 text-blue-700 ring-1 ring-blue-300"
+                                  : level === "P2"
+                                    ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200"
+                                    : "bg-gray-100 text-gray-500 ring-1 ring-gray-200"
+                              }`}
+                            >
+                              <span
+                                className={`absolute -top-2 -right-2 text-[9px] font-bold px-1 py-0.5 rounded-full ${
+                                  level === "P1"
+                                    ? "bg-blue-500 text-white"
+                                    : level === "P2"
+                                      ? "bg-indigo-400 text-white"
+                                      : "bg-gray-400 text-white"
+                                }`}
+                              >
+                                {level}
+                              </span>
+                              {audienceLabels[key] || key}
+                            </span>
+                          ),
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
+                {product.problemsPriorities && (
                   <div>
-                    <h2 className="text-xl font-bold text-text-primary">{label.text}</h2>
-                    <p className="text-text-secondary text-sm">
-                      Score global : {product.scoreTotal}/100
-                    </p>
-                    {product.updatedAt && (
-                      <p className="text-xs text-text-secondary mt-0.5">
-                        Évalué en {new Date(product.updatedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
-                      </p>
-                    )}
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                      Problematiques adressees
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(["P1", "P2", "P3"] as const).map((level) =>
+                        (product.problemsPriorities?.[level] ?? []).map(
+                          (key: string) => (
+                            <span
+                              key={key}
+                              className={`relative px-3 py-1 rounded-full text-xs font-semibold ${
+                                level === "P1"
+                                  ? "bg-blue-50 text-blue-700 ring-1 ring-blue-300"
+                                  : level === "P2"
+                                    ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200"
+                                    : "bg-gray-100 text-gray-500 ring-1 ring-gray-200"
+                              }`}
+                            >
+                              <span
+                                className={`absolute -top-2 -right-2 text-[9px] font-bold px-1 py-0.5 rounded-full ${
+                                  level === "P1"
+                                    ? "bg-blue-500 text-white"
+                                    : level === "P2"
+                                      ? "bg-indigo-400 text-white"
+                                      : "bg-gray-400 text-white"
+                                }`}
+                              >
+                                {level}
+                              </span>
+                              {problemLabels[key] || key}
+                            </span>
+                          ),
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-5">
-                  {SCORE_CRITERIA.map(({ key, label: criteriaLabel, justKey }) => {
-                    const score = product.scoring?.[key];
-                    const justification = product.scoring?.[justKey];
-                    const pillarLabel = getPillarLabelInfo(score);
-                    return (
-                      <div key={key} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-text-primary">{criteriaLabel}</span>
-                          {score != null
-                            ? <span className="text-lg font-bold text-text-primary">{score}/5</span>
-                            : <span className="text-xs text-text-secondary italic">Non renseigné</span>
-                          }
-                        </div>
-                        {score != null && (
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                            <div
-                              className="h-2.5 rounded-full transition-all"
-                              style={{
-                                width: `${(score / 5) * 100}%`,
-                                backgroundColor: pillarLabel.bgColor,
-                              }}
-                            />
-                          </div>
-                        )}
-                        {justification && (
-                          <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                            {product.isDemo ? (
-                              <ul className="text-sm text-text-secondary leading-relaxed space-y-1">
-                                {justification.split(/\.\s+/).filter(Boolean).map((sentence: string, i: number) => (
-                                  <li key={i} className="flex gap-2">
-                                    <span className="text-text-secondary flex-shrink-0">-</span>
-                                    <span>{sentence.replace(/\.$/, '').trim()}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
-                                {justification}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Placeholder when scoring data is not available */}
-            {!hasScoring && (
-              <div className="bg-white rounded-2xl border-2 border-dashed border-gray-300 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-text-primary">Évaluation en cours</h2>
-                    <p className="text-sm text-text-secondary mt-1">
-                      Cette solution est en cours d'évaluation par notre équipe. Les scores de qualité seront disponibles prochainement.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </div>
@@ -365,7 +434,9 @@ export const ProductPage: React.FC = () => {
                   Découvrir {product.name} →
                 </a>
               ) : (
-                <p className="text-center text-text-secondary italic">Lien non disponible</p>
+                <p className="text-center text-text-secondary italic">
+                  Lien non disponible
+                </p>
               )}
               {canFavorite && (
                 <button
@@ -378,7 +449,9 @@ export const ProductPage: React.FC = () => {
                   }`}
                 >
                   <span>{isFavorite ? "★" : "☆"}</span>
-                  <span>{isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
+                  <span>
+                    {isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  </span>
                 </button>
               )}
               {favoriteError && (
@@ -391,7 +464,9 @@ export const ProductPage: React.FC = () => {
             {/* Pricing */}
             {product.pricing && (
               <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-                <h3 className="text-sm font-bold text-text-primary mb-3">Tarification</h3>
+                <h3 className="text-sm font-bold text-text-primary mb-3">
+                  Tarification
+                </h3>
                 <div
                   className={`inline-block px-4 py-2 rounded-lg border-2 text-sm font-semibold ${
                     pricingColors[product.pricing.model || "custom"]
@@ -401,64 +476,67 @@ export const ProductPage: React.FC = () => {
                     pricingLabels[product.pricing.model || "custom"]}
                 </div>
                 {product.pricing.details && (
-                  <p className="text-xs text-text-secondary mt-2">{product.pricing.details}</p>
+                  <p className="text-xs text-text-secondary mt-2">
+                    {product.pricing.details}
+                  </p>
                 )}
               </div>
             )}
-
-            {/* Audience & problems */}
-            <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 space-y-4">
-              {product.audience.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-bold text-text-primary mb-2">Public cible</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.audience.map((aud) => (
-                      <span
-                        key={aud}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium"
-                      >
-                        {audienceLabels[aud] || aud}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {product.problemsSolved.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-bold text-text-primary mb-2">Problèmes traités</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.problemsSolved.map((prob) => (
-                      <span
-                        key={prob}
-                        className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium"
-                      >
-                        {problemLabels[prob] || prob}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {product.tags.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-bold text-text-primary mb-2">Tags</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
           </div>
         </div>
+
+        {/* Clinical Notes - prescribers only */}
+        {canFavorite && (
+          <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 mt-6">
+            <h2 className="text-xl font-bold text-text-primary mb-3">
+              Notes cliniques
+            </h2>
+            <p className="text-sm text-text-secondary mb-4">
+              Notes privées visibles uniquement par vous. Utiles pour garder une
+              trace de vos observations sur ce produit.
+            </p>
+            <textarea
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              placeholder="Ajoutez vos notes cliniques sur ce produit..."
+              rows={4}
+              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-secondary/50 focus:border-primary focus:outline-none resize-y"
+            />
+            <div className="flex items-center gap-3 mt-3">
+              <button
+                onClick={handleSaveNote}
+                disabled={noteSaving || !noteContent.trim()}
+                className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {noteSaving
+                  ? "Enregistrement..."
+                  : existingNote
+                    ? "Mettre à jour"
+                    : "Enregistrer"}
+              </button>
+              {existingNote && (
+                <button
+                  onClick={handleDeleteNote}
+                  disabled={noteDeleting}
+                  className="px-5 py-2 border-2 border-red-200 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  {noteDeleting ? "..." : "Supprimer la note"}
+                </button>
+              )}
+              {noteMessage && (
+                <span
+                  className={`text-sm font-medium ${
+                    noteMessage.type === "success"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {noteMessage.text}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

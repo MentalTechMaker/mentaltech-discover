@@ -1,4 +1,4 @@
-import { apiFetch } from './client';
+import { apiFetch } from "./client";
 
 // ─── PRESCRIPTIONS ──────────────────────────────────────────
 
@@ -50,39 +50,62 @@ export interface PrescriptionStats {
   topProducts: Array<{ productId: string; productName: string; count: number }>;
 }
 
-export async function createPrescription(data: PrescriptionCreate): Promise<PrescriptionResponse> {
-  return apiFetch<PrescriptionResponse>('/prescriptions', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }, true);
+export async function createPrescription(
+  data: PrescriptionCreate,
+): Promise<PrescriptionResponse> {
+  return apiFetch<PrescriptionResponse>(
+    "/prescriptions",
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    },
+    true,
+  );
 }
 
-export async function listPrescriptions(limit = 50, offset = 0): Promise<PrescriptionResponse[]> {
-  return apiFetch<PrescriptionResponse[]>(`/prescriptions?limit=${limit}&offset=${offset}`, {}, true);
+export async function listPrescriptions(
+  limit = 50,
+  offset = 0,
+): Promise<PrescriptionResponse[]> {
+  return apiFetch<PrescriptionResponse[]>(
+    `/prescriptions?limit=${limit}&offset=${offset}`,
+    {},
+    true,
+  );
 }
 
 export async function getPrescriptionStats(): Promise<PrescriptionStats> {
-  return apiFetch<PrescriptionStats>('/prescriptions/stats', {}, true);
+  return apiFetch<PrescriptionStats>("/prescriptions/stats", {}, true);
 }
 
 export async function deletePrescription(id: string): Promise<void> {
-  await apiFetch<void>(`/prescriptions/${id}`, { method: 'DELETE' }, true);
+  await apiFetch<void>(`/prescriptions/${id}`, { method: "DELETE" }, true);
 }
 
-export async function renewPrescription(id: string): Promise<PrescriptionResponse> {
-  return apiFetch<PrescriptionResponse>(`/prescriptions/${id}/renew`, { method: 'POST' }, true);
+export async function renewPrescription(
+  id: string,
+): Promise<PrescriptionResponse> {
+  return apiFetch<PrescriptionResponse>(
+    `/prescriptions/${id}/renew`,
+    { method: "POST" },
+    true,
+  );
 }
 
-export async function viewPrescription(token: string): Promise<PrescriptionPublicResponse> {
+export async function viewPrescription(
+  token: string,
+): Promise<PrescriptionPublicResponse> {
   return apiFetch<PrescriptionPublicResponse>(`/prescriptions/view/${token}`);
 }
 
 export async function confirmPrescriptionView(token: string): Promise<void> {
-  await apiFetch<void>(`/prescriptions/view/${token}/confirm`, { method: 'POST' });
+  await apiFetch<void>(`/prescriptions/view/${token}/confirm`, {
+    method: "POST",
+  });
 }
 
 export async function revokePrescription(token: string): Promise<void> {
-  await apiFetch<void>(`/prescriptions/revoke/${token}`, { method: 'DELETE' });
+  await apiFetch<void>(`/prescriptions/revoke/${token}`, { method: "DELETE" });
 }
 
 // ─── FAVORITES ──────────────────────────────────────────────
@@ -94,18 +117,28 @@ export interface FavoriteResponse {
 }
 
 export async function listFavorites(): Promise<FavoriteResponse[]> {
-  return apiFetch<FavoriteResponse[]>('/prescriber/favorites', {}, true);
+  return apiFetch<FavoriteResponse[]>("/prescriber/favorites", {}, true);
 }
 
-export async function addFavorite(productId: string): Promise<FavoriteResponse> {
-  return apiFetch<FavoriteResponse>('/prescriber/favorites', {
-    method: 'POST',
-    body: JSON.stringify({ product_id: productId }),
-  }, true);
+export async function addFavorite(
+  productId: string,
+): Promise<FavoriteResponse> {
+  return apiFetch<FavoriteResponse>(
+    "/prescriber/favorites",
+    {
+      method: "POST",
+      body: JSON.stringify({ product_id: productId }),
+    },
+    true,
+  );
 }
 
 export async function removeFavorite(productId: string): Promise<void> {
-  await apiFetch<void>(`/prescriber/favorites/${productId}`, { method: 'DELETE' }, true);
+  await apiFetch<void>(
+    `/prescriber/favorites/${productId}`,
+    { method: "DELETE" },
+    true,
+  );
 }
 
 // ─── NOTES ──────────────────────────────────────────────────
@@ -119,18 +152,29 @@ export interface NoteResponse {
 }
 
 export async function listNotes(): Promise<NoteResponse[]> {
-  return apiFetch<NoteResponse[]>('/prescriber/notes', {}, true);
+  return apiFetch<NoteResponse[]>("/prescriber/notes", {}, true);
 }
 
-export async function upsertNote(productId: string, content: string): Promise<NoteResponse> {
-  return apiFetch<NoteResponse>('/prescriber/notes', {
-    method: 'PUT',
-    body: JSON.stringify({ product_id: productId, content }),
-  }, true);
+export async function upsertNote(
+  productId: string,
+  content: string,
+): Promise<NoteResponse> {
+  return apiFetch<NoteResponse>(
+    "/prescriber/notes",
+    {
+      method: "PUT",
+      body: JSON.stringify({ product_id: productId, content }),
+    },
+    true,
+  );
 }
 
 export async function deleteNote(productId: string): Promise<void> {
-  await apiFetch<void>(`/prescriber/notes/${productId}`, { method: 'DELETE' }, true);
+  await apiFetch<void>(
+    `/prescriber/notes/${productId}`,
+    { method: "DELETE" },
+    true,
+  );
 }
 
 // ─── VEILLE / UPDATES ───────────────────────────────────────
@@ -145,18 +189,15 @@ export interface ProductUpdateResponse {
   createdAt: string;
 }
 
-export async function listUpdates(favoritesOnly = false, limit = 50): Promise<ProductUpdateResponse[]> {
+export async function listUpdates(
+  favoritesOnly = false,
+  limit = 50,
+): Promise<ProductUpdateResponse[]> {
   return apiFetch<ProductUpdateResponse[]>(
     `/prescriber/updates?favorites_only=${favoritesOnly}&limit=${limit}`,
     {},
     true,
   );
-}
-
-// ─── COMPARATOR ─────────────────────────────────────────────
-
-export async function compareProducts(ids: string[]): Promise<Record<string, unknown>[]> {
-  return apiFetch<Record<string, unknown>[]>(`/prescriber/compare?ids=${ids.join(',')}`, {}, true);
 }
 
 // ─── COMMUNITY STATS ────────────────────────────────────────
@@ -169,7 +210,11 @@ export interface CommunityStatsItem {
 }
 
 export async function getCommunityStats(): Promise<CommunityStatsItem[]> {
-  return apiFetch<CommunityStatsItem[]>('/prescriber/community-stats', {}, true);
+  return apiFetch<CommunityStatsItem[]>(
+    "/prescriber/community-stats",
+    {},
+    true,
+  );
 }
 
 export interface PublicStats {
@@ -178,7 +223,7 @@ export interface PublicStats {
 }
 
 export async function getPublicStats(): Promise<PublicStats> {
-  return apiFetch<PublicStats>('/stats/public');
+  return apiFetch<PublicStats>("/stats/public");
 }
 
 // ─── ADMIN ──────────────────────────────────────────────────
@@ -194,7 +239,9 @@ export interface PrescriberListItem {
   created_at: string;
 }
 
-export async function listPendingPrescribers(pendingOnly = false): Promise<PrescriberListItem[]> {
+export async function listPendingPrescribers(
+  pendingOnly = false,
+): Promise<PrescriberListItem[]> {
   return apiFetch<PrescriberListItem[]>(
     `/admin/prescribers?pending_only=${pendingOnly}`,
     {},
@@ -202,12 +249,24 @@ export async function listPendingPrescribers(pendingOnly = false): Promise<Presc
   );
 }
 
-export async function verifyPrescriber(id: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>(`/admin/prescribers/${id}/verify`, { method: 'POST' }, true);
+export async function verifyPrescriber(
+  id: string,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(
+    `/admin/prescribers/${id}/verify`,
+    { method: "POST" },
+    true,
+  );
 }
 
-export async function rejectPrescriber(id: string): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>(`/admin/prescribers/${id}/reject`, { method: 'POST' }, true);
+export async function rejectPrescriber(
+  id: string,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(
+    `/admin/prescribers/${id}/reject`,
+    { method: "POST" },
+    true,
+  );
 }
 
 export interface AdminProductUpdateCreate {
@@ -217,9 +276,15 @@ export interface AdminProductUpdateCreate {
   description?: string;
 }
 
-export async function createAdminProductUpdate(data: AdminProductUpdateCreate): Promise<ProductUpdateResponse> {
-  return apiFetch<ProductUpdateResponse>('/admin/product-updates', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }, true);
+export async function createAdminProductUpdate(
+  data: AdminProductUpdateCreate,
+): Promise<ProductUpdateResponse> {
+  return apiFetch<ProductUpdateResponse>(
+    "/admin/product-updates",
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    },
+    true,
+  );
 }

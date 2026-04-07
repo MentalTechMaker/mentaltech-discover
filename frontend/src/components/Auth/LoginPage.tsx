@@ -42,7 +42,10 @@ export const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Email
               </label>
               <input
@@ -57,7 +60,10 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-text-primary mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-text-primary mb-1"
+              >
                 Mot de passe
               </label>
               <input

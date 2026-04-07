@@ -8,7 +8,7 @@ declare global {
   interface Window {
     plausible?: (
       eventName: string,
-      options?: { props?: Record<string, string | number | boolean> }
+      options?: { props?: Record<string, string | number | boolean> },
     ) => void;
   }
 }
@@ -20,7 +20,7 @@ declare global {
  */
 export const trackEvent = (
   eventName: string,
-  props?: Record<string, string | number | boolean>
+  props?: Record<string, string | number | boolean>,
 ): void => {
   if (typeof window !== "undefined" && window.plausible) {
     try {
@@ -51,7 +51,8 @@ export const analytics = {
     trackEvent("filter_used", { type: filterType, value: filterValue }),
   filterCleared: () => trackEvent("filter_cleared"),
 
-  pageViewed: (pageName: string) => trackEvent("page_viewed", { page: pageName }),
+  pageViewed: (pageName: string) =>
+    trackEvent("page_viewed", { page: pageName }),
   catalogViewed: (filterCount: number) =>
     trackEvent("catalog_viewed", { filters: filterCount }),
 

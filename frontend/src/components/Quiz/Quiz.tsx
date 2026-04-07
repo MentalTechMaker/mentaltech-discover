@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { questions } from "../../data/questions";
@@ -26,54 +32,58 @@ export const Quiz: React.FC = () => {
   } = useAppStore();
 
   const { products } = useProductsStore();
-  const questionsList = userType === "company"
-    ? companyQuestions
-    : userType === "health-decision-maker"
-      ? healthDecisionMakerQuestions
-      : questions;
+  const questionsList =
+    userType === "company"
+      ? companyQuestions
+      : userType === "health-decision-maker"
+        ? healthDecisionMakerQuestions
+        : questions;
   const hasStartedRef = useRef(false);
 
   useEffect(() => {
     setPageMeta(
       "Questionnaire - trouvez votre solution",
-      "Répondez à quelques questions pour découvrir les solutions de santé mentale adaptées à vos besoins. Gratuit, sans inscription."
+      "Répondez à quelques questions pour découvrir les solutions de santé mentale adaptées à vos besoins. Gratuit, sans inscription.",
     );
     setCanonical("/questionnaire");
   }, []);
   const isCompletedRef = useRef(false);
   const [partialCount, setPartialCount] = useState<number | null>(null);
 
-  const getAnswerValue = useCallback((questionId: number): string | undefined => {
-    if (userType === "company") {
-      const companyMapping: Record<number, keyof typeof answers> = {
-        1: "companySize",
-        2: "companyNeeds",
-        3: "preference",
-      };
-      const key = companyMapping[questionId];
-      return answers[key];
-    }
+  const getAnswerValue = useCallback(
+    (questionId: number): string | undefined => {
+      if (userType === "company") {
+        const companyMapping: Record<number, keyof typeof answers> = {
+          1: "companySize",
+          2: "companyNeeds",
+          3: "preference",
+        };
+        const key = companyMapping[questionId];
+        return answers[key];
+      }
 
-    if (userType === "health-decision-maker") {
-      const healthMapping: Record<number, keyof typeof answers> = {
-        1: "healthOrgType",
-        2: "healthOrgNeeds",
-        3: "preference",
-      };
-      const key = healthMapping[questionId];
-      return answers[key];
-    }
+      if (userType === "health-decision-maker") {
+        const healthMapping: Record<number, keyof typeof answers> = {
+          1: "healthOrgType",
+          2: "healthOrgNeeds",
+          3: "preference",
+        };
+        const key = healthMapping[questionId];
+        return answers[key];
+      }
 
-    const individualMapping: Record<number, keyof typeof answers> = {
-      1: "feeling",
-      2: "urgency",
-      3: "problem",
-      4: "audience",
-      5: "preference",
-    };
-    const key = individualMapping[questionId];
-    return answers[key];
-  }, [answers, userType]);
+      const individualMapping: Record<number, keyof typeof answers> = {
+        1: "feeling",
+        2: "urgency",
+        3: "problem",
+        4: "audience",
+        5: "preference",
+      };
+      const key = individualMapping[questionId];
+      return answers[key];
+    },
+    [answers, userType],
+  );
 
   const activeQuestions = useMemo(() => {
     return questionsList.filter((q) => {
@@ -82,7 +92,6 @@ export const Quiz: React.FC = () => {
       return conditionAnswer === q.condition.value;
     });
   }, [questionsList, getAnswerValue]);
-
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
   const currentAnswer = currentQuestion
@@ -123,7 +132,9 @@ export const Quiz: React.FC = () => {
     const answeredCount = Object.values(answers).filter(Boolean).length;
     if (answeredCount >= 2 && products.length > 0) {
       const reco = getRecommendations(answers, userType, products);
-      setPartialCount(reco.products.filter((p) => (p.recommendationScore ?? 0) > 0).length);
+      setPartialCount(
+        reco.products.filter((p) => (p.recommendationScore ?? 0) > 0).length,
+      );
     } else {
       setPartialCount(null);
     }
@@ -139,20 +150,16 @@ export const Quiz: React.FC = () => {
     if (currentQuestionIndex < activeQuestions.length - 1) {
       nextQuestion();
       setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 0);
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 0);
     } else {
       const numberOfAnswers = Object.values(answers).filter(Boolean).length;
       analytics.quizCompleted(numberOfAnswers);
       isCompletedRef.current = true;
 
-      const recommendations = getRecommendations(
-        answers,
-        userType,
-        products
-      );
+      const recommendations = getRecommendations(answers, userType, products);
       setView("results");
       setRecommendations(recommendations);
     }
@@ -187,10 +194,19 @@ export const Quiz: React.FC = () => {
           {partialCount !== null && (
             <div className="flex justify-center" aria-live="polite">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-full animate-pulse">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                {partialCount} solution{partialCount > 1 ? "s" : ""} déjà détectée{partialCount > 1 ? "s" : ""}
+                {partialCount} solution{partialCount > 1 ? "s" : ""} déjà
+                détectée{partialCount > 1 ? "s" : ""}
               </span>
             </div>
           )}

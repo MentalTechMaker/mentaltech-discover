@@ -3,7 +3,15 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from collections import Counter
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    status,
+)
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -33,7 +41,9 @@ router = APIRouter(prefix="/api/prescriptions", tags=["prescriptions"])
 PRESCRIPTION_EXPIRE_DAYS = 30
 
 
-def _prescription_to_response(p: Prescription, prescriber_name: str | None = None) -> PrescriptionResponse:
+def _prescription_to_response(
+    p: Prescription, prescriber_name: str | None = None
+) -> PrescriptionResponse:
     return PrescriptionResponse(
         id=str(p.id),
         prescriberId=str(p.prescriber_id),
@@ -42,7 +52,8 @@ def _prescription_to_response(p: Prescription, prescriber_name: str | None = Non
         message=p.message,
         token=p.token,
         link=f"{settings.FRONTEND_URL}/prescription/{p.token}",
-        emailSent=p.patient_email is None and p.created_at < datetime.now(timezone.utc) - timedelta(seconds=10),
+        emailSent=p.patient_email is None
+        and p.created_at < datetime.now(timezone.utc) - timedelta(seconds=10),
         expiresAt=p.expires_at.isoformat(),
         viewedAt=p.viewed_at.isoformat() if p.viewed_at else None,
         createdAt=p.created_at.isoformat(),
@@ -74,16 +85,25 @@ async def _send_and_purge_email(
     )
     # Purge email after successful send
     try:
-        prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
+        prescription = (
+            db.query(Prescription).filter(Prescription.id == prescription_id).first()
+        )
         if prescription:
             prescription.patient_email = None
             db.commit()
-            logger.info(f"RGPD: patient_email purged for prescription {prescription_id}")
+            logger.info(
+                f"RGPD: patient_email purged for prescription {prescription_id}"
+            )
     except Exception:
-        logger.error(f"Failed to purge patient_email for prescription {prescription_id}", exc_info=True)
+        logger.error(
+            f"Failed to purge patient_email for prescription {prescription_id}",
+            exc_info=True,
+        )
 
 
-@router.post("", response_model=PrescriptionResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", response_model=PrescriptionResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_prescription(
     data: PrescriptionCreate,
     background_tasks: BackgroundTasks,
@@ -97,7 +117,11 @@ async def create_prescription(
         )
 
     # Verify all product IDs exist
-    existing = db.query(Product.id, Product.name).filter(Product.id.in_(data.product_ids)).all()
+    existing = (
+        db.query(Product.id, Product.name)
+        .filter(Product.id.in_(data.product_ids))
+        .all()
+    )
     existing_ids = {row[0] for row in existing}
     missing = set(data.product_ids) - existing_ids
     if missing:
@@ -166,9 +190,7 @@ def get_stats(
     db: Session = Depends(get_db),
 ):
     all_prescriptions = (
-        db.query(Prescription)
-        .filter(Prescription.prescriber_id == user.id)
-        .all()
+        db.query(Prescription).filter(Prescription.prescriber_id == user.id).all()
     )
 
     now = datetime.now(timezone.utc)
@@ -181,7 +203,7 @@ def get_stats(
     # Top prescribed products
     product_counter: Counter[str] = Counter()
     for p in all_prescriptions:
-        for pid in (p.product_ids or []):
+        for pid in p.product_ids or []:
             product_counter[pid] += 1
 
     top_ids = [pid for pid, _ in product_counter.most_common(5)]
@@ -212,14 +234,20 @@ async def renew_prescription(
 ):
     prescription = (
         db.query(Prescription)
-        .filter(Prescription.id == prescription_id, Prescription.prescriber_id == user.id)
+        .filter(
+            Prescription.id == prescription_id, Prescription.prescriber_id == user.id
+        )
         .first()
     )
     if not prescription:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable"
+        )
 
     prescription.token = secrets.token_urlsafe(48)
-    prescription.expires_at = datetime.now(timezone.utc) + timedelta(days=PRESCRIPTION_EXPIRE_DAYS)
+    prescription.expires_at = datetime.now(timezone.utc) + timedelta(
+        days=PRESCRIPTION_EXPIRE_DAYS
+    )
     prescription.viewed_at = None
     db.commit()
     db.refresh(prescription)
@@ -238,16 +266,21 @@ def delete_prescription(
 ):
     prescription = (
         db.query(Prescription)
-        .filter(Prescription.id == prescription_id, Prescription.prescriber_id == user.id)
+        .filter(
+            Prescription.id == prescription_id, Prescription.prescriber_id == user.id
+        )
         .first()
     )
     if not prescription:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable"
+        )
     db.delete(prescription)
     db.commit()
 
 
 # ─── Public endpoints (no auth) ────────────────────────────────
+
 
 @router.get("/view/{token}", response_model=PrescriptionPublicResponse)
 def view_prescription(
@@ -256,7 +289,9 @@ def view_prescription(
 ):
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription or prescription.revoked_at:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable"
+        )
 
     now = datetime.now(timezone.utc)
     expired = now > prescription.expires_at
@@ -267,21 +302,25 @@ def view_prescription(
     # Get products
     products = []
     if prescription.product_ids:
-        product_rows = db.query(Product).filter(Product.id.in_(prescription.product_ids)).all()
+        product_rows = (
+            db.query(Product).filter(Product.id.in_(prescription.product_ids)).all()
+        )
         for p in product_rows:
             resp = _to_response(p)
-            products.append({
-                "id": resp.id,
-                "name": resp.name,
-                "type": resp.type,
-                "tagline": resp.tagline,
-                "description": resp.description,
-                "url": resp.url,
-                "logo": resp.logo,
-                "scoreLabel": resp.scoreLabel,
-                "scoreTotal": resp.scoreTotal,
-                "pricing": resp.pricing.model_dump() if resp.pricing else None,
-            })
+            products.append(
+                {
+                    "id": resp.id,
+                    "name": resp.name,
+                    "type": resp.type,
+                    "tagline": resp.tagline,
+                    "description": resp.description,
+                    "url": resp.url,
+                    "logo": resp.logo,
+                    "scoreLabel": resp.scoreLabel,
+                    "scoreTotal": resp.scoreTotal,
+                    "pricing": resp.pricing.model_dump() if resp.pricing else None,
+                }
+            )
 
     return PrescriptionPublicResponse(
         prescriberName=prescriber.name if prescriber else "Prescripteur",
@@ -305,7 +344,9 @@ def confirm_prescription_view(
     """Mark prescription as viewed. Called by frontend after a delay to filter out bots."""
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription or prescription.revoked_at:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable"
+        )
     if prescription.viewed_at:
         return
 
@@ -315,7 +356,9 @@ def confirm_prescription_view(
 
     prescription.viewed_at = now
     db.commit()
-    logger.info(f"Prescription {prescription.id} confirmed as viewed (IP: {request.client.host if request.client else 'unknown'})")
+    logger.info(
+        f"Prescription {prescription.id} confirmed as viewed (IP: {request.client.host if request.client else 'unknown'})"
+    )
 
     prescriber = db.query(User).filter(User.id == prescription.prescriber_id).first()
     if prescriber and prescriber.email:
@@ -339,7 +382,9 @@ def revoke_prescription_by_patient(
     """Allow a patient to request deletion of their prescription (RGPD right to erasure)."""
     prescription = db.query(Prescription).filter(Prescription.token == token).first()
     if not prescription:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Prescription introuvable"
+        )
     if prescription.revoked_at:
         return  # Already revoked
 

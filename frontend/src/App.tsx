@@ -1,5 +1,9 @@
 import { useEffect } from "react";
-import { useAppStore, initializeAppStore, decodeParamsToAnswers } from "./store/useAppStore";
+import {
+  useAppStore,
+  initializeAppStore,
+  decodeParamsToAnswers,
+} from "./store/useAppStore";
 import { useProductsStore } from "./store/useProductsStore";
 import { useAuthStore } from "./store/useAuthStore";
 import { Header } from "./components/Layout/Header";
@@ -23,7 +27,6 @@ import { ProductPage } from "./components/ProductPage";
 import { PrescriberDashboard } from "./components/Prescriber/PrescriberDashboard";
 import { NewPrescription } from "./components/Prescriber/NewPrescription";
 import { VeillePage } from "./components/Prescriber/VeillePage";
-import { ComparatorPage } from "./components/Prescriber/ComparatorPage";
 import { PrescriptionViewPage } from "./components/Prescriber/PrescriptionViewPage";
 import { PublicSubmissionForm } from "./components/Public/PublicSubmissionForm";
 import { HealthProApplicationForm } from "./components/Public/HealthProApplicationForm";
@@ -49,12 +52,18 @@ function App() {
   const products = useProductsStore((s) => s.products);
   const setRecommendations = useAppStore((s) => s.setRecommendations);
   useEffect(() => {
-    const pending = (window as unknown as Record<string, unknown>).__pendingResultRestore as
+    const pending = (window as unknown as Record<string, unknown>)
+      .__pendingResultRestore as
       | ReturnType<typeof decodeParamsToAnswers>
       | undefined;
     if (pending && products.length > 0) {
-      delete (window as unknown as Record<string, unknown>).__pendingResultRestore;
-      const reco = getRecommendations(pending.answers, pending.userType, products);
+      delete (window as unknown as Record<string, unknown>)
+        .__pendingResultRestore;
+      const reco = getRecommendations(
+        pending.answers,
+        pending.userType,
+        products,
+      );
       setRecommendations(reco);
     }
   }, [products, setRecommendations]);
@@ -90,11 +99,12 @@ function App() {
           {currentView === "prescriber-dashboard" && <PrescriberDashboard />}
           {currentView === "new-prescription" && <NewPrescription />}
           {currentView === "veille" && <VeillePage />}
-          {currentView === "comparator" && <ComparatorPage />}
           {currentView === "prescription" && <PrescriptionViewPage />}
           {currentView === "join-collective" && <JoinCollectivePage />}
           {currentView === "public-submission" && <PublicSubmissionForm />}
-          {currentView === "health-pro-application" && <HealthProApplicationForm />}
+          {currentView === "health-pro-application" && (
+            <HealthProApplicationForm />
+          )}
           {currentView === "confirm-submission" && <ConfirmSubmissionPage />}
           {currentView === "confirm-health-pro" && <ConfirmHealthProPage />}
         </ErrorBoundary>

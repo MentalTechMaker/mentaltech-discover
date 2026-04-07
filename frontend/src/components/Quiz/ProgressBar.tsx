@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ProgressBarProps {
   current: number;
@@ -11,7 +11,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   return (
     <div className="w-full space-y-2">
       <div className="flex justify-between items-center text-sm text-text-secondary">
-        <span>Question {current}/{total}</span>
+        <span>
+          Question {current}/{total}
+        </span>
         <span>{Math.round(percentage)}%</span>
       </div>
       <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">

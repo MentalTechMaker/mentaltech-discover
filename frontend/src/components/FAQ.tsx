@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
-import { setPageMeta, setCanonical, injectJsonLd, removeJsonLd } from "../utils/meta";
+import {
+  setPageMeta,
+  setCanonical,
+  injectJsonLd,
+  removeJsonLd,
+} from "../utils/meta";
 
 interface FAQItem {
   question: string;
@@ -9,17 +14,50 @@ interface FAQItem {
 }
 
 const FAQ_SCHEMA_DATA = [
-  { q: "Comment sont sélectionnées les solutions ?", a: "Toute solution peut être soumise et évaluée selon notre protocole de qualité : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active. Les membres du Collectif MentalTech bénéficient d'un badge dédié." },
-  { q: "Comment fonctionne l'algorithme de recommandation ?", a: "Nous analysons 5 dimensions : public cible, problématiques, préférences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance." },
-  { q: "MentalTech Discover est-il gratuit ?", a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de santé peuvent créer un compte prescripteur gratuit." },
-  { q: "Mes données sont-elles collectées ?", a: "Pour les visiteurs, aucune donnée n'est collectée. Les réponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectés de manière sécurisée." },
-  { q: "Y a-t-il des cookies ou tracking ?", a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisées uniquement pour améliorer le service." },
-  { q: "Mes données de quiz sont-elles conservées ?", a: "Non. Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire." },
-  { q: "Est-ce un dispositif médical ?", a: "Non. MentalTech Discover est une plateforme d'orientation, pas un dispositif médical certifié. Il aide à explorer les solutions disponibles sans fournir de service médical." },
-  { q: "Que faire en cas de crise ?", a: "Appelez le 3114 (prévention du suicide), le 15 (SAMU) ou le 112 (urgences européennes). Ces numéros sont gratuits et disponibles 24h/24." },
-  { q: "Y a-t-il un mode professionnel ?", a: "Oui, l'espace prescripteur est maintenant disponible : tableau de bord, prescriptions numériques, veille solutions, comparateur. Gratuit, inscription requise." },
-  { q: "Comment être référencé sur MentalTech Discover ?", a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2." },
-  { q: "Le code est-il open-source ?", a: "Oui, transparence totale. Le code est disponible sur GitHub : github.com/mentaltechmaker/mentaltech-discover sous licence MIT." },
+  {
+    q: "Comment sont sélectionnées les solutions ?",
+    a: "Toute solution peut être soumise et évaluée selon notre protocole de qualité : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active. Les membres du Collectif MentalTech bénéficient d'un badge dédié.",
+  },
+  {
+    q: "Comment fonctionne l'algorithme de recommandation ?",
+    a: "Nous analysons 5 dimensions : public cible, problématiques, préférences, budget et type de service. Chaque solution reçoit un score 0-100 selon la correspondance.",
+  },
+  {
+    q: "MentalTech Discover est-il gratuit ?",
+    a: "Oui, 100 % gratuit pour tous les utilisateurs. Anonyme et sans inscription pour les visiteurs. Les professionnels de santé peuvent créer un compte prescripteur gratuit.",
+  },
+  {
+    q: "Mes données sont-elles collectées ?",
+    a: "Pour les visiteurs, aucune donnée n'est collectée. Les réponses au questionnaire restent dans votre navigateur. Pour les prescripteurs inscrits, nom, email et profession sont collectés de manière sécurisée.",
+  },
+  {
+    q: "Y a-t-il des cookies ou tracking ?",
+    a: "Non. Aucun cookie tiers, aucun tracking nominatif. Statistiques anonymisées uniquement pour améliorer le service.",
+  },
+  {
+    q: "Mes données de quiz sont-elles conservées ?",
+    a: "Non. Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs. Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire.",
+  },
+  {
+    q: "Est-ce un dispositif médical ?",
+    a: "Non. MentalTech Discover est une plateforme d'orientation, pas un dispositif médical certifié. Il aide à explorer les solutions disponibles sans fournir de service médical.",
+  },
+  {
+    q: "Que faire en cas de crise ?",
+    a: "Appelez le 3114 (prévention du suicide), le 15 (SAMU) ou le 112 (urgences européennes). Ces numéros sont gratuits et disponibles 24h/24.",
+  },
+  {
+    q: "Y a-t-il un mode professionnel ?",
+    a: "Oui, l'espace prescripteur est maintenant disponible : tableau de bord, prescriptions numériques, veille solutions, notes cliniques. Gratuit, inscription requise.",
+  },
+  {
+    q: "Comment être référencé sur MentalTech Discover ?",
+    a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2.",
+  },
+  {
+    q: "Le code est-il open-source ?",
+    a: "Oui, transparence totale. Le code est disponible sur GitHub : github.com/mentaltechmaker/mentaltech-discover sous licence MIT.",
+  },
 ];
 
 export const FAQ: React.FC = () => {
@@ -29,16 +67,16 @@ export const FAQ: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "FAQ - Questions sur les solutions de santé mentale numérique",
-      "Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur."
+      "Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur.",
     );
     setCanonical("/faq");
     injectJsonLd("faq-schema", {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": FAQ_SCHEMA_DATA.map(({ q, a }) => ({
+      mainEntity: FAQ_SCHEMA_DATA.map(({ q, a }) => ({
         "@type": "Question",
-        "name": q,
-        "acceptedAnswer": { "@type": "Answer", "text": a },
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
       })),
     });
     return () => removeJsonLd("faq-schema");
@@ -75,8 +113,9 @@ export const FAQ: React.FC = () => {
       question: "Combien de questions dans le questionnaire ?",
       answer: (
         <p>
-          <strong>5 questions</strong> pour les particuliers, <strong>3 questions</strong>{" "}
-          pour les entreprises. Durée : <strong>2 minutes maximum</strong>.
+          <strong>5 questions</strong> pour les particuliers,{" "}
+          <strong>3 questions</strong> pour les entreprises. Durée :{" "}
+          <strong>2 minutes maximum</strong>.
           <br />
           Vous pouvez aussi explorer directement le catalogue avec filtres.
         </p>
@@ -99,7 +138,8 @@ export const FAQ: React.FC = () => {
           </ul>
           <p className="mt-2">
             Chaque solution reçoit un <strong>score 0-100</strong> selon la
-            correspondance. Nous recommandons les <strong>2-3 meilleures</strong>.
+            correspondance. Nous recommandons les{" "}
+            <strong>2-3 meilleures</strong>.
           </p>
         </div>
       ),
@@ -112,9 +152,8 @@ export const FAQ: React.FC = () => {
         <p>
           <strong>Oui, 100% gratuit</strong> pour tous les utilisateurs.
           <br />
-          Anonyme et sans inscription pour les visiteurs.{" "}
-          Les professionnels de santé peuvent créer un{" "}
-          <strong>compte prescripteur</strong> gratuit.
+          Anonyme et sans inscription pour les visiteurs. Les professionnels de
+          santé peuvent créer un <strong>compte prescripteur</strong> gratuit.
         </p>
       ),
     },
@@ -127,11 +166,21 @@ export const FAQ: React.FC = () => {
             Cela dépend de chaque solution. Les modèles tarifaires varient :
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>🆓 <strong>Gratuit</strong> : accès complet sans frais</li>
-            <li>💎 <strong>Freemium</strong> : version gratuite + options premium</li>
-            <li>💳 <strong>Abonnement</strong> : mensuel ou annuel</li>
-            <li>🏥 <strong>Par session</strong> : paiement à l'acte</li>
-            <li>🏢 <strong>B2B</strong> : offres entreprises/mutuelles</li>
+            <li>
+              🆓 <strong>Gratuit</strong> : accès complet sans frais
+            </li>
+            <li>
+              💎 <strong>Freemium</strong> : version gratuite + options premium
+            </li>
+            <li>
+              💳 <strong>Abonnement</strong> : mensuel ou annuel
+            </li>
+            <li>
+              🏥 <strong>Par session</strong> : paiement à l'acte
+            </li>
+            <li>
+              🏢 <strong>B2B</strong> : offres entreprises/mutuelles
+            </li>
           </ul>
           <p className="mt-2">
             Les prix sont toujours affichés sur la fiche de chaque solution.
@@ -144,13 +193,13 @@ export const FAQ: React.FC = () => {
       question: "Les consultations sont-elles remboursées ?",
       answer: (
         <p>
-          Certaines le sont ! Par exemple, <strong>Qare</strong> est remboursé par
-          l'Assurance Maladie pour les téléconsultations avec psychiatres et
+          Certaines le sont ! Par exemple, <strong>Qare</strong> est remboursé
+          par l'Assurance Maladie pour les téléconsultations avec psychiatres et
           psychologues.
           <br />
           <br />
-          L'information de remboursement est indiquée dans la fiche de chaque solution
-          quand applicable.
+          L'information de remboursement est indiquée dans la fiche de chaque
+          solution quand applicable.
         </p>
       ),
     },
@@ -161,20 +210,22 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-3">
           <div>
-            <p className="font-semibold mb-1">👤 Visiteurs et utilisateurs du questionnaire :</p>
+            <p className="font-semibold mb-1">
+              👤 Visiteurs et utilisateurs du questionnaire :
+            </p>
             <p>
               <strong>Aucune donnée collectée.</strong> Vos réponses restent{" "}
-              <strong>dans votre navigateur</strong>, jamais envoyées à un serveur.
-              Aucun compte requis.
+              <strong>dans votre navigateur</strong>, jamais envoyées à un
+              serveur. Aucun compte requis.
             </p>
           </div>
           <div>
             <p className="font-semibold mb-1">🩺 Prescripteurs inscrits :</p>
             <p>
-              Votre <strong>nom, email et profession</strong> sont collectés pour
-              créer votre compte. Ces données sont stockées de manière sécurisée en
-              France (OVH) et ne sont jamais partagées avec des tiers. Vous pouvez
-              demander leur suppression à tout moment.
+              Votre <strong>nom, email et profession</strong> sont collectés
+              pour créer votre compte. Ces données sont stockées de manière
+              sécurisée en France (OVH) et ne sont jamais partagées avec des
+              tiers. Vous pouvez demander leur suppression à tout moment.
             </p>
           </div>
         </div>
@@ -188,14 +239,14 @@ export const FAQ: React.FC = () => {
           <strong>Non.</strong> Aucun cookie tiers, aucun tracking nominatif.
           <br />
           <br />
-          Nous utilisons des <strong>statistiques anonymisées</strong> (compteurs de
-          visites globaux) pour améliorer le service, mais aucune donnée individuelle
-          n'est suivie.
+          Nous utilisons des <strong>statistiques anonymisées</strong>{" "}
+          (compteurs de visites globaux) pour améliorer le service, mais aucune
+          donnée individuelle n'est suivie.
           <br />
           <br />
           Les prescripteurs connectés disposent d'un cookie de session sécurisé
-          (HttpOnly, inaccessible en JavaScript) pour maintenir leur connexion. Ce
-          cookie ne contient aucune donnée personnelle.
+          (HttpOnly, inaccessible en JavaScript) pour maintenir leur connexion.
+          Ce cookie ne contient aucune donnée personnelle.
         </p>
       ),
     },
@@ -208,7 +259,9 @@ export const FAQ: React.FC = () => {
             <strong>Oui :</strong>
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Site en <strong>HTTPS</strong> (connexion chiffrée)</li>
+            <li>
+              Site en <strong>HTTPS</strong> (connexion chiffrée)
+            </li>
             <li>
               Code <strong>open-source</strong> auditable sur GitHub
             </li>
@@ -224,10 +277,13 @@ export const FAQ: React.FC = () => {
       question: "Mes données de quiz sont-elles conservées ?",
       answer: (
         <p>
-          <strong>Non.</strong> Vos réponses au questionnaire restent exclusivement dans votre navigateur (localStorage). Elles ne sont jamais envoyées à nos serveurs.
+          <strong>Non.</strong> Vos réponses au questionnaire restent
+          exclusivement dans votre navigateur (localStorage). Elles ne sont
+          jamais envoyées à nos serveurs.
           <br />
           <br />
-          Si vous changez d'appareil ou videz le cache de votre navigateur, vous recommencerez le questionnaire.
+          Si vous changez d'appareil ou videz le cache de votre navigateur, vous
+          recommencerez le questionnaire.
         </p>
       ),
     },
@@ -238,7 +294,8 @@ export const FAQ: React.FC = () => {
       answer: (
         <p>
           <strong>Non.</strong> MentalTech Discover est une{" "}
-          <strong>plateforme d'orientation</strong>, pas un dispositif médical certifié.
+          <strong>plateforme d'orientation</strong>, pas un dispositif médical
+          certifié.
           <br />
           <br />
           Nous vous aidons à explorer les solutions disponibles, mais nous ne
@@ -255,8 +312,9 @@ export const FAQ: React.FC = () => {
           <strong>compléments</strong>, pas des remplacements.
           <br />
           <br />
-          Pour un <strong>diagnostic</strong>, un <strong>traitement</strong> ou une{" "}
-          <strong>urgence</strong>, consultez un professionnel de santé qualifié.
+          Pour un <strong>diagnostic</strong>, un <strong>traitement</strong> ou
+          une <strong>urgence</strong>, consultez un professionnel de santé
+          qualifié.
         </p>
       ),
     },
@@ -324,8 +382,8 @@ export const FAQ: React.FC = () => {
           <br />
           <br />
           ⚠️ Notez que nous ne certifions pas l'efficacité clinique. Pour une
-          prescription formelle, référez-vous aux études cliniques disponibles sur
-          la fiche de chaque solution.
+          prescription formelle, référez-vous aux études cliniques disponibles
+          sur la fiche de chaque solution.
         </p>
       ),
     },
@@ -335,13 +393,16 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            <strong>Oui !</strong> L'espace prescripteur est maintenant disponible.
+            <strong>Oui !</strong> L'espace prescripteur est maintenant
+            disponible.
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Tableau de bord personnel</li>
-            <li>Création et envoi de prescriptions numériques à vos patients</li>
+            <li>
+              Création et envoi de prescriptions numériques à vos patients
+            </li>
             <li>Veille sur les nouvelles solutions</li>
-            <li>Comparateur de solutions côte à côte</li>
+            <li>Notes cliniques par solution</li>
           </ul>
           <p className="mt-2">
             → <strong>Gratuit</strong> - créez votre compte sur l'{" "}
@@ -361,10 +422,13 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            Toute solution peut être soumise via notre <strong>formulaire public</strong> (bouton "Référencer" dans le menu). Elle sera évaluée selon notre protocole de qualité.
+            Toute solution peut être soumise via notre{" "}
+            <strong>formulaire public</strong> (bouton "Référencer" dans le
+            menu). Elle sera évaluée selon notre protocole de qualité.
           </p>
           <p>
-            Les <strong>membres du Collectif MentalTech</strong> bénéficient du badge niveau 2.
+            Les <strong>membres du Collectif MentalTech</strong> bénéficient du
+            badge niveau 2.
           </p>
           <p className="text-sm text-text-secondary mt-2">
             → En savoir plus sur le Collectif :{" "}
@@ -412,7 +476,8 @@ export const FAQ: React.FC = () => {
                 <strong>Veille solutions</strong> : suivez les nouveautés
               </li>
               <li>
-                <strong>Comparateur</strong> : comparez les solutions côte à côte
+                <strong>Notes cliniques</strong> : ajoutez des notes privées par
+                solution
               </li>
             </ul>
           </div>
@@ -425,8 +490,8 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            <strong>Oui, avec plaisir !</strong> Vos retours nous aident à améliorer
-            le service.
+            <strong>Oui, avec plaisir !</strong> Vos retours nous aident à
+            améliorer le service.
           </p>
           <p>
             ✉️ Email :{" "}
@@ -458,8 +523,7 @@ export const FAQ: React.FC = () => {
         <p>
           <strong>Oui.</strong> Transparence totale.
           <br />
-          <br />
-          → Repo GitHub :{" "}
+          <br />→ Repo GitHub :{" "}
           <a
             href="https://github.com/mentaltechmaker/mentaltech-discover"
             target="_blank"
@@ -480,8 +544,8 @@ export const FAQ: React.FC = () => {
       question: "Une solution ne fonctionne pas",
       answer: (
         <p>
-          MentalTech Discover est un <strong>annuaire</strong>, pas un hébergeur de
-          services.
+          MentalTech Discover est un <strong>annuaire</strong>, pas un hébergeur
+          de services.
           <br />
           <br />
           Pour tout problème technique avec une solution, contactez{" "}
@@ -520,11 +584,13 @@ export const FAQ: React.FC = () => {
         <div className="space-y-2">
           <p>
             Pour tout problème de <strong>sécurité</strong>,{" "}
-            <strong>données personnelles</strong> ou <strong>contenus inappropriés</strong>
-            :
+            <strong>données personnelles</strong> ou{" "}
+            <strong>contenus inappropriés</strong>:
           </p>
           <div className="bg-red-50 border-2 border-red-300 p-4 rounded-lg">
-            <p className="font-bold text-red-900 mb-2">✉️ Email prioritaire :</p>
+            <p className="font-bold text-red-900 mb-2">
+              ✉️ Email prioritaire :
+            </p>
             <a
               href="mailto:arnaud@mentaltechmaker.fr?subject=URGENT - Problème grave MentalTech Discover"
               className="text-primary hover:underline font-semibold"
@@ -572,7 +638,9 @@ export const FAQ: React.FC = () => {
                       className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-gray-100 hover:border-primary transition-colors"
                     >
                       <button
-                        onClick={() => setOpenIndex(isOpen ? null : globalIndex)}
+                        onClick={() =>
+                          setOpenIndex(isOpen ? null : globalIndex)
+                        }
                         className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
                         aria-expanded={isOpen}
                       >
@@ -600,20 +668,41 @@ export const FAQ: React.FC = () => {
         ))}
 
         <div className="grid md:grid-cols-3 gap-4 mt-12">
-          <button onClick={() => setView("quiz")} className="p-6 bg-primary/10 hover:bg-primary/20 rounded-xl text-center transition-colors">
+          <button
+            onClick={() => setView("quiz")}
+            className="p-6 bg-primary/10 hover:bg-primary/20 rounded-xl text-center transition-colors"
+          >
             <span className="text-3xl block mb-2">🧭</span>
-            <span className="font-semibold text-primary">Commencer le questionnaire</span>
-            <p className="text-xs text-text-secondary mt-1">Trouvez votre solution en 2 minutes</p>
+            <span className="font-semibold text-primary">
+              Commencer le questionnaire
+            </span>
+            <p className="text-xs text-text-secondary mt-1">
+              Trouvez votre solution en 2 minutes
+            </p>
           </button>
-          <button onClick={() => setView("prescriber-auth")} className="p-6 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition-colors">
+          <button
+            onClick={() => setView("prescriber-auth")}
+            className="p-6 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition-colors"
+          >
             <span className="text-3xl block mb-2">🩺</span>
-            <span className="font-semibold text-purple-700">Espace prescripteur</span>
-            <p className="text-xs text-text-secondary mt-1">Prescriptions numériques pour vos patients</p>
+            <span className="font-semibold text-purple-700">
+              Espace prescripteur
+            </span>
+            <p className="text-xs text-text-secondary mt-1">
+              Prescriptions numériques pour vos patients
+            </p>
           </button>
-          <button onClick={() => setView("public-submission")} className="p-6 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-colors">
+          <button
+            onClick={() => setView("public-submission")}
+            className="p-6 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-colors"
+          >
             <span className="text-3xl block mb-2">🚀</span>
-            <span className="font-semibold text-amber-700">Référencer ma solution</span>
-            <p className="text-xs text-text-secondary mt-1">Soumettez votre solution au collectif</p>
+            <span className="font-semibold text-amber-700">
+              Référencer ma solution
+            </span>
+            <p className="text-xs text-text-secondary mt-1">
+              Soumettez votre solution au collectif
+            </p>
           </button>
         </div>
 

@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..dependencies import require_admin
-from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse, PaginatedProducts
+from ..schemas.product import (
+    ProductCreate,
+    ProductUpdate,
+    ProductResponse,
+    PaginatedProducts,
+)
 from ..services.product import (
     get_all_products,
     get_product_by_id,

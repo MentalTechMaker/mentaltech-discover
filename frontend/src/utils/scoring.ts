@@ -6,7 +6,12 @@ export interface LabelInfo {
 }
 
 const LABEL_CONFIG: Record<string, LabelInfo> = {
-  A: { grade: "A", text: "Validé MentalTech", color: "#FFFFFF", bgColor: "#1B7D3A" },
+  A: {
+    grade: "A",
+    text: "Validé MentalTech",
+    color: "#FFFFFF",
+    bgColor: "#1B7D3A",
+  },
   B: { grade: "B", text: "Recommandé", color: "#000000", bgColor: "#97C94E" },
   C: { grade: "C", text: "Évalué", color: "#000000", bgColor: "#FECB02" },
   D: { grade: "D", text: "À améliorer", color: "#FFFFFF", bgColor: "#EE8100" },
@@ -26,7 +31,9 @@ export function getLabelInfo(scoreLabel: string | null | undefined): LabelInfo {
 }
 
 /** Returns the label info for a single pillar score (0–5), independent of other pillars. */
-export function getPillarLabelInfo(score: number | null | undefined): LabelInfo {
+export function getPillarLabelInfo(
+  score: number | null | undefined,
+): LabelInfo {
   if (score == null) return UNRATED;
   if (score >= 5) return LABEL_CONFIG["A"];
   if (score >= 4) return LABEL_CONFIG["B"];
@@ -36,11 +43,31 @@ export function getPillarLabelInfo(score: number | null | undefined): LabelInfo 
 }
 
 export const SCORE_CRITERIA = [
-  { key: "security" as const, label: "Sécurité", justKey: "justificationSecurity" as const },
-  { key: "efficacy" as const, label: "Preuves", justKey: "justificationEfficacy" as const },
-  { key: "accessibility" as const, label: "Accessibilité", justKey: "justificationAccessibility" as const },
-  { key: "ux" as const, label: "Expérience user", justKey: "justificationUx" as const },
-  { key: "support" as const, label: "Support", justKey: "justificationSupport" as const },
+  {
+    key: "security" as const,
+    label: "Sécurité",
+    justKey: "justificationSecurity" as const,
+  },
+  {
+    key: "efficacy" as const,
+    label: "Preuves",
+    justKey: "justificationEfficacy" as const,
+  },
+  {
+    key: "accessibility" as const,
+    label: "Accessibilité",
+    justKey: "justificationAccessibility" as const,
+  },
+  {
+    key: "ux" as const,
+    label: "Expérience user",
+    justKey: "justificationUx" as const,
+  },
+  {
+    key: "support" as const,
+    label: "Support",
+    justKey: "justificationSupport" as const,
+  },
 ];
 
 export function computeLabelFromScores(
@@ -56,7 +83,7 @@ export function computeLabelFromScores(
   // Always divide by 5: missing pillars count as 0, not as absent
   const sum = scores.reduce<number>((acc, s) => acc + (s ?? 0), 0);
   const avg = sum / scores.length; // average out of 5, denominator always = 5
-  const total = Math.round(avg / 5 * 100); // scale to 0-100
+  const total = Math.round((avg / 5) * 100); // scale to 0-100
   if (total >= 80) return { total, label: "A" };
   if (total >= 60) return { total, label: "B" };
   if (total >= 40) return { total, label: "C" };

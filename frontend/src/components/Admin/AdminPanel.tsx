@@ -18,7 +18,6 @@ type Tab = "products" | "prescribers" | "veille" | "soumissions";
 
 const UPDATE_TYPES = [
   { value: "price_change", label: "Changement de tarif" },
-  { value: "score_change", label: "Mise à jour de score" },
   { value: "new_feature", label: "Nouvelle fonctionnalité" },
   { value: "study", label: "Étude / Recherche" },
   { value: "general", label: "Information générale" },
@@ -33,21 +32,28 @@ export const AdminPanel: React.FC = () => {
 
   // Products tab state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [currentSubmissionId, setCurrentSubmissionId] = useState<string | null>(null);
+  const [currentSubmissionId, setCurrentSubmissionId] = useState<string | null>(
+    null,
+  );
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showProtocolForm, setShowProtocolForm] = useState(false);
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [adminProductsLoading, setAdminProductsLoading] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [productSearch, setProductSearch] = useState("");
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Prescribers tab state
   const [prescribers, setPrescribers] = useState<PrescriberListItem[]>([]);
   const [prescribersLoading, setPrescribersLoading] = useState(false);
   const [pendingOnly, setPendingOnly] = useState(false);
-  const [prescriberActionId, setPrescriberActionId] = useState<string | null>(null);
+  const [prescriberActionId, setPrescriberActionId] = useState<string | null>(
+    null,
+  );
 
   // Veille tab state
   const [veilleProductId, setVeilleProductId] = useState("");
@@ -84,7 +90,9 @@ export const AdminPanel: React.FC = () => {
     }
   }, [activeTab, pendingOnly]);
 
-  const handleCreateFromSubmission = (sub: import("../../types").PublicSubmission) => {
+  const handleCreateFromSubmission = (
+    sub: import("../../types").PublicSubmission,
+  ) => {
     const product: Product = {
       id: "",
       name: sub.name || "",
@@ -99,7 +107,9 @@ export const AdminPanel: React.FC = () => {
       preferenceMatch: [],
       isMentaltechMember: sub.collectifStatus === "accepted",
       pricing: {
-        model: (sub.pricingModel as NonNullable<Product["pricing"]>["model"]) ?? undefined,
+        model:
+          (sub.pricingModel as NonNullable<Product["pricing"]>["model"]) ??
+          undefined,
         amount: sub.pricingAmount ?? undefined,
         details: sub.pricingDetails ?? undefined,
       },
@@ -133,7 +143,10 @@ export const AdminPanel: React.FC = () => {
     setDeleteConfirm(null);
   };
 
-  const showToast = (message: string, type: "success" | "error" = "success") => {
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success",
+  ) => {
     setToast({ message, type });
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 3500);
@@ -227,7 +240,9 @@ export const AdminPanel: React.FC = () => {
       setVeilleProductId("");
       setVeilleType("general");
     } catch (err) {
-      setVeilleError(err instanceof Error ? err.message : "Erreur lors de la création");
+      setVeilleError(
+        err instanceof Error ? err.message : "Erreur lors de la création",
+      );
     } finally {
       setVeilleLoading(false);
     }
@@ -257,15 +272,21 @@ export const AdminPanel: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-sm font-semibold ${
-          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
-        }`}>
+        <div
+          className={`fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-sm font-semibold ${
+            toast.type === "success"
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
+          }`}
+        >
           <span>{toast.type === "success" ? "✓" : "✕"}</span>
           <span>{toast.message}</span>
         </div>
       )}
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-text-primary mb-6">Administration</h1>
+        <h1 className="text-3xl font-bold text-text-primary mb-6">
+          Administration
+        </h1>
 
         {/* Tabs */}
         <div className="flex gap-1 mb-8 border-b-2 border-gray-200">
@@ -308,16 +329,25 @@ export const AdminPanel: React.FC = () => {
               <p className="text-text-secondary">
                 {adminProducts.length} produit(s) au total -{" "}
                 <span className="text-green-600 font-semibold">
-                  {adminProducts.filter((p) => p.isVisible !== false && !p.companyDefunct).length} visibles
+                  {
+                    adminProducts.filter(
+                      (p) => p.isVisible !== false && !p.companyDefunct,
+                    ).length
+                  }{" "}
+                  visibles
                 </span>
-                {adminProducts.filter((p) => p.isVisible === false).length > 0 && (
+                {adminProducts.filter((p) => p.isVisible === false).length >
+                  0 && (
                   <span className="text-gray-500 ml-2">
-                    · {adminProducts.filter((p) => p.isVisible === false).length} cachés
+                    ·{" "}
+                    {adminProducts.filter((p) => p.isVisible === false).length}{" "}
+                    cachés
                   </span>
                 )}
                 {adminProducts.filter((p) => p.companyDefunct).length > 0 && (
                   <span className="text-red-500 ml-2">
-                    · {adminProducts.filter((p) => p.companyDefunct).length} défunts
+                    · {adminProducts.filter((p) => p.companyDefunct).length}{" "}
+                    défunts
                   </span>
                 )}
               </p>
@@ -332,130 +362,180 @@ export const AdminPanel: React.FC = () => {
             </div>
 
             {adminProductsLoading ? (
-              <div className="text-center py-12 text-text-secondary">Chargement...</div>
+              <div className="text-center py-12 text-text-secondary">
+                Chargement...
+              </div>
             ) : (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Nom / ID</th>
-                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Type</th>
-                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Statut</th>
-                    <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">Tarif</th>
-                    <th className="text-right px-4 py-4 text-sm font-semibold text-text-secondary">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {adminProducts.filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase())).map((product) => {
-                    const isHidden = product.isVisible === false;
-                    const isDefunct = product.companyDefunct === true;
-                    const isDemo = product.isDemo === true;
-                    return (
-                    <tr
-                      key={product.id}
-                      className={`hover:bg-gray-50 ${isHidden || isDefunct ? "opacity-60" : ""}`}
-                    >
-                      <td className="px-4 py-3">
-                        <p className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                          {product.name}
-                          {isHidden && (
-                            <span className="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-xs font-semibold">Caché</span>
-                          )}
-                          {isDefunct && (
-                            <span className="bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-semibold">Défunt</span>
-                          )}
-                          {isDemo && (
-                            <span className="bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-xs font-semibold">Demo</span>
-                          )}
-                        </p>
-                        <p className="text-xs font-mono text-text-secondary">{product.id}</p>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">{product.type}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => handleToggleVisibility(product.id)}
-                            disabled={togglingId === product.id}
-                            title={isHidden ? "Publier dans le catalogue" : "Retirer du catalogue"}
-                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
-                              isHidden
-                                ? "bg-gray-200 text-gray-600 hover:bg-green-100 hover:text-green-700"
-                                : "bg-green-100 text-green-700 hover:bg-gray-200 hover:text-gray-600"
-                            }`}
-                          >
-                            {isHidden ? "Publier" : "Depublier"}
-                          </button>
-                          <button
-                            onClick={() => handleToggleDefunct(product.id)}
-                            disabled={togglingId === product.id}
-                            title={isDefunct ? "Marquer comme actif" : "Marquer société disparue"}
-                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
-                              isDefunct
-                                ? "bg-red-100 text-red-600 hover:bg-gray-200 hover:text-gray-600"
-                                : "bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"
-                            }`}
-                          >
-                            {isDefunct ? "💀 Défunt" : "🏢 Actif"}
-                          </button>
-                          <button
-                            onClick={() => handleToggleDemo(product.id)}
-                            disabled={togglingId === product.id}
-                            title={isDemo ? "Retirer le statut demo" : "Marquer comme demo"}
-                            className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
-                              isDemo
-                                ? "bg-blue-100 text-blue-600 hover:bg-gray-200 hover:text-gray-600"
-                                : "bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600"
-                            }`}
-                          >
-                            {isDemo ? "🧪 Demo" : "🧪 Non-demo"}
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">{product.pricing?.model || "-"}</td>
-                      <td className="px-4 py-3 text-right space-x-2">
-                        <button
-                          onClick={() => {
-                            setEditingProduct(product);
-                            setShowProtocolForm(true);
-                          }}
-                          className="bg-primary text-white px-3 py-1 rounded text-sm font-semibold hover:opacity-90"
-                        >
-                          Modifier
-                        </button>
-                        {deleteConfirm === product.id ? (
-                          <>
-                            <button
-                              onClick={() => handleDelete(product.id)}
-                              className="bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold hover:opacity-90"
-                            >
-                              Confirmer
-                            </button>
-                            <button
-                              onClick={() => setDeleteConfirm(null)}
-                              className="bg-gray-200 text-text-primary px-3 py-1 rounded text-sm font-semibold hover:bg-gray-300"
-                            >
-                              Annuler
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => setDeleteConfirm(product.id)}
-                            className="bg-red-100 text-red-700 px-3 py-1 rounded text-sm font-semibold hover:bg-red-200"
-                          >
-                            Supprimer
-                          </button>
-                        )}
-                      </td>
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
+                        Nom / ID
+                      </th>
+                      <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
+                        Type
+                      </th>
+                      <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
+                        Statut
+                      </th>
+                      <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
+                        Tarif
+                      </th>
+                      <th className="text-right px-4 py-4 text-sm font-semibold text-text-secondary">
+                        Actions
+                      </th>
                     </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {adminProducts
+                      .filter(
+                        (p) =>
+                          !productSearch ||
+                          p.name
+                            .toLowerCase()
+                            .includes(productSearch.toLowerCase()),
+                      )
+                      .map((product) => {
+                        const isHidden = product.isVisible === false;
+                        const isDefunct = product.companyDefunct === true;
+                        const isDemo = product.isDemo === true;
+                        return (
+                          <tr
+                            key={product.id}
+                            className={`hover:bg-gray-50 ${isHidden || isDefunct ? "opacity-60" : ""}`}
+                          >
+                            <td className="px-4 py-3">
+                              <p className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                                {product.name}
+                                {isHidden && (
+                                  <span className="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-xs font-semibold">
+                                    Caché
+                                  </span>
+                                )}
+                                {isDefunct && (
+                                  <span className="bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-semibold">
+                                    Défunt
+                                  </span>
+                                )}
+                                {isDemo && (
+                                  <span className="bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-xs font-semibold">
+                                    Demo
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs font-mono text-text-secondary">
+                                {product.id}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-text-secondary">
+                              {product.type}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col gap-1">
+                                <button
+                                  onClick={() =>
+                                    handleToggleVisibility(product.id)
+                                  }
+                                  disabled={togglingId === product.id}
+                                  title={
+                                    isHidden
+                                      ? "Publier dans le catalogue"
+                                      : "Retirer du catalogue"
+                                  }
+                                  className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                                    isHidden
+                                      ? "bg-gray-200 text-gray-600 hover:bg-green-100 hover:text-green-700"
+                                      : "bg-green-100 text-green-700 hover:bg-gray-200 hover:text-gray-600"
+                                  }`}
+                                >
+                                  {isHidden ? "Publier" : "Depublier"}
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleToggleDefunct(product.id)
+                                  }
+                                  disabled={togglingId === product.id}
+                                  title={
+                                    isDefunct
+                                      ? "Marquer comme actif"
+                                      : "Marquer société disparue"
+                                  }
+                                  className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                                    isDefunct
+                                      ? "bg-red-100 text-red-600 hover:bg-gray-200 hover:text-gray-600"
+                                      : "bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"
+                                  }`}
+                                >
+                                  {isDefunct ? "💀 Défunt" : "🏢 Actif"}
+                                </button>
+                                <button
+                                  onClick={() => handleToggleDemo(product.id)}
+                                  disabled={togglingId === product.id}
+                                  title={
+                                    isDemo
+                                      ? "Retirer le statut demo"
+                                      : "Marquer comme demo"
+                                  }
+                                  className={`text-xs px-2 py-1 rounded font-semibold transition-colors disabled:opacity-50 ${
+                                    isDemo
+                                      ? "bg-blue-100 text-blue-600 hover:bg-gray-200 hover:text-gray-600"
+                                      : "bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600"
+                                  }`}
+                                >
+                                  {isDemo ? "🧪 Demo" : "🧪 Non-demo"}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-text-secondary">
+                              {product.pricing?.model || "-"}
+                            </td>
+                            <td className="px-4 py-3 text-right space-x-2">
+                              <button
+                                onClick={() => {
+                                  setEditingProduct(product);
+                                  setShowProtocolForm(true);
+                                }}
+                                className="bg-primary text-white px-3 py-1 rounded text-sm font-semibold hover:opacity-90"
+                              >
+                                Modifier
+                              </button>
+                              {deleteConfirm === product.id ? (
+                                <>
+                                  <button
+                                    onClick={() => handleDelete(product.id)}
+                                    className="bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold hover:opacity-90"
+                                  >
+                                    Confirmer
+                                  </button>
+                                  <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    className="bg-gray-200 text-text-primary px-3 py-1 rounded text-sm font-semibold hover:bg-gray-300"
+                                  >
+                                    Annuler
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => setDeleteConfirm(product.id)}
+                                  className="bg-red-100 text-red-700 px-3 py-1 rounded text-sm font-semibold hover:bg-red-200"
+                                >
+                                  Supprimer
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
 
-              {adminProducts.length === 0 && (
-                <div className="p-12 text-center text-text-secondary">Aucun produit trouvé</div>
-              )}
-            </div>
+                {adminProducts.length === 0 && (
+                  <div className="p-12 text-center text-text-secondary">
+                    Aucun produit trouvé
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}
@@ -471,7 +551,9 @@ export const AdminPanel: React.FC = () => {
                   onChange={(e) => setPendingOnly(e.target.checked)}
                   className="w-4 h-4 text-primary"
                 />
-                <span className="text-sm font-semibold text-text-secondary">Afficher uniquement "En attente"</span>
+                <span className="text-sm font-semibold text-text-secondary">
+                  Afficher uniquement "En attente"
+                </span>
               </label>
               <button
                 onClick={loadPrescribers}
@@ -483,30 +565,54 @@ export const AdminPanel: React.FC = () => {
             </div>
 
             {prescribersLoading ? (
-              <div className="text-center py-12 text-text-secondary">Chargement...</div>
+              <div className="text-center py-12 text-text-secondary">
+                Chargement...
+              </div>
             ) : (
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Nom / Email</th>
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Profession</th>
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Organisation</th>
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">RPPS / ADELI</th>
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Statut</th>
-                      <th className="text-right px-6 py-4 text-sm font-semibold text-text-secondary">Actions</th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">
+                        Nom / Email
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">
+                        Profession
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">
+                        Organisation
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">
+                        RPPS / ADELI
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">
+                        Statut
+                      </th>
+                      <th className="text-right px-6 py-4 text-sm font-semibold text-text-secondary">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {prescribers.map((p) => (
                       <tr key={p.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-text-primary">{p.name}</p>
-                          <p className="text-xs text-text-secondary">{p.email}</p>
+                          <p className="text-sm font-semibold text-text-primary">
+                            {p.name}
+                          </p>
+                          <p className="text-xs text-text-secondary">
+                            {p.email}
+                          </p>
                         </td>
-                        <td className="px-6 py-4 text-sm text-text-secondary">{p.profession || "-"}</td>
-                        <td className="px-6 py-4 text-sm text-text-secondary">{p.organization || "-"}</td>
-                        <td className="px-6 py-4 text-sm font-mono text-text-secondary">{p.rpps_adeli || "-"}</td>
+                        <td className="px-6 py-4 text-sm text-text-secondary">
+                          {p.profession || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-text-secondary">
+                          {p.organization || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-mono text-text-secondary">
+                          {p.rpps_adeli || "-"}
+                        </td>
                         <td className="px-6 py-4">
                           {p.is_verified_prescriber ? (
                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">
@@ -545,7 +651,9 @@ export const AdminPanel: React.FC = () => {
 
                 {prescribers.length === 0 && (
                   <div className="p-12 text-center text-text-secondary">
-                    {pendingOnly ? "Aucun prescripteur en attente" : "Aucun prescripteur trouvé"}
+                    {pendingOnly
+                      ? "Aucun prescripteur en attente"
+                      : "Aucun prescripteur trouvé"}
                   </div>
                 )}
               </div>
@@ -554,14 +662,21 @@ export const AdminPanel: React.FC = () => {
         )}
 
         {/* ── Soumissions & Collectif tab ──────────────────────── */}
-        {activeTab === "soumissions" && <PublicSubmissionsAdmin onCreateProduct={handleCreateFromSubmission} />}
+        {activeTab === "soumissions" && (
+          <PublicSubmissionsAdmin
+            onCreateProduct={handleCreateFromSubmission}
+          />
+        )}
 
         {/* ── Veille tab ───────────────────────────────────────── */}
         {activeTab === "veille" && (
           <div className="max-w-2xl">
-            <h2 className="text-xl font-bold text-text-primary mb-2">Créer une mise à jour produit</h2>
+            <h2 className="text-xl font-bold text-text-primary mb-2">
+              Créer une mise à jour produit
+            </h2>
             <p className="text-text-secondary text-sm mb-6">
-              Ces mises à jour apparaissent dans l'espace Veille des prescripteurs.
+              Ces mises à jour apparaissent dans l'espace Veille des
+              prescripteurs.
             </p>
 
             {veilleSuccess && (
@@ -575,9 +690,14 @@ export const AdminPanel: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleVeilleSubmit} className="bg-white rounded-xl shadow-lg p-6 space-y-4">
+            <form
+              onSubmit={handleVeilleSubmit}
+              className="bg-white rounded-xl shadow-lg p-6 space-y-4"
+            >
               <div>
-                <label className="block text-sm font-semibold text-text-primary mb-1">Produit</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">
+                  Produit
+                </label>
                 <select
                   value={veilleProductId}
                   onChange={(e) => setVeilleProductId(e.target.value)}
@@ -594,7 +714,9 @@ export const AdminPanel: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-text-primary mb-1">Type de mise à jour</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">
+                  Type de mise à jour
+                </label>
                 <select
                   value={veilleType}
                   onChange={(e) => setVeilleType(e.target.value)}
@@ -610,7 +732,9 @@ export const AdminPanel: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-text-primary mb-1">Titre</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">
+                  Titre
+                </label>
                 <input
                   value={veilleTitle}
                   onChange={(e) => setVeilleTitle(e.target.value)}
@@ -622,7 +746,10 @@ export const AdminPanel: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-1">
-                  Description <span className="text-text-secondary font-normal">(optionnel)</span>
+                  Description{" "}
+                  <span className="text-text-secondary font-normal">
+                    (optionnel)
+                  </span>
                 </label>
                 <textarea
                   value={veilleDescription}

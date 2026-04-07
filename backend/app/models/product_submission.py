@@ -15,9 +15,7 @@ class ProductSubmission(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    publisher_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), nullable=False
-    )
+    publisher_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     product_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="draft")
 
@@ -32,6 +30,8 @@ class ProductSubmission(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audience: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    audience_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
+    problems_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
     pricing_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
     pricing_amount: Mapped[str | None] = mapped_column(String(100), nullable=True)
     pricing_details: Mapped[str | None] = mapped_column(Text, nullable=True)

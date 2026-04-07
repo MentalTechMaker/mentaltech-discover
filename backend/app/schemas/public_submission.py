@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
-
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from .product import PriorityMapSchema
 
 VALID_PROFESSIONS = [
     "Médecin généraliste",
@@ -30,7 +30,7 @@ VALID_PROFESSIONS = [
 
 class PublicSubmissionCreate(BaseModel):
     # Contact info (required)
-    contact_name: str
+    contact_name: str = Field(max_length=200)
     contact_email: EmailStr
 
     # Anti-bot fields
@@ -38,22 +38,24 @@ class PublicSubmissionCreate(BaseModel):
     submitted_at_ts: float = 0.0
 
     # Product info (all optional)
-    name: str | None = None
+    name: str | None = Field(default=None, max_length=200)
     type: str | None = None
-    tagline: str | None = None
-    description: str | None = None
-    url: str | None = None
-    linkedin: str | None = None
+    tagline: str | None = Field(default=None, max_length=300)
+    description: str | None = Field(default=None, max_length=10000)
+    url: str | None = Field(default=None, max_length=500)
+    linkedin: str | None = Field(default=None, max_length=500)
     logo: str | None = None
     tags: list[str] = []
     audience: list[str] = []
     problems_solved: list[str] = []
+    audience_priorities: PriorityMapSchema = PriorityMapSchema()
+    problems_priorities: PriorityMapSchema = PriorityMapSchema()
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
     protocol_answers: dict = {}
 
-    # Collectif (CA range is never stored in DB - email only)
+    # Collectif (CA range stored temporarily for admin review)
     collectif_requested: bool = False
     collectif_ca_range: str | None = None
     collectif_contact_email: EmailStr | None = None
@@ -74,6 +76,8 @@ class PublicSubmissionResponse(BaseModel):
     tags: list[str]
     audience: list[str]
     problemsSolved: list[str]
+    audiencePriorities: dict | None = None
+    problemsPriorities: dict | None = None
     pricingModel: str | None
     pricingAmount: str | None
     pricingDetails: str | None
@@ -92,13 +96,13 @@ class PublicSubmissionResponse(BaseModel):
 
 
 class HealthProfApplicationCreate(BaseModel):
-    name: str
+    name: str = Field(max_length=200)
     email: EmailStr
     profession: str
     rpps_adeli: str | None = None
-    organization: str | None = None
-    motivation: str | None = None
-    linkedin: str | None = None
+    organization: str | None = Field(default=None, max_length=300)
+    motivation: str | None = Field(default=None, max_length=5000)
+    linkedin: str | None = Field(default=None, max_length=500)
 
     # Anti-bot
     honeypot: str = ""
@@ -108,7 +112,9 @@ class HealthProfApplicationCreate(BaseModel):
     @classmethod
     def validate_profession(cls, v: str) -> str:
         if v not in VALID_PROFESSIONS:
-            raise ValueError(f"Profession invalide. Valeurs acceptées: {', '.join(VALID_PROFESSIONS)}")
+            raise ValueError(
+                f"Profession invalide. Valeurs acceptées: {', '.join(VALID_PROFESSIONS)}"
+            )
         return v
 
 

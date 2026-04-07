@@ -55,7 +55,6 @@ describe("T-SEO-2 | robots.txt - routes privees bloquees", () => {
     "/admin",
     "/dashboard",
     "/nouvelle-prescription",
-    "/comparateur",
     "/prescripteur",
     "/reset-password",
     "/check-email",
@@ -71,8 +70,8 @@ describe("T-SEO-2 | robots.txt - routes privees bloquees", () => {
     });
   }
 
-  test("reference le sitemap statique", () => {
-    expect(robots).toContain("Sitemap: https://discover.mentaltech.fr/sitemap.xml");
+  test("reference le sitemap API", () => {
+    expect(robots).toContain("Sitemap: https://discover.mentaltech.fr/api/sitemap.xml");
   });
 
   test("reference le sitemap dynamique (/api/sitemap.xml)", () => {
@@ -276,8 +275,8 @@ describe("Code V2 | Quiz - parcours health-decision-maker", () => {
 describe("Code V2 | Landing - 3e parcours etablissement", () => {
   const landing = src("components/Landing.tsx");
 
-  test("gere le type health-decision-maker", () => {
-    expect(landing).toContain("health-decision-maker");
+  test("affiche le parcours etablissement (bientot disponible)", () => {
+    expect(landing).toContain("établissement");
   });
 
   test("grille a 3 colonnes (md:grid-cols-3)", () => {
@@ -337,7 +336,6 @@ describe("Code V2 | Labels audience - etablissement-sante / entreprise", () => {
     "components/ProductPage.tsx",
     "components/ProductCatalog/ProductCatalogCard.tsx",
     "components/Prescriber/ProductQuickView.tsx",
-    "components/Prescriber/ComparatorPage.tsx",
   ];
 
   for (const file of displayFiles) {

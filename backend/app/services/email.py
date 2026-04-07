@@ -3,7 +3,8 @@ from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
-from jose import jwt, JWTError
+import jwt
+from jwt.exceptions import PyJWTError
 from jinja2 import Environment, FileSystemLoader
 
 from ..config import settings
@@ -18,6 +19,7 @@ def _mask_email(email: str) -> str:
         return "***"
     local, domain = email.split("@", 1)
     return f"{local[0]}***@{domain}"
+
 
 TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
 EMAIL_DEV_DIR = Path("/tmp/mentaltech_emails")
@@ -42,7 +44,12 @@ fm = FastMail(mail_conf)
 
 
 def _write_email_to_file(subject: str, recipients: list[str], html: str) -> None:
-    """Écrit le contenu d'un email dans un fichier local (fallback dev)."""
+    """Écrit le contenu d'un email dans un fichier local (fallback dev uniquement)."""
+    if not settings.DEBUG:
+        logger.warning(
+            "Email send failed in production - file fallback disabled for security"
+        )
+        return
     try:
         EMAIL_DEV_DIR.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
@@ -77,7 +84,7 @@ def decode_email_token(
         if return_full:
             return payload
         return payload.get("sub")
-    except (JWTError, ValueError, KeyError):
+    except (PyJWTError, ValueError, KeyError):
         return None
 
 
@@ -99,7 +106,9 @@ async def send_verification_email(email: str, name: str, user_id: str) -> None:
         await fm.send_message(message)
         logger.info(f"Verification email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send verification email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send verification email to {_mask_email(email)}", exc_info=True
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -135,7 +144,10 @@ async def send_prescription_email(
         await fm.send_message(message_schema)
         logger.info(f"Prescription email sent to {_mask_email(patient_email)}")
     except Exception:
-        logger.error(f"Failed to send prescription email to {_mask_email(patient_email)}", exc_info=True)
+        logger.error(
+            f"Failed to send prescription email to {_mask_email(patient_email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message_schema.subject, [patient_email], html)
 
 
@@ -157,9 +169,14 @@ async def send_prescription_viewed_email(
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Prescription viewed email sent to {_mask_email(prescriber_email)}")
+        logger.info(
+            f"Prescription viewed email sent to {_mask_email(prescriber_email)}"
+        )
     except Exception:
-        logger.error(f"Failed to send prescription viewed email to {_mask_email(prescriber_email)}", exc_info=True)
+        logger.error(
+            f"Failed to send prescription viewed email to {_mask_email(prescriber_email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [prescriber_email], html)
 
 
@@ -181,13 +198,20 @@ async def send_prescription_revoked_email(
     )
     try:
         await fm.send_message(message)
-        logger.info(f"Prescription revoked email sent to {_mask_email(prescriber_email)}")
+        logger.info(
+            f"Prescription revoked email sent to {_mask_email(prescriber_email)}"
+        )
     except Exception:
-        logger.error(f"Failed to send prescription revoked email to {_mask_email(prescriber_email)}", exc_info=True)
+        logger.error(
+            f"Failed to send prescription revoked email to {_mask_email(prescriber_email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [prescriber_email], html)
 
 
-async def send_prescriber_approved_email(email: str, name: str, dashboard_url: str) -> None:
+async def send_prescriber_approved_email(
+    email: str, name: str, dashboard_url: str
+) -> None:
     template = jinja_env.get_template("prescriber_approved.html")
     html = template.render(name=name, dashboard_url=dashboard_url)
     message = MessageSchema(
@@ -200,11 +224,16 @@ async def send_prescriber_approved_email(email: str, name: str, dashboard_url: s
         await fm.send_message(message)
         logger.info(f"Prescriber approved email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send prescriber approved email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send prescriber approved email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_submission_confirmation_email(email: str, name: str, confirm_token: str) -> None:
+async def send_submission_confirmation_email(
+    email: str, name: str, confirm_token: str
+) -> None:
     confirm_url = f"{settings.FRONTEND_URL}/confirmer-soumission?token={confirm_token}"
     template = jinja_env.get_template("submission_confirmation.html")
     html = template.render(name=name, confirm_url=confirm_url)
@@ -218,7 +247,60 @@ async def send_submission_confirmation_email(email: str, name: str, confirm_toke
         await fm.send_message(message)
         logger.info(f"Submission confirmation email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission confirmation email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send submission confirmation email to {_mask_email(email)}",
+            exc_info=True,
+        )
+        _write_email_to_file(message.subject, [email], html)
+
+
+async def send_submission_recap_email(
+    email: str,
+    contact_name: str,
+    product_name: str | None,
+    product_type: str | None,
+    tagline: str | None,
+    url: str | None,
+    audience_priorities: dict | None,
+    problems_priorities: dict | None,
+    pricing_model: str | None,
+    pricing_amount: str | None,
+    collectif_requested: bool,
+) -> None:
+    template = jinja_env.get_template("submission_recap.html")
+    ap = audience_priorities or {}
+    pp = problems_priorities or {}
+    html = template.render(
+        contact_name=contact_name,
+        product_name=product_name,
+        product_type=product_type,
+        tagline=tagline,
+        url=url,
+        audience_p1=ap.get("P1", []),
+        audience_p2=ap.get("P2", []),
+        audience_p3=ap.get("P3", []),
+        problems_p1=pp.get("P1", []),
+        problems_p2=pp.get("P2", []),
+        problems_p3=pp.get("P3", []),
+        pricing_model=pricing_model,
+        pricing_amount=pricing_amount,
+        collectif_requested=collectif_requested,
+        frontend_url=settings.FRONTEND_URL,
+    )
+    message = MessageSchema(
+        subject="Recapitulatif de votre soumission - MentalTech Discover",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await fm.send_message(message)
+        logger.info(f"Submission recap email sent to {_mask_email(email)}")
+    except Exception:
+        logger.error(
+            f"Failed to send submission recap email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -254,10 +336,14 @@ async def send_submission_received_admin_email(
         _write_email_to_file(message.subject, [admin_email], html)
 
 
-async def send_submission_approved_email(email: str, name: str, product_name: str | None) -> None:
+async def send_submission_approved_email(
+    email: str, name: str, product_name: str | None
+) -> None:
     catalog_url = f"{settings.FRONTEND_URL}/catalogue"
     template = jinja_env.get_template("submission_approved.html")
-    html = template.render(name=name, product_name=product_name, catalog_url=catalog_url)
+    html = template.render(
+        name=name, product_name=product_name, catalog_url=catalog_url
+    )
     message = MessageSchema(
         subject="Votre solution a été acceptée ! - MentalTech Discover",
         recipients=[email],
@@ -268,13 +354,20 @@ async def send_submission_approved_email(email: str, name: str, product_name: st
         await fm.send_message(message)
         logger.info(f"Submission approved email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission approved email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send submission approved email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_submission_rejected_email(email: str, name: str, product_name: str | None, admin_notes: str | None) -> None:
+async def send_submission_rejected_email(
+    email: str, name: str, product_name: str | None, admin_notes: str | None
+) -> None:
     template = jinja_env.get_template("submission_rejected.html")
-    html = template.render(name=name, product_name=product_name, admin_notes=admin_notes)
+    html = template.render(
+        name=name, product_name=product_name, admin_notes=admin_notes
+    )
     message = MessageSchema(
         subject="Réponse à votre demande de référencement - MentalTech Discover",
         recipients=[email],
@@ -285,11 +378,16 @@ async def send_submission_rejected_email(email: str, name: str, product_name: st
         await fm.send_message(message)
         logger.info(f"Submission rejected email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send submission rejected email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send submission rejected email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_collectif_invite_email(email: str, name: str, helloasso_url: str) -> None:
+async def send_collectif_invite_email(
+    email: str, name: str, helloasso_url: str
+) -> None:
     template = jinja_env.get_template("collectif_invite.html")
     html = template.render(name=name, helloasso_url=helloasso_url)
     message = MessageSchema(
@@ -302,11 +400,16 @@ async def send_collectif_invite_email(email: str, name: str, helloasso_url: str)
         await fm.send_message(message)
         logger.info(f"Collectif invite email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send collectif invite email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send collectif invite email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_collectif_refused_email(email: str, name: str, admin_notes: str | None) -> None:
+async def send_collectif_refused_email(
+    email: str, name: str, admin_notes: str | None
+) -> None:
     template = jinja_env.get_template("collectif_refused.html")
     html = template.render(name=name, admin_notes=admin_notes)
     message = MessageSchema(
@@ -319,11 +422,16 @@ async def send_collectif_refused_email(email: str, name: str, admin_notes: str |
         await fm.send_message(message)
         logger.info(f"Collectif refused email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send collectif refused email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send collectif refused email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
-async def send_health_pro_confirmation_email(email: str, name: str, confirm_token: str) -> None:
+async def send_health_pro_confirmation_email(
+    email: str, name: str, confirm_token: str
+) -> None:
     confirm_url = f"{settings.FRONTEND_URL}/confirmer-candidature?token={confirm_token}"
     template = jinja_env.get_template("health_pro_confirmation.html")
     html = template.render(name=name, confirm_url=confirm_url)
@@ -337,7 +445,10 @@ async def send_health_pro_confirmation_email(email: str, name: str, confirm_toke
         await fm.send_message(message)
         logger.info(f"Health pro confirmation email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send health pro confirmation email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send health pro confirmation email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
 
 
@@ -393,5 +504,8 @@ async def send_reset_password_email(email: str, name: str, user_id: str) -> None
         await fm.send_message(message)
         logger.info(f"Password reset email sent to {_mask_email(email)}")
     except Exception:
-        logger.error(f"Failed to send password reset email to {_mask_email(email)}", exc_info=True)
+        logger.error(
+            f"Failed to send password reset email to {_mask_email(email)}",
+            exc_info=True,
+        )
         _write_email_to_file(message.subject, [email], html)
