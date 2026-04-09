@@ -80,7 +80,6 @@ async def _send_or_write(message: MessageSchema, recipients: list[str], html: st
         return True
     except Exception:
         logger.error(f"Failed to send {label} to {_mask_email(recipients[0])}", exc_info=True)
-        _write_email_to_file(message.subject, recipients, html)
         return False
 
 

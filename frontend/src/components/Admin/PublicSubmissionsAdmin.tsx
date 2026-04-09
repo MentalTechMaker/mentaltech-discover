@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { useToast } from "../../hooks/useToast";
 import {
   listPublicSubmissions,
   approvePublicSubmission,
@@ -66,15 +67,12 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
   const [actionLoading, setActionLoading] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
   const [helloassoUrl, setHelloassoUrl] = useState("");
+  const [showPendingEmail, setShowPendingEmail] = useState(false);
   // Inline actions for submissions
   const [rejectingSubId, setRejectingSubId] = useState<string | null>(null);
   const [collectifSubId, setCollectifSubId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { toast, showToast } = useToast();
 
   useEffect(() => {
     if (activeTab === "submissions") loadSubmissions();
@@ -121,16 +119,12 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
     }
   };
 
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
-    setToast({ message, type });
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 3500);
-  };
+  const pendingEmailCount = submissions.filter(
+    (s) => s.status === "pending_email",
+  ).length;
 
   const filteredSubmissions = submissions.filter((sub) => {
+    if (!showPendingEmail && sub.status === "pending_email") return false;
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -162,7 +156,7 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
           [
             {
               key: "submissions",
-              label: `Soumissions (${submissions.length})`,
+              label: `Soumissions (${submissions.length - pendingEmailCount}${pendingEmailCount > 0 ? ` + ${pendingEmailCount} en attente` : ""})`,
             },
             {
               key: "health-pro",
@@ -196,13 +190,27 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
       {/* ── SUBMISSIONS TAB ──────────────────────────────────────── */}
       {!loading && activeTab === "submissions" && (
         <div className="space-y-2">
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher par nom, contact, email..."
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
-          />
+          <div className="flex gap-3 items-center">
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher par nom, contact, email..."
+              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
+            />
+            {pendingEmailCount > 0 && (
+              <button
+                onClick={() => setShowPendingEmail(!showPendingEmail)}
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                  showPendingEmail
+                    ? "bg-orange-100 text-orange-700 border-orange-300"
+                    : "bg-gray-100 text-gray-500 border-gray-200 hover:border-orange-300"
+                }`}
+              >
+                {showPendingEmail ? "Masquer" : "Voir"} non confirmés ({pendingEmailCount})
+              </button>
+            )}
+          </div>
           {filteredSubmissions.length === 0 && (
             <p className="text-sm text-text-secondary py-8 text-center">
               {submissions.length === 0
@@ -217,7 +225,7 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
             };
             const isRejecting = rejectingSubId === sub.id;
             const isCollectif = collectifSubId === sub.id;
-            const canReject = ["submitted", "under_review"].includes(
+            const canReject = !["rejected", "changes_requested"].includes(
               sub.status,
             );
             return (
@@ -240,18 +248,25 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
                       </p>
                       <p className="text-xs text-text-secondary mt-1">
                         {new Date(sub.createdAt).toLocaleDateString("fr-FR")}
-                        {sub.type && <> · {sub.type}</>}
                       </p>
                       {sub.tagline && (
-                        <p className="text-xs text-primary mt-1 line-clamp-1">{sub.tagline}</p>
+                        <p className="text-xs text-primary mt-1 line-clamp-1">
+                          {sub.tagline}
+                        </p>
                       )}
                       {(sub.audiencePriorities || sub.problemsPriorities) && (
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {renderPriorityBadges(sub.audiencePriorities, audienceLabels)}
+                          {renderPriorityBadges(
+                            sub.audiencePriorities,
+                            audienceLabels,
+                          )}
                           {sub.audiencePriorities && sub.problemsPriorities && (
                             <span className="text-gray-300 mx-0.5">|</span>
                           )}
-                          {renderPriorityBadges(sub.problemsPriorities, problemLabels)}
+                          {renderPriorityBadges(
+                            sub.problemsPriorities,
+                            problemLabels,
+                          )}
                         </div>
                       )}
                     </div>

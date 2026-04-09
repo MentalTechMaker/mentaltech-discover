@@ -5,7 +5,7 @@ from .product import PriorityMapSchema
 class SubmissionCreate(BaseModel):
     # Basic info (all optional for draft saving)
     name: str | None = None
-    type: str | None = None
+
     tagline: str | None = None
     description: str | None = None
     url: str | None = None
@@ -24,7 +24,7 @@ class SubmissionCreate(BaseModel):
 class SubmissionUpdate(BaseModel):
     # Same as Create but explicit partial
     name: str | None = None
-    type: str | None = None
+
     tagline: str | None = None
     description: str | None = None
     url: str | None = None
@@ -46,7 +46,6 @@ class SubmissionResponse(BaseModel):
     productId: str | None
     status: str
     name: str | None
-    type: str | None
     tagline: str | None
     description: str | None
     url: str | None
@@ -89,7 +88,7 @@ class AdminCreateAndPublishSchema(BaseModel):
     # Basic product info (same as SubmissionCreate)
     id: str | None = None
     name: str
-    type: str
+
     tagline: str
     description: str
     url: str

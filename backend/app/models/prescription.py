@@ -16,7 +16,7 @@ class Prescription(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     prescriber_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     patient_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     product_ids: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)

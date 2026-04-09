@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import type { Product, PriorityMap } from "../../types";
 import { apiFetch } from "../../api/client";
+import { PriorityPicker } from "../shared/PriorityPicker";
 
 interface ProductFormProps {
   product?: Product;
@@ -28,7 +29,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const [id, setId] = useState(product?.id ?? "");
   const [name, setName] = useState(product?.name ?? "");
-  const [type, setType] = useState(product?.type ?? "");
   const [tagline, setTagline] = useState(product?.tagline ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [url, setUrl] = useState(product?.url ?? "");
@@ -77,33 +77,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const isEditing = !!product;
 
-  function togglePriorityItem(type: "audience" | "problems", value: string) {
-    const setter =
-      type === "audience" ? setAudiencePriorities : setProblemsPriorities;
-    setter((prev) => {
-      const ordered = [
-        ...(prev.P1 ?? []),
-        ...(prev.P2 ?? []),
-        ...(prev.P3 ?? []),
-      ];
-      if (ordered.includes(value)) {
-        const remaining = ordered.filter((v) => v !== value);
-        return {
-          P1: remaining.slice(0, 1),
-          P2: remaining.slice(1, 2),
-          P3: remaining.slice(2, 3),
-        };
-      }
-      if (ordered.length >= 3) return prev;
-      const next = [...ordered, value];
-      return {
-        P1: next.slice(0, 1),
-        P2: next.slice(1, 2),
-        P3: next.slice(2, 3),
-      };
-    });
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -119,7 +92,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       await onSubmit({
         id,
         name,
-        type,
         tagline,
         description,
         url,
@@ -202,15 +174,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold mb-1">Type</label>
-          <input
-            value={type}
-            onChange={(e) => setType(e.target.value)}
             required
             className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
           />
@@ -326,144 +289,40 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold mb-2">Public cible</label>
-        <p className="text-xs text-text-secondary mb-3">
-          Cliquez dans l'ordre de priorité : 1er = P1, 2e = P2, 3e = P3.
-          Recliquez pour retirer.
-        </p>
-        {(() => {
-          const AUDIENCE_OPTIONS = [
-            { value: "adult", label: "Adultes" },
-            { value: "young", label: "Adolescents" },
-            { value: "child", label: "Enfants" },
-            { value: "parent", label: "Parents" },
-            { value: "senior", label: "Seniors" },
-            { value: "entreprise", label: "Entreprises" },
-            { value: "etablissement-sante", label: "Établissements de santé" },
-          ];
-          const ordered = [
-            ...(audiencePriorities.P1 ?? []),
-            ...(audiencePriorities.P2 ?? []),
-            ...(audiencePriorities.P3 ?? []),
-          ];
-          return (
-            <div className="flex flex-wrap gap-2">
-              {AUDIENCE_OPTIONS.map((opt) => {
-                const idx = ordered.indexOf(opt.value);
-                const isSelected = idx !== -1;
-                const level =
-                  idx === 0 ? "P1" : idx === 1 ? "P2" : idx === 2 ? "P3" : null;
-                const isFull = ordered.length >= 3 && !isSelected;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    disabled={isFull}
-                    onClick={() => togglePriorityItem("audience", opt.value)}
-                    className={`relative px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold transition-all ${
-                      level === "P1"
-                        ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
-                        : level === "P2"
-                          ? "bg-indigo-50 text-indigo-600 ring-2 ring-indigo-300"
-                          : level === "P3"
-                            ? "bg-gray-100 text-gray-600 ring-2 ring-gray-300"
-                            : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}
-                  >
-                    {isSelected && (
-                      <span
-                        className={`absolute -top-2 -right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                          level === "P1"
-                            ? "bg-blue-500 text-white"
-                            : level === "P2"
-                              ? "bg-indigo-400 text-white"
-                              : "bg-gray-400 text-white"
-                        }`}
-                      >
-                        {level}
-                      </span>
-                    )}
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })()}
-      </div>
+      <PriorityPicker
+        options={[
+          { value: "adult", label: "Adultes" },
+          { value: "young", label: "Adolescents" },
+          { value: "child", label: "Enfants" },
+          { value: "parent", label: "Parents" },
+          { value: "senior", label: "Seniors" },
+          { value: "entreprise", label: "Entreprises" },
+          { value: "etablissement-sante", label: "Établissements de santé" },
+        ]}
+        priorities={audiencePriorities}
+        onToggle={setAudiencePriorities}
+        label="Public cible"
+        description="Cliquez dans l'ordre de priorité : 1er = P1, 2e = P2, 3e = P3. Recliquez pour retirer."
+      />
 
-      <div>
-        <label className="block text-sm font-semibold mb-2">
-          Problèmes adressés
-        </label>
-        <p className="text-xs text-text-secondary mb-3">
-          Cliquez dans l'ordre de priorité : 1er = P1, 2e = P2, 3e = P3.
-          Recliquez pour retirer.
-        </p>
-        {(() => {
-          const PROBLEM_OPTIONS = [
-            { value: "stress-anxiety", label: "Stress / Anxiété" },
-            { value: "sadness", label: "Tristesse / Dépression" },
-            { value: "addiction", label: "Addictions" },
-            { value: "trauma", label: "Traumatismes" },
-            { value: "work", label: "Travail / Burn-out" },
-            { value: "sleep", label: "Sommeil" },
-            { value: "cognitif", label: "Troubles cognitifs" },
-            { value: "douleur", label: "Douleur" },
-            { value: "concentration", label: "Concentration / TDAH" },
-            { value: "other", label: "Autres" },
-          ];
-          const ordered = [
-            ...(problemsPriorities.P1 ?? []),
-            ...(problemsPriorities.P2 ?? []),
-            ...(problemsPriorities.P3 ?? []),
-          ];
-          return (
-            <div className="flex flex-wrap gap-2">
-              {PROBLEM_OPTIONS.map((opt) => {
-                const idx = ordered.indexOf(opt.value);
-                const isSelected = idx !== -1;
-                const level =
-                  idx === 0 ? "P1" : idx === 1 ? "P2" : idx === 2 ? "P3" : null;
-                const isFull = ordered.length >= 3 && !isSelected;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    disabled={isFull}
-                    onClick={() => togglePriorityItem("problems", opt.value)}
-                    className={`relative px-3 py-1.5 min-h-[44px] rounded-full text-sm font-semibold transition-all ${
-                      level === "P1"
-                        ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
-                        : level === "P2"
-                          ? "bg-indigo-50 text-indigo-600 ring-2 ring-indigo-300"
-                          : level === "P3"
-                            ? "bg-gray-100 text-gray-600 ring-2 ring-gray-300"
-                            : "bg-gray-100 text-text-secondary hover:bg-gray-200"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}
-                  >
-                    {isSelected && (
-                      <span
-                        className={`absolute -top-2 -right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                          level === "P1"
-                            ? "bg-blue-500 text-white"
-                            : level === "P2"
-                              ? "bg-indigo-400 text-white"
-                              : "bg-gray-400 text-white"
-                        }`}
-                      >
-                        {level}
-                      </span>
-                    )}
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })()}
-      </div>
+      <PriorityPicker
+        options={[
+          { value: "stress-anxiety", label: "Stress / Anxiété" },
+          { value: "sadness", label: "Tristesse / Dépression" },
+          { value: "addiction", label: "Addictions" },
+          { value: "trauma", label: "Traumatismes" },
+          { value: "work", label: "Travail / Burn-out" },
+          { value: "sleep", label: "Sommeil" },
+          { value: "cognitif", label: "Troubles cognitifs" },
+          { value: "douleur", label: "Douleur" },
+          { value: "concentration", label: "Concentration / TDAH" },
+          { value: "other", label: "Autres" },
+        ]}
+        priorities={problemsPriorities}
+        onToggle={setProblemsPriorities}
+        label="Problèmes adressés"
+        description="Cliquez dans l'ordre de priorité : 1er = P1, 2e = P2, 3e = P3. Recliquez pour retirer."
+      />
 
       <div>
         <label className="block text-sm font-semibold mb-2">

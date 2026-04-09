@@ -7,7 +7,6 @@ export interface PublicSubmissionCreate {
   honeypot: string;
   submitted_at_ts: number;
   name?: string;
-  type?: string;
   tagline?: string;
   description?: string;
   url?: string;
@@ -21,6 +20,7 @@ export interface PublicSubmissionCreate {
   pricing_details?: string;
   audience_priorities?: Record<string, string[]>;
   problems_priorities?: Record<string, string[]>;
+  preference_match?: string[];
   protocol_answers?: Record<string, unknown>;
   collectif_requested?: boolean;
   collectif_ca_range?: string;

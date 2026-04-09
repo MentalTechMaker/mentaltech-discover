@@ -29,7 +29,6 @@ class PublicSubmission(Base):
 
     # Product info
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     tagline: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     url: Mapped[str | None] = mapped_column(String(500), nullable=True)
@@ -40,6 +39,7 @@ class PublicSubmission(Base):
     problems_solved: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audience_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
     problems_priorities: Mapped[dict | None] = mapped_column(JSONB, default=dict)
+    preference_match: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     pricing_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
     pricing_amount: Mapped[str | None] = mapped_column(String(100), nullable=True)
     pricing_details: Mapped[str | None] = mapped_column(Text, nullable=True)

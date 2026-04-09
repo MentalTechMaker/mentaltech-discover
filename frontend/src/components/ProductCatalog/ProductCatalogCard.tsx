@@ -106,7 +106,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
                       💙 MentalTech
                     </span>
                   )}
-                  <p className="text-sm text-text-secondary">{product.type}</p>
                 </div>
                 <div className="flex flex-col gap-2 items-end">
                   {product.audience.includes("entreprise") && (
@@ -261,7 +260,6 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
               </div>
             )}
           </div>
-          <p className="text-xs text-text-secondary mb-2">{product.type}</p>
           <p className="text-primary font-semibold text-sm">
             {product.tagline}
           </p>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import {
   useAppStore,
   initializeAppStore,
@@ -22,20 +22,45 @@ import { ProfilePage } from "./components/Auth/ProfilePage";
 import { ForgotPasswordPage } from "./components/Auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./components/Auth/ResetPasswordPage";
 import { VerifyEmailPage } from "./components/Auth/VerifyEmailPage";
-import { AdminPanel } from "./components/Admin/AdminPanel";
 import { ProductPage } from "./components/ProductPage";
-import { PrescriberDashboard } from "./components/Prescriber/PrescriberDashboard";
-import { NewPrescription } from "./components/Prescriber/NewPrescription";
-import { VeillePage } from "./components/Prescriber/VeillePage";
 import { PrescriptionViewPage } from "./components/Prescriber/PrescriptionViewPage";
-import { PublicSubmissionForm } from "./components/Public/PublicSubmissionForm";
-import { HealthProApplicationForm } from "./components/Public/HealthProApplicationForm";
 import { ConfirmSubmissionPage } from "./components/Public/ConfirmSubmissionPage";
 import { ConfirmHealthProPage } from "./components/Public/ConfirmHealthProPage";
 import { JoinCollectivePage } from "./components/Public/JoinCollectivePage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { analytics } from "./lib/analytics";
 import { getRecommendations } from "./data/recommendationEngine";
+
+const AdminPanel = lazy(() =>
+  import("./components/Admin/AdminPanel").then((m) => ({
+    default: m.AdminPanel,
+  })),
+);
+const PrescriberDashboard = lazy(() =>
+  import("./components/Prescriber/PrescriberDashboard").then((m) => ({
+    default: m.PrescriberDashboard,
+  })),
+);
+const NewPrescription = lazy(() =>
+  import("./components/Prescriber/NewPrescription").then((m) => ({
+    default: m.NewPrescription,
+  })),
+);
+const VeillePage = lazy(() =>
+  import("./components/Prescriber/VeillePage").then((m) => ({
+    default: m.VeillePage,
+  })),
+);
+const PublicSubmissionForm = lazy(() =>
+  import("./components/Public/PublicSubmissionForm").then((m) => ({
+    default: m.PublicSubmissionForm,
+  })),
+);
+const HealthProApplicationForm = lazy(() =>
+  import("./components/Public/HealthProApplicationForm").then((m) => ({
+    default: m.HealthProApplicationForm,
+  })),
+);
 
 function App() {
   const currentView = useAppStore((state) => state.currentView);
@@ -80,33 +105,41 @@ function App() {
       <Header />
       <main className="flex-1">
         <ErrorBoundary>
-          {currentView === "landing" && <Landing />}
-          {currentView === "quiz" && <Quiz />}
-          {currentView === "results" && <RecommendationList />}
-          {currentView === "privacy" && <Privacy />}
-          {currentView === "legal" && <LegalNotice />}
-          {currentView === "catalog" && <ProductCatalog />}
-          {currentView === "methodology" && <Methodology />}
-          {currentView === "about" && <About />}
-          {currentView === "faq" && <FAQ />}
-          {currentView === "prescriber-auth" && <PrescriberAuthPage />}
-          {currentView === "profile" && <ProfilePage />}
-          {currentView === "forgot-password" && <ForgotPasswordPage />}
-          {currentView === "reset-password" && <ResetPasswordPage />}
-          {currentView === "verify-email" && <VerifyEmailPage />}
-          {currentView === "admin" && <AdminPanel />}
-          {currentView === "product" && <ProductPage />}
-          {currentView === "prescriber-dashboard" && <PrescriberDashboard />}
-          {currentView === "new-prescription" && <NewPrescription />}
-          {currentView === "veille" && <VeillePage />}
-          {currentView === "prescription" && <PrescriptionViewPage />}
-          {currentView === "join-collective" && <JoinCollectivePage />}
-          {currentView === "public-submission" && <PublicSubmissionForm />}
-          {currentView === "health-pro-application" && (
-            <HealthProApplicationForm />
-          )}
-          {currentView === "confirm-submission" && <ConfirmSubmissionPage />}
-          {currentView === "confirm-health-pro" && <ConfirmHealthProPage />}
+          <Suspense
+            fallback={
+              <div className="min-h-[50vh] flex items-center justify-center text-text-secondary">
+                Chargement...
+              </div>
+            }
+          >
+            {currentView === "landing" && <Landing />}
+            {currentView === "quiz" && <Quiz />}
+            {currentView === "results" && <RecommendationList />}
+            {currentView === "privacy" && <Privacy />}
+            {currentView === "legal" && <LegalNotice />}
+            {currentView === "catalog" && <ProductCatalog />}
+            {currentView === "methodology" && <Methodology />}
+            {currentView === "about" && <About />}
+            {currentView === "faq" && <FAQ />}
+            {currentView === "prescriber-auth" && <PrescriberAuthPage />}
+            {currentView === "profile" && <ProfilePage />}
+            {currentView === "forgot-password" && <ForgotPasswordPage />}
+            {currentView === "reset-password" && <ResetPasswordPage />}
+            {currentView === "verify-email" && <VerifyEmailPage />}
+            {currentView === "admin" && <AdminPanel />}
+            {currentView === "product" && <ProductPage />}
+            {currentView === "prescriber-dashboard" && <PrescriberDashboard />}
+            {currentView === "new-prescription" && <NewPrescription />}
+            {currentView === "veille" && <VeillePage />}
+            {currentView === "prescription" && <PrescriptionViewPage />}
+            {currentView === "join-collective" && <JoinCollectivePage />}
+            {currentView === "public-submission" && <PublicSubmissionForm />}
+            {currentView === "health-pro-application" && (
+              <HealthProApplicationForm />
+            )}
+            {currentView === "confirm-submission" && <ConfirmSubmissionPage />}
+            {currentView === "confirm-health-pro" && <ConfirmHealthProPage />}
+          </Suspense>
         </ErrorBoundary>
       </main>
       <Footer />

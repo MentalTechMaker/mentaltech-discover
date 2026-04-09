@@ -56,7 +56,7 @@ export const ProductPage: React.FC = () => {
   useEffect(() => {
     if (!product) return;
     const desc = product.tagline || product.description?.slice(0, 155) || "";
-    setPageMeta(`${product.name} - ${product.type}`, desc);
+    setPageMeta(product.name, desc);
     setCanonical(`/solution/${product.id}`);
     if (product.logo) {
       const logoUrl = product.logo.startsWith("http")
@@ -288,7 +288,6 @@ export const ProductPage: React.FC = () => {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-text-secondary">{product.type}</p>
               <p className="text-lg text-primary font-semibold">
                 {product.tagline}
               </p>

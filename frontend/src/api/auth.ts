@@ -121,7 +121,10 @@ export async function verifyEmail(token: string): Promise<{ message: string }> {
   );
 }
 
-export async function resendVerification(): Promise<{ message: string; email_sent?: boolean }> {
+export async function resendVerification(): Promise<{
+  message: string;
+  email_sent?: boolean;
+}> {
   return apiFetch<{ message: string }>(
     "/auth/resend-verification",
     {

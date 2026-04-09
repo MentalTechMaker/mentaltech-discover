@@ -67,7 +67,6 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
             <h2 className="font-bold text-text-primary text-lg leading-tight truncate">
               {product.name}
             </h2>
-            <p className="text-sm text-text-secondary">{product.type}</p>
           </div>
           <button
             type="button"

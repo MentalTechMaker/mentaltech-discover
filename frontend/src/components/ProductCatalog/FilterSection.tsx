@@ -5,7 +5,6 @@ import { analytics } from "../../lib/analytics";
 interface FilterSectionProps {
   filters: Filters;
   filterOptions: {
-    types: string[];
     problems: string[];
     pricingModels: string[];
   };
@@ -192,28 +191,6 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
                 <span className="text-text-secondary">
                   {problemLabels[problem] || problem}
                 </span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-text-primary mb-2">
-            Type de service ({filters.type.length})
-          </label>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {filterOptions.types.map((type) => (
-              <label
-                key={type}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={filters.type.includes(type)}
-                  onChange={() => toggleArrayFilter("type", type)}
-                  className="w-4 h-4 text-primary"
-                />
-                <span className="text-text-secondary">{type}</span>
               </label>
             ))}
           </div>

@@ -68,7 +68,6 @@ export async function requestChanges(
 export async function createAndPublishAdmin(data: {
   id?: string;
   name: string;
-  type: string;
   tagline: string;
   description: string;
   url: string;

@@ -40,7 +40,6 @@ CREATE TABLE users (
 CREATE TABLE products (
     id VARCHAR(100) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    type VARCHAR(100) NOT NULL,
     tagline TEXT NOT NULL,
     description TEXT NOT NULL,
     url VARCHAR(500) NOT NULL,
@@ -194,7 +193,6 @@ CREATE TABLE product_submissions (
 
     -- Basic product info
     name VARCHAR(255),
-    type VARCHAR(100),
     tagline TEXT,
     description TEXT,
     url VARCHAR(500),
@@ -242,7 +240,6 @@ CREATE TABLE IF NOT EXISTS public_submissions (
     confirm_token VARCHAR(500) UNIQUE,
     email_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
     name VARCHAR(255),
-    type VARCHAR(100),
     tagline TEXT,
     description TEXT,
     url VARCHAR(500),
@@ -253,6 +250,7 @@ CREATE TABLE IF NOT EXISTS public_submissions (
     problems_solved TEXT[] DEFAULT '{}',
     audience_priorities JSONB DEFAULT '{}',
     problems_priorities JSONB DEFAULT '{}',
+    preference_match TEXT[] DEFAULT '{}',
     pricing_model VARCHAR(50),
     pricing_amount VARCHAR(100),
     pricing_details TEXT,

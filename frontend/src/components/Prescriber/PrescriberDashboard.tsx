@@ -635,9 +635,6 @@ export const PrescriberDashboard: React.FC = () => {
                           <h3 className="font-bold text-text-primary truncate">
                             {product.name}
                           </h3>
-                          <p className="text-sm text-text-secondary">
-                            {product.type}
-                          </p>
                         </div>
                       </div>
 

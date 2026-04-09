@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
     Cookie,
     Depends,
     HTTPException,
@@ -81,7 +80,6 @@ def _set_auth_response(
 async def register(
     request: Request,
     data: UserRegister,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     password_error = validate_password_strength(data.password)
@@ -133,7 +131,6 @@ async def register(
 async def register_prescriber(
     request: Request,
     data: PrescriberRegister,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     password_error = validate_password_strength(data.password)
@@ -290,7 +287,6 @@ def change_password(
 async def forgot_password(
     request: Request,
     data: ForgotPassword,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     user = db.query(User).filter(User.email == data.email).first()
@@ -378,7 +374,6 @@ def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
 @limiter.limit("2/minute")
 async def resend_verification(
     request: Request,
-    background_tasks: BackgroundTasks,
     user: User = Depends(get_current_user),
 ):
     if user.email_verified:

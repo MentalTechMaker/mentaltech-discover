@@ -21,7 +21,6 @@ class ProductSubmission(Base):
 
     # Basic product info
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     tagline: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     url: Mapped[str | None] = mapped_column(String(500), nullable=True)

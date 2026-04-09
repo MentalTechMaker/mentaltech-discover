@@ -67,3 +67,23 @@ def auth_headers(registered_user):
     """Return Authorization headers for the registered user."""
     data = registered_user["response"].json()
     return {"Authorization": f"Bearer {data['access_token']}"}
+
+
+@pytest.fixture()
+def admin_user(client, db):
+    """Register a user and promote to admin. Return auth headers."""
+    from app.models.user import User
+
+    creds = {
+        "email": "admin@example.com",
+        "password": "AdminPass1",
+        "name": "Admin User",
+    }
+    res = client.post("/api/auth/register", json=creds)
+    data = res.json()
+
+    user = db.query(User).filter(User.email == "admin@example.com").first()
+    user.role = "admin"
+    db.commit()
+
+    return {"Authorization": f"Bearer {data['access_token']}"}

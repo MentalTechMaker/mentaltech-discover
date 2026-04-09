@@ -89,7 +89,9 @@ export const HealthProApplicationForm: React.FC = () => {
         submitted_at_ts: loadedAt.current,
       });
       if (result.email_sent === false) {
-        setError("Candidature enregistrée, mais l'email de confirmation n'a pas pu être envoyé. Contactez-nous si besoin.");
+        setError(
+          "Candidature enregistrée, mais l'email de confirmation n'a pas pu être envoyé. Contactez-nous si besoin.",
+        );
         return;
       }
       setSubmitted(true);

@@ -8,14 +8,6 @@ import type {
 
 const INSTITUTIONAL_AUDIENCES = new Set(["entreprise", "etablissement-sante"]);
 
-function isTypeTeleconsultation(product: Product): boolean {
-  return (
-    product.type
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") === "teleconsultation"
-  );
-}
 
 interface ScoredProduct extends Product {
   score: number;
@@ -167,9 +159,6 @@ function calculateScore(product: Product, answers: UserAnswers): number {
     if (product.preferenceMatch.includes("talk-now")) {
       contexte += 5;
     }
-    if (isTypeTeleconsultation(product)) {
-      contexte += 3;
-    }
   } else if (answers.feeling === "prevention") {
     if (
       product.preferenceMatch.includes("autonomous") ||
@@ -181,8 +170,7 @@ function calculateScore(product: Product, answers: UserAnswers): number {
 
   if (answers.urgency === "suffering") {
     if (
-      product.preferenceMatch.includes("talk-now") ||
-      isTypeTeleconsultation(product)
+      product.preferenceMatch.includes("talk-now")
     ) {
       contexte = 10;
     }
@@ -285,7 +273,7 @@ function calculateCompanyScore(product: Product, answers: UserAnswers): number {
   if (answers.preference) {
     const prefMap: Record<string, () => boolean> = {
       platform: () => product.audience.includes("entreprise"),
-      training: () => product.type === "Plateforme entreprise",
+      training: () => product.audience.includes("entreprise"),
       therapy: () => product.preferenceMatch.includes("talk-now"),
       tools: () => product.preferenceMatch.includes("autonomous"),
     };
@@ -347,7 +335,7 @@ function calculateHealthDecisionMakerScore(
       platform: () =>
         product.audience.includes("entreprise") ||
         product.audience.includes("etablissement-sante"),
-      training: () => product.type === "Plateforme entreprise",
+      training: () => product.audience.includes("entreprise"),
       therapy: () => product.preferenceMatch.includes("talk-now"),
       tools: () => product.preferenceMatch.includes("autonomous"),
     };

@@ -67,7 +67,7 @@ class ProductResponse(BaseModel):
 
     id: str
     name: str
-    type: str
+
     tagline: str
     description: str
     url: str
@@ -96,7 +96,7 @@ class ProductResponse(BaseModel):
 class ProductCreate(BaseModel):
     id: str
     name: str
-    type: str
+
     tagline: str
     description: str
     url: str
@@ -125,7 +125,7 @@ class ProductCreate(BaseModel):
 
 class ProductUpdate(BaseModel):
     name: str | None = None
-    type: str | None = None
+
     tagline: str | None = None
     description: str | None = None
     url: str | None = None

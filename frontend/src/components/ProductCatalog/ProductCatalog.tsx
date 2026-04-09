@@ -9,7 +9,6 @@ const LAUNCH_THRESHOLD = 10;
 
 export interface Filters {
   search: string;
-  type: string[];
   audience: string[];
   problemsSolved: string[];
   pricingModel: string[];
@@ -31,7 +30,6 @@ export const ProductCatalog: React.FC = () => {
 
   const [filters, setFilters] = useState<Filters>({
     search: "",
-    type: [],
     audience: [],
     problemsSolved: [],
     pricingModel: [],
@@ -48,12 +46,10 @@ export const ProductCatalog: React.FC = () => {
   } = useProductsStore();
 
   const filterOptions = useMemo(() => {
-    const types = new Set<string>();
     const problems = new Set<string>();
     const pricingModels = new Set<string>();
 
     allProducts.forEach((product) => {
-      types.add(product.type);
       product.problemsSolved.forEach((prob) => problems.add(prob));
       if (product.pricing?.model) {
         pricingModels.add(product.pricing.model);
@@ -61,7 +57,6 @@ export const ProductCatalog: React.FC = () => {
     });
 
     return {
-      types: Array.from(types).sort(),
       problems: Array.from(problems).sort(),
       pricingModels: Array.from(pricingModels).sort(),
     };
@@ -77,10 +72,6 @@ export const ProductCatalog: React.FC = () => {
           product.tagline.toLowerCase().includes(searchLower) ||
           product.tags.some((tag) => tag.toLowerCase().includes(searchLower));
         if (!matchesSearch) return false;
-      }
-
-      if (filters.type.length > 0 && !filters.type.includes(product.type)) {
-        return false;
       }
 
       if (filters.segment === "company") {
@@ -152,7 +143,6 @@ export const ProductCatalog: React.FC = () => {
   const clearFilters = () => {
     setFilters({
       search: "",
-      type: [],
       audience: [],
       problemsSolved: [],
       pricingModel: [],

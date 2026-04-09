@@ -101,7 +101,6 @@ async def public_upload_logo(request: Request, file: UploadFile = File(...)):
 @limiter.limit("3/hour")
 async def create_public_submission(
     data: PublicSubmissionCreate,
-    background_tasks: BackgroundTasks,
     request: Request,
     db: Session = Depends(get_db),
 ):
@@ -113,7 +112,6 @@ async def create_public_submission(
         status="pending_email",
         email_confirmed=False,
         name=data.name,
-        type=data.type,
         tagline=data.tagline,
         description=data.description,
         url=data.url,
@@ -124,6 +122,7 @@ async def create_public_submission(
         problems_solved=data.problems_solved,
         audience_priorities=to_dict(data.audience_priorities),
         problems_priorities=to_dict(data.problems_priorities),
+        preference_match=data.preference_match,
         pricing_model=data.pricing_model,
         pricing_amount=data.pricing_amount,
         pricing_details=data.pricing_details,
@@ -211,7 +210,7 @@ async def confirm_submission(
         email=submission.contact_email,
         contact_name=submission.contact_name,
         product_name=submission.name,
-        product_type=submission.type,
+        product_type=None,
         tagline=submission.tagline,
         url=submission.url,
         audience_priorities=submission.audience_priorities,
@@ -231,7 +230,6 @@ async def confirm_submission(
 @limiter.limit("3/hour")
 async def apply_health_pro(
     data: HealthProfApplicationCreate,
-    background_tasks: BackgroundTasks,
     request: Request,
     db: Session = Depends(get_db),
 ):

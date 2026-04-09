@@ -30,7 +30,6 @@ class Product(Base):
 
     id: Mapped[str] = mapped_column(String(100), primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    type: Mapped[str] = mapped_column(String(100), nullable=False)
     tagline: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     url: Mapped[str] = mapped_column(String(500), nullable=False)

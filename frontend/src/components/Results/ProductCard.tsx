@@ -59,25 +59,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             <span>Infos à vérifier</span>
           </div>
         )}
-        <div className="flex items-center gap-2">
-          {product.recommendationScore !== undefined &&
-            product.recommendationScore > 0 && (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-xs font-bold rounded-full backdrop-blur-sm shadow-sm">
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>{Math.round(product.recommendationScore)}% match</span>
-              </div>
-            )}
-        </div>
+        {product.recommendationScore !== undefined &&
+          product.recommendationScore > 0 && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-xs font-bold rounded-full backdrop-blur-sm shadow-sm">
+              <svg
+                className="w-3.5 h-3.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>{Math.round(product.recommendationScore)}% match</span>
+            </div>
+          )}
       </div>
 
       <div className="relative p-6 flex flex-col h-full">
@@ -175,37 +173,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           </button>
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          {safeUrl ? (
+            {safeUrl ? (
+              <a
+                href={safeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  analytics.solutionClicked(
+                    product.name,
+                    "solution",
+                  );
+                }}
+                className="text-xs text-primary hover:text-primary-dark font-medium transition-colors"
+                aria-label={`Accéder au site de ${product.name} (ouvre dans un nouvel onglet)`}
+              >
+                Accéder au site ↗
+              </a>
+            ) : (
+              <span className="text-xs text-text-secondary italic">
+                Lien non disponible
+              </span>
+            )}
             <a
-              href={safeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`mailto:arnaud@mentaltechmaker.fr?subject=Signalement solution: ${encodeURIComponent(product.name)}&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant la solution "${encodeURIComponent(product.name)}" :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement`}
               onClick={() => {
-                analytics.solutionClicked(
-                  product.name,
-                  product.type || "unknown",
-                );
+                analytics.solutionReported(product.name);
               }}
-              className="text-xs text-primary hover:text-primary-dark font-medium transition-colors"
-              aria-label={`Accéder au site de ${product.name} (ouvre dans un nouvel onglet)`}
+              className="text-xs text-gray-500 hover:text-red-600 hover:underline transition-colors"
+              aria-label={`Signaler un problème avec ${product.name}`}
             >
-              Accéder au site ↗
+              🚨 Signaler un problème
             </a>
-          ) : (
-            <span className="text-xs text-text-secondary italic">
-              Lien non disponible
-            </span>
-          )}
-          <a
-            href={`mailto:arnaud@mentaltechmaker.fr?subject=Signalement solution: ${encodeURIComponent(product.name)}&body=Bonjour,%0D%0A%0D%0AJe souhaite signaler un problème concernant la solution "${encodeURIComponent(product.name)}" :%0D%0A%0D%0A[Décrivez le problème ici]%0D%0A%0D%0ACordialement`}
-            onClick={() => {
-              analytics.solutionReported(product.name);
-            }}
-            className="text-xs text-gray-500 hover:text-red-600 hover:underline transition-colors"
-            aria-label={`Signaler un problème avec ${product.name}`}
-          >
-            🚨 Signaler un problème
-          </a>
           </div>
         </div>
       </div>

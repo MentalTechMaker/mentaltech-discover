@@ -189,18 +189,19 @@ def get_stats(
     user: User = Depends(require_prescriber_or_admin),
     db: Session = Depends(get_db),
 ):
-    all_prescriptions = (
-        db.query(Prescription).filter(Prescription.prescriber_id == user.id).all()
-    )
+    from sqlalchemy import func
+
+    base = db.query(Prescription).filter(Prescription.prescriber_id == user.id)
 
     now = datetime.now(timezone.utc)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    total = len(all_prescriptions)
-    this_month = sum(1 for p in all_prescriptions if p.created_at >= month_start)
-    viewed = sum(1 for p in all_prescriptions if p.viewed_at is not None)
+    total = base.count()
+    this_month = base.filter(Prescription.created_at >= month_start).count()
+    viewed = base.filter(Prescription.viewed_at.isnot(None)).count()
 
-    # Top prescribed products
+    # Top prescribed products (needs Python for JSONB array traversal)
+    all_prescriptions = base.all()
     product_counter: Counter[str] = Counter()
     for p in all_prescriptions:
         for pid in p.product_ids or []:

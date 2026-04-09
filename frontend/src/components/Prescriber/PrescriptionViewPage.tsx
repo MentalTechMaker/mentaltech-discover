@@ -170,9 +170,6 @@ export const PrescriptionViewPage: React.FC = () => {
                     <h3 className="text-lg font-bold text-text-primary">
                       {product.name}
                     </h3>
-                    <span className="text-xs font-medium text-text-secondary bg-gray-100 rounded-full px-2.5 py-0.5">
-                      {product.type}
-                    </span>
                   </div>
 
                   <p className="text-text-secondary text-sm mb-3">

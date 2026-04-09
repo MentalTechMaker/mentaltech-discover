@@ -36,7 +36,6 @@ export interface PriorityMap {
 export interface Product {
   id: string;
   name: string;
-  type: string;
   tagline: string;
   description: string;
   url: string;
@@ -114,7 +113,6 @@ export interface PublicSubmission {
   contactEmail: string;
   status: PublicSubmissionStatus;
   name: string | null;
-  type: string | null;
   tagline: string | null;
   description: string | null;
   url: string | null;
@@ -125,6 +123,7 @@ export interface PublicSubmission {
   problemsSolved: string[];
   audiencePriorities?: PriorityMap;
   problemsPriorities?: PriorityMap;
+  preferenceMatch?: string[];
   pricingModel: string | null;
   pricingAmount: string | null;
   pricingDetails: string | null;

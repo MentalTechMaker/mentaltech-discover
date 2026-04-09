@@ -126,7 +126,9 @@ export const PrescriberAuthPage: React.FC = () => {
         rppsAdeli || undefined,
       );
       if (result.email_sent === false) {
-        setRegisterError("Compte créé, mais l'email de vérification n'a pas pu être envoyé. Réessayez plus tard.");
+        setRegisterError(
+          "Compte créé, mais l'email de vérification n'a pas pu être envoyé. Réessayez plus tard.",
+        );
       }
       setView("profile");
     } catch (err) {

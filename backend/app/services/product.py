@@ -12,7 +12,6 @@ from ..schemas.product import (
 
 ALLOWED_FIELDS = {
     "name",
-    "type",
     "tagline",
     "description",
     "url",
@@ -131,7 +130,6 @@ def _to_response(product: Product, include_scoring: bool = False) -> ProductResp
     return ProductResponse(
         id=product.id,
         name=product.name,
-        type=product.type,
         tagline=product.tagline,
         description=product.description,
         url=product.url,
@@ -201,7 +199,6 @@ def create_product(db: Session, data: ProductCreate) -> ProductResponse:
     product = Product(
         id=data.id,
         name=data.name,
-        type=data.type,
         tagline=data.tagline,
         description=data.description,
         url=data.url,

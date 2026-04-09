@@ -65,7 +65,6 @@ export const NewPrescription: React.FC = () => {
     return base.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
-        p.type.toLowerCase().includes(q) ||
         p.tagline.toLowerCase().includes(q),
     );
   }, [products, searchQuery, favoritesOnly, favoriteProductIds]);
@@ -268,7 +267,7 @@ export const NewPrescription: React.FC = () => {
           <p className="font-semibold text-text-primary truncate">
             {product.name}
           </p>
-          <p className="text-sm text-gray-500 truncate">{product.type}</p>
+          <p className="text-sm text-gray-500 truncate">{product.tagline}</p>
         </div>
 
         {product.scoreLabel && (
@@ -633,7 +632,6 @@ export const NewPrescription: React.FC = () => {
                   <p className="text-sm font-medium text-text-primary truncate">
                     {p.name}
                   </p>
-                  <p className="text-xs text-gray-500">{p.type}</p>
                 </div>
                 {p.scoreLabel && (
                   <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -761,7 +759,6 @@ export const NewPrescription: React.FC = () => {
           <div style="flex:1;min-width:0;">
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px;">
               <h3 style="font-size:18px;font-weight:700;color:#2c3e50;margin:0;">${escapeHtml(product.name)}</h3>
-              <span style="font-size:12px;font-weight:500;color:#6b7280;background:#f3f4f6;border-radius:9999px;padding:2px 10px;">${escapeHtml(product.type)}</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin:0 0 12px 0;">${escapeHtml(product.tagline)}</p>
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:12px;">

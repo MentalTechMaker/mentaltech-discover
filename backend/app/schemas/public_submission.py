@@ -39,7 +39,6 @@ class PublicSubmissionCreate(BaseModel):
 
     # Product info (all optional)
     name: str | None = Field(default=None, max_length=200)
-    type: str | None = None
     tagline: str | None = Field(default=None, max_length=300)
     description: str | None = Field(default=None, max_length=10000)
     url: str | None = Field(default=None, max_length=500)
@@ -50,6 +49,7 @@ class PublicSubmissionCreate(BaseModel):
     problems_solved: list[str] = []
     audience_priorities: PriorityMapSchema = PriorityMapSchema()
     problems_priorities: PriorityMapSchema = PriorityMapSchema()
+    preference_match: list[str] = []
     pricing_model: str | None = None
     pricing_amount: str | None = None
     pricing_details: str | None = None
@@ -67,7 +67,6 @@ class PublicSubmissionResponse(BaseModel):
     contactEmail: str
     status: str
     name: str | None
-    type: str | None
     tagline: str | None
     description: str | None
     url: str | None
@@ -78,6 +77,7 @@ class PublicSubmissionResponse(BaseModel):
     problemsSolved: list[str]
     audiencePriorities: dict | None = None
     problemsPriorities: dict | None = None
+    preferenceMatch: list[str] = []
     pricingModel: str | None
     pricingAmount: str | None
     pricingDetails: str | None

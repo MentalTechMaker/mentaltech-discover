@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useToast } from "../../hooks/useToast";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { SubmissionForm } from "../Publisher/SubmissionForm";
@@ -41,11 +42,7 @@ export const AdminPanel: React.FC = () => {
   const [adminProductsLoading, setAdminProductsLoading] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [productSearch, setProductSearch] = useState("");
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { toast, showToast } = useToast();
 
   // Prescribers tab state
   const [prescribers, setPrescribers] = useState<PrescriberListItem[]>([]);
@@ -96,7 +93,6 @@ export const AdminPanel: React.FC = () => {
     const product: Product = {
       id: "",
       name: sub.name || "",
-      type: sub.type || "",
       tagline: sub.tagline || "",
       description: sub.description || "",
       url: sub.url || "",
@@ -104,7 +100,7 @@ export const AdminPanel: React.FC = () => {
       tags: sub.tags || [],
       audience: sub.audience || [],
       problemsSolved: sub.problemsSolved || [],
-      preferenceMatch: [],
+      preferenceMatch: sub.preferenceMatch || [],
       audiencePriorities: sub.audiencePriorities || { P1: [], P2: [], P3: [] },
       problemsPriorities: sub.problemsPriorities || { P1: [], P2: [], P3: [] },
       isMentaltechMember: sub.collectifStatus === "accepted",
@@ -116,7 +112,12 @@ export const AdminPanel: React.FC = () => {
         details: sub.pricingDetails ?? undefined,
       },
       scoringCriteria: sub.protocolAnswers,
-    };
+      // Pass collectif info for admin display
+      _collectifRequested: sub.collectifRequested,
+      _collectifCaRange: sub.collectifCaRange,
+      _collectifContactEmail: sub.collectifContactEmail,
+      _collectifStatus: sub.collectifStatus,
+    } as Product;
     setEditingProduct(product);
     setCurrentSubmissionId(sub.id);
     setShowProtocolForm(true);
@@ -143,15 +144,6 @@ export const AdminPanel: React.FC = () => {
     await fetchProducts();
     await loadAdminProducts();
     setDeleteConfirm(null);
-  };
-
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
-    setToast({ message, type });
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 3500);
   };
 
   const handleToggleVisibility = async (id: string) => {
@@ -376,9 +368,6 @@ export const AdminPanel: React.FC = () => {
                         Nom / ID
                       </th>
                       <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
-                        Type
-                      </th>
-                      <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
                         Statut
                       </th>
                       <th className="text-left px-4 py-4 text-sm font-semibold text-text-secondary">
@@ -429,9 +418,6 @@ export const AdminPanel: React.FC = () => {
                               <p className="text-xs font-mono text-text-secondary">
                                 {product.id}
                               </p>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-text-secondary">
-                              {product.type}
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex flex-col gap-1">

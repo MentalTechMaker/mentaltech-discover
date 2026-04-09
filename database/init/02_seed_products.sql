@@ -7,11 +7,11 @@
 -- ============================================================
 -- 1. PETIT BAMBOU (64/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('petitbambou', 'Petit BamBou', 'Application',
+('petitbambou', 'Petit BamBou',
  'Application de meditation guidee pour reduire le stress',
  'Application mobile de meditation guidee proposant des centaines de programmes audio pour reduire le stress, ameliorer le sommeil et developper la pleine conscience. Approche accessible pour tous les niveaux avec sessions de 3 a 20 minutes. Plus de 12 millions d''utilisateurs et 510+ seances disponibles. Referencee dans Mon espace sante.',
  'https://www.petitbambou.com', '/logos/petitbambou.png',
@@ -60,11 +60,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 2. KWIT (72/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('kwit', 'Kwit', 'Application',
+('kwit', 'Kwit',
  'Arretez de fumer et restez non fumeur pour de bon',
  'Application mobile de sevrage tabagique qui combine TCC et gamification. Accompagne 5 millions d''utilisateurs avec suivi de progression, gestion des envies et contenu educatif. Partenariats avec Imperial College London, Universite Paris-Nanterre et Institut National du Cancer (programme Tabado).',
  'https://kwit.app', '/logos/kwit.png',
@@ -113,11 +113,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 3. SOBERO (64/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('sobero', 'Sobero', 'Application',
+('sobero', 'Sobero',
  'Reprenez le pouvoir sur votre consommation d''alcool, en toute conscience et bienveillance.',
  'Application mobile qui aide a developper une relation plus saine avec l''alcool, basee sur la science du comportement et la gamification. Propose un accompagnement anonyme et bienveillant avec suivi de consommation, exercices de journaling, communaute d''entraide et contenu educatif. Developpee par l''equipe Kwit.',
  'https://sobero.app', '/logos/sobero.png',
@@ -166,11 +166,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 4. LET''S TOLK (64/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('letstolk', 'Let''s Tolk', 'Teleconsultation',
+('letstolk', 'Let''s Tolk',
  'Les psychologues en ligne',
  'Cabinet digital de psychologues en ligne diplomes d''un Master en psychologie (5 ans). Accompagnement humain, professionnel et attentif en visio et messagerie pour burn-out, anxiete, depression, troubles du sommeil et addictions. Entreprise a mission basee a Lille.',
  'https://www.letstolk.com/', '/logos/letstolk.svg',
@@ -219,11 +219,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 5. FEEL (64/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('feel', 'Feel', 'Application',
+('feel', 'Feel',
  'Feel est une application qui aide a soigner la depression en 3 a 6 mois.',
  'Application qui aide a soigner la depression en 3 a 6 mois basee sur la therapie cognitivo-comportementale. Accompagne les utilisateurs pour modifier leurs comportements et maitriser leurs pensees negatives avec des exercices pratiques, outils TCC (PHQ-9, GAD-7, HAMD-21) et contenu de psychoeducation. Certification ISO 27001.',
  'https://feelapp.care/', '/logos/feel.png',
@@ -272,11 +272,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 6. HYPNOVR (72/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('hypnovr', 'HypnoVR', 'Dispositif medical',
+('hypnovr', 'HypnoVR',
  'Ameliorer son parcours de soin grace a son cerveau !',
  'Therapies digitales certifiees en realite virtuelle pour la sante mentale. Propose des seances d''hypnose immersives pour gerer le stress, l''anxiete, les troubles du sommeil et la douleur. Plus de 300 etablissements de sante equipes avec 23 etudes cliniques publiees. Partenaires : Mayo Clinic, AP-HP, Sorbonne. Certifie ISO 27001 depuis 2023.',
  'https://hypnovr.io/', '/logos/hypnovr.png',
@@ -325,11 +325,11 @@ INSERT INTO products (id, name, type, tagline, description, url, logo, tags, aud
 -- ============================================================
 -- 7. MOKA.CARE (72/100 - Grade B)
 -- ============================================================
-INSERT INTO products (id, name, type, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
+INSERT INTO products (id, name, tagline, description, url, logo, tags, audience, problems_solved, preference_match, pricing_model, pricing_amount, pricing_details, last_updated,
   score_security, score_efficacy, score_accessibility, score_ux, score_support,
   justification_security, justification_efficacy, justification_accessibility, justification_ux, justification_support,
   scoring_criteria, audience_priorities, problems_priorities) VALUES
-('mokacare', 'moka.care', 'Plateforme entreprise',
+('mokacare', 'moka.care',
  'Plateforme de sante mentale pour accompagner les salaries',
  'Solution complete de sante mentale en entreprise proposant un accompagnement par psychologues, therapeutes et coachs. Presente dans 320+ entreprises et 20 pays. Hebergement via infrastructure certifiee HDS, ISO 27001, SOC 2/3 (Heroku). Certification Qualiopi pour les formations.',
  'https://www.moka.care', '/logos/mokacare.png',
