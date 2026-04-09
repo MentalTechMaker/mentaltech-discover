@@ -49,14 +49,17 @@ REFRESH_COOKIE_MAX_AGE = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
 
 
 def _set_auth_response(
-    access_token: str, refresh_token: str, status_code: int = 200
+    access_token: str, refresh_token: str, status_code: int = 200, email_sent: bool | None = None
 ) -> JSONResponse:
+    content: dict = {
+        "access_token": access_token,
+        "refresh_token": "",
+        "token_type": "bearer",
+    }
+    if email_sent is not None:
+        content["email_sent"] = email_sent
     response = JSONResponse(
-        content={
-            "access_token": access_token,
-            "refresh_token": "",
-            "token_type": "bearer",
-        },
+        content=content,
         status_code=status_code,
     )
     response.set_cookie(
@@ -111,14 +114,13 @@ async def register(
             detail="Un compte avec cet email existe déjà",
         )
 
-    background_tasks.add_task(
-        send_verification_email, user.email, user.name, str(user.id)
-    )
+    email_sent = await send_verification_email(user.email, user.name, str(user.id))
 
     return _set_auth_response(
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
         status_code=201,
+        email_sent=email_sent,
     )
 
 
@@ -168,14 +170,13 @@ async def register_prescriber(
             detail="Un compte avec cet email existe déjà",
         )
 
-    background_tasks.add_task(
-        send_verification_email, user.email, user.name, str(user.id)
-    )
+    email_sent = await send_verification_email(user.email, user.name, str(user.id))
 
     return _set_auth_response(
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
         status_code=201,
+        email_sent=email_sent,
     )
 
 
@@ -295,13 +296,13 @@ async def forgot_password(
     user = db.query(User).filter(User.email == data.email).first()
 
     # Always return success to prevent email enumeration
+    email_sent = True
     if user:
-        background_tasks.add_task(
-            send_reset_password_email, user.email, user.name, str(user.id)
-        )
+        email_sent = await send_reset_password_email(user.email, user.name, str(user.id))
 
     return {
-        "message": "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé"
+        "message": "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé",
+        "email_sent": email_sent,
     }
 
 
@@ -383,8 +384,6 @@ async def resend_verification(
     if user.email_verified:
         return {"message": "Email déjà vérifié"}
 
-    background_tasks.add_task(
-        send_verification_email, user.email, user.name, str(user.id)
-    )
+    email_sent = await send_verification_email(user.email, user.name, str(user.id))
 
-    return {"message": "Email de vérification renvoyé"}
+    return {"message": "Email de vérification renvoyé", "email_sent": email_sent}

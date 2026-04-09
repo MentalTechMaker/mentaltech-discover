@@ -77,7 +77,7 @@ export const HealthProApplicationForm: React.FC = () => {
     setError("");
     setSubmitting(true);
     try {
-      await applyHealthPro({
+      const result = await applyHealthPro({
         name: name.trim(),
         email: email.trim(),
         profession,
@@ -88,6 +88,10 @@ export const HealthProApplicationForm: React.FC = () => {
         honeypot,
         submitted_at_ts: loadedAt.current,
       });
+      if (result.email_sent === false) {
+        setError("Candidature enregistrée, mais l'email de confirmation n'a pas pu être envoyé. Contactez-nous si besoin.");
+        return;
+      }
       setSubmitted(true);
     } catch (e: unknown) {
       setError(

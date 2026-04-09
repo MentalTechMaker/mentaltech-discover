@@ -144,33 +144,17 @@ async def create_public_submission(
     submission.confirm_token = token
     db.commit()
 
-    # Send confirmation email (CA range passed in background - never stored)
-    background_tasks.add_task(
-        send_submission_confirmation_email,
+    # Send confirmation email
+    email_sent = await send_submission_confirmation_email(
         email=str(data.contact_email),
         name=data.contact_name,
         confirm_token=token,
     )
 
-    # Store CA range in closure for admin email (never hits DB)
-    ca_range = data.collectif_ca_range
-
-    async def _send_admin_later():
-        await send_submission_received_admin_email(
-            admin_email=settings.ADMIN_EMAIL,
-            contact_name=data.contact_name,
-            contact_email=str(data.contact_email),
-            product_name=data.name,
-            collectif_requested=data.collectif_requested,
-            collectif_ca_range=ca_range,
-        )
-
-    # Note: background_tasks doesn't support async closures directly, so use a wrapper
-    # We skip admin notification here and send it on confirm instead (after email verification)
-
     return {
         "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
         "id": str(submission.id),
+        "email_sent": email_sent,
     }
 
 
@@ -274,8 +258,7 @@ async def apply_health_pro(
     application.confirm_token = token
     db.commit()
 
-    background_tasks.add_task(
-        send_health_pro_confirmation_email,
+    email_sent = await send_health_pro_confirmation_email(
         email=str(data.email),
         name=data.name,
         confirm_token=token,
@@ -284,6 +267,7 @@ async def apply_health_pro(
     return {
         "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
         "id": str(application.id),
+        "email_sent": email_sent,
     }
 
 

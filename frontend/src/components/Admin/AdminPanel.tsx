@@ -105,6 +105,8 @@ export const AdminPanel: React.FC = () => {
       audience: sub.audience || [],
       problemsSolved: sub.problemsSolved || [],
       preferenceMatch: [],
+      audiencePriorities: sub.audiencePriorities || { P1: [], P2: [], P3: [] },
+      problemsPriorities: sub.problemsPriorities || { P1: [], P2: [], P3: [] },
       isMentaltechMember: sub.collectifStatus === "accepted",
       pricing: {
         model:

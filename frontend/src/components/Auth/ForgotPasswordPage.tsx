@@ -16,7 +16,11 @@ export const ForgotPasswordPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await forgotPassword(email);
+      const result = await forgotPassword(email);
+      if (result.email_sent === false) {
+        setError("L'email n'a pas pu être envoyé. Veuillez réessayer plus tard.");
+        return;
+      }
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");

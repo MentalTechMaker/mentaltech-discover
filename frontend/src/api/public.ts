@@ -41,7 +41,7 @@ export interface HealthProfApplicationCreate {
 
 export async function submitPublicSolution(
   data: PublicSubmissionCreate,
-): Promise<{ message: string; id: string }> {
+): Promise<{ message: string; id: string; email_sent?: boolean }> {
   return apiFetch("/public/submissions", {
     method: "POST",
     body: JSON.stringify(data),
@@ -58,7 +58,7 @@ export async function confirmPublicSubmission(
 
 export async function applyHealthPro(
   data: HealthProfApplicationCreate,
-): Promise<{ message: string; id: string }> {
+): Promise<{ message: string; id: string; email_sent?: boolean }> {
   return apiFetch("/public/health-pro/apply", {
     method: "POST",
     body: JSON.stringify(data),

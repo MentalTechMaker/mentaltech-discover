@@ -95,16 +95,13 @@ export function getRecommendations(
     return b.randomTieBreaker - a.randomTieBreaker;
   });
 
-  // Retourner TOUTES les solutions avec score > 0
-  const allMatching = scoredProducts
-    .filter((p) => p.score > 0)
-    .map(({ score, ...product }) => ({
+  // Retourner TOUTES les solutions triées par score décroissant
+  const recommendedProducts = scoredProducts.map(
+    ({ score, randomTieBreaker, ...product }) => ({
       ...product,
       recommendationScore: score,
-    }));
-
-  const recommendedProducts =
-    allMatching.length > 0 ? allMatching : filteredProducts;
+    }),
+  );
 
   const explanation =
     userType === "company"

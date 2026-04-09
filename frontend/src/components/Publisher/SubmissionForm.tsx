@@ -508,7 +508,7 @@ export const SubmissionForm: React.FC<Props> = ({
     setSaving(true);
     setError("");
     try {
-      await submitPublicSolution({
+      const result = await submitPublicSolution({
         contact_name: contactName.trim(),
         contact_email: contactEmail.trim(),
         honeypot,
@@ -548,6 +548,10 @@ export const SubmissionForm: React.FC<Props> = ({
             ? collectifContactEmail
             : undefined,
       });
+      if (result.email_sent === false) {
+        setError("Soumission enregistrée, mais l'email de confirmation n'a pas pu être envoyé. Contactez-nous si besoin.");
+        return;
+      }
       try {
         localStorage.removeItem(DRAFT_KEY);
       } catch {

@@ -43,18 +43,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
       />
 
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
-        {product.isDemo && (
-          <div className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-semibold rounded-full shadow-sm">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Demo
-          </div>
-        )}
         {!product.lastUpdated && !product.isDemo && (
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 text-orange-700 text-xs font-semibold rounded-full backdrop-blur-sm shadow-sm">
             <svg
@@ -92,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
         </div>
       </div>
 
-      <div className="relative p-6 space-y-5">
+      <div className="relative p-6 flex flex-col h-full">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow group-hover:scale-110 transition-transform duration-300 overflow-hidden">
             <img
@@ -115,18 +103,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             />
           </div>
           <div className="flex-1 pt-1">
-            <h3
-              className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors cursor-pointer"
-              role="button"
-              tabIndex={0}
-              onClick={() => viewProduct(product.id)}
-              onKeyDown={(e) =>
-                (e.key === "Enter" || e.key === " ") && viewProduct(product.id)
-              }
-            >
-              {product.name}
-            </h3>
-            <p className="text-base text-primary font-medium mt-1.5 leading-snug">
+            <div className="flex items-center gap-2">
+              <h3
+                className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onClick={() => viewProduct(product.id)}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") &&
+                  viewProduct(product.id)
+                }
+              >
+                {product.name}
+              </h3>
+              {product.isDemo && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-semibold rounded-full">
+                  Demo
+                </span>
+              )}
+            </div>
+            <p className="text-base text-primary font-medium mt-1.5 leading-snug line-clamp-2">
               {product.tagline}
             </p>
             {product.isMentaltechMember && (
@@ -140,57 +136,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           </div>
         </div>
 
-        <p className="text-text-secondary leading-relaxed text-sm">
+        <p className="text-text-secondary leading-relaxed text-sm mt-5 line-clamp-4">
           {product.description}
         </p>
 
-        {(product.audiencePriorities || product.problemsPriorities) && (
-          <div className="flex flex-wrap gap-1.5 items-center">
-            {renderPriorityBadges(product.audiencePriorities, audienceLabels)}
-            {product.audiencePriorities && product.problemsPriorities && (
-              <span className="text-gray-300 mx-0.5">|</span>
-            )}
-            {renderPriorityBadges(product.problemsPriorities, problemLabels)}
-          </div>
-        )}
+        <div className="mt-auto pt-5 space-y-5">
+          {(product.audiencePriorities || product.problemsPriorities) && (
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {renderPriorityBadges(product.audiencePriorities, audienceLabels)}
+              {product.audiencePriorities && product.problemsPriorities && (
+                <span className="text-gray-300 mx-0.5">|</span>
+              )}
+              {renderPriorityBadges(product.problemsPriorities, problemLabels)}
+            </div>
+          )}
 
-        {product.tags && product.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {product.tags.slice(0, 3).map((tag, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-full group-hover:bg-blue-100 group-hover:text-primary transition-colors"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <button
-          onClick={() => viewProduct(product.id)}
-          className="relative group/btn flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/20"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
-          <span className="relative">Voir la fiche</span>
-          <svg
-            className={`relative w-5 h-5 transition-transform duration-300 ${
-              isHovered ? "translate-x-1" : ""
-            }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          <button
+            onClick={() => viewProduct(product.id)}
+            className="relative group/btn flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/20"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 7l5 5m0 0l-5 5m5-5H6"
-            />
-          </svg>
-        </button>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+            <span className="relative">Voir la fiche</span>
+            <svg
+              className={`relative w-5 h-5 transition-transform duration-300 ${
+                isHovered ? "translate-x-1" : ""
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </button>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
           {safeUrl ? (
             <a
               href={safeUrl}
@@ -222,6 +206,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           >
             🚨 Signaler un problème
           </a>
+          </div>
         </div>
       </div>
 

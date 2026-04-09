@@ -117,7 +117,7 @@ export const PrescriberAuthPage: React.FC = () => {
 
     setRegisterLoading(true);
     try {
-      await registerPrescriber(
+      const result = await registerPrescriber(
         registerEmail,
         password,
         name,
@@ -125,6 +125,9 @@ export const PrescriberAuthPage: React.FC = () => {
         organization || undefined,
         rppsAdeli || undefined,
       );
+      if (result.email_sent === false) {
+        setRegisterError("Compte créé, mais l'email de vérification n'a pas pu être envoyé. Réessayez plus tard.");
+      }
       setView("profile");
     } catch (err) {
       setRegisterError(

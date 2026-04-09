@@ -11,6 +11,8 @@ import {
   setHealthProCollectiveMember,
 } from "../../api/public";
 import type { PublicSubmission, HealthProfApplication } from "../../types";
+import { audienceLabels, problemLabels } from "../../data/labels";
+import { renderPriorityBadges } from "../shared/PriorityBadges";
 
 const COLLECTIF_BADGES: Record<string, { label: string; cls: string }> = {
   none: { label: "Non demandé", cls: "bg-gray-100 text-gray-500" },
@@ -238,7 +240,20 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
                       </p>
                       <p className="text-xs text-text-secondary mt-1">
                         {new Date(sub.createdAt).toLocaleDateString("fr-FR")}
+                        {sub.type && <> · {sub.type}</>}
                       </p>
+                      {sub.tagline && (
+                        <p className="text-xs text-primary mt-1 line-clamp-1">{sub.tagline}</p>
+                      )}
+                      {(sub.audiencePriorities || sub.problemsPriorities) && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {renderPriorityBadges(sub.audiencePriorities, audienceLabels)}
+                          {sub.audiencePriorities && sub.problemsPriorities && (
+                            <span className="text-gray-300 mx-0.5">|</span>
+                          )}
+                          {renderPriorityBadges(sub.problemsPriorities, problemLabels)}
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       <Badge {...st} />

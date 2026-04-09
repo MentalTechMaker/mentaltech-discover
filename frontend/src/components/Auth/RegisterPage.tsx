@@ -33,7 +33,10 @@ export const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await register(email, password, name);
+      const result = await register(email, password, name);
+      if (result.email_sent === false) {
+        setError("Compte créé, mais l'email de vérification n'a pas pu être envoyé. Réessayez plus tard.");
+      }
       setView("landing");
     } catch (err) {
       setError(

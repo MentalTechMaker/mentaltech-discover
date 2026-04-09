@@ -4,6 +4,7 @@ interface TokenResponse {
   access_token: string;
   refresh_token: string;
   token_type: string;
+  email_sent?: boolean;
 }
 
 interface UserResponse {
@@ -96,7 +97,7 @@ export async function changePassword(
 
 export async function forgotPassword(
   email: string,
-): Promise<{ message: string }> {
+): Promise<{ message: string; email_sent?: boolean }> {
   return apiFetch<{ message: string }>("/auth/forgot-password", {
     method: "POST",
     body: JSON.stringify({ email }),
@@ -120,7 +121,7 @@ export async function verifyEmail(token: string): Promise<{ message: string }> {
   );
 }
 
-export async function resendVerification(): Promise<{ message: string }> {
+export async function resendVerification(): Promise<{ message: string; email_sent?: boolean }> {
   return apiFetch<{ message: string }>(
     "/auth/resend-verification",
     {

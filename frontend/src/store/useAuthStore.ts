@@ -37,7 +37,7 @@ interface AuthState {
   isLoading: boolean;
 
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<{ email_sent?: boolean }>;
   registerPrescriber: (
     email: string,
     password: string,
@@ -45,7 +45,7 @@ interface AuthState {
     profession: string,
     organization?: string,
     rppsAdeli?: string,
-  ) => Promise<void>;
+  ) => Promise<{ email_sent?: boolean }>;
   logout: () => void;
   loadUser: () => Promise<void>;
 }
@@ -98,7 +98,7 @@ export const useAuthStore = create<AuthState>((set) => {
     },
 
     register: async (email: string, password: string, name: string) => {
-      await apiRegister(email, password, name);
+      const result = await apiRegister(email, password, name);
       const user = await getMe();
       set({
         user,
@@ -113,6 +113,7 @@ export const useAuthStore = create<AuthState>((set) => {
         isPublisher:
           user.role === "publisher" && (user.is_verified_publisher ?? false),
       });
+      return { email_sent: result.email_sent };
     },
 
     registerPrescriber: async (
@@ -123,7 +124,7 @@ export const useAuthStore = create<AuthState>((set) => {
       organization?: string,
       rppsAdeli?: string,
     ) => {
-      await apiRegisterPrescriber(
+      const result = await apiRegisterPrescriber(
         email,
         password,
         name,
@@ -144,6 +145,7 @@ export const useAuthStore = create<AuthState>((set) => {
           user.role === "prescriber" && !(user.is_verified_prescriber ?? false),
         isPublisher: false,
       });
+      return { email_sent: result.email_sent };
     },
 
     logout: () => {
