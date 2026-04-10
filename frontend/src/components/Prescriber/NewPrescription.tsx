@@ -762,9 +762,7 @@ export const NewPrescription: React.FC = () => {
             </div>
             <p style="color:#6b7280;font-size:14px;margin:0 0 12px 0;">${escapeHtml(product.tagline)}</p>
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:12px;">
-              <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:9999px;padding:4px 12px;background:${escapeHtml(label.bgColor)};color:${escapeHtml(label.color)};">
-                ${escapeHtml(label.grade)} - ${escapeHtml(label.text)}
-              </span>
+              ${product.scoreLabel ? `<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:9999px;padding:4px 12px;background:${escapeHtml(label.bgColor)};color:${escapeHtml(label.color)};">${escapeHtml(label.grade)} - ${escapeHtml(label.text)}</span>` : ""}
               ${pricingText ? `<span style="font-size:12px;font-weight:500;color:#6b7280;background:#f3f4f6;border-radius:9999px;padding:2px 10px;">${escapeHtml(pricingText)}${escapeHtml(pricingAmount)}</span>` : ""}
             </div>
             ${pricingDetails ? `<p style="font-size:12px;color:#6b7280;margin:0 0 12px 0;">${escapeHtml(pricingDetails)}</p>` : ""}

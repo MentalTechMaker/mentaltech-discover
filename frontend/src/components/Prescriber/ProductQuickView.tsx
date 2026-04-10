@@ -128,7 +128,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
           {product.scoring && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Évaluation détaillée
+                Analyse détaillée
               </p>
               {SCORE_CRITERIA.map(({ key, label: criteriaLabel }) => {
                 const score = product.scoring?.[key];

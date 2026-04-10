@@ -14,7 +14,7 @@ export const RecommendationList: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Tes recommandations personnalisées",
-      "Découvre les solutions de santé mentale sélectionnées pour toi par MentalTech Discover, évaluées et classées selon tes besoins.",
+      "Découvre les solutions de santé mentale sélectionnées pour toi par MentalTech Discover, analysées et classées selon tes besoins.",
     );
     setCanonical("/resultats");
   }, []);

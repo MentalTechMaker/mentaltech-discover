@@ -179,7 +179,7 @@ export const HealthProApplicationForm: React.FC = () => {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
-              Contribution à l'évaluation des solutions
+              Contribution à l'analyse des solutions
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>

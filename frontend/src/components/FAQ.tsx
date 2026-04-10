@@ -16,7 +16,7 @@ interface FAQItem {
 const FAQ_SCHEMA_DATA = [
   {
     q: "Comment sont sélectionnées les solutions ?",
-    a: "Toute solution peut être soumise et évaluée selon notre protocole de qualité : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active. Les membres du Collectif MentalTech bénéficient d'un badge dédié.",
+    a: "Toute solution peut être soumise et analysée selon notre protocole de qualité : conformité RGPD, hébergement HDS si données de santé, transparence tarifaire, entreprise active. Les membres du Collectif MentalTech bénéficient d'un badge dédié.",
   },
   {
     q: "Comment fonctionne l'algorithme de recommandation ?",
@@ -52,7 +52,7 @@ const FAQ_SCHEMA_DATA = [
   },
   {
     q: "Comment être référencé sur MentalTech Discover ?",
-    a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera évaluée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2.",
+    a: "Toute solution peut être soumise via notre formulaire public (bouton 'Référencer' dans le menu). Elle sera analysée selon notre protocole de qualité. Les membres du Collectif MentalTech bénéficient du badge niveau 2.",
   },
   {
     q: "Le code est-il open-source ?",
@@ -89,7 +89,7 @@ export const FAQ: React.FC = () => {
       answer: (
         <div className="space-y-2">
           <p>
-            Toute solution peut être soumise et évaluée selon nos critères :
+            Toute solution peut être soumise et analysée selon nos critères :
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Conformité RGPD et hébergement HDS si données de santé</li>
@@ -424,7 +424,7 @@ export const FAQ: React.FC = () => {
           <p>
             Toute solution peut être soumise via notre{" "}
             <strong>formulaire public</strong> (bouton "Référencer" dans le
-            menu). Elle sera évaluée selon notre protocole de qualité.
+            menu). Elle sera analysée selon notre protocole de qualité.
           </p>
           <p>
             Les <strong>membres du Collectif MentalTech</strong> bénéficient du

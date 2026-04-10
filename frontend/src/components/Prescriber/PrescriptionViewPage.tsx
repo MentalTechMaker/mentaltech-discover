@@ -176,17 +176,19 @@ export const PrescriptionViewPage: React.FC = () => {
                     {product.tagline}
                   </p>
 
-                  {/* Score badge */}
+                  {/* Score badge + pricing */}
                   <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <span
-                      className="inline-flex items-center gap-1.5 text-xs font-bold rounded-full px-3 py-1"
-                      style={{
-                        backgroundColor: label.bgColor,
-                        color: label.color,
-                      }}
-                    >
-                      {label.grade} - {label.text}
-                    </span>
+                    {product.scoreLabel && (
+                      <span
+                        className="inline-flex items-center gap-1.5 text-xs font-bold rounded-full px-3 py-1"
+                        style={{
+                          backgroundColor: label.bgColor,
+                          color: label.color,
+                        }}
+                      >
+                        {label.grade} - {label.text}
+                      </span>
+                    )}
 
                     {/* Pricing */}
                     {pricingLabel && (

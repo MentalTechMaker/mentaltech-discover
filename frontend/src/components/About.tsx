@@ -7,8 +7,8 @@ export const About: React.FC = () => {
 
   useEffect(() => {
     setPageMeta(
-      "Notre démarche - Évaluation des solutions de santé mentale numérique",
-      "Découvrez comment MentalTech Discover sélectionne et évalue les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers.",
+      "Notre démarche - Analyse des solutions de santé mentale numérique",
+      "Découvrez comment MentalTech Discover sélectionne et analyse les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers.",
     );
     setCanonical("/notre-demarche");
   }, []);
@@ -146,11 +146,11 @@ export const About: React.FC = () => {
                 <span className="text-3xl flex-shrink-0">✅</span>
                 <div>
                   <h3 className="font-bold text-text-primary mb-2">
-                    Soumission et évaluation
+                    Soumission et analyse
                   </h3>
                   <p className="text-sm text-text-secondary">
                     Toute solution peut être soumise via notre formulaire public
-                    et sera évaluée selon notre protocole de qualité. Les
+                    et sera analysée selon notre protocole de qualité. Les
                     membres du Collectif MentalTech bénéficient d'un badge
                     dédié.
                   </p>
@@ -213,9 +213,9 @@ export const About: React.FC = () => {
                   Pas encore une certification qualité
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Notre système de scoring qualité est disponible : chaque
-                  solution est évaluée sur 5 piliers (sécurité, preuves,
-                  accessibilité, expérience user, support) pour un label A à E.
+                  Notre système de scoring qualité est en cours de
+                  développement : chaque solution sera analysée sur 5 piliers
+                  (sécurité, preuves, accessibilité, expérience user, support).
                   Cependant, nous ne sommes pas un organisme de certification
                   officiel.
                 </p>

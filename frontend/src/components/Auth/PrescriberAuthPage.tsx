@@ -166,7 +166,7 @@ export const PrescriberAuthPage: React.FC = () => {
               numériques à vos patients
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-indigo-500">✓</span> Évaluations complètes
+              <span className="text-indigo-500">✓</span> Fiches complètes
               des solutions (5 piliers)
             </li>
             <li className="flex items-center gap-2">

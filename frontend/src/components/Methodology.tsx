@@ -4,8 +4,8 @@ import { setPageMeta, setCanonical } from "../utils/meta";
 export const Methodology: React.FC = () => {
   useEffect(() => {
     setPageMeta(
-      "Méthodologie d'évaluation",
-      "Comment MentalTech Discover évalue les solutions numériques de santé mentale : 5 piliers, protocole transparent, labels A à E.",
+      "Méthodologie d'analyse",
+      "Comment MentalTech Discover analyse les solutions numériques de santé mentale : 5 piliers, protocole transparent.",
     );
     setCanonical("/methodologie");
   }, []);
@@ -159,7 +159,7 @@ export const Methodology: React.FC = () => {
                     <span className="text-green-600 font-bold">✓</span>
                     <span>
                       <strong>Mêmes règles pour tous</strong> : chaque solution
-                      est évaluée équitablement
+                      est analysée équitablement
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -346,14 +346,14 @@ export const Methodology: React.FC = () => {
             <div className="flex-1">
               <div className="items-center gap-3 mb-2 text-center">
                 <h2 className="text-2xl font-bold text-text-primary">
-                  ⭐ Évaluation et scoring des solutions
+                  ⭐ Analyse et scoring des solutions
                 </h2>
                 <span className="inline-block bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-semibold px-4 py-1.5 rounded-full border border-green-300">
                   ✅ Disponible
                 </span>
               </div>
               <p className="text-sm text-gray-600">
-                Un système complet d'évaluation sur 5 piliers pour vous aider à
+                Un système complet d'analyse sur 5 piliers pour vous aider à
                 choisir la meilleure solution
               </p>
             </div>
@@ -366,9 +366,9 @@ export const Methodology: React.FC = () => {
                 Un scoring objectif sur 5 piliers
               </h3>
               <p className="text-sm text-gray-700 mb-4">
-                Notre système d'évaluation va{" "}
+                Notre système d'analyse va{" "}
                 <strong>au-delà du simple match avec le questionnaire</strong>.
-                Chaque solution est évaluée de manière objective sur{" "}
+                Chaque solution est analysée de manière objective sur{" "}
                 <strong>5 piliers de qualité</strong> :
               </p>
 
@@ -443,7 +443,7 @@ export const Methodology: React.FC = () => {
                   Chaque pilier est noté de 0 à 5 points. Le{" "}
                   <strong>score global sur 100 points</strong> est calculé en
                   additionnant les 5 piliers (chacun multiplié par 4). Tous les
-                  piliers ont un <strong>poids égal</strong> dans l'évaluation
+                  piliers ont un <strong>poids égal</strong> dans l'analyse
                   finale, permettant une comparaison objective :
                 </p>
                 <ul className="space-y-2 text-sm text-gray-700">
@@ -457,8 +457,8 @@ export const Methodology: React.FC = () => {
                   <li className="flex items-start gap-2">
                     <span className="text-indigo-600 font-bold">✓</span>
                     <span>
-                      <strong>Qualité objective</strong> : Évaluation
-                      indépendante sur les 5 piliers (note A à E)
+                      <strong>Qualité objective</strong> : Analyse
+                      indépendante sur les 5 piliers
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -475,9 +475,9 @@ export const Methodology: React.FC = () => {
             <div className="bg-green-50 border-l-4 border-green-500 p-5">
               <p className="text-sm text-green-900">
                 <strong>✅ Système déployé :</strong> Chaque solution du
-                catalogue dispose d'un label qualité A à E basé sur l'évaluation
+                catalogue dispose d'une fiche qualité basée sur l'analyse
                 des 5 piliers. Les scores et justifications sont visibles sur
-                chaque fiche produit. La méthodologie complète d'évaluation est
+                chaque fiche produit. La méthodologie complète d'analyse est
                 disponible dans notre{" "}
                 <a href="/protocole" className="underline font-semibold">
                   protocole public

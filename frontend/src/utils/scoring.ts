@@ -13,14 +13,14 @@ const LABEL_CONFIG: Record<string, LabelInfo> = {
     bgColor: "#1B7D3A",
   },
   B: { grade: "B", text: "Recommandé", color: "#000000", bgColor: "#97C94E" },
-  C: { grade: "C", text: "Évalué", color: "#000000", bgColor: "#FECB02" },
+  C: { grade: "C", text: "Référencé", color: "#000000", bgColor: "#FECB02" },
   D: { grade: "D", text: "À améliorer", color: "#FFFFFF", bgColor: "#EE8100" },
   E: { grade: "E", text: "Déconseillé", color: "#FFFFFF", bgColor: "#E63E11" },
 };
 
 const UNRATED: LabelInfo = {
   grade: "-",
-  text: "Non évalué",
+  text: "Non noté",
   color: "#6B7280",
   bgColor: "#E5E7EB",
 };

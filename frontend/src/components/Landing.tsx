@@ -18,7 +18,7 @@ export const Landing: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Trouvez votre solution en santé mentale",
-      "Découvrez les meilleures solutions numériques en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, évaluations par des experts.",
+      "Découvrez les meilleures solutions numériques en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, analyses par des experts.",
     );
     setCanonical("/");
   }, []);
@@ -222,7 +222,7 @@ export const Landing: React.FC = () => {
                       : `${products.length}`}
                   </p>
                   <p className="text-sm text-text-secondary">
-                    solutions évaluées
+                    solutions référencées
                   </p>
                 </div>
               </div>
@@ -252,7 +252,7 @@ export const Landing: React.FC = () => {
                   Recevez des recommandations
                 </h3>
                 <p className="text-text-secondary text-sm">
-                  Outils évalués selon notre protocole de qualité
+                  Outils analysés selon notre protocole de qualité
                 </p>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl border-2 border-purple-100 shadow-sm">
@@ -283,7 +283,7 @@ export const Landing: React.FC = () => {
                   Vous êtes professionnel de santé ?
                 </h3>
                 <p className="text-text-secondary text-sm leading-relaxed">
-                  Créez votre compte prescripteur pour accéder aux évaluations
+                  Créez votre compte prescripteur pour accéder aux analyses
                   détaillées et aux justificatifs de chaque solution référencée.
                 </p>
               </div>
@@ -307,7 +307,7 @@ export const Landing: React.FC = () => {
                   Vous avez une solution à référencer ?
                 </h3>
                 <p className="text-text-secondary text-sm leading-relaxed">
-                  Soumettez votre solution pour qu'elle soit évaluée et visible
+                  Soumettez votre solution pour qu'elle soit référencée et visible
                   par les professionnels de santé et les particuliers.
                 </p>
               </div>

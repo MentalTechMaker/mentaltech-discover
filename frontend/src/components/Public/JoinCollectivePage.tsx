@@ -57,7 +57,7 @@ export const JoinCollectivePage: React.FC = () => {
                   {products.length}
                 </p>
                 <p className="text-sm text-text-secondary mt-1">
-                  solutions évaluées
+                  solutions référencées
                 </p>
               </div>
             )}
@@ -103,7 +103,7 @@ export const JoinCollectivePage: React.FC = () => {
             <p className="text-text-secondary leading-relaxed">
               Startup, éditeur ou porteur de projet en santé mentale - soumettez
               votre solution pour qu'elle soit{" "}
-              <strong>évaluée, référencée</strong> et visible par les
+              <strong>analysée, référencée</strong> et visible par les
               professionnels et les patients.
             </p>
             <ul className="space-y-2 text-sm">
@@ -163,7 +163,7 @@ export const JoinCollectivePage: React.FC = () => {
             </div>
             <p className="text-text-secondary leading-relaxed">
               Médecin, psychiatre, psychologue, infirmier... Rejoignez le
-              collectif pour accéder aux <strong>évaluations détaillées</strong>{" "}
+              collectif pour accéder aux <strong>analyses détaillées</strong>{" "}
               et participer à la promotion d'outils numériques validés.
             </p>
             <ul className="space-y-2 text-sm">
@@ -172,7 +172,7 @@ export const JoinCollectivePage: React.FC = () => {
                   &#10003;
                 </span>
                 <span className="text-text-primary font-medium">
-                  Accès aux évaluations protocole MentalTech
+                  Accès aux fiches protocole MentalTech
                 </span>
               </li>
               <li className="flex items-start gap-2">
@@ -316,11 +316,11 @@ export const JoinCollectivePage: React.FC = () => {
               },
               {
                 q: "Ma solution sera-t-elle visible immédiatement ?",
-                a: "Après approbation de votre candidature, votre solution est évaluée selon notre protocole MentalTech (5 piliers : sécurité, preuves, accessibilité, expérience user, support) avant publication sur le catalogue.",
+                a: "Après approbation de votre candidature, votre solution est analysée selon notre protocole MentalTech (5 piliers : sécurité, preuves, accessibilité, expérience user, support) avant publication sur le catalogue.",
               },
               {
                 q: "Quels sont les avantages pour un professionnel de santé ?",
-                a: "Accès aux évaluations détaillées des solutions, outil de prescription numérique pour vos patients, participation aux groupes de travail du collectif et réseau de 25+ entreprises innovantes en santé mentale.",
+                a: "Accès aux fiches détaillées des solutions, outil de prescription numérique pour vos patients, participation aux groupes de travail du collectif et réseau de 25+ entreprises innovantes en santé mentale.",
               },
             ].map(({ q, a }, i) => (
               <details

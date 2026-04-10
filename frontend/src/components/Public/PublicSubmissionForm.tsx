@@ -8,7 +8,7 @@ export const PublicSubmissionForm: React.FC = () => {
   useEffect(() => {
     setPageMeta(
       "Référencer votre solution en santé mentale",
-      "Proposez votre solution de santé mentale numérique sur MentalTech Discover. Évaluation gratuite sur 5 piliers de qualité.",
+      "Proposez votre solution de santé mentale numérique sur MentalTech Discover. Analyse gratuite sur 5 piliers de qualité.",
     );
     setCanonical("/soumettre-solution");
   }, []);
