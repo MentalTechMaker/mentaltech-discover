@@ -12,8 +12,8 @@ MentalTech Discover référence les solutions des membres du Collectif MentalTec
 
 - 🧭 **Questionnaire personnalisé** - Recommandations sur-mesure en 3-5 minutes
 - 📚 **Catalogue complet** - Filtres avancés par type, audience, problématique, tarification
-- 🎯 **Algorithme de matching P1/P2/P3** - Scoring intelligent basé sur les priorités éditeur
-- 📄 **Fiches produit** - Page dédiée par solution avec positionnement P1/P2/P3
+- 🎯 **Algorithme de matching P1/P2/P3** - Scoring intelligent base sur les priorites editeur
+- 📄 **Fiches produit** - Page dediee par solution avec positionnement P1/P2/P3
 - 💙 **Collectif MentalTech** - Badge d'appartenance au collectif
 - 🔒 **Authentification** - Inscription, connexion, panel d'administration
 - 🩺 **Espace Prescripteur** - Prescriptions digitales, favoris, notes cliniques, veille
@@ -70,7 +70,7 @@ Chaque solution definit ses priorites sur deux axes :
 
 **Score de matching** : Audience (30) + Probleme (30) + Format (15) + Collectif (8) + Contexte (10) = **93 pts max**
 
-Le protocole d'evaluation complet est documente dans [`protocole.md`](protocole.md).
+Le protocole d'analyse complet est documente dans [`protocole.md`](protocole.md).
 
 ### 📄 Fiches produit
 
@@ -377,7 +377,7 @@ mentaltech-discover/
 │   └── docker-backup-entrypoint.sh  # Entrypoint du container backup
 │
 ├── _docs/                    # Documentation interne (audits, runbooks, protocoles de test)
-├── protocole.md              # Protocole d'évaluation des solutions
+├── protocole.md              # Protocole d'analyse des solutions
 ├── docker-compose.yml        # Orchestration 4 services
 └── .env.example              # Variables d'environnement
 ```
@@ -539,18 +539,33 @@ Chaque solution comprend :
 
 ### Palette de couleurs
 
-- **Primaire** : Bleu #4A90E2 - Confiance, sérénité
-- **Secondaire** : Bleu foncé #357ABD - Fiabilité
-- **Succès** : Vert #10B981 - Bien-être
+- **Primaire** : Bleu #4A90E2 - Confiance, serenite
+- **Secondaire** : Bleu fonce #357ABD - Fiabilite
+- **Succes** : Vert #10B981 - Bien-etre
 - **Danger** : Rouge #EF4444 - Urgences
-- **Accents** : Violet, Orange, Rose - Diversité
+- **Accents** : Violet, Orange, Rose - Diversite
+
+### Tokens CSS
+
+| Element | Classes Tailwind |
+|---------|-----------------|
+| Container page | `min-h-[calc(100vh-280px)] px-4 py-8` + `max-w-4xl mx-auto` |
+| Texte principal | `text-text-primary` |
+| Texte secondaire | `text-text-secondary` |
+| Cards | `bg-white rounded-2xl border border-gray-200 p-8` |
+| Bouton primaire | `bg-primary text-white py-3 rounded-lg font-semibold` |
+| Inputs | `border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/30` |
+| Erreurs | `bg-red-50 border border-red-200 rounded-lg text-red-700` |
+
+Style guide complet : `_docs/decisions/2026-04-10-style-guide-css.md`
 
 ### Principes
 
 - Mobile-first responsive
-- Accessibilité ARIA labels
+- Tokens semantiques (pas de couleurs hardcodees)
+- Accessibilite ARIA labels
 - Animations fluides
-- Performance optimisée
+- Performance optimisee
 
 ---
 
@@ -729,7 +744,7 @@ cd frontend && npx tsc --noEmit
 
 #### Scoring & Qualite
 - [x] Systeme de scoring qualite interne sur 5 piliers (0-5 chacun)
-- [x] Protocole d'evaluation documente
+- [x] Protocole d'analyse documente
 
 #### Espace Prescripteur
 - [x] Inscription prescripteur (profession, organisation, RPPS/ADELI)
@@ -787,6 +802,7 @@ cd frontend && npx tsc --noEmit
 - [x] Systeme de priorites P1/P2/P3 sur audiences et problemes (scoring 30:18:8)
 - [x] Selecteur P1/P2/P3 dans les formulaires (max 3 par niveau, validation serveur)
 - [x] Retrait labels qualite de l'affichage public (scoring interne conserve en base)
+- [x] Retrait de la notion d'evaluation (remplacee par "analyse/reference")
 - [x] Affichage de toutes les solutions classees par match
 - [x] UI notes cliniques prescripteur (dashboard + page produit)
 - [x] Focus trap banniere d'urgence + role="alert" + prefers-reduced-motion
@@ -795,6 +811,12 @@ cd frontend && npx tsc --noEmit
 - [x] Email recapitulatif editeur apres confirmation
 - [x] Migration SQL pour bases existantes
 - [x] ~80 corrections accents francais
+- [x] Filtres admin soumissions (approuves, rejetes, non confirmes) avec masquage par defaut
+- [x] Filtres admin soignants (acceptes, refuses, non confirmes) + recherche
+- [x] Compteurs tabs admin montrent les demandes a traiter (chargement parallele)
+- [x] Avantages collectif dans le formulaire de soumission editeur
+- [x] Formulaire soignants aligne sur la DA du formulaire produit
+- [x] Uniformisation DA CSS : tokens semantiques, border-radius, containers, cards (16 fichiers)
 
 ### 🔮 V3 - Expansion (prevu)
 
@@ -810,6 +832,6 @@ cd frontend && npx tsc --noEmit
 
 ---
 
-**Version actuelle** : V2.1.0
-**Dernière mise à jour** : Avril 2026
+**Version actuelle** : V2.1.1
+**Derniere mise a jour** : 10 avril 2026
 **Status** : Production Ready
