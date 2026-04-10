@@ -14,7 +14,7 @@ export const LegalNotice: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-200px)] px-4 py-8">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">

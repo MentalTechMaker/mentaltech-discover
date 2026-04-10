@@ -323,7 +323,7 @@ export const FAQ: React.FC = () => {
       question: "Que faire en cas de crise ?",
       answer: (
         <div className="space-y-3">
-          <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="font-bold text-red-900 mb-3">
               🚨 Numéros d'urgence (gratuits 24h/24) :
             </p>
@@ -587,7 +587,7 @@ export const FAQ: React.FC = () => {
             <strong>données personnelles</strong> ou{" "}
             <strong>contenus inappropriés</strong>:
           </p>
-          <div className="bg-red-50 border-2 border-red-300 p-4 rounded-lg">
+          <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <p className="font-bold text-red-900 mb-2">
               ✉️ Email prioritaire :
             </p>
@@ -609,10 +609,10 @@ export const FAQ: React.FC = () => {
   const categories = Array.from(new Set(faqData.map((item) => item.category)));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-12">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
             ❓ Questions fréquentes
           </h1>
           <p className="text-xl text-text-secondary">
@@ -635,7 +635,7 @@ export const FAQ: React.FC = () => {
                   return (
                     <div
                       key={globalIndex}
-                      className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-gray-100 hover:border-primary transition-colors"
+                      className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-primary transition-colors"
                     >
                       <button
                         onClick={() =>
@@ -706,7 +706,7 @@ export const FAQ: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-blue-200 shadow-lg mt-8">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200 mt-8">
           <div className="text-center space-y-4">
             <h3 className="text-2xl font-bold text-text-primary">
               Une autre question ?
@@ -716,7 +716,7 @@ export const FAQ: React.FC = () => {
             </p>
             <a
               href="mailto:arnaud@mentaltechmaker.fr"
-              className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg"
+              className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
             >
               Nous contacter
             </a>

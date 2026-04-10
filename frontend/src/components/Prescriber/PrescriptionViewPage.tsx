@@ -61,7 +61,7 @@ export const PrescriptionViewPage: React.FC = () => {
   // ── Loading ──────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-text-secondary text-lg">
@@ -75,7 +75,7 @@ export const PrescriptionViewPage: React.FC = () => {
   // ── Error ────────────────────────────────────────────────────
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4">
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 max-w-md w-full text-center">
           <div className="text-5xl mb-4">&#128683;</div>
           <h2 className="text-xl font-bold text-text-primary mb-2">
@@ -91,7 +91,7 @@ export const PrescriptionViewPage: React.FC = () => {
 
   // ── Loaded ───────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-[calc(100vh-280px)]">
       {/* ── Header Banner ─────────────────────────────────────── */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-3xl mx-auto px-4 py-8 text-center">

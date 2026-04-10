@@ -11,13 +11,13 @@ export const Methodology: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
             Notre Méthodologie
           </h1>
-          <p className="text-lg text-gray-600 mb-4">
+          <p className="text-lg text-text-secondary mb-4">
             Comment nous sélectionnons et évaluons les solutions de santé
             mentale
           </p>
@@ -28,22 +28,22 @@ export const Methodology: React.FC = () => {
           </div>
         </div>
 
-        <section className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 mb-8">
           <div className="items-start gap-4 mb-6 text-center">
             <div>
               <h2 className="text-2xl font-bold text-text-primary mb-4">
                 🔍 Comment sont sourcées nos solutions
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-text-secondary">
                 Un processus rigoureux du collectif MentalTech pour vous
                 garantir des solutions de confiance
               </p>
             </div>
           </div>
 
-          <div className="space-y-6 text-gray-700">
+          <div className="space-y-6 text-text-secondary">
             <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="font-bold text-text-primary mb-4 flex items-center gap-2">
                 <span className="text-2xl">📋</span>
                 Processus de sourcing
               </h3>
@@ -51,7 +51,7 @@ export const Methodology: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <span className="text-primary font-bold text-lg">1.</span>
                   <div>
-                    <strong className="text-gray-900">
+                    <strong className="text-text-primary">
                       Veille active sur l'écosystème MentalTech
                     </strong>
                     <p className="text-sm mt-1">
@@ -66,7 +66,7 @@ export const Methodology: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <span className="text-primary font-bold text-lg">2.</span>
                   <div>
-                    <strong className="text-gray-900">
+                    <strong className="text-text-primary">
                       Vérification de l'activité et de la disponibilité
                     </strong>
                     <p className="text-sm mt-1">
@@ -82,7 +82,7 @@ export const Methodology: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <span className="text-primary font-bold text-lg">3.</span>
                   <div>
-                    <strong className="text-gray-900">
+                    <strong className="text-text-primary">
                       Analyse de la pertinence
                     </strong>
                     <p className="text-sm mt-1">
@@ -96,7 +96,7 @@ export const Methodology: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <span className="text-primary font-bold text-lg">4.</span>
                   <div>
-                    <strong className="text-gray-900">
+                    <strong className="text-text-primary">
                       Diversité de l'offre
                     </strong>
                     <p className="text-sm mt-1">
@@ -120,22 +120,22 @@ export const Methodology: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 mb-8">
           <div className="items-start gap-4 mb-6 text-center">
             <div>
               <h2 className="text-2xl font-bold text-text-primary mb-4">
                 🧭 Fonctionnement des recommandations
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-text-secondary">
                 Un système transparent basé uniquement sur les caractéristiques
                 des solutions
               </p>
             </div>
           </div>
 
-          <div className="space-y-6 text-gray-700">
+          <div className="space-y-6 text-text-secondary">
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6 border-l-4 border-green-600">
-              <h3 className="font-bold text-gray-900 mb-3 text-lg flex items-center gap-2">
+              <h3 className="font-bold text-text-primary mb-3 text-lg flex items-center gap-2">
                 <span className="text-2xl">✓</span>
                 Principe fondamental : Zéro favoritisme
               </h3>
@@ -174,7 +174,7 @@ export const Methodology: React.FC = () => {
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg">
+              <h3 className="font-bold text-text-primary mb-4 text-lg">
                 Comment ça marche concrètement ?
               </h3>
 
@@ -185,10 +185,10 @@ export const Methodology: React.FC = () => {
                       Étape 1
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">
+                      <h4 className="font-semibold text-text-primary mb-1">
                         Vos réponses au questionnaire
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-text-secondary">
                         Nous collectons vos besoins : public cible (adulte,
                         enfant...), problème (stress, addiction...), préférence
                         (autonome, accompagné...) et niveau d'urgence.
@@ -203,10 +203,10 @@ export const Methodology: React.FC = () => {
                       Étape 2
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">
+                      <h4 className="font-semibold text-text-primary mb-1">
                         Attribution de points par critères
                       </h4>
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-sm text-text-secondary mb-2">
                         Chaque solution reçoit un score basé sur ses{" "}
                         <strong>caractéristiques objectives</strong> :
                       </p>
@@ -215,25 +215,25 @@ export const Methodology: React.FC = () => {
                           <span className="font-bold text-blue-600">
                             10 pts
                           </span>
-                          <span className="text-gray-600">Public cible</span>
+                          <span className="text-text-secondary">Public cible</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-green-600">
                             8 pts
                           </span>
-                          <span className="text-gray-600">Problème traité</span>
+                          <span className="text-text-secondary">Problème traité</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-purple-600">
                             6 pts
                           </span>
-                          <span className="text-gray-600">Format souhaité</span>
+                          <span className="text-text-secondary">Format souhaité</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-orange-600">
                             5-7 pts
                           </span>
-                          <span className="text-gray-600">
+                          <span className="text-text-secondary">
                             Niveau d'urgence
                           </span>
                         </div>
@@ -241,7 +241,7 @@ export const Methodology: React.FC = () => {
                           <span className="font-bold text-pink-600">
                             10-15 pts
                           </span>
-                          <span className="text-gray-600">Spécialisation</span>
+                          <span className="text-text-secondary">Spécialisation</span>
                         </div>
                       </div>
                     </div>
@@ -254,10 +254,10 @@ export const Methodology: React.FC = () => {
                       Étape 3
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">
+                      <h4 className="font-semibold text-text-primary mb-1">
                         Classement automatique
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-text-secondary">
                         Les solutions sont classées par score décroissant. Les 3
                         plus pertinentes vous sont présentées en priorité.
                       </p>
@@ -268,20 +268,20 @@ export const Methodology: React.FC = () => {
             </div>
 
             <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-3">
+              <h3 className="font-bold text-text-primary mb-3">
                 Exemple concret : Besoin d'aide pour addiction
               </h3>
               <div className="space-y-3 text-sm">
-                <p className="text-gray-700">
+                <p className="text-text-secondary">
                   <strong>Vos réponses :</strong> "Je suis un adulte, j'ai un
                   problème d'addiction, je préfère une solution autonome"
                 </p>
 
                 <div className="bg-white rounded p-3 border-l-4 border-green-500">
-                  <p className="font-semibold text-gray-900 mb-2">
+                  <p className="font-semibold text-text-primary mb-2">
                     Solution A - App coaching sevrage ⭐
                   </p>
-                  <div className="space-y-1 text-xs text-gray-600">
+                  <div className="space-y-1 text-xs text-text-secondary">
                     <div>
                       ✓ Public adulte :{" "}
                       <span className="font-bold text-blue-600">+10 pts</span>
@@ -299,7 +299,7 @@ export const Methodology: React.FC = () => {
                       <span className="font-bold text-pink-600">+10 pts</span>
                     </div>
                     <div className="pt-1 border-t mt-2">
-                      <span className="font-bold text-indigo-700">
+                      <span className="font-bold text-blue-700">
                         Total : 34 points → RECOMMANDÉE
                       </span>
                     </div>
@@ -307,10 +307,10 @@ export const Methodology: React.FC = () => {
                 </div>
 
                 <div className="bg-white rounded p-3 border-l-4 border-gray-300">
-                  <p className="font-semibold text-gray-900 mb-2">
+                  <p className="font-semibold text-text-primary mb-2">
                     Solution B - Méditation bien-être
                   </p>
-                  <div className="space-y-1 text-xs text-gray-600">
+                  <div className="space-y-1 text-xs text-text-secondary">
                     <div>
                       ✓ Public adulte :{" "}
                       <span className="font-bold text-blue-600">+10 pts</span>
@@ -331,7 +331,7 @@ export const Methodology: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-600 italic pt-2">
+                <p className="text-xs text-text-secondary italic pt-2">
                   → La solution A est recommandée car elle correspond mieux à
                   votre besoin spécifique, pas parce qu'elle est "favorisée" par
                   l'algorithme.
@@ -341,7 +341,7 @@ export const Methodology: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 mb-8">
           <div className="flex items-start gap-4 mb-6">
             <div className="flex-1">
               <div className="items-center gap-3 mb-2 text-center">
@@ -352,7 +352,7 @@ export const Methodology: React.FC = () => {
                   ✅ Disponible
                 </span>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-text-secondary text-center">
                 Un système complet d'analyse sur 5 piliers pour vous aider à
                 choisir la meilleure solution
               </p>
@@ -360,12 +360,12 @@ export const Methodology: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-l-4 border-indigo-600">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg flex items-center gap-2">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-50 rounded-lg p-6 border-l-4 border-blue-600">
+              <h3 className="font-bold text-text-primary mb-4 text-lg flex items-center gap-2">
                 <span className="text-2xl">⭐</span>
                 Un scoring objectif sur 5 piliers
               </h3>
-              <p className="text-sm text-gray-700 mb-4">
+              <p className="text-sm text-text-secondary mb-4">
                 Notre système d'analyse va{" "}
                 <strong>au-delà du simple match avec le questionnaire</strong>.
                 Chaque solution est analysée de manière objective sur{" "}
@@ -376,11 +376,11 @@ export const Methodology: React.FC = () => {
                 <div className="bg-white rounded-lg p-3 border border-blue-200">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">🔒</span>
-                    <span className="font-semibold text-gray-900 text-sm">
+                    <span className="font-semibold text-text-primary text-sm">
                       Sécurité
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-text-secondary">
                     RGPD, hébergement HDS, chiffrement
                   </p>
                 </div>
@@ -388,11 +388,11 @@ export const Methodology: React.FC = () => {
                 <div className="bg-white rounded-lg p-3 border border-green-200">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">🎯</span>
-                    <span className="font-semibold text-gray-900 text-sm">
+                    <span className="font-semibold text-text-primary text-sm">
                       Preuves
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-text-secondary">
                     Base scientifique, études cliniques
                   </p>
                 </div>
@@ -400,11 +400,11 @@ export const Methodology: React.FC = () => {
                 <div className="bg-white rounded-lg p-3 border border-purple-200">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">♿</span>
-                    <span className="font-semibold text-gray-900 text-sm">
+                    <span className="font-semibold text-text-primary text-sm">
                       Accessibilité
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-text-secondary">
                     Prix transparent, multiplateforme
                   </p>
                 </div>
@@ -412,11 +412,11 @@ export const Methodology: React.FC = () => {
                 <div className="bg-white rounded-lg p-3 border border-orange-200">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">✨</span>
-                    <span className="font-semibold text-gray-900 text-sm">
+                    <span className="font-semibold text-text-primary text-sm">
                       Expérience user
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-text-secondary">
                     Interface intuitive, ergonomie
                   </p>
                 </div>
@@ -424,45 +424,45 @@ export const Methodology: React.FC = () => {
                 <div className="bg-white rounded-lg p-3 border border-pink-200 md:col-span-2">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">💬</span>
-                    <span className="font-semibold text-gray-900 text-sm">
+                    <span className="font-semibold text-text-primary text-sm">
                       Support
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-text-secondary">
                     Service client, ressources d'aide, gestion des crises
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-4 border-2 border-indigo-200">
-                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+                <h4 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
                   <span>📊</span>
                   Score sur 100 points
                 </h4>
-                <p className="text-sm text-gray-700 mb-3">
+                <p className="text-sm text-text-secondary mb-3">
                   Chaque pilier est noté de 0 à 5 points. Le{" "}
                   <strong>score global sur 100 points</strong> est calculé en
                   additionnant les 5 piliers (chacun multiplié par 4). Tous les
                   piliers ont un <strong>poids égal</strong> dans l'analyse
                   finale, permettant une comparaison objective :
                 </p>
-                <ul className="space-y-2 text-sm text-gray-700">
+                <ul className="space-y-2 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold">✓</span>
+                    <span className="text-blue-600 font-bold">✓</span>
                     <span>
                       <strong>Pertinence personnalisée</strong> : Match avec vos
                       besoins via le questionnaire
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold">✓</span>
+                    <span className="text-blue-600 font-bold">✓</span>
                     <span>
                       <strong>Qualité objective</strong> : Analyse
                       indépendante sur les 5 piliers
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold">✓</span>
+                    <span className="text-blue-600 font-bold">✓</span>
                     <span>
                       <strong>Transparence totale</strong> : Méthodologie
                       publique et justifications accessibles
@@ -488,7 +488,7 @@ export const Methodology: React.FC = () => {
           </div>
         </section>
 
-        <div className="text-center mt-12 text-gray-600">
+        <div className="text-center mt-12 text-text-secondary">
           <p className="text-sm">
             Cette méthodologie est en constante évolution. Nous nous engageons à
             la transparence et à l'amélioration continue de nos processus.

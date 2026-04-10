@@ -114,7 +114,7 @@ export const VeillePage: React.FC = () => {
         </button>
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-text-primary mb-2">
             Veille solutions
           </h1>
@@ -124,7 +124,7 @@ export const VeillePage: React.FC = () => {
         </div>
 
         {/* Toggle filter */}
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <div className="inline-flex rounded-lg border-2 border-gray-200 overflow-hidden">
             <button
               onClick={() => setFavoritesOnly(false)}
@@ -165,7 +165,7 @@ export const VeillePage: React.FC = () => {
 
         {/* Empty state */}
         {!loading && !error && updates.length === 0 && (
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
+          <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
             <div className="text-5xl mb-4">
               {favoritesOnly ? "\u2B50" : "\uD83D\uDCE1"}
             </div>
@@ -195,7 +195,7 @@ export const VeillePage: React.FC = () => {
               return (
                 <div
                   key={update.id}
-                  className="bg-white rounded-2xl border-2 border-gray-200 p-6 hover:border-primary/30 transition-colors"
+                  className="bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-start gap-4">
                     {/* Type icon */}

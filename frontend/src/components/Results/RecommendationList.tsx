@@ -60,7 +60,7 @@ export const RecommendationList: React.FC = () => {
   });
 
   return (
-    <div className="min-h-[calc(100vh-200px)] px-4 py-12 bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-7xl mx-auto space-y-10">
         <div
           className="text-center space-y-5"

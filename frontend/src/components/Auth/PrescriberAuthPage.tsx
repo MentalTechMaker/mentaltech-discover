@@ -145,7 +145,7 @@ export const PrescriberAuthPage: React.FC = () => {
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
             🩺 Espace prescripteur
           </div>
           <h2 className="text-2xl font-bold text-text-primary">
@@ -156,25 +156,25 @@ export const PrescriberAuthPage: React.FC = () => {
         </div>
 
         {/* Value proposition */}
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6">
-          <p className="text-sm font-semibold text-indigo-900 mb-2">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+          <p className="text-sm font-semibold text-blue-900 mb-2">
             Vos avantages prescripteur :
           </p>
-          <ul className="text-sm text-indigo-800 space-y-1">
+          <ul className="text-sm text-blue-800 space-y-1">
             <li className="flex items-center gap-2">
-              <span className="text-indigo-500">✓</span> Prescriptions
+              <span className="text-blue-500">✓</span> Prescriptions
               numériques à vos patients
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-indigo-500">✓</span> Fiches complètes
+              <span className="text-blue-500">✓</span> Fiches complètes
               des solutions (5 piliers)
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-indigo-500">✓</span> Réseau de
+              <span className="text-blue-500">✓</span> Réseau de
               professionnels engagés
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-indigo-500">✓</span> 100% gratuit
+              <span className="text-blue-500">✓</span> 100% gratuit
             </li>
           </ul>
         </div>
@@ -203,7 +203,7 @@ export const PrescriberAuthPage: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8">
           {/* LOGIN TAB */}
           {activeTab === "login" && (
             <>

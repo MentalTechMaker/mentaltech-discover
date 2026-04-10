@@ -27,7 +27,7 @@ export const JoinCollectivePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-280px)] bg-gradient-to-b from-purple-50/50 to-white">
+    <div className="min-h-[calc(100vh-280px)]">
       <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">

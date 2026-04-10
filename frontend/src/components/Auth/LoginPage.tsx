@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8">
           <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
             Connexion
           </h2>
@@ -99,7 +99,7 @@ export const LoginPage: React.FC = () => {
             Professionnel de santé ?{" "}
             <button
               onClick={() => setView("prescriber-auth")}
-              className="text-purple-700 font-semibold hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               Espace prescripteur →
             </button>

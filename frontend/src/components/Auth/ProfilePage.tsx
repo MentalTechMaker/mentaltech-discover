@@ -80,7 +80,7 @@ export const ProfilePage: React.FC = () => {
     <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-lg space-y-6">
         {/* User Info */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8">
           <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
             Mon profil
           </h2>
@@ -242,7 +242,7 @@ export const ProfilePage: React.FC = () => {
         )}
 
         {/* Change Password */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8">
           <h3 className="text-xl font-bold text-text-primary mb-4">
             Changer le mot de passe
           </h3>

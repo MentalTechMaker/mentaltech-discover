@@ -14,10 +14,10 @@ export const About: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-12">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
             🎯 Notre démarche
           </h1>
           <p className="text-xl text-text-secondary">
@@ -25,7 +25,7 @@ export const About: React.FC = () => {
           </p>
         </div>
 
-        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>💙</span>
             Qui sommes-nous ?
@@ -79,7 +79,7 @@ export const About: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🩺</span>
             Pour les professionnels de santé
@@ -122,7 +122,7 @@ export const About: React.FC = () => {
             <div className="mt-4 text-center">
               <button
                 onClick={() => setView("prescriber-auth")}
-                className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg"
+                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Créer mon compte prescripteur gratuitement
               </button>
@@ -130,7 +130,7 @@ export const About: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🔍</span>
             Nos critères de référencement
@@ -237,7 +237,7 @@ export const About: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🧮</span>
             Notre algorithme de matching
@@ -333,7 +333,7 @@ export const About: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-lg p-8 space-y-6 border-2 border-indigo-200">
+        <section className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border border-blue-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>🚀</span>
             Nouveautés de la V2
@@ -420,7 +420,7 @@ export const About: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
           <h2 className="text-3xl font-bold text-text-primary flex items-center justify-center gap-3">
             <span>📞</span>
             Contact

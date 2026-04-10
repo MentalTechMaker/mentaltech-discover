@@ -73,7 +73,7 @@ export const ResetPasswordPage: React.FC = () => {
     return (
       <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <h2 className="text-2xl font-bold text-text-primary mb-4">
               Lien invalide
             </h2>
@@ -95,7 +95,7 @@ export const ResetPasswordPage: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8">
           <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
             Nouveau mot de passe
           </h2>
