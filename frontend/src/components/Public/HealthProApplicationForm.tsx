@@ -106,17 +106,17 @@ export const HealthProApplicationForm: React.FC = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center p-4">
-        <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center p-4">
+        <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-200">
           <div className="text-5xl mb-4">📬</div>
-          <h2 className="text-2xl font-bold text-foreground mb-3">
+          <h2 className="text-2xl font-bold text-text-primary mb-3">
             Vérifiez votre boîte mail
           </h2>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-text-secondary mb-6">
             Un email de confirmation a été envoyé à <strong>{email}</strong>.
             Cliquez sur le lien pour valider votre candidature.
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-text-secondary">
             Le bureau du Collectif examinera ensuite votre dossier.
           </p>
           <button
@@ -131,7 +131,7 @@ export const HealthProApplicationForm: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8 px-4">
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       {/* Honeypot */}
       <input
         type="text"
@@ -143,55 +143,61 @@ export const HealthProApplicationForm: React.FC = () => {
         autoComplete="off"
       />
 
-      <div className="max-w-xl mx-auto">
-        <div className="text-center mb-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">
+              Candidature professionnel de santé
+            </h1>
+            <p className="text-sm text-text-secondary mt-1">
+              Pour les professionnels de santé souhaitant soutenir et
+              co-construire l'écosystème MentalTech.
+            </p>
+          </div>
           <button
             onClick={() => setView("join-collective")}
-            className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-flex items-center gap-1"
+            className="text-text-secondary hover:text-text-primary"
           >
-            ← Retour
+            Retour
           </button>
-          <div className="text-4xl mb-3">👩‍⚕️</div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Rejoindre le Collectif
-          </h1>
-          <p className="text-muted-foreground">
-            Pour les professionnels de santé souhaitant soutenir et
-            co-construire l'écosystème MentalTech.
-          </p>
         </div>
 
         {/* Avantages */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
-          <h3 className="font-semibold text-amber-900 mb-3">
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 mb-6">
+          <h3 className="font-semibold text-purple-900 mb-3">
             Pourquoi rejoindre le Collectif ?
           </h3>
-          <ul className="space-y-2 text-sm text-amber-800">
+          <ul className="space-y-2 text-sm text-purple-800">
             <li className="flex items-start gap-2">
-              <span>✅</span> Accès au réseau MentalTech et à ses membres
+              <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+              Accès au réseau MentalTech et à ses membres
             </li>
             <li className="flex items-start gap-2">
-              <span>✅</span> Participation aux groupes de travail thématiques
+              <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+              Participation aux groupes de travail thématiques
             </li>
             <li className="flex items-start gap-2">
-              <span>✅</span> Contribution à l'évaluation des solutions
+              <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+              Contribution à l'évaluation des solutions
             </li>
             <li className="flex items-start gap-2">
-              <span>✅</span> Accès aux événements et ressources exclusives
+              <span className="text-purple-500 font-bold text-lg leading-5">&#10003;</span>
+              Accès aux événements et ressources exclusives
             </li>
           </ul>
-          <p className="text-sm text-amber-700 mt-3 font-medium">
-            Cotisation annuelle pour les professionnels de santé
+          <p className="text-sm text-purple-700 mt-3 font-medium">
+            Cotisation annuelle : 50 EUR / an
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-sm border border-border p-6 md:p-8 space-y-5"
+          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 space-y-5"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Nom complet <span className="text-destructive">*</span>
               </label>
               <input
@@ -199,11 +205,11 @@ export const HealthProApplicationForm: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Dr. Prénom Nom"
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Email <span className="text-destructive">*</span>
               </label>
               <input
@@ -211,13 +217,13 @@ export const HealthProApplicationForm: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="prenom.nom@hopital.fr"
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Profession <span className="text-destructive">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -227,7 +233,7 @@ export const HealthProApplicationForm: React.FC = () => {
                   className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-colors ${
                     profession === p
                       ? "border-primary bg-primary/5 text-primary"
-                      : "border-border hover:border-primary/50"
+                      : "border-gray-200 hover:border-primary/50"
                   }`}
                 >
                   <input
@@ -246,9 +252,9 @@ export const HealthProApplicationForm: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Numéro RPPS ou ADELI{" "}
-                <span className="text-muted-foreground font-normal">
+                <span className="text-text-secondary font-normal">
                   (optionnel)
                 </span>
               </label>
@@ -257,13 +263,13 @@ export const HealthProApplicationForm: React.FC = () => {
                 value={rppsAdeli}
                 onChange={(e) => setRppsAdeli(e.target.value)}
                 placeholder="10 chiffres"
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Établissement / Organisation{" "}
-                <span className="text-muted-foreground font-normal">
+                <span className="text-text-secondary font-normal">
                   (optionnel)
                 </span>
               </label>
@@ -272,15 +278,15 @@ export const HealthProApplicationForm: React.FC = () => {
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value)}
                 placeholder="CHU, cabinet libéral..."
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Profil LinkedIn{" "}
-              <span className="text-muted-foreground font-normal">
+              <span className="text-text-secondary font-normal">
                 (optionnel)
               </span>
             </label>
@@ -289,12 +295,12 @@ export const HealthProApplicationForm: React.FC = () => {
               value={linkedin}
               onChange={(e) => setLinkedin(e.target.value)}
               placeholder="https://linkedin.com/in/votre-profil"
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Pourquoi souhaitez-vous rejoindre le Collectif ?
             </label>
             <textarea
@@ -302,17 +308,17 @@ export const HealthProApplicationForm: React.FC = () => {
               onChange={(e) => setMotivation(e.target.value)}
               placeholder="Partagez vos motivations et ce que vous espérez apporter au collectif..."
               rows={4}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </div>
 
           {error && (
-            <p
+            <div
               role="alert"
-              className="text-sm text-destructive bg-destructive/10 rounded-lg px-4 py-3"
+              className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
             >
               {error}
-            </p>
+            </div>
           )}
 
           <label className="flex items-start gap-3 cursor-pointer">
@@ -343,22 +349,22 @@ export const HealthProApplicationForm: React.FC = () => {
             >
               {submitting ? "Envoi en cours..." : "Envoyer ma candidature"}
             </button>
-            <p className="text-xs text-center text-muted-foreground mt-3">
+            <p className="text-xs text-center text-text-secondary mt-3">
               Un email de confirmation vous sera envoyé. Votre candidature sera
               examinée par le bureau du Collectif.
             </p>
           </div>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Vous souhaitez référencer une solution ?{" "}
+        <div className="flex justify-center gap-4 mt-6 text-sm text-text-secondary">
+          <span>Vous souhaitez référencer une solution ?</span>
           <button
             onClick={() => setView("public-submission")}
-            className="text-primary hover:underline"
+            className="text-primary hover:underline font-medium"
           >
             Formulaire de référencement
           </button>
-        </p>
+        </div>
       </div>
     </div>
   );

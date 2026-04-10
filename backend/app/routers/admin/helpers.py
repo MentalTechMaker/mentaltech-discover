@@ -63,6 +63,7 @@ def _health_pro_to_response(
         rppsAdeli=app.rpps_adeli,
         organization=app.organization,
         motivation=app.motivation,
+        linkedin=app.linkedin,
         status=app.status,
         emailConfirmed=app.email_confirmed,
         isCollectiveMember=app.is_collective_member,

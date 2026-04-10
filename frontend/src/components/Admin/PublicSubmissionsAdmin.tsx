@@ -48,6 +48,33 @@ function Badge({ label, cls }: { label: string; cls: string }) {
   );
 }
 
+const FILTER_COLORS = {
+  orange: { active: "bg-orange-100 text-orange-700 border-orange-300", hover: "hover:border-orange-300" },
+  green: { active: "bg-green-100 text-green-700 border-green-300", hover: "hover:border-green-300" },
+  red: { active: "bg-red-100 text-red-700 border-red-300", hover: "hover:border-red-300" },
+} as const;
+
+function FilterToggle({ active, label, count, color, onToggle }: {
+  active: boolean;
+  label: string;
+  count: number;
+  color: keyof typeof FILTER_COLORS;
+  onToggle: () => void;
+}) {
+  if (count === 0) return null;
+  const c = FILTER_COLORS[color];
+  return (
+    <button
+      onClick={onToggle}
+      className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+        active ? c.active : `bg-gray-100 text-gray-500 border-gray-200 ${c.hover}`
+      }`}
+    >
+      {active ? "Masquer" : "Voir"} {label} ({count})
+    </button>
+  );
+}
+
 interface Props {
   onCreateProduct?: (sub: PublicSubmission) => void;
 }
@@ -60,7 +87,8 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
   const [healthProApps, setHealthProApps] = useState<HealthProfApplication[]>(
     [],
   );
-  const [loading, setLoading] = useState(true);
+  const [loadingSubs, setLoadingSubs] = useState(true);
+  const [loadingHp, setLoadingHp] = useState(true);
   const [selectedApp, setSelectedApp] = useState<HealthProfApplication | null>(
     null,
   );
@@ -68,32 +96,38 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
   const [adminNotes, setAdminNotes] = useState("");
   const [helloassoUrl, setHelloassoUrl] = useState("");
   const [showPendingEmail, setShowPendingEmail] = useState(false);
+  const [showApproved, setShowApproved] = useState(false);
+  const [showRejected, setShowRejected] = useState(false);
   // Inline actions for submissions
   const [rejectingSubId, setRejectingSubId] = useState<string | null>(null);
   const [collectifSubId, setCollectifSubId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  // Health pro filters
+  const [hpShowPendingEmail, setHpShowPendingEmail] = useState(false);
+  const [hpShowAccepted, setHpShowAccepted] = useState(false);
+  const [hpShowRefused, setHpShowRefused] = useState(false);
+  const [hpSearchQuery, setHpSearchQuery] = useState("");
   const { toast, showToast } = useToast();
 
   useEffect(() => {
-    if (activeTab === "submissions") loadSubmissions();
-    else loadHealthPro();
-  }, [activeTab]);
+    Promise.all([loadSubmissions(), loadHealthPro()]);
+  }, []);
 
   const loadSubmissions = async () => {
-    setLoading(true);
+    setLoadingSubs(true);
     try {
       setSubmissions(await listPublicSubmissions());
     } finally {
-      setLoading(false);
+      setLoadingSubs(false);
     }
   };
 
   const loadHealthPro = async () => {
-    setLoading(true);
+    setLoadingHp(true);
     try {
       setHealthProApps(await listHealthProApplications());
     } finally {
-      setLoading(false);
+      setLoadingHp(false);
     }
   };
 
@@ -122,15 +156,51 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
   const pendingEmailCount = submissions.filter(
     (s) => s.status === "pending_email",
   ).length;
+  const approvedCount = submissions.filter(
+    (s) => s.status === "approved",
+  ).length;
+  const rejectedCount = submissions.filter(
+    (s) => s.status === "rejected" || s.status === "changes_requested",
+  ).length;
 
   const filteredSubmissions = submissions.filter((sub) => {
     if (!showPendingEmail && sub.status === "pending_email") return false;
+    if (!showApproved && sub.status === "approved") return false;
+    if (
+      !showRejected &&
+      (sub.status === "rejected" || sub.status === "changes_requested")
+    )
+      return false;
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
       (sub.name || "").toLowerCase().includes(q) ||
       (sub.contactName || "").toLowerCase().includes(q) ||
       (sub.contactEmail || "").toLowerCase().includes(q)
+    );
+  });
+
+  // Health pro counts & filter
+  const hpPendingEmailCount = healthProApps.filter(
+    (a) => a.status === "pending_email",
+  ).length;
+  const hpAcceptedCount = healthProApps.filter(
+    (a) => a.status === "accepted",
+  ).length;
+  const hpRefusedCount = healthProApps.filter(
+    (a) => a.status === "refused",
+  ).length;
+
+  const filteredHealthPro = healthProApps.filter((app) => {
+    if (!hpShowPendingEmail && app.status === "pending_email") return false;
+    if (!hpShowAccepted && app.status === "accepted") return false;
+    if (!hpShowRefused && app.status === "refused") return false;
+    if (!hpSearchQuery.trim()) return true;
+    const q = hpSearchQuery.toLowerCase();
+    return (
+      app.name.toLowerCase().includes(q) ||
+      app.email.toLowerCase().includes(q) ||
+      (app.profession || "").toLowerCase().includes(q)
     );
   });
 
@@ -156,11 +226,11 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
           [
             {
               key: "submissions",
-              label: `Soumissions (${submissions.length - pendingEmailCount}${pendingEmailCount > 0 ? ` + ${pendingEmailCount} en attente` : ""})`,
+              label: `Soumissions (${submissions.length - pendingEmailCount - approvedCount - rejectedCount})`,
             },
             {
               key: "health-pro",
-              label: `Pros de santé (${healthProApps.length})`,
+              label: `Pros de santé (${healthProApps.length - hpPendingEmailCount - hpAcceptedCount - hpRefusedCount})`,
             },
           ] as { key: Tab; label: string }[]
         ).map(({ key, label }) => (
@@ -183,12 +253,13 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
         ))}
       </div>
 
-      {loading && (
+      {((activeTab === "submissions" && loadingSubs) ||
+        (activeTab === "health-pro" && loadingHp)) && (
         <p className="text-sm text-text-secondary py-4">Chargement...</p>
       )}
 
       {/* ── SUBMISSIONS TAB ──────────────────────────────────────── */}
-      {!loading && activeTab === "submissions" && (
+      {!loadingSubs && activeTab === "submissions" && (
         <div className="space-y-2">
           <div className="flex gap-3 items-center">
             <input
@@ -198,18 +269,9 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
               placeholder="Rechercher par nom, contact, email..."
               className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
             />
-            {pendingEmailCount > 0 && (
-              <button
-                onClick={() => setShowPendingEmail(!showPendingEmail)}
-                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  showPendingEmail
-                    ? "bg-orange-100 text-orange-700 border-orange-300"
-                    : "bg-gray-100 text-gray-500 border-gray-200 hover:border-orange-300"
-                }`}
-              >
-                {showPendingEmail ? "Masquer" : "Voir"} non confirmés ({pendingEmailCount})
-              </button>
-            )}
+            <FilterToggle active={showPendingEmail} label="non confirmés" count={pendingEmailCount} color="orange" onToggle={() => setShowPendingEmail(!showPendingEmail)} />
+            <FilterToggle active={showApproved} label="approuvés" count={approvedCount} color="green" onToggle={() => setShowApproved(!showApproved)} />
+            <FilterToggle active={showRejected} label="rejetés" count={rejectedCount} color="red" onToggle={() => setShowRejected(!showRejected)} />
           </div>
           {filteredSubmissions.length === 0 && (
             <p className="text-sm text-text-secondary py-8 text-center">
@@ -469,14 +531,28 @@ export const PublicSubmissionsAdmin: React.FC<Props> = ({
       )}
 
       {/* ── HEALTH PRO TAB - LIST ───────────────────────────────── */}
-      {!loading && activeTab === "health-pro" && !selectedApp && (
+      {!loadingHp && activeTab === "health-pro" && !selectedApp && (
         <div className="space-y-2">
-          {healthProApps.length === 0 && (
+          <div className="flex gap-3 items-center flex-wrap">
+            <input
+              type="search"
+              value={hpSearchQuery}
+              onChange={(e) => setHpSearchQuery(e.target.value)}
+              placeholder="Rechercher par nom, email, profession..."
+              className="flex-1 min-w-[200px] px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
+            />
+            <FilterToggle active={hpShowPendingEmail} label="non confirmés" count={hpPendingEmailCount} color="orange" onToggle={() => setHpShowPendingEmail(!hpShowPendingEmail)} />
+            <FilterToggle active={hpShowAccepted} label="acceptés" count={hpAcceptedCount} color="green" onToggle={() => setHpShowAccepted(!hpShowAccepted)} />
+            <FilterToggle active={hpShowRefused} label="refusés" count={hpRefusedCount} color="red" onToggle={() => setHpShowRefused(!hpShowRefused)} />
+          </div>
+          {filteredHealthPro.length === 0 && (
             <p className="text-sm text-text-secondary py-8 text-center">
-              Aucune candidature.
+              {healthProApps.length === 0
+                ? "Aucune candidature."
+                : "Aucun résultat pour cette recherche."}
             </p>
           )}
-          {healthProApps.map((app) => (
+          {filteredHealthPro.map((app) => (
             <div
               key={app.id}
               className="border border-gray-200 rounded-xl p-4 hover:border-primary/50 cursor-pointer transition-colors bg-white"

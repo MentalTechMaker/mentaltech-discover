@@ -176,6 +176,20 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
                 Le Collectif MentalTech réunit des solutions engagées pour une
                 santé mentale accessible et de qualité.
               </p>
+              <ul className="space-y-1.5 text-sm text-amber-800 mb-4">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                  Visibilité auprès des prescripteurs membres
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                  Adhésion au collectif et réseau d'entreprises
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500 font-bold text-lg leading-5">&#10003;</span>
+                  Label MentalTech et communication conjointe
+                </li>
+              </ul>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"

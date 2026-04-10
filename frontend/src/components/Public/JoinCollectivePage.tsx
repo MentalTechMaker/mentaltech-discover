@@ -112,14 +112,6 @@ export const JoinCollectivePage: React.FC = () => {
                   &#10003;
                 </span>
                 <span className="text-text-primary font-medium">
-                  Évaluation selon le protocole MentalTech (5 piliers)
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-amber-500 font-bold text-lg leading-5">
-                  &#10003;
-                </span>
-                <span className="text-text-primary font-medium">
                   Visibilité auprès de {publicStats?.prescribers || "25"}+
                   prescripteurs
                 </span>
