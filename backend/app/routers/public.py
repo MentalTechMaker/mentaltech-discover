@@ -139,7 +139,7 @@ async def public_upload_logo(request: Request, file: UploadFile = File(...)):
 
 
 @router.post("/submissions", status_code=status.HTTP_201_CREATED)
-@limiter.limit("3/hour")
+@limiter.limit("10/hour")
 async def create_public_submission(
     data: PublicSubmissionCreate,
     request: Request,
@@ -267,7 +267,7 @@ async def confirm_submission(
 
 
 @router.post("/health-pro/apply", status_code=status.HTTP_201_CREATED)
-@limiter.limit("3/hour")
+@limiter.limit("10/hour")
 async def apply_health_pro(
     data: HealthProfApplicationCreate,
     request: Request,
