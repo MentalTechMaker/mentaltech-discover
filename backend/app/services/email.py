@@ -276,7 +276,7 @@ async def send_submission_received_admin_email(
         admin_url=admin_url,
     )
     message = MessageSchema(
-        subject=f"Nouvelle soumission : {product_name or contact_name} - MentalTech Discover",
+        subject=f"[MTD] Nouvelle soumission : {product_name or contact_name}",
         recipients=[admin_email],
         body=html,
         subtype=MessageType.html,
@@ -375,12 +375,39 @@ async def send_health_pro_admin_notification(
         admin_url=admin_url,
     )
     message = MessageSchema(
-        subject=f"Nouvelle candidature professionnelle : {name} - MentalTech Discover",
+        subject=f"[MTD] Nouvelle candidature professionnelle : {name}",
         recipients=[admin_email],
         body=html,
         subtype=MessageType.html,
     )
     return await _send_or_write(message, [admin_email], html, "Health pro admin notification")
+
+async def send_prescriber_pending_admin_email(
+    admin_email: str,
+    name: str,
+    email: str,
+    profession: str | None,
+    rpps_adeli: str | None,
+    organization: str | None,
+) -> bool:
+    admin_url = f"{settings.FRONTEND_URL}/admin"
+    template = jinja_env.get_template("admin_prescriber_pending.html")
+    html = template.render(
+        name=name,
+        email=email,
+        profession=profession,
+        rpps_adeli=rpps_adeli,
+        organization=organization,
+        admin_url=admin_url,
+    )
+    message = MessageSchema(
+        subject=f"[MTD] Nouveau prescripteur à valider : {name}",
+        recipients=[admin_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    return await _send_or_write(message, [admin_email], html, "Prescriber pending admin notification")
+
 
 async def send_reset_password_email(email: str, name: str, user_id: str) -> bool:
     token = create_email_token(user_id, "reset_password", expire_hours=1)

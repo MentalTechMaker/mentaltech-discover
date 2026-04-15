@@ -14,6 +14,7 @@ from fastapi import (
     status,
 )
 from fastapi.responses import JSONResponse
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..utils import to_dict, validate_magic_bytes, public_submission_to_response
@@ -64,6 +65,46 @@ def _check_bot(honeypot: str, submitted_at_ts: float) -> None:
 _to_response = public_submission_to_response
 
 
+def _populate_submission_fields(
+    submission: PublicSubmission, data: PublicSubmissionCreate
+) -> None:
+    submission.contact_name = data.contact_name
+    submission.contact_email = str(data.contact_email)
+    submission.name = data.name
+    submission.tagline = data.tagline
+    submission.description = data.description
+    submission.url = data.url
+    submission.linkedin = data.linkedin
+    submission.logo = data.logo
+    submission.tags = data.tags
+    submission.audience = data.audience
+    submission.problems_solved = data.problems_solved
+    submission.audience_priorities = to_dict(data.audience_priorities)
+    submission.problems_priorities = to_dict(data.problems_priorities)
+    submission.preference_match = data.preference_match
+    submission.pricing_model = data.pricing_model
+    submission.pricing_amount = data.pricing_amount
+    submission.pricing_details = data.pricing_details
+    submission.protocol_answers = data.protocol_answers
+    submission.collectif_requested = data.collectif_requested
+    submission.collectif_ca_range = data.collectif_ca_range
+    submission.collectif_contact_email = (
+        str(data.collectif_contact_email) if data.collectif_contact_email else None
+    )
+
+
+def _populate_health_pro_fields(
+    application: HealthProfApplication, data: HealthProfApplicationCreate
+) -> None:
+    application.name = data.name
+    application.email = str(data.email)
+    application.profession = data.profession
+    application.rpps_adeli = data.rpps_adeli
+    application.organization = data.organization
+    application.motivation = data.motivation
+    application.linkedin = data.linkedin
+
+
 @router.post("/upload-logo")
 @limiter.limit("5/hour")
 async def public_upload_logo(request: Request, file: UploadFile = File(...)):
@@ -106,34 +147,33 @@ async def create_public_submission(
 ):
     _check_bot(data.honeypot, data.submitted_at_ts)
 
-    submission = PublicSubmission(
-        contact_name=data.contact_name,
-        contact_email=str(data.contact_email),
-        status="pending_email",
-        email_confirmed=False,
-        name=data.name,
-        tagline=data.tagline,
-        description=data.description,
-        url=data.url,
-        linkedin=data.linkedin,
-        logo=data.logo,
-        tags=data.tags,
-        audience=data.audience,
-        problems_solved=data.problems_solved,
-        audience_priorities=to_dict(data.audience_priorities),
-        problems_priorities=to_dict(data.problems_priorities),
-        preference_match=data.preference_match,
-        pricing_model=data.pricing_model,
-        pricing_amount=data.pricing_amount,
-        pricing_details=data.pricing_details,
-        protocol_answers=data.protocol_answers,
-        collectif_requested=data.collectif_requested,
-        collectif_ca_range=data.collectif_ca_range,  # Stored temporarily for admin review, purged on approval/rejection
-        collectif_contact_email=(
-            str(data.collectif_contact_email) if data.collectif_contact_email else None
-        ),
+    email_lower = str(data.contact_email).lower().strip()
+    name_lower = (data.name or "").lower().strip()
+
+    existing = (
+        db.query(PublicSubmission)
+        .filter(
+            func.lower(func.trim(PublicSubmission.contact_email)) == email_lower,
+            func.lower(func.trim(func.coalesce(PublicSubmission.name, ""))) == name_lower,
+        )
+        .first()
     )
-    db.add(submission)
+
+    if existing and existing.email_confirmed:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cette solution a déjà été soumise avec cette adresse email. Contactez-nous si besoin.",
+        )
+
+    if existing:
+        submission = existing
+    else:
+        # collectif_ca_range stored temporarily for admin review, purged on approval/rejection
+        submission = PublicSubmission(status="pending_email", email_confirmed=False)
+        db.add(submission)
+
+    _populate_submission_fields(submission, data)
+
     db.commit()
     db.refresh(submission)
 
@@ -151,7 +191,7 @@ async def create_public_submission(
     )
 
     return {
-        "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
+        "message": f"Email de confirmation {'renvoyé' if existing else 'envoyé'}. Vérifiez votre boîte mail.",
         "id": str(submission.id),
         "email_sent": email_sent,
     }
@@ -235,18 +275,28 @@ async def apply_health_pro(
 ):
     _check_bot(data.honeypot, data.submitted_at_ts)
 
-    application = HealthProfApplication(
-        name=data.name,
-        email=str(data.email),
-        profession=data.profession,
-        rpps_adeli=data.rpps_adeli,
-        organization=data.organization,
-        motivation=data.motivation,
-        linkedin=data.linkedin,
-        status="pending_email",
-        email_confirmed=False,
+    email_lower = str(data.email).lower().strip()
+
+    existing = (
+        db.query(HealthProfApplication)
+        .filter(func.lower(func.trim(HealthProfApplication.email)) == email_lower)
+        .first()
     )
-    db.add(application)
+
+    if existing and existing.email_confirmed:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Une candidature a déjà été déposée avec cette adresse email. Contactez-nous si besoin.",
+        )
+
+    if existing:
+        application = existing
+    else:
+        application = HealthProfApplication(status="pending_email", email_confirmed=False)
+        db.add(application)
+
+    _populate_health_pro_fields(application, data)
+
     db.commit()
     db.refresh(application)
 
@@ -263,7 +313,7 @@ async def apply_health_pro(
     )
 
     return {
-        "message": "Email de confirmation envoyé. Vérifiez votre boîte mail.",
+        "message": f"Email de confirmation {'renvoyé' if existing else 'envoyé'}. Vérifiez votre boîte mail.",
         "id": str(application.id),
         "email_sent": email_sent,
     }

@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Cookie,
     Depends,
     HTTPException,
@@ -36,6 +37,7 @@ from ..services.auth import (
 from ..services.email import (
     send_verification_email,
     send_reset_password_email,
+    send_prescriber_pending_admin_email,
     decode_email_token,
 )
 from ..dependencies import get_current_user
@@ -349,7 +351,12 @@ def reset_password(
 
 @router.get("/verify-email")
 @limiter.limit("10/minute")
-def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
+def verify_email(
+    request: Request,
+    token: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     user_id = decode_email_token(token, "verify_email")
     if not user_id:
         raise HTTPException(
@@ -364,8 +371,22 @@ def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
             detail="Utilisateur non trouvé",
         )
 
+    if user.email_verified:
+        return {"message": "Email vérifié avec succès"}
+
     user.email_verified = True
     db.commit()
+
+    if user.role == "prescriber" and not user.is_verified_prescriber:
+        background_tasks.add_task(
+            send_prescriber_pending_admin_email,
+            admin_email=settings.ADMIN_EMAIL,
+            name=user.name,
+            email=user.email,
+            profession=user.profession,
+            rpps_adeli=user.rpps_adeli,
+            organization=user.organization,
+        )
 
     return {"message": "Email vérifié avec succès"}
 
