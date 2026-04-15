@@ -34,6 +34,7 @@ services:
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
       MAIL_SSL_TLS: ${MAIL_SSL_TLS:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-contact@mentaltechmaker.fr}
       DEBUG: ${DEBUG:-false}
     volumes:
       - ./dev-emails:/tmp/mentaltech_emails
