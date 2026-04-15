@@ -258,6 +258,7 @@ export const SubmissionForm: React.FC<Props> = ({
             setRgpdConsent={form.setRgpdConsent}
             handlePublicSubmit={form.handlePublicSubmit}
             handleAdminCreateAndPublish={form.handleAdminCreateAndPublish}
+            error={publicMode ? form.error : undefined}
             submissionId={submissionId}
             editProductId={editProduct?.id}
           />

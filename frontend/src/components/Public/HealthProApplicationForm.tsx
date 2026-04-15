@@ -312,15 +312,6 @@ export const HealthProApplicationForm: React.FC = () => {
             />
           </div>
 
-          {error && (
-            <div
-              role="alert"
-              className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            >
-              {error}
-            </div>
-          )}
-
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -342,6 +333,14 @@ export const HealthProApplicationForm: React.FC = () => {
           </label>
 
           <div className="pt-2">
+            {error && (
+              <div
+                role="alert"
+                className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+              >
+                {error}
+              </div>
+            )}
             <button
               type="submit"
               disabled={submitting || !consent}

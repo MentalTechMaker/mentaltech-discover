@@ -28,6 +28,8 @@ export interface StepSummaryProps {
   // Submission
   handlePublicSubmit: () => void;
   handleAdminCreateAndPublish: () => void;
+  // Error near submit button (duplicate submission, network, etc.)
+  error?: string;
   // Admin button label
   submissionId?: string;
   editProductId?: string;
@@ -55,6 +57,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
   setRgpdConsent,
   handlePublicSubmit,
   handleAdminCreateAndPublish,
+  error,
   submissionId,
   editProductId,
 }) => {
@@ -317,6 +320,14 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
           </label>
 
           <div className="border-t border-gray-200 pt-4">
+            {error && (
+              <div
+                role="alert"
+                className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+              >
+                {error}
+              </div>
+            )}
             <button
               onClick={handlePublicSubmit}
               disabled={saving || !rgpdConsent}
