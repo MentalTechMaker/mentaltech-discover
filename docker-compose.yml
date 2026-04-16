@@ -1,15 +1,84 @@
 services:
-  mentaltech-discover:
+  db:
+    image: postgres:16-alpine
+    container_name: mentaltech-discover-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mentaltech}
+      POSTGRES_USER: ${POSTGRES_USER:-mentaltech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mentaltech_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mentaltech}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - db-network
+
+  backend:
+    build: ./backend
+    container_name: mentaltech-discover-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://mentaltech:mentaltech_secret@db:5432/mentaltech}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY env var is required}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3033,http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3033}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@mentaltechmaker.fr}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-MentalTech Discover}
+      MAIL_SERVER: ${MAIL_SERVER:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      MAIL_SSL_TLS: ${MAIL_SSL_TLS:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-contact@mentaltechmaker.fr}
+      DEBUG: ${DEBUG:-false}
+    volumes:
+      - ./dev-emails:/tmp/mentaltech_emails
+      - uploads_data:/tmp/uploads
+      - logs_data:/var/log/mentaltech
+    depends_on:
+      db:
+        condition: service_healthy
+    # Port 8000 non exposé publiquement - seul le réseau interne Docker est utilisé
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - db-network
+      - frontend-network
+
+  frontend:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: mentaltech-discover
+    container_name: mentaltech-discover-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "3033:8080"
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-    # Sécurité: Limiter les ressources
+    # Securite: Limiter les ressources
     deploy:
       resources:
         limits:
@@ -18,20 +87,20 @@ services:
         reservations:
           cpus: "0.5"
           memory: 256M
-    # Sécurité: Capacités Linux limitées
+    # Securite: Capacites Linux limitees
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    # Sécurité: Lecture seule du système de fichiers (sauf /tmp et cache)
+    # Securite: Lecture seule du systeme de fichiers (sauf /tmp et cache)
     read_only: true
     tmpfs:
       - /tmp:mode=1777
       - /var/cache/nginx:uid=101,gid=101
       - /var/run:uid=101,gid=101
-    # Sécurité: Empêcher l'escalade de privilèges
+    # Securite: Empecher l'escalade de privileges
     security_opt:
       - no-new-privileges:true
     healthcheck:
@@ -42,15 +111,57 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:8080/health",
+          "http://127.0.0.1:8080/health",
         ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
-      - mentaltech-network
+      - frontend-network
+
+  backup:
+    image: postgres:16-alpine
+    container_name: mentaltech-discover-backup
+    entrypoint: ["/bin/sh", "/scripts/docker-backup-entrypoint.sh"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mentaltech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mentaltech_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-mentaltech}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
+      BACKUP_CRON: ${BACKUP_CRON:-0 3 * * *}
+      BACKUP_ENCRYPT_KEY: ${BACKUP_ENCRYPT_KEY:-}
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups_data:/backups
+      - uploads_data:/uploads:ro
+      - logs_data:/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - db-network
+
+volumes:
+  postgres_data:
+  uploads_data:
+  logs_data:
+  backups_data:
 
 networks:
-  mentaltech-network:
+  # Reseau DB : seuls backend et backup peuvent joindre la base
+  db-network:
+    driver: bridge
+  # Reseau frontend : seuls backend et frontend communiquent
+  frontend-network:
     driver: bridge

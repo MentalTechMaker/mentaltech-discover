@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .info-block { background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 16px 0; }
+        .info-row { margin-bottom: 8px; }
+        .info-label { font-weight: 600; color: #555; }
+        .btn { display: inline-block; background-color: #4a90e2; color: white !important; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #2c3e50;">Nouvelle candidature professionnelle de santé</h2>
+            <p>Un professionnel de santé souhaite rejoindre le Collectif MentalTech.</p>
+            <div class="info-block">
+                <div class="info-row">
+                    <span class="info-label">Nom :</span> {{ name }}
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email :</span> <a href="mailto:{{ email }}">{{ email }}</a>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Profession :</span> {{ profession }}
+                </div>
+                {% if rpps_adeli %}
+                <div class="info-row">
+                    <span class="info-label">RPPS / ADELI :</span> {{ rpps_adeli }}
+                </div>
+                {% endif %}
+                {% if organization %}
+                <div class="info-row">
+                    <span class="info-label">Établissement :</span> {{ organization }}
+                </div>
+                {% endif %}
+                {% if motivation %}
+                <div class="info-row">
+                    <span class="info-label">Motivation :</span>
+                    <p style="margin: 4px 0 0 0;">{{ motivation }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <a href="{{ admin_url }}" class="btn" style="color: white;">Voir dans le panel admin</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover - Administration</p>
+        </div>
+    </div>
+</body>
+</html>

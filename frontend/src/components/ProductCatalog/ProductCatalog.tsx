@@ -1,0 +1,360 @@
+import React, { useState, useMemo, useEffect } from "react";
+import { useProductsStore } from "../../store/useProductsStore";
+import { useAppStore } from "../../store/useAppStore";
+import { ProductCatalogCard } from "./ProductCatalogCard";
+import { FilterSection } from "./FilterSection";
+import { setPageMeta, setCanonical } from "../../utils/meta";
+
+const LAUNCH_THRESHOLD = 10;
+
+export interface Filters {
+  search: string;
+  audience: string[];
+  problemsSolved: string[];
+  pricingModel: string[];
+  segment: "all" | "particulier" | "company" | "health";
+}
+
+const INSTITUTIONAL_AUDIENCES = new Set(["entreprise", "etablissement-sante"]);
+
+export const ProductCatalog: React.FC = () => {
+  const setView = useAppStore((s) => s.setView);
+
+  useEffect(() => {
+    setPageMeta(
+      "Catalogue des solutions",
+      "Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience et tarif.",
+    );
+    setCanonical("/catalogue");
+  }, []);
+
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    audience: [],
+    problemsSolved: [],
+    pricingModel: [],
+    segment: "all",
+  });
+
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"name" | "pricing">("name");
+
+  const {
+    products: allProducts,
+    isLoading,
+    error: loadError,
+  } = useProductsStore();
+
+  const filterOptions = useMemo(() => {
+    const problems = new Set<string>();
+    const pricingModels = new Set<string>();
+
+    allProducts.forEach((product) => {
+      product.problemsSolved.forEach((prob) => problems.add(prob));
+      if (product.pricing?.model) {
+        pricingModels.add(product.pricing.model);
+      }
+    });
+
+    return {
+      problems: Array.from(problems).sort(),
+      pricingModels: Array.from(pricingModels).sort(),
+    };
+  }, [allProducts]);
+
+  const filteredProducts = useMemo(() => {
+    const filtered = allProducts.filter((product) => {
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const matchesSearch =
+          product.name.toLowerCase().includes(searchLower) ||
+          product.description.toLowerCase().includes(searchLower) ||
+          product.tagline.toLowerCase().includes(searchLower) ||
+          product.tags.some((tag) => tag.toLowerCase().includes(searchLower));
+        if (!matchesSearch) return false;
+      }
+
+      if (filters.segment === "company") {
+        if (!product.audience.includes("entreprise")) return false;
+      } else if (filters.segment === "health") {
+        if (!product.audience.includes("etablissement-sante")) return false;
+      } else if (filters.segment === "particulier") {
+        if (
+          product.audience.length > 0 &&
+          product.audience.every((a) => INSTITUTIONAL_AUDIENCES.has(a))
+        )
+          return false;
+      }
+
+      if (filters.audience.length > 0 && filters.segment === "particulier") {
+        const hasMatchingAudience = filters.audience.some((aud) =>
+          product.audience.includes(aud),
+        );
+        if (!hasMatchingAudience) return false;
+      }
+
+      if (filters.problemsSolved.length > 0) {
+        const hasMatchingProblem = filters.problemsSolved.some((prob) =>
+          product.problemsSolved.includes(prob),
+        );
+        if (!hasMatchingProblem) return false;
+      }
+
+      if (filters.pricingModel.length > 0) {
+        if (
+          !product.pricing?.model ||
+          !filters.pricingModel.includes(product.pricing.model)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "name":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name, "fr"));
+      case "pricing": {
+        const pricingOrder: Record<string, number> = {
+          free: 0,
+          freemium: 1,
+          subscription: 2,
+          "per-session": 3,
+          enterprise: 4,
+          custom: 5,
+        };
+        return sorted.sort((a, b) => {
+          const orderA = pricingOrder[a.pricing?.model || "custom"] ?? 99;
+          const orderB = pricingOrder[b.pricing?.model || "custom"] ?? 99;
+          return orderA - orderB;
+        });
+      }
+      default:
+        return sorted;
+    }
+  }, [allProducts, filters, sortBy]);
+
+  const handleFilterChange = (key: keyof Filters, value: string | string[]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      search: "",
+      audience: [],
+      problemsSolved: [],
+      pricingModel: [],
+      segment: "all",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
+        <p className="text-text-secondary text-lg">
+          Chargement des produits...
+        </p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
+        <div className="text-center">
+          <p className="text-2xl mb-3">⚠️</p>
+          <p className="text-text-primary font-semibold mb-1">
+            Impossible de charger les produits
+          </p>
+          <p className="text-text-secondary text-sm">{loadError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (allProducts.length === 0) {
+    return (
+      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-16">
+        <div className="max-w-lg w-full text-center space-y-6">
+          <div className="text-6xl">🔨</div>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary mb-3">
+              Catalogue en cours de construction
+            </h1>
+            <p className="text-text-secondary leading-relaxed">
+              Nous référençons actuellement les premières solutions du
+              catalogue. Les éditeurs sont en train de soumettre leurs
+              solutions.
+            </p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-left">
+            <p className="text-sm font-semibold text-blue-900 mb-1">
+              Vous êtes éditeur de solution santé mentale ?
+            </p>
+            <p className="text-sm text-blue-800">
+              Soumettez votre solution en 15 minutes pour être parmi les
+              premiers référencés.
+            </p>
+          </div>
+          <button
+            onClick={() => setView("public-submission")}
+            className="inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+          >
+            <span>➕</span>
+            <span>Soumettre votre solution</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
+            Catalogue des solutions de santé mentale
+          </h1>
+          <p className="text-lg text-text-secondary">
+            Explorez l'écosystème complet des{" "}
+            <strong>solutions numériques en santé mentale</strong> <br />
+            avec des filtres avancés pour trouver ce qui vous correspond.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 mb-6">
+          <div className="bg-blue-50 px-4 py-2 rounded-lg border-2 border-primary border-opacity-20">
+            <span className="font-bold text-primary text-lg">
+              {filteredProducts.length}
+            </span>
+            <span className="text-text-secondary ml-2">
+              produit{filteredProducts.length > 1 ? "s" : ""} trouvé
+              {filteredProducts.length > 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="bg-green-50 px-4 py-2 rounded-lg border-2 border-secondary border-opacity-20">
+            <span className="font-bold text-secondary text-lg">
+              {allProducts.length}
+            </span>
+            <span className="text-text-secondary ml-2">total</span>
+          </div>
+        </div>
+
+        {allProducts.length < LAUNCH_THRESHOLD && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="font-semibold text-amber-900 text-sm">
+                Catalogue en cours de construction - {allProducts.length}{" "}
+                solution{allProducts.length > 1 ? "s" : ""} référencée
+                {allProducts.length > 1 ? "s" : ""}
+              </p>
+              <p className="text-amber-800 text-xs mt-0.5">
+                Nous enrichissons le catalogue chaque semaine. Revenez bientôt
+                pour plus de solutions.
+              </p>
+            </div>
+            <button
+              onClick={() => setView("public-submission")}
+              className="flex-shrink-0 text-xs font-bold bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors whitespace-nowrap"
+            >
+              ➕ Soumettre une solution
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-80 flex-shrink-0">
+            <FilterSection
+              filters={filters}
+              filterOptions={filterOptions}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-4 gap-4">
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="sort-select"
+                  className="text-sm font-semibold text-text-secondary whitespace-nowrap"
+                >
+                  Trier par :
+                </label>
+                <select
+                  id="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="px-4 py-2 bg-white border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none text-sm font-medium text-text-primary"
+                >
+                  <option value="name">Nom (A-Z)</option>
+                  <option value="pricing">Prix (gratuit d'abord)</option>
+                </select>
+              </div>
+
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-1 hidden sm:flex gap-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`px-4 py-2 rounded ${
+                    viewMode === "grid"
+                      ? "bg-primary text-white"
+                      : "text-text-secondary hover:bg-gray-100"
+                  } transition-colors`}
+                  aria-label="Vue en grille"
+                >
+                  <span className="text-xl">⊞</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`px-4 py-2 rounded ${
+                    viewMode === "list"
+                      ? "bg-primary text-white"
+                      : "text-text-secondary hover:bg-gray-100"
+                  } transition-colors`}
+                  aria-label="Vue en liste"
+                >
+                  <span className="text-xl">☰</span>
+                </button>
+              </div>
+            </div>
+
+            {filteredProducts.length === 0 ? (
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-12 text-center">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-2xl font-bold text-text-primary mb-2">
+                  Aucun produit trouvé
+                </h3>
+                <p className="text-text-secondary mb-6">
+                  Essayez de modifier vos filtres pour voir plus de résultats
+                </p>
+                <button
+                  onClick={clearFilters}
+                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 gap-6"
+                    : "space-y-4"
+                }
+              >
+                {filteredProducts.map((product) => (
+                  <ProductCatalogCard
+                    key={product.id}
+                    product={product}
+                    viewMode={viewMode}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

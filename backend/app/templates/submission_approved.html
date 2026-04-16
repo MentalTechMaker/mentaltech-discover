@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .success-block { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 8px; padding: 16px; margin: 20px 0; }
+        .btn { display: inline-block; background-color: #4a90e2; color: white !important; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #22c55e;">Votre solution a été acceptée !</h2>
+            <p>Bonjour <strong>{{ name }}</strong>,</p>
+            <div class="success-block">
+                <p style="margin: 0;"><strong>{% if product_name %}{{ product_name }}{% else %}Votre solution{% endif %}</strong> est maintenant référencée dans le catalogue MentalTech Discover.</p>
+            </div>
+            <p>Votre solution est désormais visible par les professionnels de santé et les particuliers qui recherchent des solutions en santé mentale.</p>
+            <div style="text-align: center;">
+                <a href="{{ catalog_url }}" class="btn" style="color: white;">Voir le catalogue</a>
+            </div>
+            <p style="font-size: 14px; color: #7f8c8d;">Si vous avez des questions, n'hésitez pas à nous contacter à <a href="mailto:contact@mentaltech.fr">contact@mentaltech.fr</a>.</p>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover - Trouvez votre solution en santé mentale</p>
+            <p style="font-size: 12px; margin-top: 8px;"><a href="{{ frontend_url }}/confidentialite" style="color: #7f8c8d;">Politique de confidentialité</a> | <a href="{{ frontend_url }}/mentions-legales" style="color: #7f8c8d;">Mentions légales</a></p>
+        </div>
+    </div>
+</body>
+</html>

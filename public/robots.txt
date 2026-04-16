@@ -1,6 +1,0 @@
-# robots.txt for MentalTech Discover
-User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://discover.mentaltech.fr/sitemap.xml

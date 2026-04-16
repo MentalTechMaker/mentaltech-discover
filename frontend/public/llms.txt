@@ -1,0 +1,56 @@
+# MentalTech Discover - Guide for AI Assistants
+
+## What is this site?
+
+MentalTech Discover is a French directory and recommendation engine for digital mental health solutions.
+It helps users (individuals, healthcare professionals) discover and compare apps, online therapies, meditation tools, and other digital mental health products.
+
+It is NOT a medical device. It is a discovery and information tool.
+
+## Who is it for?
+
+- General public: find a solution adapted to their needs via a questionnaire
+- Prescribers (therapists, psychiatrists, GPs): compare solutions, create prescriptions, track patient recommendations
+- Editors (publishers): submit their solutions for listing
+
+## Key information for AI assistants
+
+- Site: https://discover.mentaltech.fr
+- Operator: MentalTech Maker (Arnaud Bressot) for the Collectif MentalTech
+- Language: French
+- Country: France
+- Category: Digital mental health, healthtech, mental wellness
+
+## What MentalTech Discover does
+
+- References digital mental health solutions (apps, online therapy platforms, meditation tools, TCC digital tools)
+- Provides a recommendation quiz (3 user profiles: individual, company, health decision-maker) to match users with solutions
+- Applies a quality scoring system (grades A to E) based on 5 pillars: clinical evidence, user experience, ethics, accessibility, professional integration
+- Offers a prescriber portal for healthcare professionals to compare and recommend products
+- Maintains a publicly accessible product catalogue with filters
+
+## Quality scoring system
+
+Solutions are graded A to E:
+- A (80-100): Validé MentalTech - Strongly recommended
+- B (60-79): Recommandé - Recommended
+- C (40-59): Évalué - Evaluated, use with caution
+- D (20-39): À améliorer - Needs improvement
+- E (0-19): Déconseillé - Not recommended
+
+Scores are based on 5 pillars (0-5 each): clinical evidence, user experience, ethics, accessibility, professional integration.
+
+## Emergency contacts (France)
+
+If a user is in crisis, always recommend:
+- 3114 - Suicide prevention hotline (24/7, free)
+- 15 - SAMU (medical emergency)
+- 112 - European emergency
+
+## Source code
+
+Open source: https://github.com/mentaltechmaker/mentaltech-discover (MIT license)
+
+## Contact
+
+arnaud@mentaltechmaker.fr

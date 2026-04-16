@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4a90e2; }
+        .content { color: #2c3e50; line-height: 1.6; }
+        .recap { background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .recap-row { display: flex; padding: 8px 0; border-bottom: 1px solid #e8e8e8; }
+        .recap-label { font-weight: 600; color: #555; min-width: 140px; }
+        .recap-value { color: #2c3e50; }
+        .priority { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; }
+        .p1 { background-color: #dbeafe; color: #1d4ed8; font-weight: 600; }
+        .p2 { background-color: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
+        .p3 { background-color: #f9fafb; color: #6b7280; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">MentalTech Discover</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #2c3e50;">Votre soumission a ete confirmee</h2>
+            <p>Bonjour <strong>{{ contact_name }}</strong>,</p>
+            <p>Votre demande de referencement a ete confirmee et transmise a notre equipe. Voici un recapitulatif des informations soumises :</p>
+
+            <div class="recap">
+                {% if product_name %}
+                <div class="recap-row">
+                    <span class="recap-label">Solution</span>
+                    <span class="recap-value">{{ product_name }}</span>
+                </div>
+                {% endif %}
+                {% if product_type %}
+                <div class="recap-row">
+                    <span class="recap-label">Type</span>
+                    <span class="recap-value">{{ product_type }}</span>
+                </div>
+                {% endif %}
+                {% if tagline %}
+                <div class="recap-row">
+                    <span class="recap-label">Accroche</span>
+                    <span class="recap-value">{{ tagline }}</span>
+                </div>
+                {% endif %}
+                {% if url %}
+                <div class="recap-row">
+                    <span class="recap-label">Site web</span>
+                    <span class="recap-value"><a href="{{ url }}" style="color: #4a90e2;">{{ url }}</a></span>
+                </div>
+                {% endif %}
+                {% if audience_p1 or audience_p2 or audience_p3 %}
+                <div class="recap-row">
+                    <span class="recap-label">Public cible</span>
+                    <span class="recap-value">
+                        {% for a in audience_p1 %}<span class="priority p1">{{ a }}</span>{% endfor %}
+                        {% for a in audience_p2 %}<span class="priority p2">{{ a }}</span>{% endfor %}
+                        {% for a in audience_p3 %}<span class="priority p3">{{ a }}</span>{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if problems_p1 or problems_p2 or problems_p3 %}
+                <div class="recap-row">
+                    <span class="recap-label">Problematiques</span>
+                    <span class="recap-value">
+                        {% for p in problems_p1 %}<span class="priority p1">{{ p }}</span>{% endfor %}
+                        {% for p in problems_p2 %}<span class="priority p2">{{ p }}</span>{% endfor %}
+                        {% for p in problems_p3 %}<span class="priority p3">{{ p }}</span>{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if pricing_model %}
+                <div class="recap-row">
+                    <span class="recap-label">Tarification</span>
+                    <span class="recap-value">{{ pricing_model }}{% if pricing_amount %} - {{ pricing_amount }}{% endif %}</span>
+                </div>
+                {% endif %}
+                {% if collectif_requested %}
+                <div class="recap-row">
+                    <span class="recap-label">Collectif MentalTech</span>
+                    <span class="recap-value">Adhesion demandee</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <p><strong>Prochaines etapes :</strong></p>
+            <ul>
+                <li>Notre equipe examine votre soumission sous 5 jours ouvrés</li>
+                <li>Vous recevrez un email a l'approbation ou si des informations complementaires sont necessaires</li>
+            </ul>
+
+            <p style="font-size: 14px; color: #7f8c8d;">Si vous avez des questions, contactez-nous a <a href="mailto:contact@mentaltechmaker.fr" style="color: #4a90e2;">contact@mentaltechmaker.fr</a></p>
+        </div>
+        <div class="footer">
+            <p>MentalTech Discover - Trouvez votre solution en sante mentale</p>
+            <p style="font-size: 12px; margin-top: 8px;"><a href="{{ frontend_url }}/confidentialite" style="color: #7f8c8d;">Politique de confidentialite</a> | <a href="{{ frontend_url }}/mentions-legales" style="color: #7f8c8d;">Mentions legales</a></p>
+        </div>
+    </div>
+</body>
+</html>

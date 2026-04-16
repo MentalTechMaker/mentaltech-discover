@@ -1,0 +1,30 @@
+# robots.txt for MentalTech Discover
+User-agent: *
+Allow: /
+
+# Private - auth routes
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /nouvelle-prescription
+Disallow: /prescripteur
+Disallow: /reset-password
+Disallow: /check-email
+Disallow: /veille
+Disallow: /profil
+Disallow: /forgot-password
+Disallow: /connexion
+Disallow: /inscription
+
+# Session-only pages (no durable content)
+Disallow: /questionnaire
+Disallow: /resultats
+
+# Prescriptions (private patient links)
+Disallow: /prescription
+
+# Confirmation pages (single-use tokens)
+Disallow: /confirmer-soumission
+Disallow: /confirmer-candidature
+
+# Sitemap
+Sitemap: https://discover.mentaltech.fr/api/sitemap.xml
