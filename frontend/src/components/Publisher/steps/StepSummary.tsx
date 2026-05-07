@@ -217,32 +217,16 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
                       Cotisation annuelle selon votre chiffre d'affaires :
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      <div className="text-xs">
-                        <span className="block font-bold text-text-primary">
-                          500 €
-                        </span>
-                        <span className="text-text-secondary">
-                          CA &lt; 100K
-                        </span>
-                      </div>
-                      <div className="text-xs">
-                        <span className="block font-bold text-text-primary">
-                          500 €
-                        </span>
-                        <span className="text-text-secondary">100K - 500K</span>
-                      </div>
-                      <div className="text-xs">
-                        <span className="block font-bold text-text-primary">
-                          1 000 €
-                        </span>
-                        <span className="text-text-secondary">500K - 1M</span>
-                      </div>
-                      <div className="text-xs">
-                        <span className="block font-bold text-text-primary">
-                          2 000 €
-                        </span>
-                        <span className="text-text-secondary">CA &gt; 1M</span>
-                      </div>
+                      {CA_RANGES.map((r) => (
+                        <div key={r.value} className="text-xs">
+                          <span className="block font-bold text-text-primary">
+                            {r.cotisation.replace("/an", "")}
+                          </span>
+                          <span className="text-text-secondary">
+                            {r.shortLabel}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                     <p className="text-xs text-text-secondary mt-2">
                       La candidature est gratuite. La cotisation est due

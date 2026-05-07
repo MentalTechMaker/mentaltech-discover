@@ -231,7 +231,16 @@ export const JoinCollectivePage: React.FC = () => {
             </div>
             <div className="border-2 border-amber-200 rounded-xl p-5 text-center bg-amber-50/50 hover:border-amber-400 transition-colors">
               <div className="text-sm font-semibold text-amber-700 mb-1">
-                CA &lt; 100 K EUR
+                CA &lt; 10 K EUR
+              </div>
+              <div className="text-3xl font-bold text-text-primary">
+                50 <span className="text-lg font-normal">EUR</span>
+              </div>
+              <div className="text-xs text-text-secondary mt-1">/ an</div>
+            </div>
+            <div className="border-2 border-amber-200 rounded-xl p-5 text-center bg-amber-50/50 hover:border-amber-400 transition-colors">
+              <div className="text-sm font-semibold text-amber-700 mb-1">
+                CA &lt; 500 K EUR
               </div>
               <div className="text-3xl font-bold text-text-primary">
                 500 <span className="text-lg font-normal">EUR</span>
@@ -312,7 +321,7 @@ export const JoinCollectivePage: React.FC = () => {
               },
               {
                 q: "C'est gratuit ?",
-                a: "Le processus de candidature est 100% gratuit. L'adhésion au Collectif MentalTech implique une cotisation annuelle : 50 EUR/an pour les professionnels de santé, et de 500 à 2 000 EUR/an pour les éditeurs selon le chiffre d'affaires.",
+                a: "Le processus de candidature est 100% gratuit. L'adhésion au Collectif MentalTech implique une cotisation annuelle : 50 EUR/an pour les professionnels de santé, et de 50 à 2 000 EUR/an pour les éditeurs selon le chiffre d'affaires.",
               },
               {
                 q: "Ma solution sera-t-elle visible immédiatement ?",
