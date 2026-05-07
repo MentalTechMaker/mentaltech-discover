@@ -34,18 +34,30 @@ export const PRICING_MODELS = [
 ];
 
 export const CA_RANGES = [
-  { value: "less-100k", label: "Moins de 100 000 €", cotisation: "500 €/an" },
   {
-    value: "100k-500k",
-    label: "100 000 € - 500 000 €",
+    value: "less-10k",
+    label: "Moins de 10 000 €",
+    shortLabel: "CA < 10K",
+    cotisation: "50 €/an",
+  },
+  {
+    value: "10k-500k",
+    label: "10 000 € - 500 000 €",
+    shortLabel: "10K - 500K",
     cotisation: "500 €/an",
   },
   {
     value: "500k-1m",
     label: "500 000 € - 1 000 000 €",
+    shortLabel: "500K - 1M",
     cotisation: "1 000 €/an",
   },
-  { value: "more-1m", label: "Plus de 1 000 000 €", cotisation: "2 000 €/an" },
+  {
+    value: "more-1m",
+    label: "Plus de 1 000 000 €",
+    shortLabel: "CA > 1M",
+    cotisation: "2 000 €/an",
+  },
 ];
 
 export const PREFERENCE_OPTIONS = [

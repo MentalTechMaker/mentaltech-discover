@@ -40,6 +40,7 @@ services:
       - ./dev-emails:/tmp/mentaltech_emails
       - uploads_data:/tmp/uploads
       - logs_data:/var/log/mentaltech
+      - ./database/migrations:/app/migrations:ro
     depends_on:
       db:
         condition: service_healthy

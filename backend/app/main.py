@@ -146,6 +146,50 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.on_event("startup")
+def run_pending_migrations():
+    """Applique les migrations SQL non encore exécutées.
+
+    Tracking via la table `schema_migrations` : chaque fichier ne tourne qu'une fois.
+    Sur erreur : fail-fast (raise) pour empêcher l'app de démarrer en état corrompu.
+    """
+    from sqlalchemy import text
+    from .database import engine
+
+    migrations_dir = Path("/app/migrations")
+    if not migrations_dir.exists():
+        return
+
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS schema_migrations ("
+                "filename VARCHAR(255) PRIMARY KEY, "
+                "applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
+            )
+        )
+        applied = {
+            row[0]
+            for row in conn.execute(text("SELECT filename FROM schema_migrations"))
+        }
+
+    for sql_file in sorted(migrations_dir.glob("*.sql")):
+        if sql_file.name in applied:
+            continue
+        try:
+            sql = sql_file.read_text(encoding="utf-8")
+            with engine.begin() as conn:
+                conn.execute(text(sql))
+                conn.execute(
+                    text("INSERT INTO schema_migrations (filename) VALUES (:f)"),
+                    {"f": sql_file.name},
+                )
+            logger.info(f"Migration applied: {sql_file.name}")
+        except Exception:
+            logger.error(f"Migration failed: {sql_file.name}", exc_info=True)
+            raise
+
+
+@app.on_event("startup")
 def cleanup_expired_prescriptions():
     """RGPD: delete prescriptions expired for more than 7 days."""
     from .database import SessionLocal
