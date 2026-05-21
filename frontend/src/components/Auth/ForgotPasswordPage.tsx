@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { forgotPassword } from "../../api/auth";
+import { useNoindex } from "../../hooks/useNoindex";
 
 export const ForgotPasswordPage: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
 
   const [email, setEmail] = useState("");

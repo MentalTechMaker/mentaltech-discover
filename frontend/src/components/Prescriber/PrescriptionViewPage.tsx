@@ -8,10 +8,12 @@ import { useAppStore } from "../../store/useAppStore";
 import { sanitizeUrl } from "../../utils/security";
 import { getLabelInfo } from "../../utils/scoring";
 import { SITE_URL } from "../../utils/meta";
+import { useNoindex } from "../../hooks/useNoindex";
 
 import { pricingLabels } from "../../data/labels";
 
 export const PrescriptionViewPage: React.FC = () => {
+  useNoindex();
   const token = useAppStore((s) => s.selectedProductId);
   const [data, setData] = useState<PrescriptionPublicResponse | null>(null);
   const [loading, setLoading] = useState(true);

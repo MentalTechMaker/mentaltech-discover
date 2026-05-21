@@ -1,20 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppStore } from "../store/useAppStore";
-import { setPageMeta, setCanonical } from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 
 export const Privacy: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
-  useEffect(() => {
-    setPageMeta(
-      "Politique de confidentialité",
-      "Découvrez comment MentalTech Discover protège vos données. Aucune collecte pour les visiteurs, hébergement en France, conformité RGPD.",
-    );
-    setCanonical("/confidentialite");
-  }, []);
-
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      <PageMeta
+        title="Politique de confidentialité"
+        description="Découvrez comment MentalTech Discover protège vos données. Aucune collecte pour les visiteurs, hébergement en France, conformité RGPD."
+        canonical="/confidentialite"
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
@@ -367,5 +365,6 @@ export const Privacy: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };

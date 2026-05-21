@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { useAuthStore } from "../store/useAuthStore";
@@ -12,14 +13,8 @@ import {
   deleteNote as apiDeleteNote,
 } from "../api/prescriber";
 import type { NoteResponse } from "../api/prescriber";
-import {
-  setPageMeta,
-  setCanonical,
-  setOgImage,
-  injectJsonLd,
-  removeJsonLd,
-  SITE_URL,
-} from "../utils/meta";
+import { setRobotsNoindex, SITE_URL } from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 
 import {
   pricingLabels,
@@ -29,7 +24,12 @@ import {
 } from "../data/labels";
 
 export const ProductPage: React.FC = () => {
-  const selectedProductId = useAppStore((s) => s.selectedProductId);
+  // URL is source of truth for the product id (works in SSG; store sync via
+  // RouteWrapper happens during render and can lag behind useSyncExternalStore
+  // snapshots on the first SSR pass).
+  const { productId: urlProductId } = useParams<{ productId: string }>();
+  const storeProductId = useAppStore((s) => s.selectedProductId);
+  const selectedProductId = urlProductId ?? storeProductId;
   const setView = useAppStore((s) => s.setView);
   const products = useProductsStore((s) => s.products);
   const isAdmin = useAuthStore((s) => s.isAdmin);
@@ -53,58 +53,61 @@ export const ProductPage: React.FC = () => {
 
   const product = products.find((p) => p.id === selectedProductId);
 
+  const productSchemas = product
+    ? [
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: product.name,
+          description: product.description,
+          applicationCategory: "HealthApplication",
+          inLanguage: "fr",
+          url: product.url,
+          offers: product.pricing
+            ? {
+                "@type": "Offer",
+                price: product.pricing.model === "free" ? "0" : undefined,
+                priceCurrency: "EUR",
+                description:
+                  product.pricing.amount || product.pricing.model,
+              }
+            : undefined,
+        } as Record<string, unknown>,
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Accueil",
+              item: `${SITE_URL}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Catalogue",
+              item: `${SITE_URL}/catalogue`,
+            },
+            { "@type": "ListItem", position: 3, name: product.name },
+          ],
+        } as Record<string, unknown>,
+      ]
+    : undefined;
+
+  const productOgImage = product?.logo
+    ? product.logo.startsWith("http")
+      ? product.logo
+      : `${SITE_URL}${product.logo}`
+    : undefined;
+
+  // Soft-404 fix: signal noindex to crawlers when the product is invisible/missing,
+  // so deep links to retired solutions are not indexed by Google.
   useEffect(() => {
-    if (!product) return;
-    const desc = product.tagline || product.description?.slice(0, 155) || "";
-    setPageMeta(product.name, desc);
-    setCanonical(`/solution/${product.id}`);
-    if (product.logo) {
-      const logoUrl = product.logo.startsWith("http")
-        ? product.logo
-        : `${SITE_URL}${product.logo}`;
-      setOgImage(logoUrl);
-    }
-    injectJsonLd("product-schema", {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: product.name,
-      description: product.description,
-      applicationCategory: "HealthApplication",
-      inLanguage: "fr",
-      url: product.url,
-      offers: product.pricing
-        ? {
-            "@type": "Offer",
-            price: product.pricing.model === "free" ? "0" : undefined,
-            priceCurrency: "EUR",
-            description: product.pricing.amount || product.pricing.model,
-          }
-        : undefined,
-    });
-    injectJsonLd("breadcrumb-schema", {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Accueil",
-          item: `${SITE_URL}/`,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Catalogue",
-          item: `${SITE_URL}/catalogue`,
-        },
-        { "@type": "ListItem", position: 3, name: product.name },
-      ],
-    });
-    return () => {
-      removeJsonLd("product-schema");
-      removeJsonLd("breadcrumb-schema");
-    };
-  }, [product]);
+    if (!selectedProductId) return;
+    if (product) return;
+    return setRobotsNoindex();
+  }, [selectedProductId, product]);
 
   useEffect(() => {
     if (!canFavorite || !selectedProductId) return;
@@ -202,9 +205,19 @@ export const ProductPage: React.FC = () => {
   }
 
   const safeUrl = sanitizeUrl(product.url);
+  const productDesc =
+    product.tagline || product.description?.slice(0, 155) || "";
 
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      <PageMeta
+        title={product.name}
+        description={productDesc}
+        canonical={`/solution/${product.id}`}
+        ogImage={productOgImage}
+        jsonLd={productSchemas}
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {product.isDemo && (
           <div className="flex items-start gap-3 px-4 py-3 mb-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-sm">
@@ -255,6 +268,7 @@ export const ProductPage: React.FC = () => {
                   src={product.logo}
                   alt={`Logo ${product.name}`}
                   className="w-full h-full object-contain p-4"
+                  loading="lazy"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
@@ -538,5 +552,6 @@ export const ProductPage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };

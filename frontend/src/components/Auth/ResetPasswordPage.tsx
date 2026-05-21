@@ -3,8 +3,10 @@ import { useAppStore } from "../../store/useAppStore";
 import { resetPassword } from "../../api/auth";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
 import { validatePassword } from "../../utils/password";
+import { useNoindex } from "../../hooks/useNoindex";
 
 export const ResetPasswordPage: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
 
   const [newPassword, setNewPassword] = useState("");

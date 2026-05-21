@@ -1,11 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
-import {
-  setPageMeta,
-  setCanonical,
-  injectJsonLd,
-  removeJsonLd,
-} from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 
 interface FAQItem {
   question: string;
@@ -63,24 +58,6 @@ const FAQ_SCHEMA_DATA = [
 export const FAQ: React.FC = () => {
   const { setView } = useAppStore();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  useEffect(() => {
-    setPageMeta(
-      "FAQ - Questions sur les solutions de santé mentale numérique",
-      "Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur.",
-    );
-    setCanonical("/faq");
-    injectJsonLd("faq-schema", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: FAQ_SCHEMA_DATA.map(({ q, a }) => ({
-        "@type": "Question",
-        name: q,
-        acceptedAnswer: { "@type": "Answer", text: a },
-      })),
-    });
-    return () => removeJsonLd("faq-schema");
-  }, []);
 
   const faqData: FAQItem[] = [
     {
@@ -609,12 +586,27 @@ export const FAQ: React.FC = () => {
   const categories = Array.from(new Set(faqData.map((item) => item.category)));
 
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
-            ❓ Questions fréquentes
-          </h1>
+    <>
+      <PageMeta
+        title="FAQ - Questions sur les solutions de santé mentale numérique"
+        description="Toutes les réponses sur MentalTech Discover : sélection des solutions, algorithme, confidentialité, aspect médical, espace prescripteur."
+        canonical="/faq"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ_SCHEMA_DATA.map(({ q, a }) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        }}
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
+              ❓ Questions fréquentes
+            </h1>
           <p className="text-xl text-text-secondary">
             Tout ce que vous devez savoir sur MentalTech Discover
           </p>
@@ -722,7 +714,8 @@ export const FAQ: React.FC = () => {
             </a>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

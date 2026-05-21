@@ -183,4 +183,5 @@ export type AppView =
   | "health-pro-application"
   | "confirm-submission"
   | "confirm-health-pro"
-  | "join-collective";
+  | "join-collective"
+  | "committee";

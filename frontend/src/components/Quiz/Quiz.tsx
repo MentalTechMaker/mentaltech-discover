@@ -16,8 +16,10 @@ import { ProgressBar } from "./ProgressBar";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { analytics } from "../../lib/analytics";
 import { setPageMeta, setCanonical } from "../../utils/meta";
+import { useNoindex } from "../../hooks/useNoindex";
 
 export const Quiz: React.FC = () => {
+  useNoindex();
   const {
     currentQuestionIndex,
     answers,

@@ -1,20 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppStore } from "../store/useAppStore";
-import { setPageMeta, setCanonical } from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 
 export const LegalNotice: React.FC = () => {
   const setView = useAppStore((state) => state.setView);
 
-  useEffect(() => {
-    setPageMeta(
-      "Mentions légales",
-      "Mentions légales de MentalTech Discover : éditeur, hébergeur, conditions d'utilisation et informations juridiques.",
-    );
-    setCanonical("/mentions-legales");
-  }, []);
-
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      <PageMeta
+        title="Mentions légales"
+        description="Mentions légales de MentalTech Discover : éditeur, hébergeur, conditions d'utilisation et informations juridiques."
+        canonical="/mentions-legales"
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
@@ -365,5 +363,6 @@ export const LegalNotice: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };

@@ -1,20 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppStore } from "../store/useAppStore";
-import { setPageMeta, setCanonical } from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 
 export const About: React.FC = () => {
   const { setView } = useAppStore();
 
-  useEffect(() => {
-    setPageMeta(
-      "Notre démarche - Analyse des solutions de santé mentale numérique",
-      "Découvrez comment MentalTech Discover sélectionne et analyse les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers.",
-    );
-    setCanonical("/notre-demarche");
-  }, []);
-
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      <PageMeta
+        title="Notre démarche - Analyse des solutions de santé mentale numérique"
+        description="Découvrez comment MentalTech Discover sélectionne et analyse les solutions de santé mentale numérique en France. Protocole transparent, 5 piliers."
+        canonical="/notre-demarche"
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="text-center space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary">
@@ -63,7 +61,7 @@ export const About: React.FC = () => {
               téléconsultation, méditation, thérapies numériques, réalité
               virtuelle, sevrage d'addictions, et bien plus.
             </p>
-            <div className="bg-blue-50 border-l-4 border-primary p-4 rounded">
+            <div className="bg-blue-50 border-l-4 border-primary p-4 rounded space-y-2">
               <p className="font-semibold text-primary">
                 🌐 En savoir plus sur le Collectif MentalTech :
               </p>
@@ -71,10 +69,16 @@ export const About: React.FC = () => {
                 href="https://mentaltech.fr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
+                className="block text-primary hover:underline font-medium"
               >
                 → mentaltech.fr
               </a>
+              <button
+                onClick={() => setView("committee")}
+                className="block text-primary hover:underline font-medium text-left"
+              >
+                → Découvrir le bureau du Collectif
+              </button>
             </div>
           </div>
         </section>
@@ -495,5 +499,6 @@ export const About: React.FC = () => {
         </section>
       </div>
     </div>
+    </>
   );
 };

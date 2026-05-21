@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
-import { setPageMeta, setCanonical } from "../utils/meta";
+import React from "react";
+import { PageMeta } from "../utils/PageMeta";
 
 export const Methodology: React.FC = () => {
-  useEffect(() => {
-    setPageMeta(
-      "Méthodologie d'analyse",
-      "Comment MentalTech Discover analyse les solutions numériques de santé mentale : 5 piliers, protocole transparent.",
-    );
-    setCanonical("/methodologie");
-  }, []);
-
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      <PageMeta
+        title="Méthodologie d'analyse"
+        description="Comment MentalTech Discover analyse les solutions numériques de santé mentale : 5 piliers, protocole transparent."
+        canonical="/methodologie"
+      />
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
@@ -496,5 +494,6 @@ export const Methodology: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };

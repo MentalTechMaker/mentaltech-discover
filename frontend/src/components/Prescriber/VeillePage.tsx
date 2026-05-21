@@ -5,6 +5,7 @@ import type {
   FavoriteResponse,
 } from "../../api/prescriber";
 import { useAppStore } from "../../store/useAppStore";
+import { useNoindex } from "../../hooks/useNoindex";
 
 const UPDATE_TYPE_ICONS: Record<string, string> = {
   price_change: "\uD83D\uDCB0",
@@ -45,6 +46,7 @@ function formatRelativeDate(dateStr: string): string {
 }
 
 export const VeillePage: React.FC = () => {
+  useNoindex();
   const setView = useAppStore((s) => s.setView);
 
   const [updates, setUpdates] = useState<ProductUpdateResponse[]>([]);

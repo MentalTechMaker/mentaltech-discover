@@ -68,3 +68,23 @@ export function setOgImage(imageUrl: string): void {
   const twImage = document.querySelector('meta[name="twitter:image"]');
   if (twImage) twImage.setAttribute("content", imageUrl);
 }
+
+/**
+ * Add <meta name="robots" content="noindex, nofollow"> for private routes.
+ * Returns a cleanup that removes the tag when the route unmounts, so navigation
+ * to a public route does not inherit the noindex signal.
+ */
+export function setRobotsNoindex(): () => void {
+  const existing = document.querySelector<HTMLMetaElement>(
+    'meta[name="robots"]',
+  );
+  const meta = existing ?? document.createElement("meta");
+  if (!existing) {
+    meta.setAttribute("name", "robots");
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", "noindex, nofollow");
+  return () => {
+    meta.remove();
+  };
+}
