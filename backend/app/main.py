@@ -242,6 +242,7 @@ def sitemap_xml():
         ("/", "weekly", "1.0"),
         ("/catalogue", "weekly", "0.9"),
         ("/rejoindre", "monthly", "0.8"),
+        ("/bureau", "monthly", "0.7"),
         ("/notre-demarche", "monthly", "0.7"),
         ("/methodologie", "monthly", "0.7"),
         ("/faq", "monthly", "0.6"),

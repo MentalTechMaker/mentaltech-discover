@@ -3,6 +3,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useAppStore } from "../../store/useAppStore";
 import { changePassword, resendVerification } from "../../api/auth";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { useNoindex } from "../../hooks/useNoindex";
 
 const roleLabels: Record<string, string> = {
   user: "Utilisateur",
@@ -12,6 +13,7 @@ const roleLabels: Record<string, string> = {
 import { validatePassword } from "../../utils/password";
 
 export const ProfilePage: React.FC = () => {
+  useNoindex();
   const { user, isAuthenticated } = useAuthStore();
   const { setView } = useAppStore();
 

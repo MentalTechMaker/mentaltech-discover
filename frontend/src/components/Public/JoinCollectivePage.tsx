@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useProductsStore } from "../../store/useProductsStore";
-import { setPageMeta, setCanonical } from "../../utils/meta";
+import { PageMeta } from "../../utils/PageMeta";
 import { getPublicStats } from "../../api/prescriber";
 
 export const JoinCollectivePage: React.FC = () => {
@@ -13,21 +13,19 @@ export const JoinCollectivePage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    setPageMeta(
-      "Rejoindre le Collectif MentalTech",
-      "Rejoignez le Collectif MentalTech : référencez votre solution de santé mentale numérique ou candidatez en tant que professionnel de santé engagé.",
-    );
-    setCanonical("/rejoindre");
-  }, []);
-
-  useEffect(() => {
     getPublicStats()
       .then(setPublicStats)
       .catch(() => {});
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-280px)]">
+    <>
+      <PageMeta
+        title="Rejoindre le Collectif MentalTech"
+        description="Rejoignez le Collectif MentalTech : référencez votre solution de santé mentale numérique ou candidatez en tant que professionnel de santé engagé."
+        canonical="/rejoindre"
+      />
+      <div className="min-h-[calc(100vh-280px)]">
       <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">
@@ -366,5 +364,6 @@ export const JoinCollectivePage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };

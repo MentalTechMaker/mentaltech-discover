@@ -19,11 +19,21 @@ const memberCardClasses =
   "bg-gradient-to-br from-blue-50/60 via-white to-purple-50/60 border-primary shadow-lg shadow-primary/15 hover:shadow-primary/25 ring-1 ring-primary/10";
 const defaultCardClasses = "bg-white border-gray-200 hover:border-primary";
 
+function isModifiedClick(e: React.MouseEvent): boolean {
+  return e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1;
+}
+
 export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
   product,
   viewMode,
 }) => {
   const viewProduct = useAppStore((s) => s.viewProduct);
+  const productHref = `/solution/${product.id}`;
+  const handleNavigate = (e: React.MouseEvent) => {
+    if (isModifiedClick(e)) return;
+    e.preventDefault();
+    viewProduct(product.id);
+  };
   const cardStyleClass = product.isMentaltechMember
     ? memberCardClasses
     : defaultCardClasses;
@@ -92,11 +102,14 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
             <div>
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div className="flex items-center gap-2">
-                  <h3
-                    className="text-2xl font-bold text-text-primary hover:text-primary cursor-pointer transition-colors"
-                    onClick={() => viewProduct(product.id)}
-                  >
-                    {product.name}
+                  <h3 className="text-2xl font-bold text-text-primary">
+                    <a
+                      href={productHref}
+                      onClick={handleNavigate}
+                      className="hover:text-primary cursor-pointer transition-colors"
+                    >
+                      {product.name}
+                    </a>
                   </h3>
                   {product.isMentaltechMember && (
                     <span
@@ -158,13 +171,14 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => viewProduct(product.id)}
+              <a
+                href={productHref}
+                onClick={handleNavigate}
                 className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
               >
                 Voir la fiche
                 <span>→</span>
-              </button>
+              </a>
               <a
                 href={sanitizeUrl(product.url)}
                 target="_blank"
@@ -239,11 +253,14 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
         <div>
           <div className="flex items-start justify-between gap-2 mb-1">
             <div className="flex items-center gap-2">
-              <h3
-                className="text-xl font-bold text-text-primary hover:text-primary cursor-pointer transition-colors"
-                onClick={() => viewProduct(product.id)}
-              >
-                {product.name}
+              <h3 className="text-xl font-bold text-text-primary">
+                <a
+                  href={productHref}
+                  onClick={handleNavigate}
+                  className="hover:text-primary cursor-pointer transition-colors"
+                >
+                  {product.name}
+                </a>
               </h3>
               {product.isMentaltechMember && (
                 <span
@@ -300,12 +317,13 @@ export const ProductCatalogCard: React.FC<ProductCatalogCardProps> = ({
       </div>
 
       <div className="mt-4 space-y-2">
-        <button
-          onClick={() => viewProduct(product.id)}
+        <a
+          href={productHref}
+          onClick={handleNavigate}
           className="block w-full text-center bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
         >
           Voir la fiche →
-        </button>
+        </a>
         <a
           href={sanitizeUrl(product.url)}
           target="_blank"

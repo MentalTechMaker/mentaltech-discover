@@ -38,6 +38,14 @@ export const Footer: React.FC = () => {
             </button>
             <span className="text-text-secondary">|</span>
             <button
+              onClick={() => setView("committee")}
+              className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+              aria-label="Bureau du Collectif"
+            >
+              💙 Bureau
+            </button>
+            <span className="text-text-secondary">|</span>
+            <button
               onClick={() => setView("faq")}
               className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
               aria-label="Questions fréquentes"

@@ -3,7 +3,7 @@ import { useAppStore } from "../store/useAppStore";
 import { useProductsStore } from "../store/useProductsStore";
 import { MedicalDisclaimer } from "./Disclaimer/MedicalDisclaimer";
 import { getPublicStats } from "../api/prescriber";
-import { setPageMeta, setCanonical } from "../utils/meta";
+import { PageMeta } from "../utils/PageMeta";
 import type { UserType } from "../types";
 
 export const Landing: React.FC = () => {
@@ -14,14 +14,6 @@ export const Landing: React.FC = () => {
     prescribers: number;
     prescriptions: number;
   } | null>(null);
-
-  useEffect(() => {
-    setPageMeta(
-      "Trouvez votre solution en santé mentale",
-      "Découvrez les meilleures solutions numériques en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, analyses par des experts.",
-    );
-    setCanonical("/");
-  }, []);
 
   useEffect(() => {
     getPublicStats()
@@ -41,7 +33,13 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-280px)]">
+    <>
+      <PageMeta
+        title="Trouvez votre solution en santé mentale"
+        description="Découvrez les meilleures solutions numériques en santé mentale adaptées à vos besoins. Questionnaire gratuit, catalogue complet, analyses par des experts."
+        canonical="/"
+      />
+      <div className="min-h-[calc(100vh-280px)]">
       <div className="px-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto text-center space-y-8 mb-12">
           <div className="space-y-4">
@@ -322,6 +320,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };

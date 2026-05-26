@@ -5,6 +5,7 @@ import type {
   RecommendationResult,
   UserType,
 } from "../types";
+import { navigateRef } from "../routing/navigateRef";
 
 // Clean URL mapping for public-facing views
 const VIEW_TO_URL: Partial<Record<AppView, string>> = {
@@ -16,6 +17,7 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
   "public-submission": "/soumettre-solution",
   "health-pro-application": "/pro-sante",
   "join-collective": "/rejoindre",
+  committee: "/bureau",
   "confirm-submission": "/confirmer-soumission",
   "confirm-health-pro": "/confirmer-candidature",
   login: "/connexion",
@@ -27,28 +29,6 @@ const VIEW_TO_URL: Partial<Record<AppView, string>> = {
   "new-prescription": "/nouvelle-prescription",
   privacy: "/confidentialite",
   legal: "/mentions-legales",
-};
-
-const URL_TO_VIEW: Record<string, AppView> = {
-  catalogue: "catalog",
-  "notre-demarche": "about",
-  methodologie: "methodology",
-  questionnaire: "quiz",
-  "soumettre-solution": "public-submission",
-  "pro-sante": "health-pro-application",
-  rejoindre: "join-collective",
-  "confirmer-soumission": "confirm-submission",
-  "confirmer-candidature": "confirm-health-pro",
-  resultats: "results",
-  connexion: "login",
-  inscription: "register",
-  prescripteur: "prescriber-auth",
-  profil: "profile",
-  "check-email": "verify-email",
-  dashboard: "prescriber-dashboard",
-  "nouvelle-prescription": "new-prescription",
-  confidentialite: "privacy",
-  "mentions-legales": "legal",
 };
 
 // Encode/decode quiz answers into URL search params for result sharing
@@ -91,6 +71,16 @@ export function decodeParamsToAnswers(
   return { answers, userType };
 }
 
+function navigateTo(path: string, options?: { replace?: boolean }): void {
+  if (navigateRef.current) {
+    navigateRef.current(path, options);
+  } else if (typeof window !== "undefined") {
+    // Bridge not yet mounted (first paint): fall back to history API
+    const method = options?.replace ? "replaceState" : "pushState";
+    window.history[method](null, "", path);
+  }
+}
+
 interface AppState {
   currentView: AppView;
   currentQuestionIndex: number;
@@ -111,6 +101,8 @@ interface AppState {
   setRecommendations: (recommendations: RecommendationResult) => void;
   setUserType: (userType: UserType) => void;
   reset: () => void;
+  // Internal: sync state from current URL (called by ViewSync on route change)
+  _syncFromRoute: (view: AppView, productId?: string | null) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -125,23 +117,13 @@ export const useAppStore = create<AppState>((set) => ({
 
   setView: (view) => {
     set({ currentView: view, selectedProductId: null });
-    if (typeof window !== "undefined") {
-      const urlPath = VIEW_TO_URL[view] ?? `/${view}`;
-      window.history.pushState({ view }, "", urlPath);
-      window.scrollTo({ top: 0, left: 0 });
-    }
+    const urlPath = VIEW_TO_URL[view] ?? `/${view}`;
+    navigateTo(urlPath);
   },
 
   viewProduct: (productId) => {
     set({ currentView: "product", selectedProductId: productId });
-    if (typeof window !== "undefined") {
-      window.history.pushState(
-        { view: "product", productId },
-        "",
-        `/solution/${productId}`,
-      );
-      window.scrollTo({ top: 0, left: 0 });
-    }
+    navigateTo(`/solution/${productId}`);
   },
 
   setAnswer: (questionId, answer) =>
@@ -170,15 +152,9 @@ export const useAppStore = create<AppState>((set) => ({
   setRecommendations: (recommendations) => {
     set({ recommendations });
     // Encode current answers into URL so results are shareable/bookmarkable
-    if (typeof window !== "undefined") {
-      const state = useAppStore.getState();
-      const params = encodeAnswersToParams(state.answers, state.userType);
-      window.history.replaceState(
-        { view: "results" },
-        "",
-        `/resultats?${params}`,
-      );
-    }
+    const state = useAppStore.getState();
+    const params = encodeAnswersToParams(state.answers, state.userType);
+    navigateTo(`/resultats?${params}`, { replace: true });
   },
 
   setAdminEditProductId: (id) => set({ adminEditProductId: id }),
@@ -194,125 +170,15 @@ export const useAppStore = create<AppState>((set) => ({
       recommendations: null,
       userType: "individual",
     });
-    if (typeof window !== "undefined") {
-      window.history.pushState({ view: "landing" }, "", "/");
-    }
+    navigateTo("/");
   },
+
+  _syncFromRoute: (view, productId) =>
+    set({
+      currentView: view,
+      selectedProductId: productId ?? null,
+    }),
 }));
-
-function parsePathView(): { view: AppView; productId?: string } {
-  const pathname = window.location.pathname.replace(/^\//, "");
-
-  // Handle /solution/some-id (new canonical URL)
-  if (pathname.startsWith("solution/")) {
-    const productId = pathname.slice("solution/".length);
-    if (productId) return { view: "product", productId };
-    return { view: "catalog" };
-  }
-
-  // Handle /product/some-id (backward compat)
-  if (pathname.startsWith("product/")) {
-    const productId = pathname.slice("product/".length);
-    if (productId) return { view: "product", productId };
-    return { view: "catalog" };
-  }
-
-  // Handle /prescription/token
-  if (pathname.startsWith("prescription/")) {
-    const token = pathname.slice("prescription/".length);
-    if (token) return { view: "prescription", productId: token };
-    return { view: "landing" };
-  }
-
-  // Check clean URL aliases (soumettre-solution, pro-sante, rejoindre, etc.)
-  if (URL_TO_VIEW[pathname]) {
-    return { view: URL_TO_VIEW[pathname] };
-  }
-
-  const validViews: AppView[] = [
-    "landing",
-    "faq",
-    "login",
-    "register",
-    "prescriber-auth",
-    "admin",
-    "profile",
-    "forgot-password",
-    "reset-password",
-    "verify-email",
-    "prescriber-dashboard",
-    "new-prescription",
-    "veille",
-    "privacy",
-    "legal",
-  ];
-  if (validViews.includes(pathname as AppView)) {
-    return { view: pathname as AppView };
-  }
-  return { view: "landing" };
-}
-
-export function initializeAppStore(): (() => void) | undefined {
-  if (typeof window === "undefined") return undefined;
-
-  const handlePopState = (event: PopStateEvent) => {
-    const state = event.state;
-    if (state && state.view) {
-      useAppStore.setState({
-        currentView: state.view as AppView,
-        selectedProductId: state.productId ?? null,
-      });
-    } else {
-      const parsed = parsePathView();
-      useAppStore.setState({
-        currentView: parsed.view,
-        selectedProductId: parsed.productId ?? null,
-      });
-    }
-  };
-
-  window.addEventListener("popstate", handlePopState);
-
-  // On initial load, detect path-based deep links (e.g. /verify-email?token=... or /product/some-id)
-  const initial = parsePathView();
-  if (initial.view === "results" && window.location.search) {
-    // Shared result link - decode answers and schedule recommendation computation
-    const decoded = decodeParamsToAnswers(window.location.search);
-    if (decoded) {
-      useAppStore.setState({
-        currentView: "results",
-        answers: decoded.answers,
-        userType: decoded.userType,
-      });
-      window.history.replaceState(
-        { view: "results" },
-        "",
-        window.location.pathname + window.location.search,
-      );
-      // Signal App.tsx to compute recommendations on mount
-      (window as unknown as Record<string, unknown>).__pendingResultRestore =
-        decoded;
-    } else {
-      useAppStore.setState({ currentView: "results" });
-    }
-  } else if (initial.view !== "landing") {
-    useAppStore.setState({
-      currentView: initial.view,
-      selectedProductId: initial.productId ?? null,
-    });
-    window.history.replaceState(
-      { view: initial.view, productId: initial.productId },
-      "",
-      window.location.pathname + window.location.search,
-    );
-  } else {
-    window.history.replaceState({ view: "landing" }, "", "/");
-  }
-
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}
 
 function getAnswerKey(
   questionId: number,

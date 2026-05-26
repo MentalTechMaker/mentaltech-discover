@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { verifyEmail } from "../../api/auth";
+import { useNoindex } from "../../hooks/useNoindex";
 
 export const VerifyEmailPage: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
   const { loadUser } = useAuthStore();
 

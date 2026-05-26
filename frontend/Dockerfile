@@ -17,7 +17,17 @@ RUN npm i --no-audit --no-fund && \
 # Copier le code source
 COPY . .
 
-# Build l'application
+# URL utilisée par le prebuild SSG (npm run prebuild fetch /api/products?visible=true).
+# - Si l'API est joignable, la liste produits est récupérée et les fiches /solution/:id
+#   sont pré-rendues en HTML statique.
+# - Si l'API est injoignable (ex: backend pas encore up dans le compose), le prebuild
+#   garde un éventuel snapshot pré-existant ou écrit []. La build SSG fonctionne quand
+#   même; les fiches restent SPA.
+# Passe-la via --build-arg ou docker-compose build.args (voir docker-compose.yml).
+ARG VITE_PRODUCTS_API_URL
+ENV VITE_PRODUCTS_API_URL=${VITE_PRODUCTS_API_URL}
+
+# Build l'application (prebuild fetch products → vite-react-ssg build)
 RUN npm run build
 
 # Stage 2: Production

@@ -4,11 +4,13 @@ import { setPageMeta, setCanonical } from "../../utils/meta";
 import { ProductCard } from "./ProductCard";
 import { ExplanationBox } from "./ExplanationBox";
 import { MedicalDisclaimer } from "../Disclaimer/MedicalDisclaimer";
+import { useNoindex } from "../../hooks/useNoindex";
 
 type PricingFilter = "all" | "free" | "paid";
 type ContactFilter = "all" | "human" | "autonomous";
 
 export const RecommendationList: React.FC = () => {
+  useNoindex();
   const { recommendations, reset, setView } = useAppStore();
 
   useEffect(() => {

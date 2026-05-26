@@ -3,6 +3,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
 import { validatePassword } from "../../utils/password";
+import { useNoindex } from "../../hooks/useNoindex";
 
 const professionOptions = [
   "Médecin généraliste",
@@ -33,6 +34,7 @@ const professionOptions = [
 type Tab = "login" | "register";
 
 export const PrescriberAuthPage: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
   const { login, registerPrescriber } = useAuthStore();
 

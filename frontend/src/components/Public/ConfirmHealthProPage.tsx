@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { confirmHealthProApplication } from "../../api/public";
 import { useAppStore } from "../../store/useAppStore";
+import { useNoindex } from "../../hooks/useNoindex";
 
 export const ConfirmHealthProPage: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",

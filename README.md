@@ -57,11 +57,11 @@ Chaque solution definit ses priorites sur deux axes :
 
 **Public cible** (audience) et **Problematiques adressees** (problemes), classes en 3 niveaux :
 
-| Niveau | Signification | Points dans l'algorithme |
-|--------|---------------|-------------------------|
-| **P1** | Coeur de cible | 30 pts |
-| **P2** | Secondaire | 18 pts |
-| **P3** | Compatible | 8 pts |
+| Niveau | Signification  | Points dans l'algorithme |
+| ------ | -------------- | ------------------------ |
+| **P1** | Coeur de cible | 30 pts                   |
+| **P2** | Secondaire     | 18 pts                   |
+| **P3** | Compatible     | 8 pts                    |
 
 - Maximum **3 items par niveau** pour forcer la specialisation
 - Les priorites sont definies par l'editeur de la solution
@@ -204,6 +204,9 @@ Point d'entrée unique pour intégrer l'écosystème MentalTech :
 ### Frontend
 
 - **React 19** + TypeScript
+- **React Router 6** - Routing client + data router pour SSG
+- **vite-react-ssg** - Static-site generation (HTML pré-rendu par route publique)
+- **react-helmet-async** - Gestion `<head>` per-route (titles, meta, JSON-LD server-side)
 - **Zustand 5** - State management
 - **Tailwind CSS 4** - Styling
 - **Vite 7** - Build tool
@@ -235,6 +238,21 @@ Point d'entrée unique pour intégrer l'écosystème MentalTech :
 - **Anti-escalade** - `no-new-privileges: true` sur tous les containers
 - **Limites de ressources** - CPU et memoire plafonnes par container
 
+### SEO & Indexation
+
+- **SSG (Static Site Generation)** - 11+ routes publiques pré-rendues en HTML statique via `vite-react-ssg` : crawlers et previews sociaux voient le contenu sans exécuter de JS
+- **JSON-LD structured data per-route** - Organization, WebSite+SearchAction, FAQPage, AboutPage, CollectionPage, ItemList, SoftwareApplication, BreadcrumbList, Person (Bureau du Collectif)
+- **Titles + meta descriptions per-route** - injectés server-side via `<Head>` de vite-react-ssg
+- **Sitemap dynamique** - `/api/sitemap.xml` généré par le backend, inclut pages statiques + fiches solutions visibles
+- **robots.txt** - blocage des routes privées (admin, dashboard, prescription, etc.) + pointeur vers le sitemap
+- **noindex sur routes privées** - injection de `<meta name="robots" content="noindex, nofollow">` via hook `useNoindex` (14 composants couverts)
+- **Pré-rendu dynamique /solution/:id** - `npm run prebuild` fetche `/api/products?visible=true` et génère une fiche HTML par produit visible
+- **Soft-404 fix** - GET `/api/products/{id}` filtre `is_visible AND NOT company_defunct` → 404 propre pour fiches retirées
+- **Open Graph + Twitter Cards** - défauts statiques + override per-route (titre, description, image)
+- **Liens internes `<a href>` sur le catalogue** - Google suit les liens vers `/solution/:id` (vs anciens `<button onClick>`)
+- **Verification meta tags** - placeholders Google Search Console + Bing Webmaster Tools dans `index.html`
+- **llms.txt** - guide pour assistants IA (GPTBot, ClaudeBot, PerplexityBot)
+
 ---
 
 ## 🚀 Démarrage Rapide
@@ -248,6 +266,11 @@ cd mentaltech-discover
 
 # Copier la configuration
 cp .env.example .env
+# Éditer .env pour ajuster (au minimum SECRET_KEY en prod).
+# VITE_PRODUCTS_API_URL est utilisé par le prebuild SSG du frontend :
+#   - localhost:8000/api/products en dev
+#   - https://discover.mentaltech.fr/api/products en prod (ou laisser vide
+#     pour ne pas pré-rendre les fiches /solution/:id au build initial)
 
 # Démarrer les 4 services (db + backend + frontend + backup)
 docker compose up --build
@@ -257,6 +280,7 @@ docker compose exec backend python -m scripts.create_admin
 ```
 
 L'application sera disponible sur :
+
 - **Frontend** : http://localhost:3033
 - **API** : http://localhost:8000
 - **API Docs** : http://localhost:8000/api/docs
@@ -386,78 +410,78 @@ mentaltech-discover/
 
 ## 🔌 API Endpoints
 
-| Méthode | Route | Auth | Description |
-|---------|-------|------|-------------|
-| `POST` | `/api/auth/register` | - | Inscription utilisateur (+ email vérification) |
-| `POST` | `/api/auth/register-prescriber` | - | Inscription prescripteur (profession, RPPS) |
-| `POST` | `/api/auth/register-publisher` | - | Inscription éditeur |
-| `POST` | `/api/auth/login` | - | Connexion (retourne JWT) |
-| `POST` | `/api/auth/refresh` | - | Renouveler l'access token |
-| `GET` | `/api/auth/me` | JWT | Profil utilisateur courant |
-| `PUT` | `/api/auth/change-password` | JWT | Changer le mot de passe |
-| `POST` | `/api/auth/forgot-password` | - | Demander un email de réinitialisation |
-| `POST` | `/api/auth/reset-password` | - | Réinitialiser le mot de passe (via token) |
-| `GET` | `/api/auth/verify-email` | - | Vérifier l'adresse email (via token) |
-| `POST` | `/api/auth/resend-verification` | JWT | Renvoyer l'email de vérification |
-| `GET` | `/api/products` | - | Liste les produits visibles (hors défunts et masqués) |
-| `GET` | `/api/products/{id}` | - | Détail d'un produit |
-| `POST` | `/api/products` | Admin | Créer un produit |
-| `PUT` | `/api/products/{id}` | Admin | Modifier un produit |
-| `DELETE` | `/api/products/{id}` | Admin | Supprimer un produit |
-| | | | |
-| **Prescriptions** | | | |
-| `POST` | `/api/prescriptions` | Prescriber | Créer une prescription (1-5 solutions) |
-| `GET` | `/api/prescriptions` | Prescriber | Lister ses prescriptions |
-| `GET` | `/api/prescriptions/stats` | Prescriber | Statistiques du tableau de bord |
-| `DELETE` | `/api/prescriptions/{id}` | Prescriber | Supprimer une prescription |
-| `POST` | `/api/prescriptions/{id}/renew` | Prescriber | Renouveler une prescription (+30 jours, nouveau lien) |
-| `GET` | `/api/prescriptions/view/{token}` | - | Vue publique patient (marque comme consultée à la 1ère visite) |
-| `DELETE` | `/api/prescriptions/revoke/{token}` | - | Suppression par le patient (RGPD droit à l'effacement) |
-| | | | |
-| **Espace Prescripteur** | | | |
-| `GET` | `/api/prescriber/favorites` | Prescriber | Lister ses favoris |
-| `POST` | `/api/prescriber/favorites` | Prescriber | Ajouter un favori |
-| `DELETE` | `/api/prescriber/favorites/{product_id}` | Prescriber | Retirer un favori |
-| `GET` | `/api/prescriber/notes` | Prescriber | Lister ses notes |
-| `PUT` | `/api/prescriber/notes` | Prescriber | Créer ou modifier une note |
-| `DELETE` | `/api/prescriber/notes/{product_id}` | Prescriber | Supprimer une note |
-| `GET` | `/api/prescriber/updates` | Prescriber | Veille : mises à jour produits |
-| `GET` | `/api/prescriber/community-stats` | Prescriber | Statistiques communauté anonymisées |
-| | | | |
-| **Espace Éditeur** | | | |
-| `POST` | `/api/publisher/submissions` | Publisher | Soumettre un produit |
-| `GET` | `/api/publisher/submissions` | Publisher | Lister ses soumissions |
-| | | | |
-| **Administration** | | | |
-| `GET` | `/api/admin/products` | Admin | Tous les produits (y compris masqués et défunts) |
-| `PATCH` | `/api/admin/products/{id}/visibility` | Admin | Basculer la visibilité d'un produit |
-| `PATCH` | `/api/admin/products/{id}/defunct` | Admin | Marquer/démarquer une entreprise défunte |
-| `GET` | `/api/admin/prescribers` | Admin | Lister les prescripteurs |
-| `POST` | `/api/admin/prescribers/{id}/verify` | Admin | Valider un prescripteur |
-| `POST` | `/api/admin/prescribers/{id}/reject` | Admin | Refuser un prescripteur |
-| `POST` | `/api/admin/product-updates` | Admin | Créer une mise à jour produit (veille) |
-| `GET` | `/api/admin/submissions` | Admin | Lister les soumissions éditeurs |
-| `POST` | `/api/admin/submissions/{id}/approve` | Admin | Approuver une soumission |
-| `POST` | `/api/admin/submissions/{id}/reject` | Admin | Refuser une soumission |
-| `GET` | `/api/stats/public` | - | Statistiques publiques (prescripteurs actifs, prescriptions créées) |
-| `GET` | `/api/health` | - | Health check |
-| | | | |
-| **Soumission Publique** | | | |
-| `POST` | `/api/public/upload-logo` | - | Upload logo (soumission publique, sans auth) |
-| `POST` | `/api/public/submissions` | - | Créer une soumission publique (anti-bot, confirmation email) |
-| `GET` | `/api/public/submissions/confirm` | - | Confirmer la soumission via token email (48h) |
-| `POST` | `/api/public/health-pro/apply` | - | Candidature professionnel de santé (anti-bot, confirmation email) |
-| `GET` | `/api/public/health-pro/confirm` | - | Confirmer la candidature via token email (48h) |
-| | | | |
-| **Admin - Soumissions & Candidatures** | | | |
-| `GET` | `/api/admin/public-submissions` | Admin | Lister les soumissions publiques (filtre par statut) |
-| `GET` | `/api/admin/public-submissions/{id}` | Admin | Détail d'une soumission publique |
-| `POST` | `/api/admin/public-submissions/{id}/approve` | Admin | Approuver une soumission publique |
-| `POST` | `/api/admin/public-submissions/{id}/reject` | Admin | Refuser une soumission publique |
-| `GET` | `/api/admin/health-pro-applications` | Admin | Lister les candidatures pro de santé |
-| `GET` | `/api/admin/health-pro-applications/{id}` | Admin | Détail d'une candidature |
-| `POST` | `/api/admin/health-pro-applications/{id}/accept` | Admin | Accepter une candidature |
-| `POST` | `/api/admin/health-pro-applications/{id}/refuse` | Admin | Refuser une candidature |
+| Méthode                                | Route                                            | Auth       | Description                                                         |
+| -------------------------------------- | ------------------------------------------------ | ---------- | ------------------------------------------------------------------- |
+| `POST`                                 | `/api/auth/register`                             | -          | Inscription utilisateur (+ email vérification)                      |
+| `POST`                                 | `/api/auth/register-prescriber`                  | -          | Inscription prescripteur (profession, RPPS)                         |
+| `POST`                                 | `/api/auth/register-publisher`                   | -          | Inscription éditeur                                                 |
+| `POST`                                 | `/api/auth/login`                                | -          | Connexion (retourne JWT)                                            |
+| `POST`                                 | `/api/auth/refresh`                              | -          | Renouveler l'access token                                           |
+| `GET`                                  | `/api/auth/me`                                   | JWT        | Profil utilisateur courant                                          |
+| `PUT`                                  | `/api/auth/change-password`                      | JWT        | Changer le mot de passe                                             |
+| `POST`                                 | `/api/auth/forgot-password`                      | -          | Demander un email de réinitialisation                               |
+| `POST`                                 | `/api/auth/reset-password`                       | -          | Réinitialiser le mot de passe (via token)                           |
+| `GET`                                  | `/api/auth/verify-email`                         | -          | Vérifier l'adresse email (via token)                                |
+| `POST`                                 | `/api/auth/resend-verification`                  | JWT        | Renvoyer l'email de vérification                                    |
+| `GET`                                  | `/api/products`                                  | -          | Liste les produits visibles (hors défunts et masqués)               |
+| `GET`                                  | `/api/products/{id}`                             | -          | Détail d'un produit                                                 |
+| `POST`                                 | `/api/products`                                  | Admin      | Créer un produit                                                    |
+| `PUT`                                  | `/api/products/{id}`                             | Admin      | Modifier un produit                                                 |
+| `DELETE`                               | `/api/products/{id}`                             | Admin      | Supprimer un produit                                                |
+|                                        |                                                  |            |                                                                     |
+| **Prescriptions**                      |                                                  |            |                                                                     |
+| `POST`                                 | `/api/prescriptions`                             | Prescriber | Créer une prescription (1-5 solutions)                              |
+| `GET`                                  | `/api/prescriptions`                             | Prescriber | Lister ses prescriptions                                            |
+| `GET`                                  | `/api/prescriptions/stats`                       | Prescriber | Statistiques du tableau de bord                                     |
+| `DELETE`                               | `/api/prescriptions/{id}`                        | Prescriber | Supprimer une prescription                                          |
+| `POST`                                 | `/api/prescriptions/{id}/renew`                  | Prescriber | Renouveler une prescription (+30 jours, nouveau lien)               |
+| `GET`                                  | `/api/prescriptions/view/{token}`                | -          | Vue publique patient (marque comme consultée à la 1ère visite)      |
+| `DELETE`                               | `/api/prescriptions/revoke/{token}`              | -          | Suppression par le patient (RGPD droit à l'effacement)              |
+|                                        |                                                  |            |                                                                     |
+| **Espace Prescripteur**                |                                                  |            |                                                                     |
+| `GET`                                  | `/api/prescriber/favorites`                      | Prescriber | Lister ses favoris                                                  |
+| `POST`                                 | `/api/prescriber/favorites`                      | Prescriber | Ajouter un favori                                                   |
+| `DELETE`                               | `/api/prescriber/favorites/{product_id}`         | Prescriber | Retirer un favori                                                   |
+| `GET`                                  | `/api/prescriber/notes`                          | Prescriber | Lister ses notes                                                    |
+| `PUT`                                  | `/api/prescriber/notes`                          | Prescriber | Créer ou modifier une note                                          |
+| `DELETE`                               | `/api/prescriber/notes/{product_id}`             | Prescriber | Supprimer une note                                                  |
+| `GET`                                  | `/api/prescriber/updates`                        | Prescriber | Veille : mises à jour produits                                      |
+| `GET`                                  | `/api/prescriber/community-stats`                | Prescriber | Statistiques communauté anonymisées                                 |
+|                                        |                                                  |            |                                                                     |
+| **Espace Éditeur**                     |                                                  |            |                                                                     |
+| `POST`                                 | `/api/publisher/submissions`                     | Publisher  | Soumettre un produit                                                |
+| `GET`                                  | `/api/publisher/submissions`                     | Publisher  | Lister ses soumissions                                              |
+|                                        |                                                  |            |                                                                     |
+| **Administration**                     |                                                  |            |                                                                     |
+| `GET`                                  | `/api/admin/products`                            | Admin      | Tous les produits (y compris masqués et défunts)                    |
+| `PATCH`                                | `/api/admin/products/{id}/visibility`            | Admin      | Basculer la visibilité d'un produit                                 |
+| `PATCH`                                | `/api/admin/products/{id}/defunct`               | Admin      | Marquer/démarquer une entreprise défunte                            |
+| `GET`                                  | `/api/admin/prescribers`                         | Admin      | Lister les prescripteurs                                            |
+| `POST`                                 | `/api/admin/prescribers/{id}/verify`             | Admin      | Valider un prescripteur                                             |
+| `POST`                                 | `/api/admin/prescribers/{id}/reject`             | Admin      | Refuser un prescripteur                                             |
+| `POST`                                 | `/api/admin/product-updates`                     | Admin      | Créer une mise à jour produit (veille)                              |
+| `GET`                                  | `/api/admin/submissions`                         | Admin      | Lister les soumissions éditeurs                                     |
+| `POST`                                 | `/api/admin/submissions/{id}/approve`            | Admin      | Approuver une soumission                                            |
+| `POST`                                 | `/api/admin/submissions/{id}/reject`             | Admin      | Refuser une soumission                                              |
+| `GET`                                  | `/api/stats/public`                              | -          | Statistiques publiques (prescripteurs actifs, prescriptions créées) |
+| `GET`                                  | `/api/health`                                    | -          | Health check                                                        |
+|                                        |                                                  |            |                                                                     |
+| **Soumission Publique**                |                                                  |            |                                                                     |
+| `POST`                                 | `/api/public/upload-logo`                        | -          | Upload logo (soumission publique, sans auth)                        |
+| `POST`                                 | `/api/public/submissions`                        | -          | Créer une soumission publique (anti-bot, confirmation email)        |
+| `GET`                                  | `/api/public/submissions/confirm`                | -          | Confirmer la soumission via token email (48h)                       |
+| `POST`                                 | `/api/public/health-pro/apply`                   | -          | Candidature professionnel de santé (anti-bot, confirmation email)   |
+| `GET`                                  | `/api/public/health-pro/confirm`                 | -          | Confirmer la candidature via token email (48h)                      |
+|                                        |                                                  |            |                                                                     |
+| **Admin - Soumissions & Candidatures** |                                                  |            |                                                                     |
+| `GET`                                  | `/api/admin/public-submissions`                  | Admin      | Lister les soumissions publiques (filtre par statut)                |
+| `GET`                                  | `/api/admin/public-submissions/{id}`             | Admin      | Détail d'une soumission publique                                    |
+| `POST`                                 | `/api/admin/public-submissions/{id}/approve`     | Admin      | Approuver une soumission publique                                   |
+| `POST`                                 | `/api/admin/public-submissions/{id}/reject`      | Admin      | Refuser une soumission publique                                     |
+| `GET`                                  | `/api/admin/health-pro-applications`             | Admin      | Lister les candidatures pro de santé                                |
+| `GET`                                  | `/api/admin/health-pro-applications/{id}`        | Admin      | Détail d'une candidature                                            |
+| `POST`                                 | `/api/admin/health-pro-applications/{id}/accept` | Admin      | Accepter une candidature                                            |
+| `POST`                                 | `/api/admin/health-pro-applications/{id}/refuse` | Admin      | Refuser une candidature                                             |
 
 Documentation interactive : http://localhost:8000/api/docs
 
@@ -486,35 +510,35 @@ docker compose down -v
 
 ### Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| `db` | 5432 (interne) | PostgreSQL 16 Alpine |
-| `backend` | 8000 (interne) | API FastAPI (non expose publiquement) |
-| `frontend` | 3033 | Nginx + React SPA |
-| `backup` | - | Backup automatique PostgreSQL (cron) |
+| Service    | Port           | Description                           |
+| ---------- | -------------- | ------------------------------------- |
+| `db`       | 5432 (interne) | PostgreSQL 16 Alpine                  |
+| `backend`  | 8000 (interne) | API FastAPI (non expose publiquement) |
+| `frontend` | 3033           | Nginx + React SPA                     |
+| `backup`   | -              | Backup automatique PostgreSQL (cron)  |
 
 ### Variables d'environnement
 
-| Variable | Défaut | Description |
-|----------|--------|-------------|
-| `POSTGRES_DB` | `mentaltech` | Nom de la base |
-| `POSTGRES_USER` | `mentaltech` | Utilisateur PostgreSQL |
-| `POSTGRES_PASSWORD` | `mentaltech_secret` | Mot de passe PostgreSQL |
-| `DATABASE_URL` | `postgresql://...` | URL de connexion complète |
-| `SECRET_KEY` | `change-me-...` | Clé secrète JWT |
-| `CORS_ORIGINS` | `http://localhost:3033,...` | Origines CORS autorisées |
-| `FRONTEND_URL` | `http://localhost:3033` | URL du frontend (pour les liens dans les emails) |
-| `MAIL_USERNAME` | *(vide)* | Identifiant SMTP |
-| `MAIL_PASSWORD` | *(vide)* | Mot de passe SMTP (app password recommandé) |
-| `MAIL_FROM` | `noreply@mentaltechmaker.fr` | Adresse expéditeur |
-| `MAIL_FROM_NAME` | `MentalTech Discover` | Nom expéditeur |
-| `MAIL_SERVER` | `smtp.gmail.com` | Serveur SMTP |
-| `MAIL_PORT` | `587` | Port SMTP |
-| `MAIL_STARTTLS` | `true` | Activer STARTTLS |
-| `MAIL_SSL_TLS` | `false` | Activer SSL/TLS direct |
-| `BACKUP_KEEP_DAYS` | `7` | Nombre de jours de retention des backups |
-| `BACKUP_CRON` | `0 3 * * *` | Expression cron pour les backups automatiques |
-| `BACKUP_ENCRYPT_KEY` | *(vide)* | Cle de chiffrement des backups (optionnel) |
+| Variable             | Défaut                       | Description                                      |
+| -------------------- | ---------------------------- | ------------------------------------------------ |
+| `POSTGRES_DB`        | `mentaltech`                 | Nom de la base                                   |
+| `POSTGRES_USER`      | `mentaltech`                 | Utilisateur PostgreSQL                           |
+| `POSTGRES_PASSWORD`  | `mentaltech_secret`          | Mot de passe PostgreSQL                          |
+| `DATABASE_URL`       | `postgresql://...`           | URL de connexion complète                        |
+| `SECRET_KEY`         | `change-me-...`              | Clé secrète JWT                                  |
+| `CORS_ORIGINS`       | `http://localhost:3033,...`  | Origines CORS autorisées                         |
+| `FRONTEND_URL`       | `http://localhost:3033`      | URL du frontend (pour les liens dans les emails) |
+| `MAIL_USERNAME`      | _(vide)_                     | Identifiant SMTP                                 |
+| `MAIL_PASSWORD`      | _(vide)_                     | Mot de passe SMTP (app password recommandé)      |
+| `MAIL_FROM`          | `noreply@mentaltechmaker.fr` | Adresse expéditeur                               |
+| `MAIL_FROM_NAME`     | `MentalTech Discover`        | Nom expéditeur                                   |
+| `MAIL_SERVER`        | `smtp.gmail.com`             | Serveur SMTP                                     |
+| `MAIL_PORT`          | `587`                        | Port SMTP                                        |
+| `MAIL_STARTTLS`      | `true`                       | Activer STARTTLS                                 |
+| `MAIL_SSL_TLS`       | `false`                      | Activer SSL/TLS direct                           |
+| `BACKUP_KEEP_DAYS`   | `7`                          | Nombre de jours de retention des backups         |
+| `BACKUP_CRON`        | `0 3 * * *`                  | Expression cron pour les backups automatiques    |
+| `BACKUP_ENCRYPT_KEY` | _(vide)_                     | Cle de chiffrement des backups (optionnel)       |
 
 ---
 
@@ -547,15 +571,15 @@ Chaque solution comprend :
 
 ### Tokens CSS
 
-| Element | Classes Tailwind |
-|---------|-----------------|
-| Container page | `min-h-[calc(100vh-280px)] px-4 py-8` + `max-w-4xl mx-auto` |
-| Texte principal | `text-text-primary` |
-| Texte secondaire | `text-text-secondary` |
-| Cards | `bg-white rounded-2xl border border-gray-200 p-8` |
-| Bouton primaire | `bg-primary text-white py-3 rounded-lg font-semibold` |
-| Inputs | `border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/30` |
-| Erreurs | `bg-red-50 border border-red-200 rounded-lg text-red-700` |
+| Element          | Classes Tailwind                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| Container page   | `min-h-[calc(100vh-280px)] px-4 py-8` + `max-w-4xl mx-auto`                                   |
+| Texte principal  | `text-text-primary`                                                                           |
+| Texte secondaire | `text-text-secondary`                                                                         |
+| Cards            | `bg-white rounded-2xl border border-gray-200 p-8`                                             |
+| Bouton primaire  | `bg-primary text-white py-3 rounded-lg font-semibold`                                         |
+| Inputs           | `border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/30` |
+| Erreurs          | `bg-red-50 border border-red-200 rounded-lg text-red-700`                                     |
 
 Style guide complet : `_docs/decisions/2026-04-10-style-guide-css.md`
 
@@ -677,6 +701,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(24))"   # -> POSTGRES_PA
 #    FRONTEND_URL=https://discover.mentaltech.fr
 #    MAIL_USERNAME=<email SMTP>
 #    MAIL_PASSWORD=<app password SMTP>
+#    VITE_PRODUCTS_API_URL=https://discover.mentaltech.fr/api/products
 
 # 4. Lancer
 docker compose up -d --build
@@ -687,6 +712,42 @@ curl http://localhost:3033/api/health # 200
 
 # 6. Créer le premier admin
 docker compose exec backend python -m scripts.create_admin
+```
+
+### Pré-rendu SSG des fiches solutions
+
+Le build frontend exécute automatiquement `npm run prebuild` qui fetche `VITE_PRODUCTS_API_URL` et écrit `frontend/src/data/build-products.json`. Le SSG utilise ce snapshot pour générer une page HTML par fiche solution visible.
+
+- **API joignable au build** → 1 page HTML par produit visible (idéal SEO, social previews)
+- **API injoignable** → snapshot existant conservé OU `[]` initial → fiches restent SPA (fallback nginx). Le site fonctionne quand même.
+
+Pour rafraîchir le snapshot manuellement après une mise à jour catalogue :
+
+```bash
+cd frontend
+VITE_PRODUCTS_API_URL=https://discover.mentaltech.fr/api/products npm run snapshot-products
+docker compose build frontend
+docker compose up -d frontend
+```
+
+### Checklist SEO post-déploiement
+
+```bash
+# 1. Ouvrir Google Search Console + Bing Webmaster Tools sur discover.mentaltech.fr
+#    Récupérer les tokens de vérification HTML
+# 2. Éditer frontend/index.html lignes 14-17 : décommenter les 2 <meta> et coller les tokens
+# 3. Rebuild + redeploy frontend
+docker compose up -d --build frontend
+
+# 4. Soumettre le sitemap dynamique dans GSC + Bing :
+#    https://discover.mentaltech.fr/api/sitemap.xml
+
+# 5. Valider les structured data avec :
+#    - https://validator.schema.org/
+#    - https://search.google.com/test/rich-results
+#    sur /, /faq, /bureau, /catalogue, une /solution/{id}
+
+# 6. Lighthouse mobile baseline sur la landing
 ```
 
 ### Backup et restauration
@@ -729,6 +790,7 @@ cd frontend && npx tsc --noEmit
 ### ✅ V2.0 - Plateforme Complète (Mars 2026)
 
 #### Architecture & Infrastructure
+
 - [x] Architecture monorepo (frontend / backend / database)
 - [x] API REST FastAPI avec documentation Swagger
 - [x] Base de donnees PostgreSQL avec produits pre-charges
@@ -736,6 +798,7 @@ cd frontend && npx tsc --noEmit
 - [x] Proxy Nginx vers le backend
 
 #### Authentification & Comptes
+
 - [x] Authentification JWT (inscription, connexion, refresh)
 - [x] Page profil utilisateur + changement de mot de passe
 - [x] Verification d'email a l'inscription (lien par email, 24h)
@@ -743,10 +806,12 @@ cd frontend && npx tsc --noEmit
 - [x] Roles : utilisateur, prescripteur, editeur, administrateur
 
 #### Scoring & Qualite
+
 - [x] Systeme de scoring qualite interne sur 5 piliers (0-5 chacun)
 - [x] Protocole d'analyse documente
 
 #### Espace Prescripteur
+
 - [x] Inscription prescripteur (profession, organisation, RPPS/ADELI)
 - [x] Validation RPPS/ADELI (format 11 ou 9 chiffres)
 - [x] Ordonnance digitale (lien securise 30 jours, 1-5 solutions, QR code)
@@ -757,6 +822,7 @@ cd frontend && npx tsc --noEmit
 - [x] Renouvellement de prescription
 
 #### Soumission Publique & Collectif
+
 - [x] Soumission publique sans compte (formulaire multi-etapes)
 - [x] Anti-bot (honeypot + delai minimum)
 - [x] Confirmation email soumission (48h)
@@ -768,6 +834,7 @@ cd frontend && npx tsc --noEmit
 - [x] Barre de progression multi-etapes
 
 #### UX & Accessibilite
+
 - [x] Resultats partageables (URL encode les reponses)
 - [x] Compteur temps reel (solutions detectees pendant le quiz)
 - [x] Modal de crise (numeros d'urgence bloquant pour reponses "tres mal")
@@ -777,6 +844,7 @@ cd frontend && npx tsc --noEmit
 - [x] Badges statut avec icones (pas couleur seule)
 
 #### Securite
+
 - [x] Rate limiting sur soumissions publiques (3/heure)
 - [x] Validation magic bytes sur uploads (PNG, JPEG, WebP)
 - [x] Rejection wildcards CORS en production
@@ -786,12 +854,14 @@ cd frontend && npx tsc --noEmit
 - [x] Backup automatise avec chiffrement optionnel
 
 #### Contenu & Legal
+
 - [x] Section "Pour les professionnels de sante" (page About)
 - [x] FAQ alignee avec les fonctionnalites actuelles
 - [x] Mentions DPIA et hebergement HDS (page Privacy)
 - [x] Textes cookies alignes (Plausible Analytics sans cookies)
 
 #### Administration
+
 - [x] Panel d'administration (CRUD complet produits)
 - [x] Visibilite produits (masquer/afficher, entreprise defunte)
 - [x] Gestion prescripteurs (valider, revoquer)
@@ -818,6 +888,22 @@ cd frontend && npx tsc --noEmit
 - [x] Formulaire soignants aligne sur la DA du formulaire produit
 - [x] Uniformisation DA CSS : tokens semantiques, border-radius, containers, cards (16 fichiers)
 
+### V2.2 - SEO & indexation (Mai 2026)
+
+- [x] Audit SEO complet + recherche mots-clés FR santé mentale numérique (`_docs/research/2026-05-21-audit-seo-mentaltech-discover.md`)
+- [x] Migration react-router 6 + vite-react-ssg pour pré-rendu HTML statique des 11 routes publiques
+- [x] Per-page title, meta description et JSON-LD injectés server-side via `<Head>` (react-helmet-async)
+- [x] Schemas Schema.org : FAQPage (/faq), CollectionPage + ItemList (/catalogue), SoftwareApplication + BreadcrumbList (/solution/:id), AboutPage + Person ×4 (/bureau)
+- [x] Page Bureau du Collectif (`/bureau`) avec les 4 membres (Présidente, Vice-président, Trésorière, Secrétaire) + photos individuelles + JSON-LD Person pour E-E-A-T
+- [x] Pré-rendu dynamique /solution/:id via `npm run prebuild` + `getStaticPaths` (fetch /api/products?visible=true au build)
+- [x] noindex sur les 14 routes privées (admin, dashboard, prescriber, quiz, results, etc.) via hook `useNoindex`
+- [x] Soft-404 fix : `GET /api/products/{id}` filtre `is_visible AND NOT company_defunct` + frontend injecte noindex pour fiches retirées
+- [x] Conversion `<button>` → `<a href>` dans ProductCatalogCard (Google suit les liens internes vers fiches)
+- [x] Lazy-load images logos (`loading="lazy"`)
+- [x] noscript fallback dans index.html avec H1, intro, liens vers les routes publiques + bannière 3114
+- [x] Suppression sitemap statique fantôme - un seul `/api/sitemap.xml` dynamique source of truth
+- [x] Placeholders pour Google Search Console + Bing Webmaster Tools verification tokens
+
 ### 🔮 V3 - Expansion (prevu)
 
 - [ ] Systeme d'abonnement (gratuit / pro / equipe)
@@ -828,7 +914,9 @@ cd frontend && npx tsc --noEmit
 - [ ] Monitoring (Sentry)
 - [ ] Multi-langue (EN, ES, DE)
 - [ ] Export PDF ordonnance
-- [ ] Blog SEO
+- [ ] Blog éditorial (page comparatif méditation FR, etc.)
+- [ ] OG image dynamique par produit
+- [ ] Page "Comité scientifique" élargie au-delà du Bureau (membres associés, conseillers)
 
 ---
 

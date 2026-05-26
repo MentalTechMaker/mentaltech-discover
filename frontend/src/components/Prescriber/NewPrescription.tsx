@@ -10,6 +10,7 @@ import { getLabelInfo } from "../../utils/scoring";
 import type { Product } from "../../types";
 
 import { pricingLabels } from "../../data/labels";
+import { useNoindex } from "../../hooks/useNoindex";
 
 function escapeHtml(str: string): string {
   return str
@@ -21,6 +22,7 @@ function escapeHtml(str: string): string {
 }
 
 export const NewPrescription: React.FC = () => {
+  useNoindex();
   const { setView } = useAppStore();
   const {
     products,

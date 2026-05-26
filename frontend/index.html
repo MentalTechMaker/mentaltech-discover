@@ -1,84 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo_mt.png" />
-    <link rel="canonical" href="https://discover.mentaltech.fr/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="MentalTech Discover - Découvrez les solutions digitales en santé mentale adaptées à vos besoins. Créé par MentalTechMaker pour le Collectif MentalTech."
-    />
     <meta name="theme-color" content="#4A90E2" />
 
-    <title>MentalTech Discover - Trouvez votre solution en santé mentale</title>
+    <!-- TODO Arnaud : remplacer le content par le token Google Search Console après ajout du domaine -->
+    <meta
+      name="google-site-verification"
+      content="TThdEH-tUjXHrhA5CY3L3IOQUmihG2xEEYFf8-pGPDg"
+    />
+    <!-- TODO Arnaud : remplacer le content par le token Bing Webmaster Tools -->
+    <!-- <meta name="msvalidate.01" content="REMPLACER_PAR_TOKEN_BING" /> -->
 
-    <!-- Open Graph Meta Tags -->
+    <!-- Fallback title (overridden per-route by <PageMeta> via react-helmet-async during SSG and SPA navigation) -->
+    <title>MentalTech Discover</title>
+
+    <!-- Static OG/Twitter defaults (per-route overrides come from <PageMeta>) -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://discover.mentaltech.fr/" />
-    <meta property="og:title" content="MentalTech Discover - Trouvez votre solution en santé mentale" />
-    <meta property="og:description" content="Découvrez les solutions digitales en santé mentale adaptées à vos besoins. Créé par MentalTechMaker pour le Collectif MentalTech." />
-    <meta property="og:image" content="https://discover.mentaltech.fr/og-image.png" />
+    <meta
+      property="og:image"
+      content="https://discover.mentaltech.fr/og-image.png"
+    />
     <meta property="og:site_name" content="MentalTech Discover" />
     <meta property="og:locale" content="fr_FR" />
-
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://discover.mentaltech.fr/" />
-    <meta name="twitter:title" content="MentalTech Discover - Trouvez votre solution en santé mentale" />
-    <meta name="twitter:description" content="Découvrez les solutions digitales en santé mentale adaptées à vos besoins. Créé par MentalTechMaker pour le Collectif MentalTech." />
-    <meta name="twitter:image" content="https://discover.mentaltech.fr/og-image.png" />
+    <meta
+      name="twitter:image"
+      content="https://discover.mentaltech.fr/og-image.png"
+    />
 
     <!-- Structured data: Organization -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Collectif MentalTech",
-      "url": "https://mentaltech.fr",
-      "logo": "https://discover.mentaltech.fr/logo_mt.png",
-      "foundingDate": "2023",
-      "description": "Premier écosystème français de santé mentale digitale",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "arnaud@mentaltechmaker.fr",
-        "contactType": "customer support",
-        "availableLanguage": "French"
-      },
-      "sameAs": [
-        "https://github.com/mentaltechmaker/mentaltech-discover"
-      ]
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Collectif MentalTech",
+        "url": "https://mentaltech.fr",
+        "logo": "https://discover.mentaltech.fr/logo_mt.png",
+        "foundingDate": "2023",
+        "description": "Premier écosystème français de santé mentale digitale",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "arnaud@mentaltechmaker.fr",
+          "contactType": "customer support",
+          "availableLanguage": "French"
+        },
+        "sameAs": ["https://github.com/mentaltechmaker/mentaltech-discover"]
+      }
     </script>
 
     <!-- Structured data: WebSite + SearchAction -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "MentalTech Discover",
-      "url": "https://discover.mentaltech.fr/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://discover.mentaltech.fr/catalog?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "MentalTech Discover",
+        "url": "https://discover.mentaltech.fr/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://discover.mentaltech.fr/catalog?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
       }
-    }
     </script>
 
     <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-lRzI12Da2RVbd6brhmLIF.js"></script>
+    <script
+      async
+      src="https://plausible.io/js/pa-lRzI12Da2RVbd6brhmLIF.js"
+    ></script>
     <script>
-      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
+      ((window.plausible =
+        window.plausible ||
+        function () {
+          (plausible.q = plausible.q || []).push(arguments);
+        }),
+        (plausible.init =
+          plausible.init ||
+          function (i) {
+            plausible.o = i || {};
+          }));
+      plausible.init();
     </script>
-
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div
+        style="
+          max-width: 720px;
+          margin: 4rem auto;
+          padding: 2rem;
+          font-family: system-ui, sans-serif;
+          color: #1a202c;
+        "
+      >
+        <h1 style="font-size: 1.75rem; margin-bottom: 1rem">
+          MentalTech Discover - annuaire des solutions numériques en santé
+          mentale
+        </h1>
+        <p style="font-size: 1.05rem; line-height: 1.55; margin-bottom: 1rem">
+          MentalTech Discover référence des applications, plateformes de
+          téléconsultation, outils de méditation et de TCC numérique en santé
+          mentale, évalués selon un protocole de qualité (preuves cliniques, UX,
+          éthique, accessibilité, intégration pro). Service gratuit, anonyme, en
+          français.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.55; margin-bottom: 1rem">
+          Pour naviguer dans l'application, activez JavaScript. Vous pouvez
+          aussi consulter directement :
+        </p>
+        <ul style="line-height: 1.8">
+          <li>
+            <a
+              href="/catalogue"
+              style="color: #2c6cb0; text-decoration: underline"
+              >Catalogue des solutions</a
+            >
+          </li>
+          <li>
+            <a
+              href="/methodologie"
+              style="color: #2c6cb0; text-decoration: underline"
+              >Notre méthodologie</a
+            >
+          </li>
+          <li>
+            <a
+              href="/notre-demarche"
+              style="color: #2c6cb0; text-decoration: underline"
+              >Notre démarche</a
+            >
+          </li>
+          <li>
+            <a href="/faq" style="color: #2c6cb0; text-decoration: underline"
+              >Questions fréquentes</a
+            >
+          </li>
+        </ul>
+        <p style="font-size: 0.9rem; color: #4a5568; margin-top: 2rem">
+          En cas de crise, appelez le <strong>3114</strong> (prévention suicide,
+          24h/24, gratuit) ou le <strong>15</strong> (SAMU). MentalTech Discover
+          n'est pas un dispositif médical.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

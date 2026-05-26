@@ -20,6 +20,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useProductsStore } from "../../store/useProductsStore";
 import { PrescriberOnboarding } from "./PrescriberOnboarding";
+import { useNoindex } from "../../hooks/useNoindex";
 
 type Tab = "prescriptions" | "favorites" | "notes" | "community";
 
@@ -58,6 +59,7 @@ function formatDate(dateStr: string): string {
 }
 
 export const PrescriberDashboard: React.FC = () => {
+  useNoindex();
   const { isAuthenticated, isPrescriber, isPrescriberPending } = useAuthStore();
   const user = useAuthStore((s) => s.user);
   const setView = useAppStore((s) => s.setView);

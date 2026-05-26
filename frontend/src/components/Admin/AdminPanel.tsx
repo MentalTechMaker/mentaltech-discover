@@ -14,6 +14,7 @@ import {
   type PrescriberListItem,
 } from "../../api/prescriber";
 import type { Product } from "../../types";
+import { useNoindex } from "../../hooks/useNoindex";
 
 type Tab = "products" | "prescribers" | "veille" | "soumissions";
 
@@ -25,6 +26,7 @@ const UPDATE_TYPES = [
 ] as const;
 
 export const AdminPanel: React.FC = () => {
+  useNoindex();
   const { isAdmin } = useAuthStore();
   const { setView, adminEditProductId, setAdminEditProductId } = useAppStore();
   const { products, fetchProducts } = useProductsStore();

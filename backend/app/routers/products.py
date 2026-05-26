@@ -34,7 +34,9 @@ def list_products(
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: str, db: Session = Depends(get_db)):
-    product = get_product_by_id(db, product_id)
+    # Public route: invisible / defunct products return 404 to avoid soft-404
+    # signals in search engines via deep links to retired solutions.
+    product = get_product_by_id(db, product_id, visible_only=True)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

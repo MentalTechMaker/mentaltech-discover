@@ -1,11 +1,13 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useProductsStore } from "../../store/useProductsStore";
 import { useAppStore } from "../../store/useAppStore";
 import { ProductCatalogCard } from "./ProductCatalogCard";
 import { FilterSection } from "./FilterSection";
-import { setPageMeta, setCanonical } from "../../utils/meta";
+import { SITE_URL } from "../../utils/meta";
+import { PageMeta } from "../../utils/PageMeta";
 
 const LAUNCH_THRESHOLD = 10;
+const ITEMLIST_MAX = 20;
 
 export interface Filters {
   search: string;
@@ -20,13 +22,43 @@ const INSTITUTIONAL_AUDIENCES = new Set(["entreprise", "etablissement-sante"]);
 export const ProductCatalog: React.FC = () => {
   const setView = useAppStore((s) => s.setView);
 
-  useEffect(() => {
-    setPageMeta(
-      "Catalogue des solutions",
-      "Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience et tarif.",
-    );
-    setCanonical("/catalogue");
-  }, []);
+  const {
+    products: allProducts,
+    isLoading,
+    error: loadError,
+  } = useProductsStore();
+
+  const catalogSchemas = useMemo(() => {
+    const collectionPage = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Catalogue des solutions de santé mentale numérique",
+      description:
+        "Annuaire évalué des solutions numériques de santé mentale en France : applications, téléconsultation, méditation, TCC, journal d'humeur.",
+      url: `${SITE_URL}/catalogue`,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "MentalTech Discover",
+        url: SITE_URL,
+      },
+      inLanguage: "fr",
+    } as Record<string, unknown>;
+    if (allProducts.length === 0) return [collectionPage];
+    const items = allProducts.slice(0, ITEMLIST_MAX).map((p, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      url: `${SITE_URL}/solution/${p.id}`,
+      name: p.name,
+    }));
+    const itemList = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Solutions numériques de santé mentale référencées",
+      itemListElement: items,
+      numberOfItems: allProducts.length,
+    } as Record<string, unknown>;
+    return [collectionPage, itemList];
+  }, [allProducts]);
 
   const [filters, setFilters] = useState<Filters>({
     search: "",
@@ -38,12 +70,6 @@ export const ProductCatalog: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"name" | "pricing">("name");
-
-  const {
-    products: allProducts,
-    isLoading,
-    error: loadError,
-  } = useProductsStore();
 
   const filterOptions = useMemo(() => {
     const problems = new Set<string>();
@@ -150,33 +176,50 @@ export const ProductCatalog: React.FC = () => {
     });
   };
 
+  const pageMeta = (
+    <PageMeta
+      title="Catalogue des solutions de santé mentale numérique"
+      description="Explorez toutes les solutions numériques de santé mentale : applications, thérapies en ligne, méditation, TCC. Filtres par type, audience et tarif."
+      canonical="/catalogue"
+      jsonLd={catalogSchemas}
+    />
+  );
+
   if (isLoading) {
     return (
-      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
-        <p className="text-text-secondary text-lg">
-          Chargement des produits...
-        </p>
-      </div>
+      <>
+        {pageMeta}
+        <div className="min-h-[calc(100vh-280px)] flex items-center justify-center">
+          <p className="text-text-secondary text-lg">
+            Chargement des produits...
+          </p>
+        </div>
+      </>
     );
   }
 
   if (loadError) {
     return (
-      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-2xl mb-3">⚠️</p>
-          <p className="text-text-primary font-semibold mb-1">
-            Impossible de charger les produits
-          </p>
-          <p className="text-text-secondary text-sm">{loadError}</p>
+      <>
+        {pageMeta}
+        <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4">
+          <div className="text-center">
+            <p className="text-2xl mb-3">⚠️</p>
+            <p className="text-text-primary font-semibold mb-1">
+              Impossible de charger les produits
+            </p>
+            <p className="text-text-secondary text-sm">{loadError}</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (allProducts.length === 0) {
     return (
-      <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-16">
+      <>
+        {pageMeta}
+        <div className="min-h-[calc(100vh-280px)] flex items-center justify-center px-4 py-16">
         <div className="max-w-lg w-full text-center space-y-6">
           <div className="text-6xl">🔨</div>
           <div>
@@ -207,11 +250,14 @@ export const ProductCatalog: React.FC = () => {
           </button>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-280px)] px-4 py-8">
+    <>
+      {pageMeta}
+      <div className="min-h-[calc(100vh-280px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
@@ -356,5 +402,6 @@ export const ProductCatalog: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
