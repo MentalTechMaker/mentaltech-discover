@@ -4,7 +4,7 @@
 //   - enumerate /solution/:id dynamic paths via getStaticPaths
 //   - pre-populate useProductsStore at module load (so SSG'd HTML contains catalog content)
 //
-// If the API is unreachable, write an empty array — SSG still works, just without
+// If the API is unreachable, write an empty array - SSG still works, just without
 // product pages pre-rendered. The site falls back to SPA behavior at runtime.
 
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";

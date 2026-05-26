@@ -185,9 +185,17 @@ def count_products(db: Session, include_all: bool = False) -> int:
 
 
 def get_product_by_id(
-    db: Session, product_id: str, include_scoring: bool = False
+    db: Session,
+    product_id: str,
+    include_scoring: bool = False,
+    visible_only: bool = False,
 ) -> ProductResponse | None:
-    product = db.query(Product).filter(Product.id == product_id).first()
+    query = db.query(Product).filter(Product.id == product_id)
+    if visible_only:
+        query = query.filter(
+            Product.is_visible == True, Product.company_defunct == False
+        )
+    product = query.first()
     if not product:
         return None
     return _to_response(product, include_scoring=include_scoring)

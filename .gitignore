@@ -13,6 +13,9 @@ dist
 dist-ssr
 *.local
 
+# Frontend SSG build-time snapshot (regenerated at each build via prebuild)
+frontend/src/data/build-products.json
+
 # Backend Python
 __pycache__
 *.py[cod]

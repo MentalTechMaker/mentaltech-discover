@@ -13,7 +13,7 @@ interface PageMetaProps {
 
 /**
  * Declarative head management for SSG'd routes. Renders <title>, meta tags,
- * canonical, OG/Twitter tags, and JSON-LD as part of the React tree — so they
+ * canonical, OG/Twitter tags, and JSON-LD as part of the React tree - so they
  * appear in the SSG'd HTML (not just after client-side hydration).
  */
 export function PageMeta({
@@ -30,12 +30,8 @@ export function PageMeta({
     <Head>
       <title>{fullTitle}</title>
       {description && <meta name="description" content={description} />}
-      {description && (
-        <meta property="og:description" content={description} />
-      )}
-      {description && (
-        <meta name="twitter:description" content={description} />
-      )}
+      {description && <meta property="og:description" content={description} />}
+      {description && <meta name="twitter:description" content={description} />}
       <meta property="og:title" content={fullTitle} />
       <meta name="twitter:title" content={fullTitle} />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}

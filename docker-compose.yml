@@ -72,6 +72,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # Forwarded to the frontend Dockerfile build stage. Used by `npm run prebuild`
+        # to fetch the visible products list and pre-render /solution/:id pages.
+        # Override in .env to point at a reachable backend (host network or prod URL).
+        VITE_PRODUCTS_API_URL: ${VITE_PRODUCTS_API_URL:-}
     container_name: mentaltech-discover-frontend
     depends_on:
       backend:
