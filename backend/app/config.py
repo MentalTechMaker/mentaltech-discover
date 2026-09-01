@@ -7,6 +7,12 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3033,http://localhost:5173"
     FRONTEND_URL: str = "http://localhost:3033"
 
+    # Backend du Collectif MentalTech (voir _docs/decisions/2026-07-13-discover-backend-du-collectif.md).
+    # API_PUBLIC_URL sert a construire les liens de confirmation e-mail de la charte,
+    # qui pointent sur l'API elle-meme (mentaltech.fr est un site statique sans page dediee).
+    API_PUBLIC_URL: str = "http://localhost:8000"
+    COLLECTIF_WEBSITE_URL: str = "https://mentaltech.fr"
+
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 

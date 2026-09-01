@@ -424,3 +424,38 @@ async def send_reset_password_email(email: str, name: str, user_id: str) -> bool
     )
 
     return await _send_or_write(message, [email], html, "Password reset email")
+
+
+async def send_charter_confirmation_email(
+    email: str, name: str, confirm_token: str
+) -> bool:
+    # Le lien pointe directement sur l'API : mentaltech.fr est un site
+    # statique, il n'a pas (encore) de page de confirmation dediee.
+    confirm_url = f"{settings.API_PUBLIC_URL}/api/charter/confirm?token={confirm_token}"
+    template = jinja_env.get_template("charter_confirmation.html")
+    html = template.render(
+        name=name, confirm_url=confirm_url, website_url=settings.COLLECTIF_WEBSITE_URL
+    )
+    message = MessageSchema(
+        subject="Confirmez votre signature de la charte MentalTech",
+        recipients=[email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    return await _send_or_write(message, [email], html, "Charter signature confirmation email")
+
+
+async def send_charter_admin_notification(
+    admin_email: str, name: str, organization: str, email: str, kind: str
+) -> bool:
+    template = jinja_env.get_template("admin_charter_received.html")
+    html = template.render(
+        name=name, organization=organization, email=email, kind=kind
+    )
+    message = MessageSchema(
+        subject=f"[Charte MentalTech] Nouvelle signature confirmee : {organization}",
+        recipients=[admin_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    return await _send_or_write(message, [admin_email], html, "Charter admin notification")
