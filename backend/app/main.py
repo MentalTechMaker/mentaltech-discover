@@ -13,7 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .config import settings
 from .rate_limit import limiter
-from .routers import auth, products, prescriptions, prescriber, admin, public
+from .routers import auth, products, prescriptions, prescriber, admin, public, charter
 
 # --- Logging configuration ---
 LOG_DIR = Path("/var/log/mentaltech")
@@ -72,7 +72,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        # setdefault,pas d'ecrasement : /api/charter/confirm porte un token dans
+        # sa query string et fixe volontairement "no-referrer", plus strict que
+        # le defaut du site.
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         response.headers["X-XSS-Protection"] = "1; mode=block"
         return response
 
@@ -138,6 +141,7 @@ app.include_router(prescriptions.router)
 app.include_router(prescriber.router)
 app.include_router(admin.router)
 app.include_router(public.router)
+app.include_router(charter.router)
 
 # Serve uploaded logos as static files (/tmp/uploads est toujours writable)
 UPLOADS_DIR = Path("/tmp/uploads")
