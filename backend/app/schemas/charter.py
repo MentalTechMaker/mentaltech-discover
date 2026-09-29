@@ -9,6 +9,7 @@ class CharterSignatoryCreate(BaseModel):
     email: EmailStr
     kind: str
     consent: bool
+    interested_in_soutien: bool = False
 
     # Anti-bot, memes conventions que public_submission / health_prof_application.
     honeypot: str = ""

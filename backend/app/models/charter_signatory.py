@@ -20,6 +20,13 @@ class CharterSignatory(Base):
     kind: Mapped[str] = mapped_column(String(30), nullable=False)  # company | individual | institution
     consent: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
+    # Case optionnelle du formulaire : l'organisation envisage de soutenir
+    # financierement le Collectif (futur statut Membre Partenaire). Intention
+    # seulement, aucun engagement ni tarif.
+    interested_in_soutien: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+
     # La charte 2026 repart de zero : les signatures fraiches (`form`) et les
     # 130+ signataires historiques 2023 importes plus tard (`import-2023`) ne
     # doivent jamais se melanger dans un compteur. Voir _docs/decisions/

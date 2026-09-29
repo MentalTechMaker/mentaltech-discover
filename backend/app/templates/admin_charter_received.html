@@ -24,6 +24,11 @@
             <div class="field"><strong>Organisation</strong> {{ organization }}</div>
             <div class="field"><strong>Email</strong> {{ email }}</div>
             <div class="field"><strong>Type</strong> {{ kind }}</div>
+            {% if interested_in_soutien %}
+            <p style="margin-top: 20px; padding: 12px 16px; background: #fdecea; border-left: 3px solid #e2574a;">
+                <strong>Intéressé par un soutien financier au Collectif.</strong> À recontacter.
+            </p>
+            {% endif %}
         </div>
         <div class="footer">
             <p>Collectif MentalTech — notification automatique</p>
