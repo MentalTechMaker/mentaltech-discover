@@ -71,6 +71,7 @@ async def sign_charter(
     signatory.email = str(data.email)
     signatory.kind = data.kind
     signatory.consent = data.consent
+    signatory.interested_in_soutien = data.interested_in_soutien
     signatory.charter_version = "2026"
 
     try:
@@ -133,22 +134,21 @@ async def confirm_charter(
             status_code=400,
         )
 
+    # Recherche par id seul : confirm_token est remis a None a la confirmation,
+    # un filtre sur le token rendrait "Déjà confirmée" inatteignable (second
+    # clic, ou pre-clic des scanners de liens type Outlook Safe Links).
     signatory = (
-        db.query(CharterSignatory)
-        .filter(
-            CharterSignatory.id == signatory_id,
-            CharterSignatory.confirm_token == token,
-        )
-        .first()
+        db.query(CharterSignatory).filter(CharterSignatory.id == signatory_id).first()
     )
 
-    if not signatory:
+    if signatory and signatory.email_confirmed:
+        return _charter_page("Déjà confirmée", "Cette signature est déjà confirmée. Merci !")
+
+    # Token remplace par une nouvelle demande de signature : seul le dernier lien vaut.
+    if not signatory or signatory.confirm_token != token:
         return _charter_page(
             "Signature introuvable", "Nous ne retrouvons pas cette signature.", status_code=404
         )
-
-    if signatory.email_confirmed:
-        return _charter_page("Déjà confirmée", "Cette signature est déjà confirmée. Merci !")
 
     signatory.email_confirmed = True
     signatory.status = "confirmed"
@@ -164,6 +164,7 @@ async def confirm_charter(
         organization=signatory.organization,
         email=signatory.email,
         kind=signatory.kind,
+        interested_in_soutien=signatory.interested_in_soutien,
     )
 
     return _charter_page(

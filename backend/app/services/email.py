@@ -446,11 +446,20 @@ async def send_charter_confirmation_email(
 
 
 async def send_charter_admin_notification(
-    admin_email: str, name: str, organization: str, email: str, kind: str
+    admin_email: str,
+    name: str,
+    organization: str,
+    email: str,
+    kind: str,
+    interested_in_soutien: bool = False,
 ) -> bool:
     template = jinja_env.get_template("admin_charter_received.html")
     html = template.render(
-        name=name, organization=organization, email=email, kind=kind
+        name=name,
+        organization=organization,
+        email=email,
+        kind=kind,
+        interested_in_soutien=interested_in_soutien,
     )
     message = MessageSchema(
         subject=f"[Charte MentalTech] Nouvelle signature confirmee : {organization}",
